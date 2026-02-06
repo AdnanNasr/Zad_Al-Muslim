@@ -1,0 +1,16 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noor_quran/themes/theme_notifier.dart';
+import 'package:noor_quran/view_models/providers/theme_provider.dart';
+
+extension SettingsExt on BuildContext {
+  // get themeMode
+  ThemeMode themeMode(WidgetRef ref) {
+    return ref.watch(themeProvider);
+  }
+  // get app color
+  FlexScheme themeColor(WidgetRef ref){
+    return ref.watch(userThemeProvider);
+  }
+}

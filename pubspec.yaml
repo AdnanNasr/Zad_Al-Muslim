@@ -1,0 +1,114 @@
+name: noor_quran
+description: "Quran App"
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_localizations: # to add a lot of languages
+    sdk: flutter
+  flex_color_scheme: ^8.3.0 # to make custom theme
+  flutter_riverpod: ^2.6.1 # to handle state
+  # badges: ^3.1.2 # to make numbers beside icons
+  isar: ^3.1.0+1 # database
+  isar_flutter_libs: ^3.1.0+1 # database ext
+  intl: ^0.20.2 # to make multi language app
+  path_provider: ^2.1.5 # to get paths of device
+  flutter_svg: ^2.2.2
+  shared_preferences: ^2.5.3
+  logger: ^2.6.2
+  # device_preview: ^1.3.1
+  # image_picker: ^1.2.0
+  # http: ^1.6.0
+  flutter_screenutil: ^5.9.3
+  flutter_launcher_icons: ^0.14.4
+  dio: ^5.9.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.6
+  isar_generator: ^3.1.0+1
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/json/
+    - assets/images/
+    - assets/icons/
+    # - assets/svg/
+
+  fonts: # custom app fonts
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri/Amiri-Italic.ttf
+          style: italic
+        - asset: assets/fonts/Amiri/Amiri-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Amiri/Amiri-BoldItalic.ttf
+          weight: 700
+          style: italic
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo/Cairo-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Cairo/Cairo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Cairo/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo/Cairo-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Cairo/Cairo-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Cairo/Cairo-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Cairo/Cairo-Black.ttf
+          weight: 900
+    - family: "Tajawal"
+      fonts:
+        - asset: assets/fonts/Tajawal/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal/Tajawal-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Tajawal/Tajawal-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Tajawal/Tajawal-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Tajawal/Tajawal-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Tajawal/Tajawal-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Tajawal/Tajawal-Black.ttf
+          weight: 900
+    - family: "Rubik"
+      fonts:
+        - asset: assets/fonts/Rubik/Rubik-Regular.ttf
+        - asset: assets/fonts/Rubik/Rubik-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Rubik/Rubik-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Rubik/Rubik-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Rubik/Rubik-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Rubik/Rubik-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Rubik/Rubik-Black.ttf
+          weight: 900
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/icons/moon.png"
