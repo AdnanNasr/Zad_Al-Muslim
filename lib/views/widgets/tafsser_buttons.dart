@@ -2,17 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/extensions/color_ext.dart';
 
-class TafsserItem extends StatelessWidget {
+class TafsserItem extends StatefulWidget {
   final TafsserInfo info;
   final void Function() onPressed;
   final VoidCallback? onTap;
+  final bool isDownloaded;
 
   const TafsserItem({
     super.key,
     required this.info,
     this.onTap,
     required this.onPressed,
+    this.isDownloaded = false,
   });
+
+  @override
+  State<TafsserItem> createState() => TafsserItemState();
+}
+
+class TafsserItemState extends State<TafsserItem> {
+  bool isDownloading = false;
+  late bool isDownloaded;
+  double downloadProgress = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    isDownloaded = widget.isDownloaded;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +38,7 @@ class TafsserItem extends StatelessWidget {
       child: Tooltip(
         message: "عرض المعلومات",
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           splashColor: context.color.primary.withValues(alpha: 0.1),
           highlightColor: context.color.primary.withValues(alpha: 0.05),
           child: Ink(
@@ -45,7 +62,7 @@ class TafsserItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        info.name,
+                        widget.info.name,
                         style: TextStyle(
                           color: context.color.onSurface,
                           fontFamily: "Rubik",
@@ -58,7 +75,7 @@ class TafsserItem extends StatelessWidget {
                       ),
                       SizedBox(height: 6.h),
                       Text(
-                        info.description,
+                        widget.info.description,
                         style: TextStyle(
                           color: context.color.onSurfaceVariant,
                           fontSize: 14.sp,
@@ -73,7 +90,7 @@ class TafsserItem extends StatelessWidget {
 
                 SizedBox(width: 10.w),
 
-                _buildDownloadButton(context, onPressed: onPressed),
+                _buildDownloadButton(context),
               ],
             ),
           ),
@@ -82,25 +99,111 @@ class TafsserItem extends StatelessWidget {
     );
   }
 
-  Widget _buildDownloadButton(
-    BuildContext context, {
-    required void Function() onPressed,
-  }) {
+  void _handleDownload() {
+    setState(() {
+      isDownloading = true;
+      downloadProgress = 0.0;
+    });
+
+    widget.onPressed.call();
+  }
+
+  void updateDownloadProgress(double progress) {
+    if (mounted) {
+      setState(() {
+        downloadProgress = progress;
+      });
+    }
+  }
+
+  void setIsDownloading(bool value) {
+    if (mounted) {
+      setState(() {
+        isDownloading = value;
+      });
+    }
+  }
+
+  void markAsDownloaded() {
+    if (mounted) {
+      setState(() {
+        isDownloading = false;
+        isDownloaded = true;
+      });
+    }
+  }
+
+  Widget _buildDownloadButton(BuildContext context) {
+    if (isDownloaded) {
+      // عند اكتمال التحميل
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.2),
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          onPressed: null, // زر معطل
+          icon: Icon(
+            Icons.check_circle_rounded,
+            size: 22.sp,
+            color: Colors.green,
+          ),
+        ),
+      );
+    }
+
+    if (isDownloading) {
+      // أثناء التحميل
+      return Container(
+        decoration: BoxDecoration(
+          color: context.color.primaryContainer.withValues(alpha: 0.5),
+          shape: BoxShape.circle,
+        ),
+        padding: EdgeInsets.all(8.w),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // الخلفية الدائرية للتقدم
+            SizedBox(
+              width: 40.w,
+              height: 40.w,
+              child: CircularProgressIndicator(
+                value: downloadProgress,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.color.primary,
+                ),
+                backgroundColor:
+                    context.color.primary.withValues(alpha: 0.2),
+              ),
+            ),
+            // رسالة النسبة المئوية
+            Text(
+              "${(downloadProgress * 100).toStringAsFixed(0)}%",
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.bold,
+                color: context.color.primary,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // الحالة الافتراضية - زر التنزيل
     return Container(
       decoration: BoxDecoration(
         color: context.color.primaryContainer.withValues(alpha: 0.5),
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        onPressed: onPressed,
+        onPressed: _handleDownload,
         icon: Icon(
           Icons.cloud_download_rounded,
           size: 22.sp,
           color: context.color.primary,
         ),
-        constraints: BoxConstraints.tightFor(width: 40.w, height: 40.w),
-        splashRadius: 24.w,
-        tooltip: 'تحميل التفسير',
       ),
     );
   }
