@@ -1,4 +1,4 @@
-# نور البيان - Noor Bayan
+<div align="center"><h1>نور البيان - Noor Bayan<h1><div>
 
 <div align="center">
 
