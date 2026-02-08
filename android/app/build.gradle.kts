@@ -10,6 +10,13 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
+    packagingOptions {
+        jniLibs {
+            // هذا السطر يضمن أن المكتبات يتم رصفها بشكل صحيح للـ 16KB
+            useLegacyPackaging = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -28,6 +35,13 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        externalNativeBuild {
+      // For ndk-build, instead use the ndkBuild block.
+      cmake {
+        // Passes optional arguments to CMake.
+        arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+      }
+    }
     }
 
     buildTypes {

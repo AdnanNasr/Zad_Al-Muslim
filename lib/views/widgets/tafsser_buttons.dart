@@ -32,6 +32,22 @@ class TafsserItemState extends State<TafsserItem> {
   }
 
   @override
+  void didUpdateWidget(TafsserItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // تحديث الحالة عند تغيير widget.isDownloaded من الأب
+    if (oldWidget.isDownloaded != widget.isDownloaded) {
+      setState(() {
+        isDownloaded = widget.isDownloaded;
+        // إذا كان التفسير قد تم تحميله للتو، قم بتحديث UI
+        if (isDownloaded && isDownloading) {
+          isDownloading = false;
+          downloadProgress = 0.0;
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
@@ -134,7 +150,10 @@ class TafsserItemState extends State<TafsserItem> {
   }
 
   Widget _buildDownloadButton(BuildContext context) {
-    if (isDownloaded) {
+    // استخدم widget.isDownloaded أو isDownloaded المحلي (whichever is true)
+    final actualDownloaded = isDownloaded || widget.isDownloaded;
+    
+    if (actualDownloaded) {
       // عند اكتمال التحميل
       return Container(
         decoration: BoxDecoration(

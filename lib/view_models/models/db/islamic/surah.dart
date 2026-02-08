@@ -6,43 +6,29 @@ part 'surah.g.dart';
 class Surah {
   Id id = Isar.autoIncrement;
 
-  final int number;
-  final String name;
-  final String englishName;
-  final String englishNameTranslation;
-  final String revelationType;
+  late int number;
+  late String name;
+  late String englishName;
+  late String englishNameTranslation;
+  late String revelationType;
 
-  final ayahs = IsarLinks<AyahModel>(); // one to many relation
+  @Backlink(to: 'surah')
+  final ayahs = IsarLinks<AyahModel>();
 
-  final EditionModel? edition; // can be null
-
-  Surah({
-    required this.number,
-    required this.name,
-    required this.englishName,
-    required this.englishNameTranslation,
-    required this.revelationType,
-    this.edition,
-  });
+  // embedded edition, optional
+  EditionModel? edition;
 }
 
 @collection
 class AyahModel {
   Id id = Isar.autoIncrement;
 
-  final int number;
-  final String text;
+  late int number;
+  late String text;
   @Index()
-  final int numberInSurah;
+  late int numberInSurah;
 
-  @Backlink(to: "ayahs")
   final surah = IsarLink<Surah>();
-
-  AyahModel({
-    required this.number,
-    required this.text,
-    required this.numberInSurah,
-  });
 }
 
 @embedded
@@ -51,6 +37,4 @@ class EditionModel {
   String? language;
   String? name;
   String? englishName;
-
-  EditionModel({this.identifier, this.language, this.name, this.englishName});
 }

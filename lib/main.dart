@@ -11,6 +11,7 @@ import 'package:noor_quran/view_models/providers/theme_provider.dart';
 import 'package:noor_quran/view_models/repositories/insert_hadith.dart';
 import 'package:noor_quran/view_models/repositories/insert_quran_pages.dart';
 import 'package:noor_quran/view_models/logic/onboarding_storage.dart';
+import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
 import 'package:noor_quran/views/pages/adkar_page.dart';
 import 'package:noor_quran/views/pages/app_info.dart';
 import 'package:noor_quran/views/pages/change_app_color_page.dart';
@@ -28,7 +29,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await IsarDb.initDatabase(); // تهيئة قاعدة البيانات المحلية وفتحها
   await insertQuranPagesToIsar(); // إضافة جميع بيانات القران الى قاعدة البيانات
-  await insertHadithToIsar();
+  await insertHadithToIsar(); // اضافة جميع بيانات الحديث الى قاعدة البيانات
+  await loadTafsserFromAssest(); // اضافة جميع بيانات التفاسير قاعدة البيانات
   final container = ProviderContainer();
   await container
       .read(themeProvider.notifier)

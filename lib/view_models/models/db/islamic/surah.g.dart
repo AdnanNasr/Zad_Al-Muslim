@@ -57,10 +57,11 @@ const SurahSchema = CollectionSchema(
   indexes: {},
   links: {
     r'ayahs': LinkSchema(
-      id: -592365729683456136,
+      id: 2838029662576292580,
       name: r'ayahs',
       target: r'AyahModel',
       single: false,
+      linkName: r'surah',
     )
   },
   embeddedSchemas: {r'EditionModel': EditionModelSchema},
@@ -116,19 +117,18 @@ Surah _surahDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Surah(
-    edition: reader.readObjectOrNull<EditionModel>(
-      offsets[0],
-      EditionModelSchema.deserialize,
-      allOffsets,
-    ),
-    englishName: reader.readString(offsets[1]),
-    englishNameTranslation: reader.readString(offsets[2]),
-    name: reader.readString(offsets[3]),
-    number: reader.readLong(offsets[4]),
-    revelationType: reader.readString(offsets[5]),
+  final object = Surah();
+  object.edition = reader.readObjectOrNull<EditionModel>(
+    offsets[0],
+    EditionModelSchema.deserialize,
+    allOffsets,
   );
+  object.englishName = reader.readString(offsets[1]);
+  object.englishNameTranslation = reader.readString(offsets[2]);
   object.id = id;
+  object.name = reader.readString(offsets[3]);
+  object.number = reader.readLong(offsets[4]);
+  object.revelationType = reader.readString(offsets[5]);
   return object;
 }
 
@@ -1231,11 +1231,10 @@ const AyahModelSchema = CollectionSchema(
   },
   links: {
     r'surah': LinkSchema(
-      id: -2890817530031300584,
+      id: 6262901992662417348,
       name: r'surah',
       target: r'Surah',
       single: true,
-      linkName: r'ayahs',
     )
   },
   embeddedSchemas: {},
@@ -1272,12 +1271,11 @@ AyahModel _ayahModelDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = AyahModel(
-    number: reader.readLong(offsets[0]),
-    numberInSurah: reader.readLong(offsets[1]),
-    text: reader.readString(offsets[2]),
-  );
+  final object = AyahModel();
   object.id = id;
+  object.number = reader.readLong(offsets[0]);
+  object.numberInSurah = reader.readLong(offsets[1]);
+  object.text = reader.readString(offsets[2]);
   return object;
 }
 
@@ -2029,12 +2027,11 @@ EditionModel _editionModelDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = EditionModel(
-    englishName: reader.readStringOrNull(offsets[0]),
-    identifier: reader.readStringOrNull(offsets[1]),
-    language: reader.readStringOrNull(offsets[2]),
-    name: reader.readStringOrNull(offsets[3]),
-  );
+  final object = EditionModel();
+  object.englishName = reader.readStringOrNull(offsets[0]);
+  object.identifier = reader.readStringOrNull(offsets[1]);
+  object.language = reader.readStringOrNull(offsets[2]);
+  object.name = reader.readStringOrNull(offsets[3]);
   return object;
 }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:noor_quran/extensions/color_ext.dart';
 import 'package:noor_quran/extensions/theme_ext.dart';
 import 'package:noor_quran/utils/tafseer_utils.dart';
@@ -10,8 +9,6 @@ import 'package:noor_quran/views/widgets/tafseer_dialog.dart';
 import 'package:noor_quran/views/widgets/tafsser_buttons.dart';
 
 class TafseerPage extends ConsumerStatefulWidget {
-  // TODO: when tafseer data are ready
-  // جلب التفاسير
   const TafseerPage({super.key});
 
   @override
@@ -19,51 +16,43 @@ class TafseerPage extends ConsumerStatefulWidget {
 }
 
 class _TafseerPageState extends ConsumerState<TafseerPage> {
+  // قائمة التفاسير مع المعرفات (IDs) التي يجب أن تطابق الـ identifier في الـ JSON
+  // ملاحظة: استخدم نفس الـ identifier المحفوظ في قاعدة البيانات (بـ dot بدلاً من underscore)
   final List<TafsserInfo> tafseerList = [
     TafsserInfo(
       name: "تفسير الجلالين",
-      id: "jalalayn",
+      id: "ar.jalalayn",
       description:
-          "أشهر التفاسير المختصرة؛ يقدم شرحاً وجيزاً للآيات بأسلوب يسهل فهمه للمبتدئين، مع التركيز على المعنى المباشر للكلمات.",
+          "أشهر التفاسير المختصرة؛ يقدم شرحاً وجيزاً للآيات بأسلوب يسهل فهمه للمبتدئين.",
     ),
-
     TafsserInfo(
       name: "تفسير القرطبي",
-      id: "qurtubi",
+      id: "ar.qurtubi",
       description:
-          "مرجع جامع لأحكام القرآن؛ يركز على استنباط الأحكام الفقهية والمسائل الشرعية، مع عناية فائقة باللغة والقراءات القرآنية.",
+          "مرجع جامع لأحكام القرآن؛ يركز على استنباط الأحكام الفقهية والمسائل الشرعية.",
     ),
-
     TafsserInfo(
       name: "تفسير البغوي",
-      id: "baghawi",
+      id: "ar.baghawi",
       description:
-          "يُعرف بـ 'تفسير أهل السنة'؛ يعتمد على النقل الصحيح عن السلف والصحابة، ويتميز بالبعد عن الإسرائيليات والأحاديث المنكرة.",
+          "يُعرف بـ 'تفسير أهل السنة'؛ يعتمد على النقل الصحيح عن السلف والصحابة.",
     ),
-
     TafsserInfo(
       name: "التفسير الميسر",
-      id: "muyassar",
+      id: "ar.muyassar",
       description:
-          "تفسير معاصر أعدته نخبة من العلماء؛ يتميز بعبارات سهلة ومنقحة، ومناسب جداً للقراءة السريعة والفهم الأولي لمعاني الآيات.",
+          "تفسير معاصر أعدته نخبة من العلماء؛ يتميز بعبارات سهلة ومنقحة ومناسبة جداً.",
     ),
-
     TafsserInfo(
       name: "التفسير الوسيط (طنطاوي)",
-      id: "waseet",
+      id: "ar.waseet",
       description:
-          "تفسير يجمع بين التحليل اللفظي والبيان البلاغي؛ يتميز بأسلوبه الأدبي الرصين الذي يوضح المقاصد الكلية للسور بوضوح.",
+          "تفسير يجمع بين التحليل اللفظي والبيان البلاغي؛ يتميز بأسلوبه الأدبي الرصين.",
     ),
   ];
 
-  // مراجع لكل عنصر TafsserItem
   late List<GlobalKey<TafsserItemState>> itemKeys;
-  
-  // قائمة بحفظ التفاسير المحملة
   late List<bool> downloadedList;
-  
-  // المفتاح المستخدم لحفظ البيانات في Shared Preferences
-  static const String _downloadedTafseersKey = "downloaded_tafseer_list";
 
   @override
   void initState() {
@@ -73,30 +62,58 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       (index) => GlobalKey<TafsserItemState>(),
     );
     downloadedList = List<bool>.filled(tafseerList.length, false);
-    _loadDownloadState();
-    _loadActiveDownloads(); // تحميل التنزيلات الجارية
+    
+    // استدعِ _initialSetup بعد بناء الـ widget بشكل كامل
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initialSetup();
+    });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // إعادة التحقق من حالة التنزيل عند العودة إلى الصفحة
-    _refreshDownloadState();
-    _resumePendingDownloads(); // استئناف التنزيلات المعلقة
+  Future<void> _initialSetup() async {
+    await _refreshDownloadState(); // التحقق من Isar
+    await _loadActiveDownloads(); // التنزيلات الجارية
+    await _resumePendingDownloads(); // استئناف المعلق
+  }
+
+  // تحديث الحالة بناءً على وجود البيانات في Isar فعلياً
+  Future<void> _refreshDownloadState() async {
+    for (int i = 0; i < tafseerList.length; i++) {
+      bool isExist = await TafseerUtils.isTafseerDownloaded(tafseerList[i].id);
+      if (mounted) {
+        // تحديث حالة التحميل في الـ state
+        setState(() {
+          downloadedList[i] = isExist;
+        });
+        
+        // إذا كان التفسير محملاً، مسح أي بيانات تحميل قديمة
+        if (isExist) {
+          final tafseerId = tafseerList[i].id;
+          // تنظيف بيانات التحميل المؤقتة
+          await TafseerUtils.removeFromActiveDownloads(tafseerId);
+          await TafseerUtils.removePendingDownload(tafseerId);
+        }
+      }
+    }
   }
 
   Future<void> _loadActiveDownloads() async {
-    // الحصول على التنزيلات الجارية المحفوظة
-    final activeDownloads = await getActiveDownloads();
-    
-    if (mounted) {
-      for (int i = 0; i < tafseerList.length; i++) {
-        if (activeDownloads.containsKey(tafseerList[i].name)) {
-          final downloadProgress = activeDownloads[tafseerList[i].name] ?? 0.0;
+    final activeDownloads = await TafseerUtils.getActiveDownloads();
+    for (int i = 0; i < tafseerList.length; i++) {
+      // إذا كان التفسير قد انتهى تحميله، لا تعرض شريط التقدم
+      if (downloadedList[i]) {
+        // تنظيف أي بيانات قديمة متعلقة بهذا التفسير
+        final tafseerId = tafseerList[i].id;
+        activeDownloads.remove(tafseerId);
+        continue;
+      }
+      
+      if (activeDownloads.containsKey(tafseerList[i].id)) {
+        final progress = activeDownloads[tafseerList[i].id] ?? 0.0;
+        if (mounted && !downloadedList[i]) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && itemKeys[i].currentState != null) {
+            if (itemKeys[i].currentState != null && !downloadedList[i]) {
               itemKeys[i].currentState?.setIsDownloading(true);
-              itemKeys[i].currentState?.updateDownloadProgress(downloadProgress);
+              itemKeys[i].currentState?.updateDownloadProgress(progress);
             }
           });
         }
@@ -104,97 +121,97 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
     }
   }
 
-  Future<void> _loadDownloadState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedList = prefs.getStringList(_downloadedTafseersKey) ?? [];
-    
-    setState(() {
-      for (int i = 0; i < tafseerList.length; i++) {
-        // التحقق من وجود اسم التفسير في القائمة المحفوظة
-        if (savedList.contains(tafseerList[i].name)) {
-          downloadedList[i] = true;
-          // تحديث حالة الودجت لعرض الحالة الصحيحة
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && itemKeys[i].currentState != null) {
-              itemKeys[i].currentState?.markAsDownloaded();
-            }
-          });
-        }
-      }
-    });
-  }
-
-  Future<void> _refreshDownloadState() async {
-    // التحقق من الملفات الفعلية على الجهاز والتنزيلات الجارية
-    _loadDownloadState();
-    _loadActiveDownloads();
-  }
-
   Future<void> _resumePendingDownloads() async {
-    // استئناف التنزيلات المعلقة عند العودة إلى الصفحة
-    final pendingDownloads = await getPendingDownloads();
-    
+    final pendingDownloads = await TafseerUtils.getPendingDownloads();
     for (final entry in pendingDownloads.entries) {
-      final tafseerName = entry.key;
-      final url = entry.value;
-      
-      // البحث عن الفهرس المطابق
-      final index = tafseerList.indexWhere((t) => t.name == tafseerName);
-      
-      // إذا كان التفسير موجود ولم يتم تحميله بعد، استأنف التنزيل
+      final index = tafseerList.indexWhere((t) => t.id == entry.key);
       if (index != -1 && !downloadedList[index]) {
-        _startDownload(index, url, tafseerName);
+        _startDownload(index, entry.value, tafseerList[index].name);
       }
     }
   }
 
   void _startDownload(int index, String url, String tafseerName) {
-    // تعيين حالة التنزيل
+    final String tafseerId = tafseerList[index].id;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && itemKeys[index].currentState != null) {
         itemKeys[index].currentState?.setIsDownloading(true);
       }
     });
 
-    downloadTafseer(
-      url,
-      tafseerName,
+    TafseerUtils.downloadTafseer(
+      url: url,
       onProgress: (progress) {
         if (mounted) {
           itemKeys[index].currentState?.updateDownloadProgress(progress);
+          // حفظ التقدم الجاري في الـ Storage لضمان الاستمرارية
+          TafseerUtils.addToActiveDownloads(tafseerId, progress);
         }
       },
       onComplete: () {
         if (mounted) {
-          itemKeys[index].currentState?.markAsDownloaded();
-          _saveDownloadState(index);
+          // تحديث downloadedList أولاً لتفعيل didUpdateWidget في الـ child
+          setState(() => downloadedList[index] = true);
+          // ثم استدعِ markAsDownloaded للتأكد من تحديث الـ UI
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (itemKeys[index].currentState != null) {
+              itemKeys[index].currentState?.markAsDownloaded();
+            }
+          });
           _showSuccessMessage(tafseerName);
-          removePendingDownload(tafseerName); // إزالة من التنزيلات المعلقة
+          // مسح البيانات المؤقتة للتنزيل من التخزين
+          TafseerUtils.removePendingDownload(tafseerId);
+          TafseerUtils.removeFromActiveDownloads(tafseerId);
         }
       },
       onError: (errorMessage) {
         if (mounted) {
           itemKeys[index].currentState?.setIsDownloading(false);
           _showErrorMessage(errorMessage);
-          removePendingDownload(tafseerName); // إزالة من التنزيلات المعلقة
+          TafseerUtils.removePendingDownload(tafseerId);
+          TafseerUtils.removeFromActiveDownloads(tafseerId);
         }
       },
     );
   }
 
-  Future<void> _saveDownloadState(int index) async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedList = prefs.getStringList(_downloadedTafseersKey) ?? [];
-    
-    // إضافة اسم التفسير إلى القائمة المحفوظة
-    if (!savedList.contains(tafseerList[index].name)) {
-      savedList.add(tafseerList[index].name);
-      await prefs.setStringList(_downloadedTafseersKey, savedList);
+  void _handleDownloadItem(int index) {
+    // فحص مضاعف محلي + قاعدة البيانات
+    if (downloadedList[index]) {
+      _showErrorMessage("هذا التفسير مثبت بالفعل");
+      return;
     }
-    
-    setState(() {
-      downloadedList[index] = true;
-    });
+
+    final String url =
+        "http://10.0.2.2:8000/tafsser_file/${tafseerList[index].id}";
+    final String tafseerId = tafseerList[index].id;
+
+    // فحص سريع من قاعدة البيانات قبل بدء التحميل
+    _checkAndStartDownload(index, url, tafseerId, tafseerList[index].name);
+  }
+
+  Future<void> _checkAndStartDownload(
+      int index, String url, String tafseerId, String tafseerName) async {
+    // تحقق مباشرة من قاعدة البيانات
+    bool isAlreadyDownloaded =
+        await TafseerUtils.isTafseerDownloaded(tafseerId);
+
+    if (isAlreadyDownloaded) {
+      // تحديث الحالة المحلية إذا كانت قديمة
+      if (mounted) {
+        setState(() => downloadedList[index] = true);
+      }
+      _showErrorMessage("هذا التفسير مثبت بالفعل");
+      return;
+    }
+
+    // مسح أي بيانات قديمة قبل بدء التحميل الجديد
+    TafseerUtils.removeFromActiveDownloads(tafseerId);
+    TafseerUtils.removePendingDownload(tafseerId);
+
+    TafseerUtils.addPendingDownload(tafseerId, url);
+    _startDownload(index, url, tafseerName);
   }
 
   @override
@@ -205,79 +222,42 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
           ? context.color.onPrimary
           : context.color.scrim,
       appBar: const CustomAppBar(title: "تفسير", center: false, profile: false),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ListView.builder(
-              itemCount: tafseerList.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return TafsserItem(
-                  key: itemKeys[index],
-                  info: tafseerList[index],
-                  isDownloaded: downloadedList[index],
-                  onPressed: () => _handleDownloadItem(index),
-                  onTap: () => showDialog(
-                    context: context,
-                    builder: (context) {
-                      return TafseerDialog(tafsserInfo: tafseerList[index]);
-                    },
-                  ),
-                );
-              },
+      body: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        itemCount: tafseerList.length,
+        itemBuilder: (context, index) {
+          return TafsserItem(
+            key: itemKeys[index],
+            info: tafseerList[index],
+            isDownloaded: downloadedList[index],
+            onPressed: () => _handleDownloadItem(index),
+            onTap: () => showDialog(
+              context: context,
+              builder: (context) =>
+                  TafseerDialog(tafsserInfo: tafseerList[index]),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  void _handleDownloadItem(int index) {
-    // تجنب البدء بتنزيل جديد إذا كان بالفعل محمل
-    if (downloadedList[index]) {
-      _showErrorMessage("تم تحميل هذا التفسير بالفعل");
-      return;
-    }
-
-    final String url =
-        "http://10.0.2.2:8000/tafsser_file/${tafseerList[index].id}";
-    
-    // حفظ معلومات التنزيل المعلقة
-    addPendingDownload(tafseerList[index].name, url);
-    
-    // بدء التنزيل
-    _startDownload(index, url, tafseerList[index].name);
-  }
-
-  void _showSuccessMessage(String tafseerName) {
+  void _showSuccessMessage(String name) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          "تم تحميل $tafseerName بنجاح ✓",
-          style: TextStyle(
-            fontFamily: "Rubik",
-            fontSize: 14.sp,
-          ),
-        ),
+        content: Text("تم تثبيت $name بنجاح"),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  void _showErrorMessage(String errorMessage) {
+  void _showErrorMessage(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          errorMessage,
-          style: TextStyle(
-            fontFamily: "Rubik",
-            fontSize: 14.sp,
-          ),
-        ),
+        content: Text(msg),
         backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

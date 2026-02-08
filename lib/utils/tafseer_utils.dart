@@ -1,202 +1,149 @@
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
-import 'package:noor_quran/view_models/utils/app_logger.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:isar/isar.dart';
+import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
+import 'package:noor_quran/view_models/models/db/isar_db.dart';
+import 'package:noor_quran/view_models/models/db/islamic/surah.dart';
 
-double progress = 0; // متغير لتخزين النسبة
-
-// لتتبع التنزيلات الجارية
-Map<String, double> activeDownloads = {};
+// المفاتيح المستخدمة في التخزين الدائم
 const String _activeDownloadsKey = "active_downloads";
-const String _downloadedTafseersKey = "downloaded_tafseer_list";
-const String _pendingDownloadsKey = "pending_downloads"; // لتخزين التنزيلات المعلقة
+const String _pendingDownloadsKey = "pending_downloads";
 
-// دالة للتحقق من وجود الملف المحمل فعلياً
-Future<bool> isTafseerDownloaded(String tafseerName) async {
-  var dir = await getApplicationDocumentsDirectory();
-  String savePath = "${dir.path}/$tafseerName";
-  return File(savePath).exists();
-}
+class TafseerUtils {
+  // ---------------------------------------------------------
+  // 1. منطق Isar والبيانات
+  // ---------------------------------------------------------
 
-// دالة للتحقق من جميع الملفات المحملة عند بدء التطبيق
-Future<List<String>> getDownloadedTafseers(List<String> tafseerIds) async {
-  List<String> downloaded = [];
-  
-  for (String id in tafseerIds) {
-    if (await isTafseerDownloaded(id)) {
-      downloaded.add(id);
+  static Future<bool> isTafseerDownloaded(String identifier) async {
+    final isar = IsarDb.database;
+    if (isar == null) return false;
+    final count = await isar.surahs
+        .filter()
+        .edition((q) => q.identifierEqualTo(identifier))
+        .count();
+    return count > 0;
+  }
+
+  static Future<void> downloadTafseer({
+    required String url,
+    required void Function(double) onProgress,
+    required void Function() onComplete,
+    required void Function(String) onError,
+  }) async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        url,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            onProgress((received / total) * 0.9);
+          }
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // تمرير البيانات لدالة الإدخال المستقلة
+        await insertTafsserToIsar(jsonMap: response.data);
+        onProgress(1.0);
+        onComplete();
+      } else {
+        onError("خطأ في السيرفر: ${response.statusCode}");
+      }
+    } on DioException catch (e) {
+      onError("خطأ في الاتصال: ${e.message}");
+    } catch (e) {
+      onError("حدث خطأ غير متوقع: $e");
     }
   }
-  
-  return downloaded;
-}
 
-// حفظ حالة التنزيل فوراً
-Future<void> markTafseerAsDownloaded(String tafseerName) async {
-  final prefs = await SharedPreferences.getInstance();
-  final savedList = prefs.getStringList(_downloadedTafseersKey) ?? [];
-  
-  if (!savedList.contains(tafseerName)) {
-    savedList.add(tafseerName);
-    await prefs.setStringList(_downloadedTafseersKey, savedList);
+  static Future<void> deleteTafseer(String identifier) async {
+    final isar = IsarDb.database;
+    if (isar == null) return;
+    await isar.writeTxn(() async {
+      await isar.ayahModels
+          .filter()
+          .surah((q) => q.edition((e) => e.identifierEqualTo(identifier)))
+          .deleteAll();
+      await isar.surahs
+          .filter()
+          .edition((q) => q.identifierEqualTo(identifier))
+          .deleteAll();
+    });
   }
-  
-  // إزالة من التنزيلات الجارية عند الانتهاء
-  await removeFromActiveDownloads(tafseerName);
-}
 
-// حفظ التنزيلات الجارية
-Future<void> addToActiveDownloads(String tafseerName, double progress) async {
-  activeDownloads[tafseerName] = progress;
-  
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(
-    _activeDownloadsKey,
-    activeDownloads.entries
-        .map((e) => '${e.key}:${e.value}')
-        .join(','),
-  );
-}
+  // ---------------------------------------------------------
+  // 2. منطق التنزيلات الجارية (Active Downloads)
+  // ---------------------------------------------------------
 
-// الحصول على التنزيلات الجارية
-Future<Map<String, double>> getActiveDownloads() async {
-  final prefs = await SharedPreferences.getInstance();
-  final activeStr = prefs.getString(_activeDownloadsKey) ?? '';
-  
-  if (activeStr.isEmpty) return {};
-  
-  Map<String, double> result = {};
-  for (String entry in activeStr.split(',')) {
-    if (entry.isNotEmpty) {
+  static Future<void> addToActiveDownloads(String id, double progress) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, double> active = await getActiveDownloads();
+    active[id] = progress;
+    
+    await prefs.setString(_activeDownloadsKey, 
+      active.entries.map((e) => '${e.key}:${e.value}').join(','));
+  }
+
+  static Future<Map<String, double>> getActiveDownloads() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString(_activeDownloadsKey) ?? '';
+    if (data.isEmpty) return {};
+    
+    Map<String, double> result = {};
+    for (var entry in data.split(',')) {
       var parts = entry.split(':');
-      if (parts.length == 2) {
-        result[parts[0]] = double.tryParse(parts[1]) ?? 0.0;
-      }
+      if (parts.length == 2) result[parts[0]] = double.tryParse(parts[1]) ?? 0.0;
+    }
+    return result;
+  }
+
+  static Future<void> removeFromActiveDownloads(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, double> active = await getActiveDownloads();
+    active.remove(id);
+    if (active.isEmpty) {
+      await prefs.remove(_activeDownloadsKey);
+    } else {
+      await prefs.setString(_activeDownloadsKey, 
+        active.entries.map((e) => '${e.key}:${e.value}').join(','));
     }
   }
-  return result;
-}
 
-// إزالة من التنزيلات الجارية
-Future<void> removeFromActiveDownloads(String tafseerName) async {
-  activeDownloads.remove(tafseerName);
-  
-  final prefs = await SharedPreferences.getInstance();
-  if (activeDownloads.isEmpty) {
-    await prefs.remove(_activeDownloadsKey);
-  } else {
-    await prefs.setString(
-      _activeDownloadsKey,
-      activeDownloads.entries
-          .map((e) => '${e.key}:${e.value}')
-          .join(','),
-    );
-  }
-}
+  // ---------------------------------------------------------
+  // 3. منطق التنزيلات المعلقة (Pending Downloads)
+  // ---------------------------------------------------------
 
-// إضافة تنزيل معلق
-Future<void> addPendingDownload(String tafseerName, String url) async {
-  final prefs = await SharedPreferences.getInstance();
-  final pending = prefs.getString(_pendingDownloadsKey) ?? '';
-  
-  final newEntry = '$tafseerName|$url';
-  if (pending.isEmpty) {
-    await prefs.setString(_pendingDownloadsKey, newEntry);
-  } else {
-    await prefs.setString(_pendingDownloadsKey, '$pending\n$newEntry');
-  }
-}
-
-// الحصول على التنزيلات المعلقة
-Future<Map<String, String>> getPendingDownloads() async {
-  final prefs = await SharedPreferences.getInstance();
-  final pending = prefs.getString(_pendingDownloadsKey) ?? '';
-  
-  final result = <String, String>{};
-  for (String line in pending.split('\n')) {
-    if (line.isNotEmpty) {
-      final parts = line.split('|');
-      if (parts.length == 2) {
-        result[parts[0]] = parts[1];
-      }
-    }
-  }
-  return result;
-}
-
-// إزالة تنزيل معلق
-Future<void> removePendingDownload(String tafseerName) async {
-  final prefs = await SharedPreferences.getInstance();
-  final pending = prefs.getString(_pendingDownloadsKey) ?? '';
-  
-  final lines = pending.split('\n').where((line) {
-    return !line.startsWith('$tafseerName|');
-  }).toList();
-  
-  final result = lines.join('\n');
-  if (result.isEmpty) {
-    await prefs.remove(_pendingDownloadsKey);
-  } else {
-    await prefs.setString(_pendingDownloadsKey, result);
-  }
-}
-
-Future<void> downloadTafseer(
-  String url,
-  String fileName, {
-  required void Function(double) onProgress,
-  required void Function() onComplete,
-  required void Function(String) onError,
-}) async {
-  Dio dio = Dio();
-
-  // الحصول على مسار الحفظ في الهاتف
-  var dir = await getApplicationDocumentsDirectory();
-  String savePath = "${dir.path}/$fileName";
-
-  try {
-    // التحقق إذا كان الملف موجود بالفعل
-    if (await File(savePath).exists()) {
-      // الملف موجود بالفعل، قم بحفظه وأكمل
-      await markTafseerAsDownloaded(fileName);
-      print("الملف: $fileName موجود بالفعل");
-      onProgress(1.0);
-      onComplete();
-      return;
-    }
-
-    await dio.download(
-      url,
-      savePath,
-      onReceiveProgress: (received, total) {
-        if (total != -1) {
-          // حساب النسبة المئوية
-          progress = received / total;
-          onProgress(progress);
-          // حفظ حالة التنزيل الجارية
-          addToActiveDownloads(fileName, progress);
-          AppLogger.logger.i("التحميل: ${(progress * 100).toStringAsFixed(0)}%");
-        }
-      },
-    );
+  static Future<void> addPendingDownload(String id, String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, String> pending = await getPendingDownloads();
+    pending[id] = url;
     
-    print("تم التحميل بنجاح في: $savePath");
-    // حفظ الحالة فوراً عند اكتمال التحميل
-    await markTafseerAsDownloaded(fileName);
-    onComplete();
-    
-  } on DioException catch (e) {
-    String errorMessage = "خطأ في التحميل: ${e.message}";
-    AppLogger.logger.e(errorMessage);
-    await removeFromActiveDownloads(fileName);
-    onError(errorMessage);
-  } catch (e) {
-    String errorMessage = "خطأ في التحميل: $e";
-    AppLogger.logger.e(errorMessage);
-    await removeFromActiveDownloads(fileName);
-    onError(errorMessage);
+    await prefs.setString(_pendingDownloadsKey, 
+      pending.entries.map((e) => '${e.key}|$e.value').join('\n'));
+  }
+
+  static Future<Map<String, String>> getPendingDownloads() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString(_pendingDownloadsKey) ?? '';
+    if (data.isEmpty) return {};
+
+    Map<String, String> result = {};
+    for (var line in data.split('\n')) {
+      var parts = line.split('|');
+      if (parts.length == 2) result[parts[0]] = parts[1];
+    }
+    return result;
+  }
+
+  static Future<void> removePendingDownload(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, String> pending = await getPendingDownloads();
+    pending.remove(id);
+    if (pending.isEmpty) {
+      await prefs.remove(_pendingDownloadsKey);
+    } else {
+      await prefs.setString(_pendingDownloadsKey, 
+        pending.entries.map((e) => '${e.key}|$e.value').join('\n'));
+    }
   }
 }
-
