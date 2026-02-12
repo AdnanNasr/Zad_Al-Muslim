@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/extensions/sizes_ext.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/views/template/surah_template.dart';
 
@@ -32,8 +33,16 @@ class QuranPages extends StatelessWidget {
             ayahs: ayahs,
             pageNumber: page.pageNumber,
             fontFamily: "Quran",
-            fontSize: 23.2.sp,
-            height: 1.4.h,
+            fontSize: context.mediaQueryWidth < 360
+            ? 18
+            : context.mediaQueryWidth <= 410
+            ? 24
+            : 25,
+            height: context.mediaQueryWidth < 360
+            ? 1.7.h
+            : context.mediaQueryWidth <= 410
+            ? 1.7.h
+            : 1.4.h
           );
         },
       ),

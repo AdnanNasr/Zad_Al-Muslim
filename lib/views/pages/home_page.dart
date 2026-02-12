@@ -379,11 +379,10 @@ class TodayDuaa extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
           Align(
             alignment: Alignment.center,
             child: Padding(
-              padding: EdgeInsets.all(8.0.r),
+              padding: EdgeInsets.only(left: 8.r, right: 8.r),
               child: Text(
                 "كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ",
                 style: TextStyle(

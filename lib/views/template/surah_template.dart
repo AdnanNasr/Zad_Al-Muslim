@@ -160,7 +160,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
           ? themeColor.scrim
           : themeColor.onSurface,
       height: widget.height,
-      wordSpacing: 0.sp,
+      wordSpacing: 1.4.sp,
       letterSpacing: 0.sp,
     );
 
