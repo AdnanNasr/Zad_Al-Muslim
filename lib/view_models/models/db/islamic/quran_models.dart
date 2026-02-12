@@ -15,14 +15,10 @@ class QuranPage {
 
 @embedded
 class Ayah {
-  late int number;
   late int surahNumber;
   late String surahName;
   late int ayahNumber;
-  late String revelationType;
-  late int numberOfAyahs;
+  late String ayaTextEmlaey;
 
   late String text;
-
-  late String textNormalized;
 }

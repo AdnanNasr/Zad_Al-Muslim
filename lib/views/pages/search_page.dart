@@ -3,57 +3,34 @@ import 'package:isar/isar.dart';
 import 'package:noor_quran/extensions/sizes_ext.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/l10n/app_localizations.dart';
-// افتراض استيراد النماذج وقاعدة البيانات
-// تم التأكد من أن هذه المسارات هي المطلوبة بناءً على سياق المشروع
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';
 
-// --- دالة المساعدة لإزالة التشكيل وتوحيد الأحرف ---
-// تم إضافتها هنا لضمان وجودها أثناء عملية البحث
-String normalizeArabicText(String text) {
-  // 1. ✅ إزالة التشكيل (الحركات)، بما في ذلك الألف الخنجرية والمدود والرموز الخاصة
-  // U+064B - U+065F: الحركات الأساسية والشدة والسكون
-  // U+0670: الألف الخنجرية (Small Alif)
-  // U+0621 - U+063A: قد تحتوي على حروف تشكيل إضافية
-  // U+08F0 - U+08F2: رموز الرسم العثماني لهزة الوصل وغيرها
-  // U+0640: حرف المد
-  String normalized = text.replaceAll(
-    RegExp(r'[\u064B-\u065F\u0670\u0640\u08F0-\u08F2]'),
-    '',
-  );
-
-  // 2. توحيد الألف (أ, إ, آ) -> ا
-  normalized = normalized.replaceAll(RegExp(r'[أإآ]'), 'ا');
-
-  // 3. توحيد الياء (ي, ى) -> ي (لضمان مطابقة الياءات غير المنقوطة)
-  normalized = normalized.replaceAll('ى', 'ي');
-
-  // 4. توحيد التاء المربوطة -> هاء
-  normalized = normalized.replaceAll('ة', 'ه');
-
-  // 5. إزالة أي رمز قد لا يزال يسبب مشكلة (مثل رمز همزة الوصل: ٱ)
-  normalized = normalized.replaceAll('ٱ', '');
-
-  return normalized;
+/// ✅ دالة تنظيف مدخلات البحث لتطابق النص الإملائي (Emlaey)
+/// تقوم فقط بتوحيد الحروف التي قد يكتبها المستخدم بأشكال مختلفة
+String cleanSearchQuery(String query) {
+  String cleaned = query.trim();
+  cleaned = cleaned.replaceAll(RegExp(r'[أإآٱ]'), 'ا');
+  cleaned = cleaned.replaceAll('ى', 'ي');
+  cleaned = cleaned.replaceAll('ة', 'ه');
+  return cleaned;
 }
-// -----------------------------------------
 
-// نموذج بسيط لتمثيل نتيجة البحث
 class SearchResult {
-  final String text; // نص الآية
-  final String surahName; // اسم السورة
-  final int pageNumber; // رقم الصفحة
-  final int ayahNumber; // رقم الآية
-  final int surahNumber; // ✅ رقم السورة (مضاف لتظليل الآية)
-  final int pageIndex; // الفهرس (index) الذي سيمرر لدالة goToPage
+  final String text; 
+  final String surahName; 
+  final int pageNumber; 
+  final int ayahNumber; 
+  final int surahNumber; 
+  final int pageIndex; 
 
   SearchResult({
     required this.text,
     required this.surahName,
     required this.pageNumber,
     required this.ayahNumber,
-    required this.surahNumber, // ✅ مطلوب
+    required this.surahNumber, 
     required this.pageIndex,
   });
 }
@@ -76,73 +53,50 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   List<SearchResult> _results = [];
   bool _isLoading = false;
-
   late Isar _isar;
 
   @override
   void initState() {
     super.initState();
-    // استخدام دالة التهيئة التي قدمها المستخدم، وهي آمنة للاستدعاء المتكرر
-    _initIsar();
+    // تأكد من أن قاعدة البيانات مهيأة مسبقاً في مشروعك
+    _isar = IsarDb.database!;
   }
 
-  // تهيئة Isar للتأكد من جاهزيته قبل البحث
-  Future<void> _initIsar() async {
-    // نستخدم IsarDb.initDatabase وهي تقوم بإرجاع النسخة المفتوحة أو فتحها إن لزم الأمر
-    _isar = await IsarDb.initDatabase();
-    setState(() {});
-  }
-
-  // دالة البحث الرئيسية باستخدام Isar (مُعدَّلة لاستخدام textNormalized)
   Future<void> _searchAyahs(String query) async {
     final trimmedQuery = query.trim();
     if (trimmedQuery.isEmpty) {
-      setState(() {
-        _results = [];
-      });
+      setState(() => _results = []);
       return;
     }
 
-    // تأكد من أن قاعدة البيانات متاحة قبل البحث
-    if (!mounted || !_isar.isOpen) return;
-
     setState(() {
       _isLoading = true;
-      _results = [];
     });
 
     try {
-      // 1. ✅ تطبيع مدخلات المستخدم (إزالة التشكيل والتوحيد)
-      final normalizedQuery = normalizeArabicText(trimmedQuery);
+      // ✅ تنظيف نص البحث ليطابق النص الإملائي المخزن في قاعدة البيانات
+      final cleanedQuery = cleanSearchQuery(trimmedQuery);
 
-      // 2. ✅ البحث باستخدام الحقل المُطابِق (textNormalized)
-      final List<QuranPage> matchedPages = await _isar.quranPages
+      // ✅ البحث مباشرة في حقل ayaTextEmlaey لضمان العثور على "قل هو" وغيرها بسهولة
+      final matchedPages = await _isar.quranPages
           .filter()
-          // ayahsElement يطبق الفلتر على كل عنصر في القائمة المضمنة
-          // نستخدم textNormalizedContains بدلاً من textContains
-          // لا نحتاج لـ caseSensitive: false لأننا قمنا بالتطبيع بالفعل
-          .ayahsElement((q) => q.textNormalizedContains(normalizedQuery))
+          .ayahsElement((q) => q.ayaTextEmlaeyContains(cleanedQuery))
           .findAll();
 
       final List<SearchResult> results = [];
 
-      // 3. تحليل الصفحات المطابقة واستخراج الآيات الفعلية المطابقة
       for (var page in matchedPages) {
-        // حساب فهرس الصفحة (index) ليتم تمريره إلى goToPage، نفترض أن صفحتك الأولى هي 1 (فهرس 0)
-        final pageIndex = page.pageNumber;
-
         for (var ayah in page.ayahs) {
-          // 4. ✅ نستخدم الحقل المُطابِق (textNormalized) للمطابقة الدقيقة في الذاكرة
-          if (ayah.textNormalized.contains(normalizedQuery)) {
+          // ✅ مطابقة ثانوية للتأكد من جلب الآية الصحيحة فقط من داخل الصفحة
+          if (ayah.ayaTextEmlaey.contains(cleanedQuery)) {
             results.add(
               SearchResult(
-                // نعرض النص الأصلي (بالتشكيل)
-                text: ayah.text,
+                text: ayah.text, // نعرض النص العثماني (بالتشكيل) في النتائج
                 surahName: ayah.surahName,
                 pageNumber: page.pageNumber,
                 ayahNumber: ayah.ayahNumber,
-                surahNumber: ayah.surahNumber, // ✅ إضافة رقم السورة
-                pageIndex: pageIndex,
+                surahNumber: ayah.surahNumber,
+                pageIndex: page.pageNumber - 1,
               ),
             );
           }
@@ -150,21 +104,16 @@ class _SearchPageState extends State<SearchPage> {
       }
 
       if (mounted) {
-        setState(() {
-          _results = results;
-        });
+        setState(() => _results = results);
       }
     } catch (e) {
-      AppLogger.logger.e("Error while searching: $e");
+      AppLogger.logger.e("خطأ أثناء البحث: $e");
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -183,13 +132,11 @@ class _SearchPageState extends State<SearchPage> {
           // شريط البحث
           TextField(
             controller: _searchController,
-            onChanged: (value) => _searchAyahs(value),
+            onChanged: _searchAyahs,
             style: theme.textTheme.titleMedium,
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.search_placeholder,
-              hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                color: Colors.grey,
-              ),
+              hintStyle: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
@@ -211,7 +158,7 @@ class _SearchPageState extends State<SearchPage> {
 
           const SizedBox(height: 16),
 
-          // نتائج البحث
+          // عرض النتائج
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -252,22 +199,11 @@ class _SearchPageState extends State<SearchPage> {
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
           elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             onTap: () {
-              final pageNumber = result.pageNumber;
-              final targetIndex = widget.pages.indexWhere(
-                (p) => p.pageNumber == pageNumber,
-              );
-              if (targetIndex != -1) {
-                widget.pageController.animateToPage(
-                  targetIndex,
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeInOut,
-                );
-              }
+              // ✅ الانتقال الفوري للفهرس الصحيح
+              widget.pageController.jumpToPage(result.pageIndex);
               Navigator.of(context).pop();
             },
             title: Text(
@@ -275,20 +211,24 @@ class _SearchPageState extends State<SearchPage> {
               textAlign: TextAlign.right,
               style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.primaryColor,
+                fontWeight: FontWeight.bold,
               ),
             ),
             subtitle: Text(
-              result.text,
+              result.text, // النص العثماني من حقل text
               textAlign: TextAlign.right,
               textDirection: TextDirection.rtl,
-              style: theme.textTheme.bodyLarge,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontFamily: 'Quran', // تأكد من مطابقة اسم الخط المضاف في pubspec.yaml
+                height: 1.6,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.menu_book),
+                const Icon(Icons.menu_book, size: 20),
                 Text(
                   'ص ${result.pageNumber}',
                   style: theme.textTheme.bodySmall,

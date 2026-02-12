@@ -31,9 +31,9 @@ class QuranPages extends StatelessWidget {
           return SurahTemplate(
             ayahs: ayahs,
             pageNumber: page.pageNumber,
-            fontFamily: "Amiri",
-            fontSize: 24.2.sp,
-            height: 1.75.h,
+            fontFamily: "Quran",
+            fontSize: 23.2.sp,
+            height: 1.4.h,
           );
         },
       ),

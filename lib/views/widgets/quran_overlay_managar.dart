@@ -121,18 +121,19 @@ class QuranOverlayManager {
                               Text(
                                 AppLocalizations.of(context)!.controll_panel,
                                 style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: 20.sp,
                                   fontFamily: "Cairo",
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w500
                                 ),
                               ),
                               IconButton(
                                 onPressed: removeOverly,
-                                icon: const Icon(Icons.close),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ),
                                 style: IconButton.styleFrom(
-                                  backgroundColor:
-                                      theme.colorScheme.errorContainer,
-                                  foregroundColor: theme.colorScheme.error,
+                                  backgroundColor: theme.colorScheme.error,
                                 ),
                               ),
                             ],
@@ -165,10 +166,12 @@ class QuranOverlayManager {
                                   Text(
                                     AppLocalizations.of(context)!.current_surah,
                                     style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: theme.colorScheme.secondary,
+                                      fontSize: 14.sp,
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  SizedBox(height: 8.h),
                                   Text(
                                     "سورة $localSelectedSurah",
                                     style: TextStyle(

@@ -157,7 +157,7 @@ class TafsserItemState extends State<TafsserItem> {
       // عند اكتمال التحميل
       return Container(
         decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.2),
+          color: context.color.primary.withValues(alpha: .3),
           shape: BoxShape.circle,
         ),
         child: IconButton(
@@ -165,7 +165,7 @@ class TafsserItemState extends State<TafsserItem> {
           icon: Icon(
             Icons.check_circle_rounded,
             size: 22.sp,
-            color: Colors.green,
+            color: context.color.primary,
           ),
         ),
       );

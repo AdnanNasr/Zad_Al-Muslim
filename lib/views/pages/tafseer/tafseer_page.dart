@@ -168,7 +168,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       onError: (errorMessage) {
         if (mounted) {
           itemKeys[index].currentState?.setIsDownloading(false);
-          _showErrorMessage(errorMessage);
+          _showErrorMessage("تم قطع الاتصال");
           TafseerUtils.removePendingDownload(tafseerId);
           TafseerUtils.removeFromActiveDownloads(tafseerId);
         }

@@ -68,7 +68,7 @@ class HadithModalBottom extends ConsumerWidget {
                   fontSize: 22.sp,
                   height: 2.2.h,
                   fontWeight: FontWeight.w500,
-                  fontFamily: "Amiri", // يفضل للأحاديث
+                  fontFamily: "Quran", // يفضل للأحاديث
                 ),
               ),
             ),

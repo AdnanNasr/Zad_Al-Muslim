@@ -48,7 +48,7 @@ flutter:
     - assets/json/
     - assets/images/
     - assets/icons/
-    # - assets/svg/
+    - assets/svgs/
 
   fonts: # custom app fonts
     - family: Amiri
@@ -108,6 +108,9 @@ flutter:
           weight: 800
         - asset: assets/fonts/Rubik/Rubik-Black.ttf
           weight: 900
+    - family: "Quran"
+      fonts:
+        - asset: assets/fonts/quran_font/uthmanic_hafs_v20.ttf
 
 flutter_launcher_icons:
   android: true

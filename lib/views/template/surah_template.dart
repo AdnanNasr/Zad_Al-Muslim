@@ -75,12 +75,11 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
               child: Text(
                 surahName,
                 style: TextStyle(
-                  fontFamily: 'Amiri',
-                  fontSize: context.witdthScreen * 0.045.sp,
-                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Quran',
+                  fontSize: context.witdthScreen * 0.05.sp,
                   color: themeMode == ThemeMode.light
                       ? Colors.black87
-                      : themeColor.onPrimary,
+                      : themeColor.onSurface,
                 ),
               ),
             ),
@@ -165,20 +164,13 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
       letterSpacing: 0.sp,
     );
 
-    final TextStyle ayahNumberStyle = TextStyle(
-      fontFamily: '',
-      fontSize: 20.sp,
-      fontWeight: FontWeight.bold,
-      color: themeColor.outline,
-    );
-
     surahsInPage.forEach((surahName, ayahs) {
       final firstAyahOfSurah = ayahs.first;
 
       if (firstAyahOfSurah.ayahNumber == 1) {
         children.add(_buildSurahHeader(firstAyahOfSurah, context, themeMode));
 
-        if (surahName != "ٱلْفَاتِحَةِ" && surahName != "التَّوۡبَةِ") {
+        if (surahName != "الفَاتِحة" && surahName != "التوبَة") {
           children.add(
             Center(
               child: Image.asset(
@@ -196,17 +188,9 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
       }
 
       final List<TextSpan> ayahSpans = [];
-      final arabicNumber = ArabicNumbers();
 
       for (final ayah in ayahs) {
-        ayahSpans.add(TextSpan(text: ayah.text, style: ayahTextStyle));
-
-        ayahSpans.add(
-          TextSpan(
-            text: ' \u06dd${arabicNumber.convert(ayah.ayahNumber)} ',
-            style: ayahNumberStyle,
-          ),
-        );
+        ayahSpans.add(TextSpan(text: "${ayah.text} ", style: ayahTextStyle));
       }
 
       children.add(
@@ -224,11 +208,9 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
 
     return Padding(
       padding: EdgeInsets.all(context.witdthScreen * 0.02.h),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: children,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children,
       ),
     );
   }

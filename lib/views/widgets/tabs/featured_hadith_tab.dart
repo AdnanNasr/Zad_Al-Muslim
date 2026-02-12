@@ -40,7 +40,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
                   hadiths[index].hadith,
                   style: TextStyle(
                     fontSize: context.witdthScreen * 0.04,
-                    fontFamily: "Cairo",
+                    fontFamily: "Amiri",
                     fontWeight: FontWeight.w400,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -50,7 +50,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
                   hadiths[index].hadithNarrator,
                   style: TextStyle(
                     fontSize: context.witdthScreen * 0.035,
-                    fontFamily: "Rubik",
+                    fontFamily: "Cairo",
                   ),
                 ),
                 leading: Text(

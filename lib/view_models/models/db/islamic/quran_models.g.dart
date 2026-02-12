@@ -550,44 +550,29 @@ const AyahSchema = Schema(
   name: r'Ayah',
   id: -4601816037318021044,
   properties: {
-    r'ayahNumber': PropertySchema(
+    r'ayaTextEmlaey': PropertySchema(
       id: 0,
+      name: r'ayaTextEmlaey',
+      type: IsarType.string,
+    ),
+    r'ayahNumber': PropertySchema(
+      id: 1,
       name: r'ayahNumber',
       type: IsarType.long,
     ),
-    r'number': PropertySchema(
-      id: 1,
-      name: r'number',
-      type: IsarType.long,
-    ),
-    r'numberOfAyahs': PropertySchema(
-      id: 2,
-      name: r'numberOfAyahs',
-      type: IsarType.long,
-    ),
-    r'revelationType': PropertySchema(
-      id: 3,
-      name: r'revelationType',
-      type: IsarType.string,
-    ),
     r'surahName': PropertySchema(
-      id: 4,
+      id: 2,
       name: r'surahName',
       type: IsarType.string,
     ),
     r'surahNumber': PropertySchema(
-      id: 5,
+      id: 3,
       name: r'surahNumber',
       type: IsarType.long,
     ),
     r'text': PropertySchema(
-      id: 6,
+      id: 4,
       name: r'text',
-      type: IsarType.string,
-    ),
-    r'textNormalized': PropertySchema(
-      id: 7,
-      name: r'textNormalized',
       type: IsarType.string,
     )
   },
@@ -603,10 +588,9 @@ int _ayahEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.revelationType.length * 3;
+  bytesCount += 3 + object.ayaTextEmlaey.length * 3;
   bytesCount += 3 + object.surahName.length * 3;
   bytesCount += 3 + object.text.length * 3;
-  bytesCount += 3 + object.textNormalized.length * 3;
   return bytesCount;
 }
 
@@ -616,14 +600,11 @@ void _ayahSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.ayahNumber);
-  writer.writeLong(offsets[1], object.number);
-  writer.writeLong(offsets[2], object.numberOfAyahs);
-  writer.writeString(offsets[3], object.revelationType);
-  writer.writeString(offsets[4], object.surahName);
-  writer.writeLong(offsets[5], object.surahNumber);
-  writer.writeString(offsets[6], object.text);
-  writer.writeString(offsets[7], object.textNormalized);
+  writer.writeString(offsets[0], object.ayaTextEmlaey);
+  writer.writeLong(offsets[1], object.ayahNumber);
+  writer.writeString(offsets[2], object.surahName);
+  writer.writeLong(offsets[3], object.surahNumber);
+  writer.writeString(offsets[4], object.text);
 }
 
 Ayah _ayahDeserialize(
@@ -633,14 +614,11 @@ Ayah _ayahDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Ayah();
-  object.ayahNumber = reader.readLong(offsets[0]);
-  object.number = reader.readLong(offsets[1]);
-  object.numberOfAyahs = reader.readLong(offsets[2]);
-  object.revelationType = reader.readString(offsets[3]);
-  object.surahName = reader.readString(offsets[4]);
-  object.surahNumber = reader.readLong(offsets[5]);
-  object.text = reader.readString(offsets[6]);
-  object.textNormalized = reader.readString(offsets[7]);
+  object.ayaTextEmlaey = reader.readString(offsets[0]);
+  object.ayahNumber = reader.readLong(offsets[1]);
+  object.surahName = reader.readString(offsets[2]);
+  object.surahNumber = reader.readLong(offsets[3]);
+  object.text = reader.readString(offsets[4]);
   return object;
 }
 
@@ -652,20 +630,14 @@ P _ayahDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
-    case 4:
-      return (reader.readString(offset)) as P;
-    case 5:
       return (reader.readLong(offset)) as P;
-    case 6:
-      return (reader.readString(offset)) as P;
-    case 7:
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -673,6 +645,136 @@ P _ayahDeserializeProp<P>(
 }
 
 extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ayaTextEmlaey',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ayaTextEmlaey',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ayaTextEmlaey',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ayaTextEmlaey',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'ayaTextEmlaey',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'ayaTextEmlaey',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'ayaTextEmlaey',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'ayaTextEmlaey',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ayaTextEmlaey',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'ayaTextEmlaey',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayahNumberEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -721,241 +823,6 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'number',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'number',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'number',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'number',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberOfAyahsEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'numberOfAyahs',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberOfAyahsGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'numberOfAyahs',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberOfAyahsLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'numberOfAyahs',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> numberOfAyahsBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'numberOfAyahs',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'revelationType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'revelationType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'revelationType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'revelationType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'revelationType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'revelationType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'revelationType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'revelationType',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'revelationType',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> revelationTypeIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'revelationType',
-        value: '',
       ));
     });
   }
@@ -1266,136 +1133,6 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'text',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'textNormalized',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'textNormalized',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'textNormalized',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'textNormalized',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'textNormalized',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'textNormalized',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'textNormalized',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'textNormalized',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'textNormalized',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textNormalizedIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'textNormalized',
         value: '',
       ));
     });
