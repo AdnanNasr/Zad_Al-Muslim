@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:isar/isar.dart';
+import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
 import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
-import 'package:noor_quran/view_models/models/db/islamic/surah.dart';
+import 'package:noor_quran/view_models/models/db/islamic/tafsser/tafsser_surah.dart';
 
 // المفاتيح المستخدمة في التخزين الدائم
 const String _activeDownloadsKey = "active_downloads";
@@ -17,7 +18,7 @@ class TafseerUtils {
   static Future<bool> isTafseerDownloaded(String identifier) async {
     final isar = IsarDb.database;
     if (isar == null) return false;
-    final count = await isar.surahs
+    final count = await isar.tafsserSurahs
         .filter()
         .edition((q) => q.identifierEqualTo(identifier))
         .count();
@@ -60,11 +61,11 @@ class TafseerUtils {
     final isar = IsarDb.database;
     if (isar == null) return;
     await isar.writeTxn(() async {
-      await isar.ayahModels
+      await isar.ayahTafssers
           .filter()
           .surah((q) => q.edition((e) => e.identifierEqualTo(identifier)))
           .deleteAll();
-      await isar.surahs
+      await isar.tafsserSurahs
           .filter()
           .edition((q) => q.identifierEqualTo(identifier))
           .deleteAll();
@@ -79,20 +80,23 @@ class TafseerUtils {
     final prefs = await SharedPreferences.getInstance();
     Map<String, double> active = await getActiveDownloads();
     active[id] = progress;
-    
-    await prefs.setString(_activeDownloadsKey, 
-      active.entries.map((e) => '${e.key}:${e.value}').join(','));
+
+    await prefs.setString(
+      _activeDownloadsKey,
+      active.entries.map((e) => '${e.key}:${e.value}').join(','),
+    );
   }
 
   static Future<Map<String, double>> getActiveDownloads() async {
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getString(_activeDownloadsKey) ?? '';
     if (data.isEmpty) return {};
-    
+
     Map<String, double> result = {};
     for (var entry in data.split(',')) {
       var parts = entry.split(':');
-      if (parts.length == 2) result[parts[0]] = double.tryParse(parts[1]) ?? 0.0;
+      if (parts.length == 2)
+        result[parts[0]] = double.tryParse(parts[1]) ?? 0.0;
     }
     return result;
   }
@@ -104,8 +108,10 @@ class TafseerUtils {
     if (active.isEmpty) {
       await prefs.remove(_activeDownloadsKey);
     } else {
-      await prefs.setString(_activeDownloadsKey, 
-        active.entries.map((e) => '${e.key}:${e.value}').join(','));
+      await prefs.setString(
+        _activeDownloadsKey,
+        active.entries.map((e) => '${e.key}:${e.value}').join(','),
+      );
     }
   }
 
@@ -117,9 +123,11 @@ class TafseerUtils {
     final prefs = await SharedPreferences.getInstance();
     Map<String, String> pending = await getPendingDownloads();
     pending[id] = url;
-    
-    await prefs.setString(_pendingDownloadsKey, 
-      pending.entries.map((e) => '${e.key}|$e.value').join('\n'));
+
+    await prefs.setString(
+      _pendingDownloadsKey,
+      pending.entries.map((e) => '${e.key}|$e.value').join('\n'),
+    );
   }
 
   static Future<Map<String, String>> getPendingDownloads() async {
@@ -142,8 +150,10 @@ class TafseerUtils {
     if (pending.isEmpty) {
       await prefs.remove(_pendingDownloadsKey);
     } else {
-      await prefs.setString(_pendingDownloadsKey, 
-        pending.entries.map((e) => '${e.key}|$e.value').join('\n'));
+      await prefs.setString(
+        _pendingDownloadsKey,
+        pending.entries.map((e) => '${e.key}|$e.value').join('\n'),
+      );
     }
   }
 }

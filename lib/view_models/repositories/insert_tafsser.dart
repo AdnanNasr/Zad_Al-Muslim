@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:isar/isar.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
-import 'package:noor_quran/view_models/models/db/islamic/surah.dart'; // تأكد من وجود موديل AyahModel هنا أو استيراده
+import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
+import 'package:noor_quran/view_models/models/db/islamic/tafsser/tafsser_surah.dart'; // تأكد من وجود موديل AyahModel هنا أو استيراده
 import 'package:noor_quran/view_models/utils/app_logger.dart';
 
 Future<void> insertTafsserToIsar({
@@ -38,12 +39,12 @@ Future<void> insertTafsserToIsar({
       // --- تعديل الأمان: التنظيف الذاتي ---
       // حذف أي بيانات قديمة مرتبطة بهذا التفسير (في حال كان التحميل سابقاً غير مكتمل)
       // نبدأ بحذف الآيات أولاً ثم السور لتجنب البيانات اليتيمة
-      await isar.ayahModels
+      await isar.ayahTafssers
           .filter()
           .surah((q) => q.edition((e) => e.identifierEqualTo(currentIdentifier)))
           .deleteAll();
 
-      await isar.surahs
+      await isar.tafsserSurahs
           .filter()
           .edition((e) => e.identifierEqualTo(currentIdentifier))
           .deleteAll();
@@ -53,7 +54,7 @@ Future<void> insertTafsserToIsar({
       // --- عملية الإدخال الجديدة ---
       for (final s in surahsData) {
         // 1. إنشاء كائن السورة مع الـ Edition (Embedded Object)
-        final surahObj = Surah()
+        final surahObj = TafsserSurah()
           ..number = s["number"]
           ..name = s["name"]
           ..englishName = s["englishName"]
@@ -66,13 +67,13 @@ Future<void> insertTafsserToIsar({
             ..englishName = editionData["englishName"]);
 
         // 2. حفظ السورة ليصبح لها ID متاح للربط
-        await isar.surahs.put(surahObj);
+        await isar.tafsserSurahs.put(surahObj);
 
         final ayahMaps = (s["ayahs"] as List?) ?? [];
-        final ayahObjs = <AyahModel>[];
+        final ayahObjs = <AyahTafsser>[];
 
         for (final ayah in ayahMaps) {
-          final ay = AyahModel()
+          final ay = AyahTafsser()
             ..number = ayah["number"]
             ..text = ayah["text"]
             ..numberInSurah = ayah["numberInSurah"];
@@ -84,7 +85,7 @@ Future<void> insertTafsserToIsar({
 
         if (ayahObjs.isNotEmpty) {
           // 4. حفظ جميع الآيات دفعة واحدة لرفع الأداء
-          await isar.ayahModels.putAll(ayahObjs);
+          await isar.ayahTafssers.putAll(ayahObjs);
 
           // 5. تحديث الـ Backlink في طرف السورة (IsarLinks)
           surahObj.ayahs.addAll(ayahObjs);
@@ -107,7 +108,7 @@ Future<void> loadTafsserFromAssest() async {
 
   if (isar != null) {
     // 1. استخدام الاستعلام المباشر لعد السور التي تنتمي للجلالين فقط
-    final jalalaynCount = await isar.surahs
+    final jalalaynCount = await isar.tafsserSurahs
         .filter()
         .edition((q) => q.identifierEqualTo("ar.jalalayn"))
         .count();

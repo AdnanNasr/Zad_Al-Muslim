@@ -1,9 +1,10 @@
 import 'package:isar/isar.dart';
+import "package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart";
 
-part 'surah.g.dart';
+part 'tafsser_surah.g.dart';
 
 @collection
-class Surah {
+class TafsserSurah {
   Id id = Isar.autoIncrement;
 
   late int number;
@@ -12,23 +13,11 @@ class Surah {
   late String englishNameTranslation;
   late String revelationType;
 
-  @Backlink(to: 'surah')
-  final ayahs = IsarLinks<AyahModel>();
+  // @Backlink(to: 'surah')
+  final ayahs = IsarLinks<AyahTafsser>();
 
   // embedded edition, optional
   EditionModel? edition;
-}
-
-@collection
-class AyahModel {
-  Id id = Isar.autoIncrement;
-
-  late int number;
-  late String text;
-  @Index()
-  late int numberInSurah;
-
-  final surah = IsarLink<Surah>();
 }
 
 @embedded

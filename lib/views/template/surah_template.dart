@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/utils/arabic_numbers.dart';
 import 'package:noor_quran/view_models/providers/theme_provider.dart';
