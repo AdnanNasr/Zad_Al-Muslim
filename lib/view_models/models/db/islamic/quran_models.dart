@@ -21,4 +21,5 @@ class Ayah {
   late String ayaTextEmlaey;
 
   late String text;
+  int get uniqueId => (surahNumber * 100) + ayahNumber;
 }

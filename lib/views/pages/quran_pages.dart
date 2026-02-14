@@ -42,7 +42,7 @@ class QuranPages extends StatelessWidget {
             ? 1.7.h
             : context.mediaQueryWidth <= 410
             ? 1.7.h
-            : 1.4.h
+            : 1.7.h
           );
         },
       ),

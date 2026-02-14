@@ -574,6 +574,11 @@ const AyahSchema = Schema(
       id: 4,
       name: r'text',
       type: IsarType.string,
+    ),
+    r'uniqueId': PropertySchema(
+      id: 5,
+      name: r'uniqueId',
+      type: IsarType.long,
     )
   },
   estimateSize: _ayahEstimateSize,
@@ -605,6 +610,7 @@ void _ayahSerialize(
   writer.writeString(offsets[2], object.surahName);
   writer.writeLong(offsets[3], object.surahNumber);
   writer.writeString(offsets[4], object.text);
+  writer.writeLong(offsets[5], object.uniqueId);
 }
 
 Ayah _ayahDeserialize(
@@ -639,6 +645,8 @@ P _ayahDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1134,6 +1142,58 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'text',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> uniqueIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'uniqueId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> uniqueIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'uniqueId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> uniqueIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'uniqueId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> uniqueIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'uniqueId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
