@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/utils/arabic_numbers.dart';
+import 'package:noor_quran/view_models/providers/tafsser_provider.dart';
 import 'package:noor_quran/view_models/providers/theme_provider.dart';
 
 class SurahTemplate extends ConsumerStatefulWidget {
@@ -68,7 +69,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
       barrierDismissible: true,
       barrierLabel: "Dismiss",
       barrierColor: Colors.transparent,
-      
+
       pageBuilder: (ctx, anim1, anim2) => Stack(
         children: [
           Positioned(
@@ -85,7 +86,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                     borderRadius: BorderRadius.circular(12.r),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: .2),
                         blurRadius: 8,
                         spreadRadius: 1,
                       ),
@@ -105,12 +106,100 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                         );
                       }),
                       _divider(),
-                      _menuAction(
-                        ctx,
-                        Icons.menu_book,
-                        "تفسير",
-                        () => Navigator.pop(ctx),
-                      ),
+                      _menuAction(ctx, Icons.menu_book, "تفسير", () async {
+                        final tafsserAyah = await ref
+                            .read(tafsserProvider.notifier)
+                            .getTafsserByAyahNumber(
+                              surahNumber: ayah.surahNumber,
+                              ayahNumber: ayah.ayahNumber,
+                            );
+
+                        if (context.mounted && tafsserAyah != null) {
+                          await showModalBottomSheet(
+                            context: context,
+                            useRootNavigator: true,
+                            isScrollControlled:
+                                true, // للسماح للمودال بالتوسع حسب المحتوى
+                            backgroundColor: Colors
+                                .transparent, // لجعل الحواف دائرية بشكل صحيح
+                            builder: (context) {
+                              return Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors
+                                      .white, // أو استخدم Theme.of(context).canvasColor
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(25),
+                                  ),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: DraggableScrollableSheet(
+                                  expand: false,
+                                  initialChildSize:
+                                      0.4, // يفتح على 40% من الشاشة
+                                  maxChildSize: 0.9, // أقصى حد 90%
+                                  minChildSize: 0.3,
+                                  builder: (context, scrollController) {
+                                    return Column(
+                                      children: [
+                                        // مقبض السحب الصغير في الأعلى
+                                        Container(
+                                          width: 40,
+                                          height: 5,
+                                          margin: const EdgeInsets.only(
+                                            bottom: 20,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[300],
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                        ),
+
+                                        // العنوان (اسم السورة ورقم الآية مثلاً)
+                                        Text(
+                                          "تفسير الآية ${ayah.ayahNumber}",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        const Divider(),
+
+                                        // محتوى التفسير القابل للتمرير
+                                        Expanded(
+                                          child: ListView(
+                                            controller: scrollController,
+                                            children: [
+                                              Text(
+                                                tafsserAyah.text,
+                                                textAlign: TextAlign.justify,
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  height:
+                                                      1.6, // تباعد الأسطر مريح للقراءة
+                                                  fontFamily:
+                                                      'Amiri', // لو عندك خط عربي مخصص
+                                                ),
+                                              ),
+                                              const SizedBox(height: 20),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                          if (!ctx.mounted) return;
+                          Navigator.of(ctx).pop();
+                        }
+                      }),
                       _divider(),
                       _menuAction(
                         ctx,
@@ -157,7 +246,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
   Widget _divider() => Container(
     width: 1,
     height: 20.h,
-    color: Colors.grey.withOpacity(0.2),
+    color: Colors.grey.withValues(alpha: 0.2),
     margin: EdgeInsets.symmetric(horizontal: 2.w),
   );
 
@@ -227,7 +316,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                   ? Colors.black87
                   : Colors.white,
               backgroundColor: _selectedAyahId == uniqueId
-                  ? Theme.of(context).primaryColor.withOpacity(0.2)
+                  ? Theme.of(context).primaryColor.withValues(alpha: .2)
                   : null,
             ),
             recognizer: recognizer,

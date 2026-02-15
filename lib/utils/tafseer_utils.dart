@@ -95,8 +95,9 @@ class TafseerUtils {
     Map<String, double> result = {};
     for (var entry in data.split(',')) {
       var parts = entry.split(':');
-      if (parts.length == 2)
+      if (parts.length == 2) {
         result[parts[0]] = double.tryParse(parts[1]) ?? 0.0;
+      }
     }
     return result;
   }

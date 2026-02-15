@@ -13,7 +13,7 @@ class TafsserSurah {
   late String englishNameTranslation;
   late String revelationType;
 
-  // @Backlink(to: 'surah')
+  @Backlink(to: 'surah')
   final ayahs = IsarLinks<AyahTafsser>();
 
   // embedded edition, optional

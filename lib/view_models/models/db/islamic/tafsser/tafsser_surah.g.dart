@@ -57,10 +57,11 @@ const TafsserSurahSchema = CollectionSchema(
   indexes: {},
   links: {
     r'ayahs': LinkSchema(
-      id: -6933820801873055695,
+      id: -6137011753763340094,
       name: r'ayahs',
       target: r'AyahTafsser',
       single: false,
+      linkName: r'surah',
     )
   },
   embeddedSchemas: {r'EditionModel': EditionModelSchema},

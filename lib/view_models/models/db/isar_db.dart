@@ -20,7 +20,7 @@ class IsarDb {
       MarkSchema,
       HadithSchema,
       TafsserSurahSchema,
-      AyahTafsserSchema
+      AyahTafsserSchema,
     ], directory: dir.path);
     AppLogger.logger.i("تم تهيئة قاعدة البيانات بنجاح");
     return database!;
