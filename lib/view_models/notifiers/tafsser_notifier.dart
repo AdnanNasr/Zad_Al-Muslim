@@ -12,25 +12,42 @@ class TafsserNoifier extends StateNotifier<AsyncValue<AyahTafsser>> {
 
   // get spicfic tafsser
   Future<AyahTafsser?> getTafsserByAyahNumber({
-    required int surahNumber,
-    required int ayahNumber,
-  }) async {
-    try {
-      // البحث مباشرة في جدول الآيات مع تصفية بناءً على رقم السورة ورقم الآية
-      final result = await db!.ayahTafssers
-          .filter()
-          .surah((s) => s.numberEqualTo(surahNumber))
-          .and()
-          .numberInSurahEqualTo(ayahNumber)
-          .findFirst();
+  required int surahNumber,
+  required int ayahNumber,
+  required EditionModel edition,
+}) async {
+  try {
+    // 1. نبحث عن السورة التي تحقق الشرطين: رقم السورة واسم التفسير
+    final TafsserSurah? surah = await db!.tafsserSurahs
+        .filter()
+        .numberEqualTo(surahNumber)
+        .and()
+        .edition((e) => e.nameEqualTo(edition.name))
+        .findFirst();
 
-      return result;
-    } catch (e, stack) {
-      // تسجيل الخطأ إذا وجد
-      AppLogger.logger.e("Error: $e | $stack");
-      return null;
+    if (surah == null) return null;
+
+    // 2. بما أن الآيات هي IsarLinks، يجب تحميلها أولاً (Load)
+    if (!surah.ayahs.isLoaded) {
+      await surah.ayahs.load();
     }
+
+    // 3. الآن نبحث عن الآية المطلوبة داخل الروابط المحملة
+    // نستخدم Dart هنا لأن التصفية على الـ Links بعد تحميلها تكون في الذاكرة
+    try {
+      return surah.ayahs.firstWhere(
+        (a) => a.numberInSurah == ayahNumber,
+      );
+    } catch (e) {
+      print("$e");
+      return null; // في حال لم يجد رقم الآية
+    }
+
+  } catch (e, stack) {
+    AppLogger.logger.e("Error: $e | $stack");
+    return null;
   }
+}
 
   // }
 

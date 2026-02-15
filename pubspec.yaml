@@ -111,6 +111,9 @@ flutter:
     - family: "Quran"
       fonts:
         - asset: assets/fonts/quran_font/uthmanic_hafs_v20.ttf
+    - family: "Naskh"
+      fonts:
+        - asset: assets\fonts\naskh\UthmanTN_v2-0.ttf
 
 flutter_launcher_icons:
   android: true

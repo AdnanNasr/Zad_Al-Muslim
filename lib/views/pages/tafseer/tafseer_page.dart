@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/extensions/color_ext.dart';
 import 'package:noor_quran/extensions/theme_ext.dart';
 import 'package:noor_quran/utils/tafseer_utils.dart';
+import 'package:noor_quran/view_models/providers/avalible_tafsser_books.dart';
 import 'package:noor_quran/views/widgets/custom_app_bar.dart';
 import 'package:noor_quran/views/widgets/tafseer_dialog.dart';
 import 'package:noor_quran/views/widgets/tafsser_buttons.dart';
@@ -163,6 +164,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
           // مسح البيانات المؤقتة للتنزيل من التخزين
           TafseerUtils.removePendingDownload(tafseerId);
           TafseerUtils.removeFromActiveDownloads(tafseerId);
+          ref.invalidate(availableTafsserBooksProvider);
         }
       },
       onError: (errorMessage) {

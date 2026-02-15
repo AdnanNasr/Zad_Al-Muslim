@@ -26,4 +26,14 @@ class EditionModel {
   String? language;
   String? name;
   String? englishName;
+  
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EditionModel &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }

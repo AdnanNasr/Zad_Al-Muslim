@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/utils/tafsser/show_tafsser_modal_bottom.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/utils/arabic_numbers.dart';
+import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
+import 'package:noor_quran/view_models/models/db/islamic/tafsser/tafsser_surah.dart';
+import 'package:noor_quran/view_models/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/view_models/providers/tafsser_provider.dart';
 import 'package:noor_quran/view_models/providers/theme_provider.dart';
 
@@ -49,7 +53,12 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
   }
 
   // دالة إظهار القائمة المحسنة
-  void _showHorizontalMenu(BuildContext context, Ayah ayah, Offset position) {
+  void _showHorizontalMenu(
+    BuildContext context,
+    Ayah ayah,
+    Offset position,
+    EditionModel edition,
+  ) {
     final menuWidth = 250.0.w;
     final menuHeight = 70.0.h;
     final screenSize = MediaQuery.of(context).size;
@@ -110,91 +119,17 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                         final tafsserAyah = await ref
                             .read(tafsserProvider.notifier)
                             .getTafsserByAyahNumber(
+                              edition: edition,
                               surahNumber: ayah.surahNumber,
                               ayahNumber: ayah.ayahNumber,
                             );
 
                         if (context.mounted && tafsserAyah != null) {
-                          await showModalBottomSheet(
-                            context: context,
-                            useRootNavigator: true,
-                            isScrollControlled:
-                                true, // للسماح للمودال بالتوسع حسب المحتوى
-                            backgroundColor: Colors
-                                .transparent, // لجعل الحواف دائرية بشكل صحيح
-                            builder: (context) {
-                              return Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors
-                                      .white, // أو استخدم Theme.of(context).canvasColor
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(25),
-                                  ),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                child: DraggableScrollableSheet(
-                                  expand: false,
-                                  initialChildSize:
-                                      0.4, // يفتح على 40% من الشاشة
-                                  maxChildSize: 0.9, // أقصى حد 90%
-                                  minChildSize: 0.3,
-                                  builder: (context, scrollController) {
-                                    return Column(
-                                      children: [
-                                        // مقبض السحب الصغير في الأعلى
-                                        Container(
-                                          width: 40,
-                                          height: 5,
-                                          margin: const EdgeInsets.only(
-                                            bottom: 20,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[300],
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                        ),
-
-                                        // العنوان (اسم السورة ورقم الآية مثلاً)
-                                        Text(
-                                          "تفسير الآية ${ayah.ayahNumber}",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        const Divider(),
-
-                                        // محتوى التفسير القابل للتمرير
-                                        Expanded(
-                                          child: ListView(
-                                            controller: scrollController,
-                                            children: [
-                                              Text(
-                                                tafsserAyah.text,
-                                                textAlign: TextAlign.justify,
-                                                style: const TextStyle(
-                                                  fontSize: 17,
-                                                  height:
-                                                      1.6, // تباعد الأسطر مريح للقراءة
-                                                  fontFamily:
-                                                      'Amiri', // لو عندك خط عربي مخصص
-                                                ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              );
-                            },
+                          await showTafsserModalBottom(
+                            context,
+                            ref,
+                            ayah,
+                            tafsserAyah,
                           );
                           if (!ctx.mounted) return;
                           Navigator.of(ctx).pop();
@@ -252,6 +187,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
 
   @override
   Widget build(BuildContext context) {
+    final currentEdtion = ref.watch(tafsserBookProvider);
     final themeMode = ref.watch(themeProvider);
     final bgColor = themeMode == ThemeMode.light
         ? const Color(0xFFF8F3E7)
@@ -264,7 +200,13 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
           color: bgColor,
           child: Column(
             children: [
-              Expanded(child: _buildDynamicSurahContent(context, themeMode)),
+              Expanded(
+                child: _buildDynamicSurahContent(
+                  context,
+                  themeMode,
+                  currentEdtion.value!,
+                ),
+              ),
               _buildPageNumber(),
             ],
           ),
@@ -273,7 +215,11 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
     );
   }
 
-  Widget _buildDynamicSurahContent(BuildContext context, ThemeMode themeMode) {
+  Widget _buildDynamicSurahContent(
+    BuildContext context,
+    ThemeMode themeMode,
+    EditionModel edition,
+  ) {
     if (widget.ayahs.isEmpty) return const SizedBox.shrink();
     _disposeRecognizers();
 
@@ -301,13 +247,18 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
               ..onLongPressStart = (details) {
                 HapticFeedback.lightImpact(); // اهتزاز بسيط لتحسين التجربة
                 setState(() => _selectedAyahId = uniqueId);
-                _showHorizontalMenu(context, ayah, details.globalPosition);
+                _showHorizontalMenu(
+                  context,
+                  ayah,
+                  details.globalPosition,
+                  edition,
+                );
               };
         _recognizers.add(recognizer);
 
         ayahSpans.add(
           TextSpan(
-            text: "${ayah.text} ",
+            text: " ${ayah.text}",
             style: TextStyle(
               fontFamily: widget.fontFamily,
               fontSize: widget.fontSize,
@@ -326,7 +277,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
 
       children.add(
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
           child: Text.rich(
             TextSpan(children: ayahSpans),
             textAlign: TextAlign.justify,
