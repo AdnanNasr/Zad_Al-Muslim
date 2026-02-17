@@ -110,12 +110,24 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                         ),
                         maxLines: 2,
                       ),
-                      subtitle: Text(
-                        hadiths[index].hadithNarrator,
-                        style: TextStyle(
-                          fontSize: context.witdthScreen * 0.035,
-                          fontFamily: "Rubik",
-                        ),
+                      subtitle: Row(
+                        children: [
+                          Text(
+                            "الرواي:",
+                            style: TextStyle(
+                              fontSize: context.witdthScreen * 0.038,
+                              fontFamily: "Cairo",
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            hadiths[index].hadithNarrator,
+                            style: TextStyle(
+                              fontSize: context.witdthScreen * 0.038,
+                              fontFamily: "Cairo",
+                            ),
+                          ),
+                        ],
                       ),
                       leading: Text(
                         "${index + 1}",

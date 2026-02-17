@@ -15,11 +15,14 @@ class TafseerDialog extends StatelessWidget {
       title: Center(
         child: Text(
           tafsserInfo.name,
-          style: const TextStyle(fontFamily: "Rubik"),
+          style: const TextStyle(
+            fontFamily: "Cairo",
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
 
-      contentPadding:  EdgeInsetsGeometry.all(16.r),
+      contentPadding: EdgeInsetsGeometry.all(16.r),
       children: [
         Text(
           tafsserInfo.description,

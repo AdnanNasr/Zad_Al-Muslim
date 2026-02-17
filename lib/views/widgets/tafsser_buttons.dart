@@ -81,7 +81,7 @@ class TafsserItemState extends State<TafsserItem> {
                         widget.info.name,
                         style: TextStyle(
                           color: context.color.onSurface,
-                          fontFamily: "Rubik",
+                          fontFamily: "Cairo",
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w700,
                           height: 1.2,
@@ -152,7 +152,7 @@ class TafsserItemState extends State<TafsserItem> {
   Widget _buildDownloadButton(BuildContext context) {
     // استخدم widget.isDownloaded أو isDownloaded المحلي (whichever is true)
     final actualDownloaded = isDownloaded || widget.isDownloaded;
-    
+
     if (actualDownloaded) {
       // عند اكتمال التحميل
       return Container(
@@ -192,8 +192,7 @@ class TafsserItemState extends State<TafsserItem> {
                 valueColor: AlwaysStoppedAnimation<Color>(
                   context.color.primary,
                 ),
-                backgroundColor:
-                    context.color.primary.withValues(alpha: 0.2),
+                backgroundColor: context.color.primary.withValues(alpha: 0.2),
               ),
             ),
             // رسالة النسبة المئوية
@@ -233,5 +232,9 @@ class TafsserInfo {
   final String description;
   final String id;
 
-  TafsserInfo({required this.name, required this.description, required this.id});
+  TafsserInfo({
+    required this.name,
+    required this.description,
+    required this.id,
+  });
 }

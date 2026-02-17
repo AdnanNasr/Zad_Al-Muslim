@@ -93,21 +93,6 @@ flutter:
           weight: 200
         - asset: assets/fonts/Tajawal/Tajawal-Black.ttf
           weight: 900
-    - family: "Rubik"
-      fonts:
-        - asset: assets/fonts/Rubik/Rubik-Regular.ttf
-        - asset: assets/fonts/Rubik/Rubik-Light.ttf
-          weight: 300
-        - asset: assets/fonts/Rubik/Rubik-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Rubik/Rubik-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Rubik/Rubik-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Rubik/Rubik-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/Rubik/Rubik-Black.ttf
-          weight: 900
     - family: "Quran"
       fonts:
         - asset: assets/fonts/quran_font/uthmanic_hafs_v20.ttf

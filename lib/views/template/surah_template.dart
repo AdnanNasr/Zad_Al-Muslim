@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/utils/tafsser/show_tafsser_modal_bottom.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/utils/arabic_numbers.dart';
-import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
 import 'package:noor_quran/view_models/models/db/islamic/tafsser/tafsser_surah.dart';
 import 'package:noor_quran/view_models/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/view_models/providers/tafsser_provider.dart';
