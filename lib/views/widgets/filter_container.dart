@@ -27,11 +27,46 @@ class _FilterContainerState extends ConsumerState<FilterContainer> {
   final GlobalKey _key = GlobalKey();
   String _title = "";
 
+  // The old implementation registered a listener in `initState`.  Riverpod
+  // now asserts that `ref.listen` may only be invoked during a build of a
+  // `ConsumerWidget`.  To keep the container's local `_title` in sync with the
+  // provider we instead compute the current value on each build and schedule a
+  // post-frame callback if an update is needed.
+
   final fontFamiily = "Cairo";
 
   @override
   Widget build(BuildContext context) {
     final Color primary = Theme.of(context).colorScheme.primary;
+
+    // compute the value that should currently be displayed according to the
+    // provider state.  if it differs from `_title` we push a post-frame
+    // callback to update it after this build completes.
+    final notifier = ref.watch(hadithProvider.notifier);
+    String? current;
+    switch (widget.title) {
+      case "الكتاب":
+        current = notifier.currentBook;
+        break;
+      case "الرواي":
+        current = notifier.currentNarrator;
+        break;
+      case "الموضوع":
+        current = notifier.currentTopic;
+        break;
+      case "الدرجة":
+        current = notifier.currentGradeText;
+        break;
+    }
+
+    if ((current ?? "") != _title) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          _title = current ?? "";
+        });
+      });
+    }
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -96,11 +131,6 @@ class _FilterContainerState extends ConsumerState<FilterContainer> {
                 break;
             }
           }
-
-          if (ref.read(hadithProvider.notifier).isFilterEmpty()) {
-            // _title = "";
-            setState(() {});
-          }
         },
         borderRadius: BorderRadius.circular(16.r),
         child: IntrinsicWidth(
@@ -116,8 +146,7 @@ class _FilterContainerState extends ConsumerState<FilterContainer> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (_title.isNotEmpty &&
-                    ref.read(hadithProvider.notifier).isFilterEmpty())
+                if (_title.isNotEmpty)
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -157,10 +186,7 @@ class _FilterContainerState extends ConsumerState<FilterContainer> {
                   ),
                 if (_title.isNotEmpty) SizedBox(width: 4.w),
                 Text(
-                  _title.isNotEmpty &&
-                          ref.read(hadithProvider.notifier).isFilterEmpty()
-                      ? _title
-                      : widget.title,
+                  _title.isNotEmpty ? _title : widget.title,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: TextStyle(

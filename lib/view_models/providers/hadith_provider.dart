@@ -71,12 +71,41 @@ class HadithProvider extends StateNotifier<List<Hadith>> {
     _applyFilters();
   }
 
-  bool isFilterEmpty(){
-    return _filters.book != null ||
-          _filters.topic != null ||
-          _filters.narrator != null ||
-          _filters.grade != null ||
-          _filters.featuredOnly;
+  /// Returns true when **no** filters are currently active.
+  ///
+  /// The previous implementation of this method returned true whenever *any*
+  /// filter was set which made the name misleading and caused the UI logic in
+  /// `FilterContainer` to behave incorrectly.  The flip in meaning is part of
+  /// the reason the old filter text would re‑appear after clearing all filters
+  /// then choosing a new one.
+  bool get isFilterEmpty {
+    return _filters.book == null &&
+        _filters.topic == null &&
+        _filters.narrator == null &&
+        _filters.grade == null &&
+        !_filters.featuredOnly;
+  }
+
+  // helpers used by the widgets so they can synchronise their local state with
+  // the values stored in the provider.
+  String? get currentBook => _filters.book;
+  String? get currentNarrator => _filters.narrator;
+  String? get currentTopic => _filters.topic;
+  HadithGrade? get currentGrade => _filters.grade;
+
+  /// Converts the current grade to the corresponding Arabic label used by the
+  /// UI.  `null` is returned when no grade filter is active.
+  String? get currentGradeText {
+    switch (_filters.grade) {
+      case HadithGrade.sahih:
+        return "صحيح";
+      case HadithGrade.hasan:
+        return "حسن";
+      case HadithGrade.daif:
+        return "ضعيف";
+      default:
+        return null;
+    }
   }
 
   // ---------------- FILTER CORE ----------------
@@ -88,9 +117,7 @@ class HadithProvider extends StateNotifier<List<Hadith>> {
     }
 
     if (_filters.narrator != null) {
-      result = result.where(
-        (h) => h.hadithNarrator == _filters.narrator,
-      );
+      result = result.where((h) => h.hadithNarrator == _filters.narrator);
     }
 
     if (_filters.topic != null) {
@@ -154,13 +181,17 @@ class HadithProvider extends StateNotifier<List<Hadith>> {
       ..grade = null
       ..featuredOnly = false;
 
-    state = _allHadith;
+    // make sure the state changes even if `_allHadith` has the same identity as
+    // the previous state; rebuilding the list forces widgets that are watching
+    // the provider to run again which is important for the filter containers.
+    state = List<Hadith>.from(_allHadith);
   }
 }
 
 // ---------------- PROVIDER ----------------
-final hadithProvider =
-    StateNotifierProvider<HadithProvider, List<Hadith>>((ref) {
+final hadithProvider = StateNotifierProvider<HadithProvider, List<Hadith>>((
+  ref,
+) {
   final db = IsarDb.database;
   if (db == null) {
     throw Exception("Isar not initialized");

@@ -8,15 +8,15 @@ import 'package:noor_quran/views/widgets/custom_app_bar.dart';
 import 'package:noor_quran/views/widgets/tabs/featured_hadith_tab.dart';
 import 'package:noor_quran/views/widgets/tabs/hadeeth_tab.dart';
 
-class SunahPage extends ConsumerStatefulWidget {
+class HadithPage extends ConsumerStatefulWidget {
   // TODO: تحسين المظهر العام
-  const SunahPage({super.key});
+  const HadithPage({super.key});
 
   @override
-  ConsumerState<SunahPage> createState() => _SunahPageState();
+  ConsumerState<HadithPage> createState() => _HadithPageState();
 }
 
-class _SunahPageState extends ConsumerState<SunahPage> {
+class _HadithPageState extends ConsumerState<HadithPage> {
   List<Widget> tabWidgets = [
     const Tab(child: Icon(Icons.my_library_books_rounded)),
     const Tab(child: Icon(Icons.favorite)),

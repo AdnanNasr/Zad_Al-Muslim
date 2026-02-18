@@ -144,13 +144,26 @@ Future<dynamic> showTafsserModalBottom(
                               return ListView(
                                 controller: scrollController,
                                 children: [
-                                  Text(
-                                    newTafsserText, // النص الجديد القادم من قاعدة البيانات
-                                    textAlign: TextAlign.justify,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      height: 1.6,
-                                      fontFamily: 'Naskh',
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(8.r),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                      border: Border.all(
+                                        color: Colors.grey.shade200,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      newTafsserText, // النص الجديد القادم من قاعدة البيانات
+                                      textAlign: TextAlign.justify,
+                                      style: TextStyle(
+                                        fontSize: 21.sp,
+                                        height: 1.6,
+                                        fontFamily: 'Naskh',
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 20),

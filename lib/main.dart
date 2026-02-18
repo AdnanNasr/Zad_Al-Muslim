@@ -20,7 +20,7 @@ import 'package:noor_quran/views/pages/onboarding/onboarding_page.dart';
 import 'package:noor_quran/views/pages/pray_time_page.dart';
 import 'package:noor_quran/views/pages/qebla_page.dart';
 import 'package:noor_quran/views/pages/settings_page.dart';
-import 'package:noor_quran/views/pages/sunah_page.dart';
+import 'package:noor_quran/views/pages/hadith_page.dart';
 import 'package:noor_quran/views/pages/tafseer/tafseer_page.dart';
 import 'package:noor_quran/views/widgets/custom_navigation_bar.dart';
 import 'package:noor_quran/views/widgets/quran_page_app_bar.dart';
@@ -82,7 +82,7 @@ class MyApp extends ConsumerWidget {
         "/change_app_color_page": (_) => const ChangeAppColorPage(),
         "/tafseer_page": (_) => const TafseerPage(),
         "/app_info": (_) => const AppInfo(),
-        "/sunah_page": (_) => const SunahPage(),
+        "/sunah_page": (_) => const HadithPage(),
         "/onboarding": (_) => const OnboardingPage(),
         "/custom_navigation_bar": (_) => const CustomNavigationBar(),
         "/pray_time_page": (_) => const PrayTimePage(),

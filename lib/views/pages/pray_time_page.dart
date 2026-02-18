@@ -13,7 +13,11 @@ class _PrayTimePageState extends State<PrayTimePage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CustomAppBar(title: "أوقات الصلاة", center: false, profile: false),
-      body: Column(),
+      body: Column(
+        children: [
+          Text("Data")
+        ],
+      ),
     );
   }
 }

@@ -70,7 +70,10 @@ class _HadithTabState extends ConsumerState<HadithTab> {
             ),
           ),
           SizedBox(height: 10.h),
-          if (ref.read(hadithProvider.notifier).isFilterEmpty())
+          // Show the "clear all" button only when there is at least one active
+          // filter.  previously the logic was inverted because
+          // `isFilterEmpty` returned true when filters existed.
+          if (!ref.read(hadithProvider.notifier).isFilterEmpty)
             ClearAllFilters(ref: ref),
           const SizedBox(height: 8),
           Divider(color: Theme.of(context).dividerColor, thickness: 2),

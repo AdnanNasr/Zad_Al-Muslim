@@ -39,7 +39,7 @@ class TafsserNoifier extends StateNotifier<AsyncValue<AyahTafsser>> {
         (a) => a.numberInSurah == ayahNumber,
       );
     } catch (e) {
-      print("$e");
+      AppLogger.logger.e("لم يتم العثور على الآية المطلوبة\nرمز الخطأ: $e");
       return null; // في حال لم يجد رقم الآية
     }
 
