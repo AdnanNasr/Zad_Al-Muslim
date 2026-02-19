@@ -20,7 +20,7 @@ subprojects {
     afterEvaluate {
         if (project.hasProperty("android")) {
             configure<com.android.build.gradle.BaseExtension> {
-                compileSdkVersion(34)
+                compileSdkVersion(35)
 
                 // 1. حل مشكلة الـ Namespace للمكتبات التي تفتقر إليه
                 if (namespace == null) {

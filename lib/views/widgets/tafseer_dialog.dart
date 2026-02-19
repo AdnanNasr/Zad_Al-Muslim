@@ -4,7 +4,6 @@ import 'package:noor_quran/extensions/sizes_ext.dart';
 import 'package:noor_quran/views/widgets/tafsser_buttons.dart';
 
 class TafseerDialog extends StatelessWidget {
-  // TODO: temp
   final TafsserInfo tafsserInfo;
   const TafseerDialog({super.key, required this.tafsserInfo});
 
@@ -26,7 +25,10 @@ class TafseerDialog extends StatelessWidget {
       children: [
         Text(
           tafsserInfo.description,
-          style: TextStyle(fontSize: context.witdthScreen * 0.045),
+          style: TextStyle(
+            fontSize: context.witdthScreen * 0.042,
+            fontFamily: "Tajawal",
+          ),
           textAlign: TextAlign.center,
         ),
       ],

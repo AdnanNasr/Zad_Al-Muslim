@@ -15,7 +15,6 @@ class HadithTab extends ConsumerStatefulWidget {
 }
 
 class _HadithTabState extends ConsumerState<HadithTab> {
-  // TODO: Complete Sunah and Hadith Page
   @override
   Widget build(BuildContext context) {
     final hadiths = ref.watch(hadithProvider);

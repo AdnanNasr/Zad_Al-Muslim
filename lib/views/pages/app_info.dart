@@ -10,6 +10,7 @@ class AppInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // TODO: implement page
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.app_information,
         center: false,
@@ -23,17 +24,17 @@ class AppInfo extends StatelessWidget {
             SettingCards(
               icon: Icons.lock,
               text: AppLocalizations.of(context)!.privacy_policy,
-              onTap: () => print("object"),
+              onTap: () => debugPrint("Temp"),
             ),
             SettingCards(
               icon: Icons.description,
               text: AppLocalizations.of(context)!.terms_of_use,
-              onTap: () => print("object"),
+              onTap: () => debugPrint("Temp"),
             ),
             SettingCards(
               icon: Icons.verified_user_outlined,
               text: AppLocalizations.of(context)!.app_certificates,
-              onTap: () => print("object"),
+              onTap: () => debugPrint("Temp"),
             ),
             SettingCards(
               icon: Icons.info,

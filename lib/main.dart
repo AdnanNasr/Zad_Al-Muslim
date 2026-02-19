@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:noor_quran/l10n/app_localizations.dart';
+import 'package:noor_quran/utils/location_locator.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/themes/theme_notifier.dart';
 import 'package:noor_quran/view_models/providers/language_provider.dart';
@@ -31,6 +33,8 @@ void main() async {
   await insertQuranPagesToIsar(); // إضافة جميع بيانات القران الى قاعدة البيانات
   await insertHadithToIsar(); // اضافة جميع بيانات الحديث الى قاعدة البيانات
   await loadTafsserFromAssest(); // اضافة جميع بيانات التفاسير قاعدة البيانات
+  Position position =
+      await LocationLocator.determinePosition(); // جلب موقع المستخدم من اجل اوقات الصلاة
   final container = ProviderContainer();
   await container
       .read(themeProvider.notifier)
@@ -46,15 +50,16 @@ void main() async {
         minTextAdapt: true,
         useInheritedMediaQuery: true,
         designSize: const Size(411.4, 853.3),
-        builder: (context, child) => MyApp(hasSeenOnboarding: hasSeen),
+        builder: (context, child) => MyApp(hasSeenOnboarding: hasSeen, position: position,),
       ),
     ),
   );
 }
 
 class MyApp extends ConsumerWidget {
+  final Position? position;
   final bool hasSeenOnboarding;
-  const MyApp({super.key, required this.hasSeenOnboarding});
+  const MyApp({super.key, required this.hasSeenOnboarding, this.position});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -85,7 +90,7 @@ class MyApp extends ConsumerWidget {
         "/sunah_page": (_) => const HadithPage(),
         "/onboarding": (_) => const OnboardingPage(),
         "/custom_navigation_bar": (_) => const CustomNavigationBar(),
-        "/pray_time_page": (_) => const PrayTimePage(),
+        "/pray_time_page": (_) =>  PrayTimePage(position: position),
         "/qebla_page": (_) => const QeblaPage(),
         "/adkar_page": (_) => const AdkarPage(),
       },

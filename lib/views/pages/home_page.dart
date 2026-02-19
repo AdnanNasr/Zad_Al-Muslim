@@ -102,7 +102,6 @@ class BodyContent extends StatelessWidget {
           color: colorScheme.surface,
           child: Column(
             children: [
-              // TODO: fix spacing between components
               Padding(
                 padding: EdgeInsets.only(top: 16.0.h),
                 child: Row(

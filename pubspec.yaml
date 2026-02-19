@@ -31,6 +31,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_launcher_icons: ^0.14.4
   dio: ^5.9.1
+  geolocator: ^14.0.2 # to get user location for pray times and qepla
 
 dev_dependencies:
   flutter_test:

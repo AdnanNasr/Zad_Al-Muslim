@@ -9,7 +9,6 @@ import 'package:noor_quran/views/widgets/tabs/featured_hadith_tab.dart';
 import 'package:noor_quran/views/widgets/tabs/hadeeth_tab.dart';
 
 class HadithPage extends ConsumerStatefulWidget {
-  // TODO: تحسين المظهر العام
   const HadithPage({super.key});
 
   @override
