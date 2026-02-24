@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:isar/isar.dart';
 import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
 import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
+import 'package:noor_quran/view_models/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/models/db/islamic/tafsser/tafsser_surah.dart';
@@ -32,28 +35,53 @@ class TafseerUtils {
     required void Function(String) onError,
   }) async {
     final dio = Dio();
-    try {
-      final response = await dio.get(
-        url,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            onProgress((received / total) * 0.9);
-          }
-        },
-      );
 
+    try {
+      // 1. تعريف المتغير في الأعلى ليكون متاحاً في كامل النطاق
+      Response response;
+
+      try {
+        response = await dio.get(
+          url,
+          onReceiveProgress: (received, total) {
+            if (total != -1) {
+              onProgress((received / total) * 0.9);
+            }
+          },
+        );
+      } on FormatException catch (e) {
+        // هذا النوع من الأخطاء نادراً ما يحدث في طلب get نفسه، بل عند تحليل البيانات
+        onError("تنسيق الرابط غير صحيح: ${e.message}");
+        return; // توقف عن التنفيذ
+      }
+
+      // 2. الآن يمكنك استخدام response هنا بأمان
       if (response.statusCode == 200) {
-        // تمرير البيانات لدالة الإدخال المستقلة
-        await insertTafsserToIsar(jsonMap: response.data);
-        onProgress(1.0);
-        onComplete();
+        // تأكد أن response.data ليس null قبل تمريره
+        if (response.data != null) {
+          await insertTafsserToIsar(jsonMap: response.data);
+          onProgress(1.0);
+          onComplete();
+        } else {
+          onError("السيرفر أعاد استجابة فارغة");
+        }
       } else {
         onError("خطأ في السيرفر: ${response.statusCode}");
       }
     } on DioException catch (e) {
-      onError("خطأ في الاتصال: ${e.message}");
+      // معالجة أخطاء الشبكة الخاصة بـ Dio
+      String errorMessage = "خطأ في الاتصال";
+      if (e.type == DioExceptionType.connectionTimeout)
+        errorMessage = "انتهت مهلة الاتصال";
+      onError("$errorMessage: ${e.message}");
+    } on FormatException catch (e) {
+      // معالجة أخطاء تحويل البيانات (JSON)
+      onError("خطأ في تحليل البيانات المرسلة من السيرفر");
+      AppLogger.logger.e("Format Error: ${e.message}");
     } catch (e) {
+      // معالجة أي خطأ غير متوقع آخر
       onError("حدث خطأ غير متوقع: $e");
+      AppLogger.logger.e("Unexpected Error: $e");
     }
   }
 
@@ -125,10 +153,8 @@ class TafseerUtils {
     Map<String, String> pending = await getPendingDownloads();
     pending[id] = url;
 
-    await prefs.setString(
-      _pendingDownloadsKey,
-      pending.entries.map((e) => '${e.key}|$e.value').join('\n'),
-    );
+    // حفظ الـ Map بالكامل كـ JSON String لمنع تداخل الحروف
+    await prefs.setString(_pendingDownloadsKey, jsonEncode(pending));
   }
 
   static Future<Map<String, String>> getPendingDownloads() async {
@@ -136,25 +162,27 @@ class TafseerUtils {
     final data = prefs.getString(_pendingDownloadsKey) ?? '';
     if (data.isEmpty) return {};
 
-    Map<String, String> result = {};
-    for (var line in data.split('\n')) {
-      var parts = line.split('|');
-      if (parts.length == 2) result[parts[0]] = parts[1];
+    try {
+      // تحويل النص من JSON إلى Map بأمان
+      final Map<String, dynamic> decoded = jsonDecode(data);
+      return decoded.map((key, value) => MapEntry(key, value.toString()));
+    } catch (e) {
+      AppLogger.logger.e("خطأ في قراءة التحميلات المعلقة: $e");
+      return {};
     }
-    return result;
   }
 
   static Future<void> removePendingDownload(String id) async {
     final prefs = await SharedPreferences.getInstance();
     Map<String, String> pending = await getPendingDownloads();
-    pending.remove(id);
-    if (pending.isEmpty) {
-      await prefs.remove(_pendingDownloadsKey);
-    } else {
-      await prefs.setString(
-        _pendingDownloadsKey,
-        pending.entries.map((e) => '${e.key}|$e.value').join('\n'),
-      );
+
+    if (pending.containsKey(id)) {
+      pending.remove(id);
+      if (pending.isEmpty) {
+        await prefs.remove(_pendingDownloadsKey);
+      } else {
+        await prefs.setString(_pendingDownloadsKey, jsonEncode(pending));
+      }
     }
   }
 }

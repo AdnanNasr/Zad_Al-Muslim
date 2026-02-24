@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/extensions/color_ext.dart';
 import 'package:noor_quran/extensions/theme_ext.dart';
-import 'package:noor_quran/utils/tafseer_utils.dart';
+import 'package:noor_quran/utils/network_info.dart';
+import 'package:noor_quran/utils/tafsser/tafseer_utils.dart';
 import 'package:noor_quran/view_models/providers/avalible_tafsser_books.dart';
 import 'package:noor_quran/views/widgets/custom_app_bar.dart';
 import 'package:noor_quran/views/widgets/tafseer_dialog.dart';
@@ -45,7 +46,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
           "تفسير معاصر أعدته نخبة من العلماء؛ يتميز بعبارات سهلة ومنقحة ومناسبة جداً.",
     ),
     TafsserInfo(
-      name: "التفسير الوسيط (طنطاوي)",
+      name: "التفسير الوسيط",
       id: "ar.waseet",
       description:
           "تفسير يجمع بين التحليل اللفظي والبيان البلاغي؛ يتميز بأسلوبه الأدبي الرصين.",
@@ -178,7 +179,14 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
     );
   }
 
-  void _handleDownloadItem(int index) {
+  Future<void> _handleDownloadItem(int index) async {
+    final bool noInternet = await NetworkInfo.hasInvalidConnection();
+
+    if (noInternet) {
+      _showErrorMessage("لا يوجد إتصال بالإنترنت");
+      return;
+    }
+
     // فحص مضاعف محلي + قاعدة البيانات
     if (downloadedList[index]) {
       _showErrorMessage("هذا التفسير مثبت بالفعل");
@@ -232,7 +240,9 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
             key: itemKeys[index],
             info: tafseerList[index],
             isDownloaded: downloadedList[index],
-            onPressed: () => _handleDownloadItem(index),
+            onPressed: () async {
+              await _handleDownloadItem(index);
+            } ,
             onTap: () => showDialog(
               context: context,
               builder: (context) =>
@@ -255,9 +265,12 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
   }
 
   void _showErrorMessage(String msg) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
+        duration: Duration(seconds: 2),
+
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ),

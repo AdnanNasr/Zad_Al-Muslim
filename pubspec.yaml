@@ -32,6 +32,12 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   dio: ^5.9.1
   geolocator: ^14.0.2 # to get user location for pray times and qepla
+  adhan: ^2.0.0+1
+  riverpod_annotation: ^2.6.1
+  geocoding: ^4.0.0
+  flutter_local_notifications: ^20.1.0
+  timezone: ^0.10.1
+  connectivity_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:
@@ -40,6 +46,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   build_runner: ^2.4.6
   isar_generator: ^3.1.0+1
+  riverpod_generator: ^2.4.0
 
 flutter:
   uses-material-design: true

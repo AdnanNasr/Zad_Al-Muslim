@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:noor_quran/constants/enums/my_enums.dart';
 import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 
+/// كلاس لتخزين قيم الفلاتر الحالية
 class HadithFilters {
   String? book;
   String? narrator;
@@ -12,165 +14,155 @@ class HadithFilters {
   bool featuredOnly = false;
 }
 
-class HadithProvider extends StateNotifier<List<Hadith>> {
-  HadithProvider(this.db) : super([]);
-
-  final Isar db;
-
+class HadithNotifier extends AsyncNotifier<List<Hadith>> {
+  late Isar _db;
   List<Hadith> _allHadith = [];
   final HadithFilters _filters = HadithFilters();
 
-  // ---------------- LOAD ----------------
-  Future<void> loadHadith() async {
-    _allHadith = await db.hadiths.where().findAll();
-    _applyFilters();
+  @override
+  FutureOr<List<Hadith>> build() async {
+    // 1. الحصول على نسخة قاعدة البيانات
+    final database = IsarDb.database;
+    if (database == null) throw Exception("Isar not initialized");
+    _db = database;
+
+    // 2. تحميل البيانات الأولية من Isar
+    _allHadith = await _db.hadiths.where().findAll();
+    
+    // 3. تطبيق الفلاتر (التي تكون فارغة في البداية) وإرجاع النتيجة
+    return _applyFiltersLocally();
   }
 
-  // ---------------- CRUD ----------------
-  Future<void> addHadith(Hadith hadith) async {
-    await db.writeTxn(() async {
-      await db.hadiths.put(hadith);
-    });
+  // ---------------- CRUD (العمليات على البيانات) ----------------
 
-    _allHadith = [..._allHadith, hadith];
-    _applyFilters();
+  Future<void> addHadith(Hadith hadith) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await _db.writeTxn(() => _db.hadiths.put(hadith));
+      _allHadith = [..._allHadith, hadith];
+      return _applyFiltersLocally();
+    });
   }
 
   Future<void> updateHadithGrade(Id id, HadithGrade grade) async {
     final index = _allHadith.indexWhere((h) => h.id == id);
     if (index == -1) return;
 
-    _allHadith[index].grade = grade;
-
-    await db.writeTxn(() async {
-      await db.hadiths.put(_allHadith[index]);
+    state = await AsyncValue.guard(() async {
+      _allHadith[index].grade = grade;
+      await _db.writeTxn(() => _db.hadiths.put(_allHadith[index]));
+      return _applyFiltersLocally();
     });
-
-    _applyFilters();
   }
 
   Future<void> deleteHadith(Id id) async {
-    await db.writeTxn(() async {
-      await db.hadiths.delete(id);
+    state = await AsyncValue.guard(() async {
+      await _db.writeTxn(() => _db.hadiths.delete(id));
+      _allHadith.removeWhere((h) => h.id == id);
+      return _applyFiltersLocally();
     });
-
-    _allHadith.removeWhere((h) => h.id == id);
-    _applyFilters();
   }
 
-  Future<void> toggleIsFeautred(String hadithText) async {
+  Future<void> toggleIsFeatured(String hadithText) async {
     final index = _allHadith.indexWhere((h) => h.hadith == hadithText);
     if (index == -1) return;
 
-    _allHadith[index].isFeautred = !_allHadith[index].isFeautred;
-
-    await db.writeTxn(() async {
-      await db.hadiths.put(_allHadith[index]);
+    state = await AsyncValue.guard(() async {
+      _allHadith[index].isFeautred = !_allHadith[index].isFeautred;
+      await _db.writeTxn(() => _db.hadiths.put(_allHadith[index]));
+      return _applyFiltersLocally();
     });
-
-    _applyFilters();
   }
 
-  /// Returns true when **no** filters are currently active.
-  ///
-  /// The previous implementation of this method returned true whenever *any*
-  /// filter was set which made the name misleading and caused the UI logic in
-  /// `FilterContainer` to behave incorrectly.  The flip in meaning is part of
-  /// the reason the old filter text would re‑appear after clearing all filters
-  /// then choosing a new one.
-  bool get isFilterEmpty {
-    return _filters.book == null &&
-        _filters.topic == null &&
-        _filters.narrator == null &&
-        _filters.grade == null &&
-        !_filters.featuredOnly;
-  }
+  // ---------------- FILTER LOGIC (منطق التصفية) ----------------
 
-  // helpers used by the widgets so they can synchronise their local state with
-  // the values stored in the provider.
-  String? get currentBook => _filters.book;
-  String? get currentNarrator => _filters.narrator;
-  String? get currentTopic => _filters.topic;
-  HadithGrade? get currentGrade => _filters.grade;
-
-  /// Converts the current grade to the corresponding Arabic label used by the
-  /// UI.  `null` is returned when no grade filter is active.
-  String? get currentGradeText {
-    switch (_filters.grade) {
-      case HadithGrade.sahih:
-        return "صحيح";
-      case HadithGrade.hasan:
-        return "حسن";
-      case HadithGrade.daif:
-        return "ضعيف";
-      default:
-        return null;
-    }
-  }
-
-  // ---------------- FILTER CORE ----------------
-  void _applyFilters() {
+  List<Hadith> _applyFiltersLocally() {
     Iterable<Hadith> result = _allHadith;
 
     if (_filters.book != null) {
       result = result.where((h) => h.book == _filters.book);
     }
-
     if (_filters.narrator != null) {
       result = result.where((h) => h.hadithNarrator == _filters.narrator);
     }
-
     if (_filters.topic != null) {
       result = result.where((h) => h.topic == _filters.topic);
     }
-
     if (_filters.grade != null) {
       result = result.where((h) => h.grade == _filters.grade);
     }
-
     if (_filters.featuredOnly) {
       result = result.where((h) => h.isFeautred);
     }
 
-    state = result.toList();
+    return result.toList();
   }
 
-  // ---------------- FILTER SETTERS ----------------
-  void setBook(String? value) {
-    _filters.book = value;
-    _applyFilters();
+  /// تحديث حالة الـ Provider لإخطار الواجهات بالتغيير
+  void _updateStateWithFilters() {
+    state = AsyncData(_applyFiltersLocally());
   }
 
-  void setNarrator(String? value) {
-    _filters.narrator = value;
-    _applyFilters();
+  // ---------------- GETTERS (الحصول على القيم الحالية) ----------------
+
+  bool get isFilterEmpty => 
+    _filters.book == null && 
+    _filters.topic == null && 
+    _filters.narrator == null && 
+    _filters.grade == null && 
+    !_filters.featuredOnly;
+
+  String? get currentBook => _filters.book;
+  String? get currentNarrator => _filters.narrator;
+  String? get currentTopic => _filters.topic;
+  
+  /// تحويل الدرجة البرمجية إلى نص عربي للواجهة
+  String? get currentGradeText {
+    if (_filters.grade == null) return null;
+    switch (_filters.grade!) {
+      case HadithGrade.sahih: return "صحيح";
+      case HadithGrade.hasan: return "حسن";
+      case HadithGrade.daif: return "ضعيف";
+    }
   }
 
-  void setTopic(String? value) {
-    _filters.topic = value;
-    _applyFilters();
+  // ---------------- SETTERS (تعديل قيم الفلاتر) ----------------
+
+  void setBook(String? value) { 
+    _filters.book = value; 
+    _updateStateWithFilters(); 
   }
 
+  void setNarrator(String? value) { 
+    _filters.narrator = value; 
+    _updateStateWithFilters(); 
+  }
+
+  void setTopic(String? value) { 
+    _filters.topic = value; 
+    _updateStateWithFilters(); 
+  }
+  
   void setGradeFromText(String? value) {
     switch (value) {
-      case "صحيح":
-        _filters.grade = HadithGrade.sahih;
+      case "صحيح": 
+        _filters.grade = HadithGrade.sahih; 
         break;
-      case "حسن":
-        _filters.grade = HadithGrade.hasan;
+      case "حسن": 
+        _filters.grade = HadithGrade.hasan; 
         break;
-      case "ضعيف":
-        _filters.grade = HadithGrade.daif;
+      case "ضعيف": 
+        _filters.grade = HadithGrade.daif; 
         break;
-      default:
+      default: 
         _filters.grade = null;
     }
-    _applyFilters();
+    _updateStateWithFilters();
   }
 
   void setFeatured(bool value) {
     _filters.featuredOnly = value;
-    _applyFilters();
+    _updateStateWithFilters();
   }
 
   void clearFilters() {
@@ -180,24 +172,12 @@ class HadithProvider extends StateNotifier<List<Hadith>> {
       ..topic = null
       ..grade = null
       ..featuredOnly = false;
-
-    // make sure the state changes even if `_allHadith` has the same identity as
-    // the previous state; rebuilding the list forces widgets that are watching
-    // the provider to run again which is important for the filter containers.
-    state = List<Hadith>.from(_allHadith);
+    _updateStateWithFilters();
   }
 }
 
-// ---------------- PROVIDER ----------------
-final hadithProvider = StateNotifierProvider<HadithProvider, List<Hadith>>((
-  ref,
-) {
-  final db = IsarDb.database;
-  if (db == null) {
-    throw Exception("Isar not initialized");
-  }
+// ---------------- PROVIDER DEFINITION ----------------
 
-  final notifier = HadithProvider(db);
-  notifier.loadHadith();
-  return notifier;
+final hadithProvider = AsyncNotifierProvider<HadithNotifier, List<Hadith>>(() {
+  return HadithNotifier();
 });

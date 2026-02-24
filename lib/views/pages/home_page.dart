@@ -56,19 +56,19 @@ class _HomePageState extends ConsumerState<HomePage>
     }
 
     return Scaffold(
-      body: lastReadingPostion != null
-          ? SingleChildScrollView(
+      body: 
+           SingleChildScrollView(
               child: BodyContent(
                 colorScheme: colorScheme,
                 themeMode: themeMode,
                 lastReadingPostion: lastReadingPostion,
               ),
             )
-          : BodyContent(
-              colorScheme: colorScheme,
-              themeMode: themeMode,
-              lastReadingPostion: lastReadingPostion,
-            ),
+          // : BodyContent(
+          //     colorScheme: colorScheme,
+          //     themeMode: themeMode,
+          //     lastReadingPostion: lastReadingPostion,
+          //   ),
     );
   }
 }
@@ -119,13 +119,11 @@ class BodyContent extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
-                        child: Divider(
-                          color: colorScheme.primary,
-                          thickness: 2,
-                        ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
+                      child: Divider(
+                        color: colorScheme.primary,
+                        thickness: 2,
                       ),
                     ),
                   ],
@@ -227,13 +225,11 @@ class BodyContent extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 5.w),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                          child: Divider(
-                            thickness: 2,
-                            color: colorScheme.primary,
-                          ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0.w),
+                        child: Divider(
+                          thickness: 2,
+                          color: colorScheme.primary,
                         ),
                       ),
                     ],
@@ -317,12 +313,10 @@ class BodyContent extends StatelessWidget {
         SizedBox(height: 8.h),
 
         lastReadingPostion == null
-            ? Expanded(
-                child: TodayDuaa(
-                  colorScheme: colorScheme,
-                  themeMode: themeMode,
-                ),
-              )
+            ? TodayDuaa(
+              colorScheme: colorScheme,
+              themeMode: themeMode,
+            )
             : TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
       ],
     );
@@ -383,7 +377,7 @@ class TodayDuaa extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: 8.r, right: 8.r),
               child: Text(
-                "كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ",
+                "كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ",
                 style: TextStyle(
                   fontSize: 19.5.sp,
                   fontFamily: "Tajawal",

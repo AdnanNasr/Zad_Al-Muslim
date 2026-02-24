@@ -10,6 +10,7 @@ class FilterContainer extends ConsumerStatefulWidget {
   final Color? color;
   final List<dynamic> options;
   final void Function()? onTap;
+
   const FilterContainer({
     super.key,
     required this.title,
@@ -25,184 +26,146 @@ class FilterContainer extends ConsumerStatefulWidget {
 
 class _FilterContainerState extends ConsumerState<FilterContainer> {
   final GlobalKey _key = GlobalKey();
-  String _title = "";
-
-  // The old implementation registered a listener in `initState`.  Riverpod
-  // now asserts that `ref.listen` may only be invoked during a build of a
-  // `ConsumerWidget`.  To keep the container's local `_title` in sync with the
-  // provider we instead compute the current value on each build and schedule a
-  // post-frame callback if an update is needed.
-
-  final fontFamiily = "Cairo";
+  final String fontFamily = "Cairo";
 
   @override
   Widget build(BuildContext context) {
     final Color primary = Theme.of(context).colorScheme.primary;
 
-    // compute the value that should currently be displayed according to the
-    // provider state.  if it differs from `_title` we push a post-frame
-    // callback to update it after this build completes.
+    // 1. نراقب الـ Notifier للحصول على القيم الحالية للفلاتر
     final notifier = ref.watch(hadithProvider.notifier);
-    String? current;
+    
+    // 2. تحديد النص المعروض بناءً على نوع الفلتر من الـ Notifier مباشرة
+    String? activeFilterValue;
     switch (widget.title) {
       case "الكتاب":
-        current = notifier.currentBook;
+        activeFilterValue = notifier.currentBook;
         break;
       case "الرواي":
-        current = notifier.currentNarrator;
+        activeFilterValue = notifier.currentNarrator;
         break;
       case "الموضوع":
-        current = notifier.currentTopic;
+        activeFilterValue = notifier.currentTopic;
         break;
       case "الدرجة":
-        current = notifier.currentGradeText;
+        activeFilterValue = notifier.currentGradeText;
         break;
     }
 
-    if ((current ?? "") != _title) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        setState(() {
-          _title = current ?? "";
-        });
-      });
-    }
+    // النص الذي سيظهر: إما قيمة الفلتر النشط أو عنوان الحاوية الأصلي
+    final String displayTitle = (activeFilterValue != null && activeFilterValue.isNotEmpty) 
+        ? activeFilterValue 
+        : widget.title;
 
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: InkWell(
-        key: _key,
-        onTap: () async {
-          final RenderBox renderBox =
-              _key.currentContext!.findRenderObject() as RenderBox;
-          final position = renderBox.localToGlobal(Offset.zero);
-          final size = renderBox.size;
+    final bool isFiltered = activeFilterValue != null && activeFilterValue.isNotEmpty;
 
-          String? selected = await showMenu<String>(
-            context: context,
-            elevation: 4,
-            color: Theme.of(context).cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
+    return InkWell(
+      key: _key,
+      onTap: () async {
+        final RenderBox renderBox = _key.currentContext!.findRenderObject() as RenderBox;
+        final position = renderBox.localToGlobal(Offset.zero);
+        final size = renderBox.size;
+
+        String? selected = await showMenu<String>(
+          context: context,
+          elevation: 4,
+          color: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+          position: RelativeRect.fromLTRB(
+            position.dx,
+            position.dy + size.height,
+            position.dx + size.width,
+            position.dy,
+          ),
+          items: widget.options.map((option) => PopupMenuItem<String>(
+            value: option.toString(),
+            child: Text(
+              option.toString(),
+              style: TextStyle(
+                fontSize: context.witdthScreen * 0.035,
+                color: widget.color ?? primary,
+                fontFamily: fontFamily,
+              ),
             ),
-            position: RelativeRect.fromLTRB(
-              position.dx,
-              position.dy + size.height,
-              position.dx + size.width,
-              position.dy,
-            ),
+          )).toList(),
+        );
 
-            items: widget.options
-                .map(
-                  (option) => PopupMenuItem<String>(
-                    value: option,
-                    child: Row(
-                      children: [
-                        Text(
-                          option,
-                          style: TextStyle(
-                            fontSize: context.witdthScreen * 0.035,
-                            color: widget.color ?? primary,
-                          ),
-                        ),
-                      ],
+        if (selected != null) {
+          _updateFilter(selected);
+        }
+      },
+      borderRadius: BorderRadius.circular(16.r),
+      child: IntrinsicWidth(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+          decoration: BoxDecoration(
+            // تغيير لون الخلفية إذا كان الفلتر نشطاً لتمييزه
+            color: isFiltered 
+                ? (widget.color ?? primary).withValues(alpha: .3)
+                : (widget.color ?? primary).withValues(alpha: .1),
+            borderRadius: BorderRadius.circular(16.r),
+            border: isFiltered 
+                ? Border.all(color: widget.color ?? primary, width: 1)
+                : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isFiltered)
+                GestureDetector(
+                  onTap: () => _updateFilter(null),
+                  child: Container(
+                    margin: EdgeInsetsDirectional.only(end: 10.w),
+                    padding: EdgeInsets.all(4.r),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (widget.color ?? primary).withValues(alpha: .2),
                     ),
-                  ),
-                )
-                .toList(),
-          );
-
-          if (selected != null) {
-            setState(() {
-              _title = selected;
-            });
-            switch (widget.title) {
-              case "الكتاب":
-                ref.read(hadithProvider.notifier).setBook(_title);
-                break;
-              case "الرواي":
-                ref.read(hadithProvider.notifier).setNarrator(_title);
-                break;
-              case "الموضوع":
-                ref.read(hadithProvider.notifier).setTopic(_title);
-                break;
-              case "الدرجة":
-                ref.read(hadithProvider.notifier).setGradeFromText(_title);
-                break;
-            }
-          }
-        },
-        borderRadius: BorderRadius.circular(16.r),
-        child: IntrinsicWidth(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-            decoration: BoxDecoration(
-              color: widget.color != null
-                  ? widget.color!.withValues(alpha: .2)
-                  : primary.withValues(alpha: .2),
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_title.isNotEmpty)
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _title = "";
-                      });
-                      switch (widget.title) {
-                        case "الكتاب":
-                          ref.read(hadithProvider.notifier).setBook(null);
-                          break;
-                        case "الرواي":
-                          ref.read(hadithProvider.notifier).setNarrator(null);
-                          break;
-                        case "الموضوع":
-                          ref.read(hadithProvider.notifier).setTopic(null);
-                          break;
-                        case "الدرجة":
-                          ref
-                              .read(hadithProvider.notifier)
-                              .setGradeFromText(null);
-                          break;
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(2.r),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        color: widget.color ?? primary,
-                        size: context.witdthScreen * 0.05,
-                      ),
+                    child: Icon(
+                      Icons.close,
+                      color: widget.color ?? primary,
+                      size: context.witdthScreen * 0.045,
                     ),
-                  ),
-                if (_title.isNotEmpty) SizedBox(width: 4.w),
-                Text(
-                  _title.isNotEmpty ? _title : widget.title,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: context.witdthScreen * 0.04,
-                    color: widget.color ?? primary,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: fontFamiily,
                   ),
                 ),
-                SizedBox(width: 8.w),
-                Icon(widget.iconData, color: widget.color ?? primary),
-              ],
-            ),
+              Text(
+                displayTitle,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: context.witdthScreen * 0.038,
+                  color: widget.color ?? primary,
+                  fontWeight: isFiltered ? FontWeight.bold : FontWeight.w600,
+                  fontFamily: fontFamily,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Icon(widget.iconData, 
+                   color: widget.color ?? primary, 
+                   size: context.witdthScreen * 0.05),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  // دالة موحدة لتحديث الفلتر بناءً على العنوان
+  void _updateFilter(String? value) {
+    final notifier = ref.read(hadithProvider.notifier);
+    switch (widget.title) {
+      case "الكتاب":
+        notifier.setBook(value);
+        break;
+      case "الرواي":
+        notifier.setNarrator(value);
+        break;
+      case "الموضوع":
+        notifier.setTopic(value);
+        break;
+      case "الدرجة":
+        notifier.setGradeFromText(value);
+        break;
+    }
   }
 }

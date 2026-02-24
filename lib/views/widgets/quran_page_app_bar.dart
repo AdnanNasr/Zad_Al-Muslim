@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:isar/isar.dart';
+import 'package:noor_quran/extensions/color_ext.dart';
 import 'package:noor_quran/extensions/sizes_ext.dart';
 import 'package:noor_quran/l10n/app_localizations.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
@@ -15,6 +16,7 @@ import 'package:noor_quran/views/pages/quran_more_menu.dart';
 import 'package:noor_quran/views/pages/quran_pages.dart';
 import 'package:noor_quran/views/pages/search_page.dart';
 import 'package:noor_quran/views/pages/settings_page.dart';
+import 'package:noor_quran/views/widgets/custom_app_bar.dart';
 import 'package:noor_quran/views/widgets/marks_dialog.dart';
 import 'package:noor_quran/views/widgets/quran_overlay_managar.dart';
 
@@ -129,13 +131,97 @@ class _QuranPagesState extends ConsumerState<QuranPageAppBar>
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (pages.isEmpty) {
-      return const Center(
-        child: Text(
-          "هناك خطأ في قاعدة البيانات، يرجى إعادة فتح التطبيق مرة اخرى.",
+   if (pages.isEmpty) {
+  return Scaffold(
+    appBar: CustomAppBar(
+      title: "",
+      center: false,
+      profile: false,
+    ),
+    body: Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 40.w),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            context.color.primary,
+            context.color.primary.withValues(alpha: .7),
+          ],
         ),
-      );
-    }
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // أيقونة توضح وجود مشكلة في البيانات أو المحتوى
+          Container(
+            padding: EdgeInsets.all(20.r),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.storage_rounded,
+              size: 70.r,
+              color: Colors.white.withValues(alpha: .8),
+            ),
+          ),
+          SizedBox(height: 30.h),
+          
+          // نص التنبيه الرئيسي
+          Text(
+            "تنبيه بخصوص البيانات",
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontFamily: "Cairo",
+            ),
+          ),
+          SizedBox(height: 15.h),
+          
+          // نص الشرح
+          Text(
+            "لم نتمكن من العثور على الصفحات المطلوبة. قد يكون هناك خلل مؤقت في قاعدة البيانات.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.white.withValues(alpha: .9),
+              fontFamily: "Cairo",
+              height: 1.5, // لزيادة المسافة بين الأسطر وجعله مريحاً للعين
+            ),
+          ),
+          SizedBox(height: 30.h),
+          
+          // إرشاد للمستخدم مع لمسة جمالية
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(30.r),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, color: Colors.white, size: 18.r),
+                SizedBox(width: 8.w),
+                Text(
+                  "يرجى إعادة فتح التطبيق مرة أخرى",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontFamily: "Cairo",
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
     final markExists = ref.watch(
       markExistsProvider(pages[currentPage].pageNumber),

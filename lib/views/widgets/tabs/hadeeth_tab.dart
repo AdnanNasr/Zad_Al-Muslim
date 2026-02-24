@@ -17,13 +17,17 @@ class HadithTab extends ConsumerStatefulWidget {
 class _HadithTabState extends ConsumerState<HadithTab> {
   @override
   Widget build(BuildContext context) {
-    final hadiths = ref.watch(hadithProvider);
+    // 1. مراقبة الـ AsyncValue
+    final hadithState = ref.watch(hadithProvider);
+    // 2. الوصول للـ Notifier للتحقق من الفلاتر (نستخدم watch للمتابعة المستمرة)
+    final notifier = ref.watch(hadithProvider.notifier);
+
     return Padding(
       padding: EdgeInsets.all(8.0.r),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-
         children: [
+          // قسم الفلاتر (يبقى ثابتاً في الأعلى)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -68,88 +72,95 @@ class _HadithTabState extends ConsumerState<HadithTab> {
               ],
             ),
           ),
+          
           SizedBox(height: 10.h),
-          // Show the "clear all" button only when there is at least one active
-          // filter.  previously the logic was inverted because
-          // `isFilterEmpty` returned true when filters existed.
-          if (!ref.read(hadithProvider.notifier).isFilterEmpty)
+
+          // إظهار زر الحذف فقط عند وجود فلاتر نشطة
+          if (!notifier.isFilterEmpty)
             ClearAllFilters(ref: ref),
+
           const SizedBox(height: 8),
           Divider(color: Theme.of(context).dividerColor, thickness: 2),
           const SizedBox(height: 8),
+
+          // 3. معالجة القائمة بناءً على حالة الـ AsyncValue
           Expanded(
-            child: ListView.builder(
-              itemCount: hadiths.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 4,
-                  ),
-                  color: Theme.of(context).cardColor,
-                  child: InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isDismissible: true,
-                        enableDrag: true,
-                        showDragHandle: true,
-                        useSafeArea: true,
-                        isScrollControlled: true,
-                        builder: (context) {
-                          return HadithModalBottom(hadith: hadiths[index]);
+            child: hadithState.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text("خطأ في تحميل الأحاديث: $err")),
+              data: (hadiths) {
+                if (hadiths.isEmpty) {
+                  return const Center(child: Text("لا يوجد أحاديث في الوقت الحالي"));
+                }
+                
+                return ListView.builder(
+                  itemCount: hadiths.length,
+                  itemBuilder: (context, index) {
+                    final hadith = hadiths[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                      color: Theme.of(context).cardColor,
+                      child: InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isDismissible: true,
+                            enableDrag: true,
+                            showDragHandle: true,
+                            useSafeArea: true,
+                            isScrollControlled: true,
+                            builder: (context) => HadithModalBottom(hadith: hadith),
+                          );
                         },
-                      );
-                    },
-                    child: ListTile(
-                      title: Text(
-                        hadiths[index].hadith,
-                        style: TextStyle(
-                          fontSize: context.witdthScreen * 0.04,
-                          fontFamily: "Cairo",
-                          fontWeight: FontWeight.w400,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        maxLines: 2,
-                      ),
-                      subtitle: Row(
-                        children: [
-                          Text(
-                            "الرواي:",
+                        child: ListTile(
+                          title: Text(
+                            hadith.hadith,
                             style: TextStyle(
-                              fontSize: context.witdthScreen * 0.038,
+                              fontSize: context.witdthScreen * 0.04,
                               fontFamily: "Cairo",
+                              fontWeight: FontWeight.w400,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 2,
+                          ),
+                          subtitle: Row(
+                            children: [
+                              Text(
+                                "الرواي:",
+                                style: TextStyle(
+                                  fontSize: context.witdthScreen * 0.038,
+                                  fontFamily: "Cairo",
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                hadith.hadithNarrator,
+                                style: TextStyle(
+                                  fontSize: context.witdthScreen * 0.038,
+                                  fontFamily: "Cairo",
+                                ),
+                              ),
+                            ],
+                          ),
+                          leading: Text(
+                            "${index + 1}",
+                            style: TextStyle(fontSize: context.witdthScreen * 0.04),
+                          ),
+                          trailing: IconButton(
+                            onPressed: () async {
+                              await ref
+                                  .read(hadithProvider.notifier)
+                                  .toggleIsFeatured(hadith.hadith);
+                            },
+                            icon: Icon(
+                              hadith.isFeautred ? Icons.star : Icons.star_border,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            hadiths[index].hadithNarrator,
-                            style: TextStyle(
-                              fontSize: context.witdthScreen * 0.038,
-                              fontFamily: "Cairo",
-                            ),
-                          ),
-                        ],
-                      ),
-                      leading: Text(
-                        "${index + 1}",
-                        style: TextStyle(fontSize: context.witdthScreen * 0.04),
-                      ),
-                      trailing: IconButton(
-                        onPressed: () async {
-                          await ref
-                              .read(hadithProvider.notifier)
-                              .toggleIsFeautred(hadiths[index].hadith);
-                        },
-                        icon: Icon(
-                          hadiths[index].isFeautred
-                              ? Icons.star
-                              : Icons.star_border,
-                          color: Theme.of(context).primaryColor,
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             ),
@@ -181,15 +192,18 @@ class ClearAllFilters extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.r),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-                SizedBox(width: 10.w),
+                Icon(Icons.filter_alt_off_outlined, 
+                     size: 18.sp,
+                     color: Theme.of(context).colorScheme.error),
+                SizedBox(width: 8.w),
                 Text(
                   "حذف كل الفلاتر",
                   style: TextStyle(
-                    fontSize: 17.sp,
+                    fontSize: 15.sp,
                     fontFamily: "Cairo",
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary,

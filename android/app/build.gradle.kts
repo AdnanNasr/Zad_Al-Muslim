@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -12,12 +11,14 @@ android {
 
     packagingOptions {
         jniLibs {
-            // هذا السطر يضمن أن المكتبات يتم رصفها بشكل صحيح للـ 16KB
             useLegacyPackaging = false
         }
     }
 
     compileOptions {
+        // --- أضف هذا السطر هنا ---
+        isCoreLibraryDesugaringEnabled = true 
+        
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -27,27 +28,21 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.nooralbayan.noor_bayan"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = flutter.minSdkVersion // يفضل جعل الحد الأدنى 21 لدعم الإشعارات والـ Desugaring بشكل أفضل
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
         externalNativeBuild {
-      // For ndk-build, instead use the ndkBuild block.
-      cmake {
-        // Passes optional arguments to CMake.
-        arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
-      }
-    }
+            cmake {
+                arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+            }
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -55,4 +50,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// --- أضف هذا القسم في نهاية الملف تماماً ---
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

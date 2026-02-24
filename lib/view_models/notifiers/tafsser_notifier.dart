@@ -49,8 +49,6 @@ class TafsserNoifier extends StateNotifier<AsyncValue<AyahTafsser>> {
   }
 }
 
-  // }
-
   // get holy tafsser
 
   // get tafsser by name

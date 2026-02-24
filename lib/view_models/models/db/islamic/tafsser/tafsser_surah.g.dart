@@ -1251,18 +1251,23 @@ const EditionModelSchema = Schema(
       name: r'englishName',
       type: IsarType.string,
     ),
-    r'identifier': PropertySchema(
+    r'hashCode': PropertySchema(
       id: 1,
+      name: r'hashCode',
+      type: IsarType.long,
+    ),
+    r'identifier': PropertySchema(
+      id: 2,
       name: r'identifier',
       type: IsarType.string,
     ),
     r'language': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'language',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'name',
       type: IsarType.string,
     )
@@ -1313,9 +1318,10 @@ void _editionModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.englishName);
-  writer.writeString(offsets[1], object.identifier);
-  writer.writeString(offsets[2], object.language);
-  writer.writeString(offsets[3], object.name);
+  writer.writeLong(offsets[1], object.hashCode);
+  writer.writeString(offsets[2], object.identifier);
+  writer.writeString(offsets[3], object.language);
+  writer.writeString(offsets[4], object.name);
 }
 
 EditionModel _editionModelDeserialize(
@@ -1326,9 +1332,9 @@ EditionModel _editionModelDeserialize(
 ) {
   final object = EditionModel();
   object.englishName = reader.readStringOrNull(offsets[0]);
-  object.identifier = reader.readStringOrNull(offsets[1]);
-  object.language = reader.readStringOrNull(offsets[2]);
-  object.name = reader.readStringOrNull(offsets[3]);
+  object.identifier = reader.readStringOrNull(offsets[2]);
+  object.language = reader.readStringOrNull(offsets[3]);
+  object.name = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -1342,10 +1348,12 @@ P _editionModelDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1504,6 +1512,62 @@ extension EditionModelQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'englishName',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<EditionModel, EditionModel, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<EditionModel, EditionModel, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<EditionModel, EditionModel, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<EditionModel, EditionModel, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hashCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
