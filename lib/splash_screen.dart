@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:noor_quran/view_models/notifiers/pray_times_notifier.dart';
 import 'package:noor_quran/view_models/providers/pray_times_provider.dart';
 import 'package:noor_quran/view_models/repositories/insert_hadith.dart';
@@ -9,6 +10,7 @@ import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
 import 'package:noor_quran/utils/location_locator.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
+import 'package:noor_quran/view_models/utils/app_logger.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
@@ -65,18 +67,32 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         _progress = 0.85;
       });
 
-      final position = await LocationLocator.determinePosition();
+      final position = await LocationLocator.determinePosition(
+        ref,
+      );
 
-      // حفظ الموقع في الموفر حتى يتمكن باقي التطبيق من الوصول له لاحقاً
-      // (مثلاً داخل PrayTimesContainer عند القراءة من اليوم).
-      ref.read(userPositionProvider.notifier).state = position;
+      if (position != null) {
+        AppLogger.logger.i(
+          "تم جلب موقع المستخدم بنجاح\nخطوط العرض: ${position.latitude}\nخطوط الطول: ${position.longitude}",
+        );
+      } else {
+        AppLogger.logger.e(
+          "خطأ في جلب موقع المستخدم\nخطوط العرض: ${position?.latitude}\nخطوط الطول: ${position?.longitude}",
+        );
+      }
 
-      await ref
-          .read(prayTimesNotifierProvider.notifier)
-          .fetchAndSaveMonthlyTimes(
-            latitude: position.latitude,
-            longitude: position.longitude,
-          );
+      if (position != null) {
+        // حفظ الموقع في الموفر حتى يتمكن باقي التطبيق من الوصول له لاحقاً
+        // (مثلاً داخل PrayTimesContainer عند القراءة من اليوم).
+        ref.read(userPositionProvider.notifier).state = position;
+
+        await ref
+            .read(prayTimesNotifierProvider.notifier)
+            .fetchAndSaveMonthlyTimes(
+              latitude: position.latitude,
+              longitude: position.longitude,
+            );
+      }
 
       setState(() {
         _progress = 1.0;
@@ -99,7 +115,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
+    return Scaffold(
       body: SizedBox(
         width: double.infinity,
         child: _error != null ? _buildErrorState() : _buildLoadingState(),
@@ -140,9 +156,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
           ),
         ),
-        
+
         SizedBox(height: 60.h),
-        
+
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 50.w),
           child: Column(
@@ -153,13 +169,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 child: LinearProgressIndicator(
                   value: _progress,
                   minHeight: 10.h,
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).primaryColor.withOpacity(0.1),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
-              
+
               SizedBox(height: 24.h),
-              
+
               // نص التحميل المتحرك
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
@@ -175,9 +195,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   ),
                 ),
               ),
-              
+
               SizedBox(height: 10.h),
-              
+
               Text(
                 "${(_progress * 100).toInt()}%",
                 style: TextStyle(
@@ -200,26 +220,41 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline_rounded, size: 80.r, color: Colors.redAccent),
+            Icon(
+              Icons.error_outline_rounded,
+              size: 80.r,
+              color: Colors.redAccent,
+            ),
             SizedBox(height: 20.h),
             Text(
               "حدث خطأ أثناء التهيئة",
-              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold, fontFamily: "Cairo"),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Cairo",
+              ),
             ),
             SizedBox(height: 10.h),
             Text(
               "تأكد من الإنترنت والـ GPS: $_error",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey, fontFamily: "Cairo"),
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey,
+                fontFamily: "Cairo",
+              ),
             ),
             SizedBox(height: 30.h),
             ElevatedButton(
               onPressed: () {
-                setState(() { _error = null; _progress = 0; });
+                setState(() {
+                  _error = null;
+                  _progress = 0;
+                });
                 _initializeApp();
               },
               child: const Text("إعادة المحاولة"),
-            )
+            ),
           ],
         ),
       ),

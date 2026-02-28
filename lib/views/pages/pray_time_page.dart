@@ -1,21 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:adhan/adhan.dart'; // تأكد من استيراد مكتبة adhan
+import 'package:adhan/adhan.dart';
 import 'package:noor_quran/extensions/color_ext.dart';
 import 'package:noor_quran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:noor_quran/view_models/providers/hadith_provider.dart';
+import 'package:noor_quran/utils/location_locator.dart';
+import 'package:noor_quran/view_models/notifiers/pray_times_notifier.dart';
+import 'package:noor_quran/view_models/providers/location_status_provider.dart';
 
 import '../../view_models/providers/pray_times_provider.dart';
 import '../../view_models/models/prayer_times/prayer_times_model.dart';
 
-class PrayTimePage extends ConsumerWidget {
-  // الصفحة الآن تعتمد على Riverpod provider لتحميل مواقيت اليوم
+class PrayTimePage extends ConsumerStatefulWidget {
   const PrayTimePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PrayTimePage> createState() => _PrayTimePageState();
+}
+
+class _PrayTimePageState extends ConsumerState<PrayTimePage> {
+  // key to reload page
+  int key = 0;
+
+  // func to updat page
+  void Function()? fullReload() {
+    setState(() {
+      key++;
+    });
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     const topContentColor = Colors.white;
 
     // تعريف أيقونات الصلوات
@@ -28,7 +45,32 @@ class PrayTimePage extends ConsumerWidget {
       "العشاء": Icons.bedtime,
     };
 
+    // location status message
+    final locationStatusMessage = ref.watch(locationStatusProvider);
+
+    // مراقبة تغييرات حالة الموقع وإعادة تحميل تلقائية
+    ref.listen(locationStatusProvider, (previous, next) {
+      // تحقق من التغيير من حالة غير مفعلة إلى مفعلة
+      final wasAllowed = previous?.keys.firstOrNull == LocationMessage.locationAllowed;
+      final isNowAllowed = next.keys.firstOrNull == LocationMessage.locationAllowed;
+
+      if (!wasAllowed && isNowAllowed) {
+        // تم قبول الأذونات الآن بعد العودة من الإعدادات
+        // أولاً نحاول قراءة الموقع وتخزينه كي يأتي مزود الأوقات بقيمة غير null
+        Future.microtask(() async {
+          final pos = await LocationLocator.determinePosition(ref);
+          if (pos != null) {
+            ref.read(userPositionProvider.notifier).state = pos;
+          }
+          // أعد تحميل البيانات تلقائياً
+          ref.invalidate(todayPrayerTimesProvider);
+          fullReload();
+        });
+      }
+    });
+
     return Scaffold(
+      key: ValueKey(key),
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -50,11 +92,12 @@ class PrayTimePage extends ConsumerWidget {
                     return _buildErrorState(
                       error: "تعذر الحصول على مواقيت الصلاة",
                       context: context,
-                      ref: ref
+                      ref: ref,
+                      status: locationStatusMessage,
+                      fullReload: () => fullReload(),
                     );
                   }
 
-                  // نقوم ببناء قائمة عادية من الموديل
                   final prayerList = [
                     {"name": "الفجر", "time": model.fajr},
                     {"name": "الشروق", "time": model.sunrise},
@@ -135,11 +178,44 @@ class PrayTimePage extends ConsumerWidget {
                     ],
                   );
                 },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
+                loading: () {
+                  // إذا تم منح الإذن لكن البيانات لم يتم تحميلها بعد
+                  if (locationStatusMessage.isNotEmpty &&
+                      locationStatusMessage.keys.first ==
+                          LocationMessage.locationAllowed) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "تم قبول الصلاحيات، جاري تجهيز مواقيت الصلاة...",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 20.h),
+                          const CircularProgressIndicator(color: Colors.white),
+                        ],
+                      ),
+                    );
+                  }
+
+                  // الحالة الافتراضية أثناء التحميل
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  );
+                },
+
+                error: (err, _) => _buildErrorState(
+                  error: err.toString(),
+                  context: context,
+                  ref: ref,
+                  status: locationStatusMessage,
+                  fullReload: () => fullReload(),
                 ),
-                error: (err, _) =>
-                    _buildErrorState(error: err.toString(), context: context, ref: ref),
               ),
         ),
       ),
@@ -171,7 +247,9 @@ class PrayTimePage extends ConsumerWidget {
   Widget _buildErrorState({
     required String error,
     required BuildContext context,
-    required WidgetRef ref
+    required WidgetRef ref,
+    required Map<LocationMessage, String> status,
+    required void Function()? fullReload,
   }) {
     return Column(
       children: [
@@ -203,7 +281,7 @@ class PrayTimePage extends ConsumerWidget {
 
                     // عنوان الخطأ
                     Text(
-                      "عذراً، حدث خطأ ما",
+                      "عذراً، حدث خطأ",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 22.sp,
@@ -224,7 +302,7 @@ class PrayTimePage extends ConsumerWidget {
                       child: Column(
                         children: [
                           Text(
-                            "يرجى تفعيل الـ GPS والاتصال بالإنترنت لمرة واحدة على الأقل لتحميل البيانات.",
+                            status.values.first,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16.sp,
@@ -247,28 +325,122 @@ class PrayTimePage extends ConsumerWidget {
                     ),
                     SizedBox(height: 30.h),
 
-                    // زر إعادة المحاولة يعطي للمستخدم حلاً بدلاً من طريق مسدود
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // هنا يمكنك استدعاء دالة إعادة التحميل
-                        ref.invalidate(hadithProvider);
-                      },
-                      icon: const Icon(Icons.refresh_rounded),
-                      iconAlignment: IconAlignment.end,
-                      label: const Text("إعادة المحاولة"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.color.primary,
-                        foregroundColor: Colors.white,
-                        iconColor: context.color.onPrimary,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 24.w,
-                          vertical: 12.h,
+                    if (status.keys.first == LocationMessage.locationNotAllowed)
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          // الحصول على الموقع مجدداً
+                          final pos = await LocationLocator.determinePosition(
+                            ref,
+                          );
+
+                          // إذا نجحنا في استرجاع موقع، خزّنه حتى يعود الموفر إلى حالة صحيحة
+                          if (pos != null) {
+                            ref.read(userPositionProvider.notifier).state = pos;
+                          }
+
+                          // أعد تحميل مواقيت الصلاة
+                          ref.invalidate(todayPrayerTimesProvider);
+
+                          // وأعد بناء الصفحة ليلغى حالة الخطأ
+                          if (ref.read(locationStatusProvider).keys.first ==
+                              LocationMessage.locationAllowed) {
+                            fullReload?.call();
+                          }
+                        },
+                        icon: const Icon(Icons.refresh_rounded),
+                        iconAlignment: IconAlignment.end,
+                        label: const Text("إعادة المحاولة"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.color.primary,
+                          foregroundColor: Colors.white,
+                          iconColor: context.color.onPrimary,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 12.h,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                      )
+                    else if (status.keys.first ==
+                        LocationMessage.locationNotAllowedEver)
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          // حاول إعادة طلب الإذن وقراءة الحالة مرة أخرى
+                          final pos = await LocationLocator.determinePosition(ref);
+
+                          final updatedStatus =
+                              ref.read(locationStatusProvider).keys.first;
+
+                          if (updatedStatus == LocationMessage.locationAllowed) {
+                            // تم قبول الأذونات
+                            if (pos != null) {
+                              ref.read(userPositionProvider.notifier).state = pos;
+                            }
+                            ref.invalidate(todayPrayerTimesProvider);
+                            fullReload?.call();
+                          } else {
+                            // لا تزال الأذونات مرفوضة
+                            if (!context.mounted) return;
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: context.color.errorContainer,
+                                  title: Text(
+                                    "لم يتم منح صلاحيات الموقع",
+                                    style: TextStyle(
+                                      fontFamily: "Cairo",
+                                      color: context.color.error,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  content: Text(
+                                    "يرجى منح صلاحيات الموقع من اجل حساب مواقيت الصلاة",
+                                    style: TextStyle(
+                                      fontSize: 16.5.sp,
+                                      color: context.color.onErrorContainer,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        "إغلاق",
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          color: context.color.error,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.refresh_rounded),
+                        iconAlignment: IconAlignment.end,
+                        label: const Text("إعادة تحميل الصفحة"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.color.primary,
+                          foregroundColor: Colors.white,
+                          iconColor: context.color.onPrimary,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 12.h,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),

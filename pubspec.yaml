@@ -38,6 +38,8 @@ dependencies:
   flutter_local_notifications: ^20.1.0
   timezone: ^0.10.1
   connectivity_plus: ^7.0.0
+  flutter_native_splash: ^2.4.7
+  qcf_quran: ^0.0.5
 
 dev_dependencies:
   flutter_test:
@@ -111,3 +113,12 @@ flutter:
 flutter_launcher_icons:
   android: true
   image_path: "assets/icons/moon.png"
+
+flutter_native_splash:
+  color: "#42a5f5"
+  image: assets/images/splash_screen.png
+  fullscreen: true
+
+  android_12:
+    color: "#42a5f5"
+    image: assets/images/splash_screen.png

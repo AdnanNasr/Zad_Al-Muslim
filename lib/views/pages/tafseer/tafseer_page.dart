@@ -194,7 +194,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
     }
 
     final String url =
-        "http://10.0.2.2:8000/tafsser_file/${tafseerList[index].id}";
+        "http://10.0.2.2:8000/tafsser/tafsser_file/${tafseerList[index].id}";
     final String tafseerId = tafseerList[index].id;
 
     // فحص سريع من قاعدة البيانات قبل بدء التحميل

@@ -1,29 +1,56 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:noor_quran/view_models/providers/location_status_provider.dart';
+import 'package:noor_quran/view_models/utils/app_logger.dart';
 
 class LocationLocator {
-  static Future<Position> determinePosition() async {
+  static Future<Position?> determinePosition(WidgetRef ref) async {
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return Future.error("يحب تفعيل الـ GPS في من إعدادات الجوال");
+      final message = "يحب تفعيل الـ GPS في من إعدادات الجوال";
+      ref.read(locationStatusProvider.notifier).setStatus({
+        LocationMessage.locationDisabeld: message,
+      });
+      AppLogger.logger.e(message);
+      return null;
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error("تم رفض طلب إذن الموقع");
+        final message = "تم رفض طلب إذن الموقع";
+        ref.read(locationStatusProvider.notifier).setStatus({
+          LocationMessage.locationNotAllowed: message,
+        });
+        AppLogger.logger.e(message);
+        return null;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'الأذونات مرفوضة بشكل دائم، يرجى تفعيلها من الإعدادات',
-      );
+      final message =
+          'الأذونات مرفوضة بشكل دائم، يرجى تفعيلها بشكل يدوي من الإعدادات';
+      ref.read(locationStatusProvider.notifier).setStatus({
+        LocationMessage.locationNotAllowedEver: message,
+      });
+      AppLogger.logger.e(message);
+      return null;
     }
 
+    ref.read(locationStatusProvider.notifier).setStatus({
+      LocationMessage.locationAllowed: "الأذونات مفعلة",
+    });
     return await Geolocator.getCurrentPosition();
   }
+}
+
+enum LocationMessage {
+  locationAllowed,
+  locationDisabeld,
+  locationNotAllowed,
+  locationNotAllowedEver,
 }
