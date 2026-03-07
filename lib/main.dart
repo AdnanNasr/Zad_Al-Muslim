@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/l10n/app_localizations.dart';
@@ -22,7 +21,8 @@ import 'package:noor_quran/views/pages/qebla_page.dart';
 import 'package:noor_quran/views/pages/settings_page.dart';
 import 'package:noor_quran/views/pages/tafseer/tafseer_page.dart';
 import 'package:noor_quran/views/widgets/custom_navigation_bar.dart';
-import 'package:noor_quran/views/widgets/quran_page_app_bar.dart';
+import 'package:noor_quran/views/widgets/quran_page_app_bar.dart' ;
+import "package:flutter_dotenv/flutter_dotenv.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +30,8 @@ void main() async {
   // إعدادات البنية التحتية
   await IsarDb.initDatabase(); 
   await NotificationService.init();
+
+  await dotenv.load(fileName: ".env");
 
   final container = ProviderContainer();
 

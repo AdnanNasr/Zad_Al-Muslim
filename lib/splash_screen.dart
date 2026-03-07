@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:noor_quran/utils/network_info.dart';
 import 'package:noor_quran/view_models/notifiers/pray_times_notifier.dart';
 import 'package:noor_quran/view_models/providers/pray_times_provider.dart';
 import 'package:noor_quran/view_models/repositories/insert_hadith.dart';
@@ -11,6 +11,7 @@ import 'package:noor_quran/utils/location_locator.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
@@ -67,31 +68,51 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         _progress = 0.85;
       });
 
-      final position = await LocationLocator.determinePosition(
-        ref,
-      );
+      // الحصول على موقع المستخدم
+      final internetConnection = await NetworkInfo.hasValidConnection();
+      // اذا كان هناك اتصال بالانترنت
+      if (internetConnection) {
+        final position = await LocationLocator.determinePosition(ref);
 
-      if (position != null) {
-        AppLogger.logger.i(
-          "تم جلب موقع المستخدم بنجاح\nخطوط العرض: ${position.latitude}\nخطوط الطول: ${position.longitude}",
-        );
-      } else {
-        AppLogger.logger.e(
-          "خطأ في جلب موقع المستخدم\nخطوط العرض: ${position?.latitude}\nخطوط الطول: ${position?.longitude}",
-        );
+        // if (position != null) {
+        //   AppLogger.logger.i(
+        //     "تم جلب موقع المستخدم بنجاح\nخطوط العرض: ${position.latitude}\nخطوط الطول: ${position.longitude}",
+        //   );
+        // } else {
+        //   AppLogger.logger.e(
+        //     "خطأ في جلب موقع المستخدم\nخطوط العرض: ${position?.latitude}\nخطوط الطول: ${position?.longitude}",
+        //   );
+        // }
+
+        if (position != null) {
+          // حفظ الموقع في الموفر حتى يتمكن باقي التطبيق من الوصول له لاحقاً
+          // (مثلاً داخل PrayTimesContainer عند القراءة من اليوم).
+          ref.read(userPositionProvider.notifier).state = position;
+
+          await ref
+              .read(prayTimesNotifierProvider.notifier)
+              .fetchAndSaveMonthlyTimes(
+                latitude: position.latitude,
+                longitude: position.longitude,
+              );
+        }
       }
 
-      if (position != null) {
-        // حفظ الموقع في الموفر حتى يتمكن باقي التطبيق من الوصول له لاحقاً
-        // (مثلاً داخل PrayTimesContainer عند القراءة من اليوم).
-        ref.read(userPositionProvider.notifier).state = position;
+      // اذا كان هناك اتصال بالانترنت
+      if (!internetConnection) {
+        final prefs = await SharedPreferences.getInstance();
 
-        await ref
-            .read(prayTimesNotifierProvider.notifier)
-            .fetchAndSaveMonthlyTimes(
-              latitude: position.latitude,
-              longitude: position.longitude,
-            );
+        final lat = prefs.getDouble("lat");
+        final long = prefs.getDouble("long");
+
+        if (lat != null && long != null) {
+          await ref
+              .read(prayTimesNotifierProvider.notifier)
+              .fetchAndSaveMonthlyTimes(latitude: lat, longitude: long);
+        }
+        AppLogger.logger.e(
+          "ليس هناك اتصال حالي بالانترنت\nلم يتم طلب الحصول على بيانات الموقع الخاصة بالمستخدم",
+        );
       }
 
       setState(() {
@@ -140,7 +161,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -171,7 +192,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   minHeight: 10.h,
                   backgroundColor: Theme.of(
                     context,
-                  ).primaryColor.withOpacity(0.1),
+                  ).primaryColor.withValues(alpha: 0.1),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     Theme.of(context).primaryColor,
                   ),

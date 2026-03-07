@@ -4,7 +4,18 @@ enum AppLocale { ar, en, de }
 // Hadith Grade
 enum HadithGrade { sahih, hasan, daif }
 
-// hadith book names
+// Netork info
+enum NetworkInfoState { connected, loading, notConnected }
+
+// Location States 
+enum LocationMessage {
+  locationAllowed,
+  locationDisabled,
+  locationNotAllowed,
+  locationNotAllowedEver,
+}
+
+// Hadith book names
 enum SahihBukhariBook {
   revelation(1, "الوحي"),
   belief(2, "الإيمان"),

@@ -84,21 +84,20 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
     double lng,
   ) async {
     try {
-     final noInternet = await NetworkInfo.hasInvalidConnection();
-    List<Placemark> placemarks = [];
+      final internetConnected = await NetworkInfo.hasValidConnection();
+      List<Placemark> placemarks = [];
 
-    // 2. المحاولة فقط في حال وجود إنترنت
-    if (!noInternet) {
-      // تصحيح: يجب إسناد النتيجة للمتغير
-      placemarks = await placemarkFromCoordinates(lat, lng)
-          .timeout(const Duration(seconds: 5));
-    }
+      // 2. المحاولة فقط في حال وجود إنترنت
+      if (internetConnected) {
+        // تصحيح: يجب إسناد النتيجة للمتغير
+        placemarks = await placemarkFromCoordinates(lat, lng);
+      }
 
-    // 3. التحقق من أن القائمة ليست فارغة قبل محاولة الوصول لـ .first
-    String countryCode = '';
-    if (placemarks.isNotEmpty) {
-      countryCode = placemarks.first.isoCountryCode?.toUpperCase() ?? '';
-    }
+      // 3. التحقق من أن القائمة ليست فارغة قبل محاولة الوصول لـ .first
+      String countryCode = '';
+      if (placemarks.isNotEmpty) {
+        countryCode = placemarks.first.isoCountryCode?.toUpperCase() ?? '';
+      }
 
       switch (countryCode) {
         // --- طريقة أم القرى ---

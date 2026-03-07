@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/extensions/color_ext.dart';
 import 'package:noor_quran/extensions/theme_ext.dart';
+import 'package:noor_quran/utils/dotenv_util.dart';
 import 'package:noor_quran/utils/network_info.dart';
 import 'package:noor_quran/utils/tafsser/tafseer_utils.dart';
 import 'package:noor_quran/view_models/providers/avalible_tafsser_books.dart';
+import 'package:noor_quran/view_models/utils/app_logger.dart';
 import 'package:noor_quran/views/widgets/custom_app_bar.dart';
 import 'package:noor_quran/views/widgets/tafseer_dialog.dart';
 import 'package:noor_quran/views/widgets/tafsser_buttons.dart';
@@ -180,9 +182,9 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
   }
 
   Future<void> _handleDownloadItem(int index) async {
-    final bool noInternet = await NetworkInfo.hasInvalidConnection();
+    final bool internetConnected = await NetworkInfo.hasValidConnection();
 
-    if (noInternet) {
+    if (!internetConnected) {
       _showErrorMessage("لا يوجد إتصال بالإنترنت");
       return;
     }
@@ -193,8 +195,10 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       return;
     }
 
+    final tafsserEndpoint = DotenvUtil.getEnvironmentVariables(key: "TAFSSER_ENPOINT", onNullValue: "exception");
+
     final String url =
-        "http://10.0.2.2:8000/tafsser/tafsser_file/${tafseerList[index].id}";
+        "$tafsserEndpoint/${tafseerList[index].id}";
     final String tafseerId = tafseerList[index].id;
 
     // فحص سريع من قاعدة البيانات قبل بدء التحميل

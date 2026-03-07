@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:isar/isar.dart';
 import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
@@ -53,6 +52,9 @@ class TafseerUtils {
         // هذا النوع من الأخطاء نادراً ما يحدث في طلب get نفسه، بل عند تحليل البيانات
         onError("تنسيق الرابط غير صحيح: ${e.message}");
         return; // توقف عن التنفيذ
+      } catch (e) {
+        AppLogger.logger.e("$e");
+        return;
       }
 
       // 2. الآن يمكنك استخدام response هنا بأمان
@@ -71,8 +73,9 @@ class TafseerUtils {
     } on DioException catch (e) {
       // معالجة أخطاء الشبكة الخاصة بـ Dio
       String errorMessage = "خطأ في الاتصال";
-      if (e.type == DioExceptionType.connectionTimeout)
+      if (e.type == DioExceptionType.connectionTimeout) {
         errorMessage = "انتهت مهلة الاتصال";
+      }
       onError("$errorMessage: ${e.message}");
     } on FormatException catch (e) {
       // معالجة أخطاء تحويل البيانات (JSON)

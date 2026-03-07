@@ -26,8 +26,6 @@ dependencies:
   shared_preferences: ^2.5.3
   logger: ^2.6.2
   # device_preview: ^1.3.1
-  # image_picker: ^1.2.0
-  # http: ^1.6.0
   flutter_screenutil: ^5.9.3
   flutter_launcher_icons: ^0.14.4
   dio: ^5.9.1
@@ -39,7 +37,8 @@ dependencies:
   timezone: ^0.10.1
   connectivity_plus: ^7.0.0
   flutter_native_splash: ^2.4.7
-  qcf_quran: ^0.0.5
+  flutter_dotenv: ^6.0.0
+  # qcf_quran: ^0.0.5
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +58,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/svgs/
+    - .env
 
   fonts: # custom app fonts
     - family: Amiri
@@ -115,10 +115,10 @@ flutter_launcher_icons:
   image_path: "assets/icons/moon.png"
 
 flutter_native_splash:
-  color: "#42a5f5"
-  image: assets/images/splash_screen.png
+  color: "#FFFFFF"
+  image: assets/images/icon_splash.png
   fullscreen: true
 
   android_12:
-    color: "#42a5f5"
-    image: assets/images/splash_screen.png
+    color: "#FFFFFF"
+    image: assets/images/icon_splash.png
