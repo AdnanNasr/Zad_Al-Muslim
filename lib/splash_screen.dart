@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/utils/network_info.dart';
-import 'package:noor_quran/view_models/notifiers/pray_times_notifier.dart';
-import 'package:noor_quran/view_models/providers/pray_times_provider.dart';
-import 'package:noor_quran/view_models/repositories/insert_hadith.dart';
-import 'package:noor_quran/view_models/repositories/insert_quran_pages.dart';
-import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
-import 'package:noor_quran/core/utils/location_locator.dart';
-import 'package:noor_quran/view_models/models/db/isar_db.dart';
-import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
-import 'package:noor_quran/view_models/utils/app_logger.dart';
+import 'package:noor_quran/core/common/providers/user_position_provider.dart';
+import 'package:noor_quran/core/utils/network/network_info.dart';
+import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_notifier.dart';
+import 'package:noor_quran/features/hadith/data/repositories/insert_hadith.dart';
+import 'package:noor_quran/features/quran/data/repositories/insert_quran_pages.dart';
+import 'package:noor_quran/features/tafsser/data/repositories/insert_tafsser.dart';
+import 'package:noor_quran/core/utils/location/location_locator.dart';
+import 'package:noor_quran/core/database/isar_db.dart';
+import 'package:noor_quran/features/hadith/data/models/hadith.dart';
+import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {

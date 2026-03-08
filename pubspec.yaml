@@ -37,7 +37,6 @@ dependencies:
   timezone: ^0.10.1
   connectivity_plus: ^7.0.0
   flutter_native_splash: ^2.4.7
-  flutter_dotenv: ^6.0.0
   # qcf_quran: ^0.0.5
 
 dev_dependencies:
@@ -58,7 +57,6 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/svgs/
-    - .env
 
   fonts: # custom app fonts
     - family: Amiri

@@ -5,33 +5,30 @@ import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/splash_screen.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
 import 'package:noor_quran/core/utils/notifications/notification_service.dart';
-import 'package:noor_quran/view_models/logic/onboarding_storage.dart';
-import 'package:noor_quran/view_models/models/db/isar_db.dart';
-import 'package:noor_quran/view_models/providers/language_provider.dart';
-import 'package:noor_quran/view_models/providers/quran_providers/mark.dart';
-import 'package:noor_quran/view_models/providers/theme_provider.dart';
-import 'package:noor_quran/views/pages/adkar_page.dart';
-import 'package:noor_quran/views/pages/app_info.dart';
-import 'package:noor_quran/views/pages/change_app_color_page.dart';
-import 'package:noor_quran/views/pages/hadith_page.dart';
-import 'package:noor_quran/views/pages/home_page.dart';
-import 'package:noor_quran/views/pages/onboarding/onboarding_page.dart';
-import 'package:noor_quran/views/pages/pray_time_page.dart';
-import 'package:noor_quran/views/pages/qebla_page.dart';
-import 'package:noor_quran/views/pages/settings_page.dart';
-import 'package:noor_quran/views/pages/tafseer/tafseer_page.dart';
-import 'package:noor_quran/views/widgets/custom_navigation_bar.dart';
-import 'package:noor_quran/views/widgets/quran_page_app_bar.dart' ;
-import "package:flutter_dotenv/flutter_dotenv.dart";
+import 'package:noor_quran/core/common/pages/onboarding/onboarding_init.dart';
+import 'package:noor_quran/core/database/isar_db.dart';
+import 'package:noor_quran/core/common/providers/language_provider.dart';
+import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
+import 'package:noor_quran/core/common/providers/theme_provider.dart';
+import 'package:noor_quran/features/adkar/presentation/pages/adkar_page.dart';
+import 'package:noor_quran/features/settings/presentation/pages/app_info.dart';
+import 'package:noor_quran/features/settings/presentation/pages/change_app_color_page.dart';
+import 'package:noor_quran/features/hadith/presentation/pages/hadith_page.dart';
+import 'package:noor_quran/core/common/pages/home/home_page.dart';
+import 'package:noor_quran/core/common/pages/onboarding/onboarding_page.dart';
+import 'package:noor_quran/features/pray_time/presentation/pages/pray_time_page.dart';
+import 'package:noor_quran/features/qebla/presentation/pages/qebla_page.dart';
+import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
+import 'package:noor_quran/features/tafsser/presentation/pages/tafseer_page.dart';
+import 'package:noor_quran/core/common/widgets/custom_navigation_bar.dart';
+import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // إعدادات البنية التحتية
-  await IsarDb.initDatabase(); 
-  await NotificationService.init();
 
-  await dotenv.load(fileName: ".env");
+  // إعدادات البنية التحتية
+  await IsarDb.initDatabase();
+  await NotificationService.init();
 
   final container = ProviderContainer();
 
@@ -39,11 +36,11 @@ void main() async {
   await container.read(themeProvider.notifier).loadTheme();
   await container.read(userThemeProvider.notifier).loadScheme();
   await container.read(languageProvider.notifier).loadlang();
-  
+
   // تحميل العلامات المحفوظة
   await container.read(marksProvder.notifier).loadMarks();
 
-  final hasSeen = await OnboardingStorage.hasSeen();
+  final hasSeen = await OnboardingInit.hasSeen();
 
   runApp(
     UncontrolledProviderScope(
@@ -76,12 +73,13 @@ class MyApp extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeMode,
-      
+
       // البداية دائماً من السبلش
-      initialRoute: "/splash_screen", 
-      
+      initialRoute: "/splash_screen",
+
       routes: {
-        "/splash_screen": (_) => SplashScreen(hasSeenOnboarding: hasSeenOnboarding),
+        "/splash_screen": (_) =>
+            SplashScreen(hasSeenOnboarding: hasSeenOnboarding),
         "/home_page": (_) => const HomePage(),
         "/quran_pages": (_) => const QuranPageAppBar(),
         "/settings_page": (_) => const SettingsPage(),
