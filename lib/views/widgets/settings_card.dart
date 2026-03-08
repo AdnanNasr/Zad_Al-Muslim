@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:noor_quran/extensions/sizes_ext.dart";
+import "package:noor_quran/core/extensions/sizes_ext.dart";
 import "package:noor_quran/view_models/providers/theme_provider.dart";
 
 class SettingCards extends ConsumerWidget {

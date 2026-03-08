@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/utils/network_info.dart';
+import 'package:noor_quran/core/utils/network_info.dart';
 import 'package:noor_quran/view_models/notifiers/pray_times_notifier.dart';
 import 'package:noor_quran/view_models/providers/pray_times_provider.dart';
 import 'package:noor_quran/view_models/repositories/insert_hadith.dart';
 import 'package:noor_quran/view_models/repositories/insert_quran_pages.dart';
 import 'package:noor_quran/view_models/repositories/insert_tafsser.dart';
-import 'package:noor_quran/utils/location_locator.dart';
+import 'package:noor_quran/core/utils/location_locator.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';

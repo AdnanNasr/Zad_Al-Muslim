@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/extensions/color_ext.dart';
-import 'package:noor_quran/extensions/theme_ext.dart';
-import 'package:noor_quran/utils/dotenv_util.dart';
-import 'package:noor_quran/utils/network_info.dart';
-import 'package:noor_quran/utils/tafsser/tafseer_utils.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/core/extensions/theme_ext.dart';
+import 'package:noor_quran/core/utils/dotenv_util.dart';
+import 'package:noor_quran/core/utils/network_info.dart';
+import 'package:noor_quran/core/utils/tafsser/tafseer_utils.dart';
 import 'package:noor_quran/view_models/providers/avalible_tafsser_books.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';
 import 'package:noor_quran/views/widgets/custom_app_bar.dart';

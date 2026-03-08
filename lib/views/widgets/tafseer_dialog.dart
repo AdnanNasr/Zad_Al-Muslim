@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/views/widgets/tafsser_buttons.dart';
 
 class TafseerDialog extends StatelessWidget {

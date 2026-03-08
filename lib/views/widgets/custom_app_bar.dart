@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/views/pages/settings_page.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {

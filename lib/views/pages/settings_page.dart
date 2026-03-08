@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
-import 'package:noor_quran/l10n/app_localizations.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
+import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/view_models/providers/theme_provider.dart';
 import 'package:noor_quran/views/pages/change_app_color_page.dart';
 import 'package:noor_quran/views/widgets/custom_app_bar.dart';

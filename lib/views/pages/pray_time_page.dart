@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adhan/adhan.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
-import 'package:noor_quran/extensions/color_ext.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:intl/intl.dart';
-import 'package:noor_quran/utils/location_locator.dart';
+import 'package:noor_quran/core/utils/location_locator.dart';
 import 'package:noor_quran/view_models/providers/location_status_provider.dart';
 import 'package:noor_quran/view_models/providers/network_info_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -151,6 +151,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                             context: context,
                             status: locationStatusMessage,
                             networkState: networkState,
+                            prayerTimes: model
                           );
                         }
 
@@ -327,6 +328,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required BuildContext context,
     required Map<LocationMessage, String> status,
     required NetworkInfoState networkState,
+    PrayerTimesModel? prayerTimes
   }) {
     // 1. حالة تحميل التحقق من الشبكة
     if (networkState == NetworkInfoState.loading) {
@@ -336,7 +338,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     }
 
     // 2. حالة عدم وجود اتصال بالإنترنت
-    if (networkState == NetworkInfoState.notConnected) {
+    if (networkState == NetworkInfoState.notConnected && prayerTimes != null) {
       return _buildNoInternetWidget();
     }
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/l10n/app_localizations.dart';
-import 'package:noor_quran/utils/reverse_arabic_numbers.dart';
+import 'package:noor_quran/core/l10n/app_localizations.dart';
+import 'package:noor_quran/core/utils/reverse_arabic_numbers.dart';
 import 'animated_quran_overlay.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/views/widgets/quran_selecet_menu.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/view_models/providers/location_status_provider.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';
 

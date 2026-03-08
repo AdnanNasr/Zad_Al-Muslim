@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
-import 'package:noor_quran/l10n/app_localizations.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
+import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/view_models/providers/language_provider.dart';
 
 class LanguageDialog extends ConsumerStatefulWidget {

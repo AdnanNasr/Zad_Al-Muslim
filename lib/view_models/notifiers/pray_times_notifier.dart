@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:noor_quran/utils/network_info.dart';
-import 'package:noor_quran/utils/pray_times/schedule_prayer_time_notification.dart';
+import 'package:noor_quran/core/utils/network_info.dart';
+import 'package:noor_quran/core/utils/pray_times/schedule_prayer_time_notification.dart';
 import 'package:noor_quran/view_models/models/prayer_times/prayer_times_model.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

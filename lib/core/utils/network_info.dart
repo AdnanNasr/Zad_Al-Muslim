@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:noor_quran/utils/dotenv_util.dart';
+import 'package:noor_quran/core/utils/dotenv_util.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';
 
 class NetworkInfo {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/extensions/color_ext.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/view_models/models/db/islamic/quran_models.dart';
 import 'package:noor_quran/view_models/models/db/islamic/tafsser/ayah.dart';
 import 'package:noor_quran/view_models/providers/avalible_tafsser_books.dart';

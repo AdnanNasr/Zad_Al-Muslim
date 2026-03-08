@@ -1,7 +1,7 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/themes/theme_notifier.dart';
+import 'package:noor_quran/core/themes/theme_notifier.dart';
 import 'package:noor_quran/view_models/providers/theme_provider.dart';
 
 extension SettingsExt on BuildContext {

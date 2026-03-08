@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/l10n/app_localizations.dart';
+import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/splash_screen.dart';
-import 'package:noor_quran/themes/theme_notifier.dart';
-import 'package:noor_quran/utils/notifications/notification_service.dart';
+import 'package:noor_quran/core/themes/theme_notifier.dart';
+import 'package:noor_quran/core/utils/notifications/notification_service.dart';
 import 'package:noor_quran/view_models/logic/onboarding_storage.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/providers/language_provider.dart';

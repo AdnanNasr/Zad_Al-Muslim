@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 

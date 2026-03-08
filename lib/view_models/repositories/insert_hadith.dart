@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:isar/isar.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/view_models/models/db/islamic/hadith.dart';
 import 'package:noor_quran/view_models/models/db/isar_db.dart';
 import 'package:noor_quran/view_models/utils/app_logger.dart';

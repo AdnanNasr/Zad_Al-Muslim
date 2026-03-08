@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
-import 'package:noor_quran/constants/surahs.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/constants/surahs.dart';
 import 'package:noor_quran/view_models/providers/language_provider.dart';
 
 class SurahNamesProvider extends StateNotifier<List<SurahItem>> {

@@ -1,4 +1,4 @@
-import 'package:noor_quran/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LocationStatusProvider

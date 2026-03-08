@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/extensions/sizes_ext.dart';
-import 'package:noor_quran/l10n/app_localizations.dart';
-import 'package:noor_quran/utils/arabic_numbers.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
+import 'package:noor_quran/core/l10n/app_localizations.dart';
+import 'package:noor_quran/core/utils/arabic_numbers.dart';
 import 'package:noor_quran/view_models/providers/quran_providers/surah_names_provider.dart';
 
 class QuranSelectMenu extends ConsumerStatefulWidget {

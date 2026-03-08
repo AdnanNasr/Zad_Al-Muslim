@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:noor_quran/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
 
 part 'hadith.g.dart';
 
