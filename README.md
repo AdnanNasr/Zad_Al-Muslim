@@ -1,4 +1,4 @@
-<div align="center"><h1>نور البيان - Noor Bayan<h1></div>
+# نور البيان - Noor Bayan
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Platform](https://img.shields.io/badge/Platform-Android%20|%20iOS-brightgreen)
 
-تطبيق قرآني متقدم | Advanced Quran Application
+تطبيق قرآني شامل | Comprehensive Islamic Application
 
 [نسخة عربية](#الوصف-العربي) • [English Version](#english-description)
 
@@ -19,18 +19,113 @@
 
 ### عن التطبيق
 
-**نور البيان** هو تطبيق قرآني شامل مطور بـ Flutter، يوفر تجربة قراءة القرآن الكريم بطريقة حديثة وسلسة. يجمع التطبيق بين التكنولوجيا المتقدمة والتصميم الراقي لتقديم أفضل تجربة للمستخدم.
+**نور البيان** هو تطبيق إسلامي شامل مطور بـ Flutter باستخدام معمارية نظيفة (Clean Architecture)، يوفر مجموعة متكاملة من الميزات الإسلامية في تطبيق واحد. يجمع التطبيق بين التكنولوجيا المتقدمة والتصميم الراقي لتقديم أفضل تجربة للمستخدم المسلم.
 
 ### ✨ المميزات الرئيسية
 
-- 📖 **عرض القرآن الكريم** - عرض كامل سور القرآن الكريم بصيغة عالية الجودة
-- 🔍 **خاصية البحث** - البحث في القرآن الكريم بسهولة
-- 🌙 **المظهر المظلم** - دعم كامل للمظهر المظلم والفاتح
-- 🎨 **تصميم احترافي** - واجهة مستخدم حديثة وسهلة الاستخدام
-- 🌐 **دعم لغات متعددة** - العربية والإنجليزية والألمانية وغيرها
-- 💾 **تخزين محلي** - حفظ التفضيلات والحفظيات
-- ⚡ **أداء عالي** - تطبيق سريع وخفيف الوزن
-- 📱 **متوافق مع جميع الأجهزة** - يعمل على Android و iOS
+#### 📖 القرآن الكريم
+
+- عرض كامل لسور القرآن الكريم بصيغة عالية الجودة
+- خاصية البحث المتقدم في الآيات والسور
+- حفظ العلامات والإشارات المرجعية
+- عرض التفسير للآيات
+
+#### 📚 الأحاديث النبوية
+
+- مجموعة شاملة من الأحاديث النبوية
+- البحث في الأحاديث بسهولة
+- تصنيف الأحاديث حسب الصحة والمصدر
+
+#### 🕌 مواقيت الصلاة
+
+- حساب دقيق لمواقيت الصلاة حسب الموقع الجغرافي
+- تذكير بالصلاة عبر الإشعارات
+- عرض الوقت المتبقي للصلاة التالية
+
+#### 🧭 القبلة
+
+- تحديد اتجاه القبلة بدقة باستخدام GPS
+- عرض بصري للاتجاه مع الخريطة
+
+#### 📿 الأذكار والأدعية
+
+- مجموعة شاملة من الأذكار اليومية
+- عداد الأذكار التفاعلي
+- أذكار خاصة بكل وقت من اليوم
+
+#### ⚙️ الإعدادات
+
+- دعم كامل للمظهر المظلم والفاتح
+- تخصيص ألوان التطبيق
+- دعم لغات متعددة (العربية، الإنجليزية، الألمانية)
+- إدارة الإشعارات والتذكيرات
+
+### 🏗️ المعمارية التقنية
+
+يستخدم التطبيق **معمارية نظيفة (Clean Architecture)** مع فصل واضح للمسؤوليات:
+
+```
+lib/
+├── core/                    # الطبقة الأساسية
+│   ├── common/             # المكونات المشتركة
+│   ├── constants/          # الثوابت والمتغيرات الثابتة
+│   ├── database/           # قاعدة البيانات (Isar)
+│   ├── di/                 # Dependency Injection
+│   ├── errors/             # إدارة الأخطاء
+│   ├── extensions/         # توسيعات مخصصة
+│   ├── l10n/               # التوطين والترجمة
+│   ├── themes/             # إدارة المظاهر
+│   └── utils/              # الأدوات المساعدة
+├── features/               # الميزات المستقلة
+│   ├── quran/              # قراءة القرآن
+│   ├── hadith/             # الأحاديث النبوية
+│   ├── pray_time/          # مواقيت الصلاة
+│   ├── qebla/              # تحديد القبلة
+│   ├── tafsser/            # التفسير
+│   ├── adkar/              # الأذكار
+│   └── settings/           # الإعدادات
+└── main.dart               # نقطة البداية
+```
+
+### 🛠️ التكنولوجيات المستخدمة
+
+#### إدارة الحالة
+
+- **Flutter Riverpod** - إدارة حالة قوية وفعالة
+
+#### قاعدة البيانات
+
+- **Isar** - قاعدة بيانات محلية سريعة وموثوقة
+
+#### الشبكة والطلبات
+
+- **Dio** - مكتبة HTTP قوية للطلبات
+- **Connectivity Plus** - مراقبة حالة الاتصال بالإنترنت
+
+#### الموقع والخرائط
+
+- **Geolocator** - تحديد الموقع الجغرافي
+- **Geocoding** - تحويل الإحداثيات إلى عناوين
+- **Adhan** - حساب مواقيت الصلاة بدقة
+
+#### التصميم والواجهة
+
+- **Flex Color Scheme** - نظام ألوان مخصص ومرن
+- **Flutter ScreenUtil** - استجابة حجم الشاشة
+- **Flutter SVG** - دعم ملفات SVG
+
+#### الإشعارات والخدمات
+
+- **Flutter Local Notifications** - إشعارات محلية
+- **Flutter Native Splash** - شاشة البداية الأصلية
+- **Shared Preferences** - تخزين البيانات البسيطة
+
+#### أدوات التطوير
+
+- **GetIt** - Dependency Injection
+- **Dartz** - Functional Programming
+- **Logger** - تسجيل الأحداث والأخطاء
+- **Build Runner** - توليد الكود
 
 ### 📋 المتطلبات
 
@@ -68,67 +163,16 @@ flutter run -d ios
 flutter run
 ```
 
-### 📁 هيكل المشروع
+### 📱 الميزات التقنية
 
-```
-noor_bayan/
-├── lib/
-│   ├── main.dart              # نقطة البداية
-│   ├── constants/             # الثوابت والمتغيرات الثابتة
-│   │   ├── reciters.dart      # بيانات القارئين
-│   │   ├── surahs.dart        # بيانات السور
-│   │   └── enums/             # تعريفات Enum
-│   ├── extensions/            # توسيعات مخصصة
-│   │   ├── color_ext.dart
-│   │   ├── sizes_ext.dart
-│   │   ├── string_ext.dart
-│   │   └── theme_ext.dart
-│   ├── l10n/                  # ملفات التوطين (i18n)
-│   │   └── app_*.arb          # ترجمات متعددة
-│   ├── themes/                # تصميم المظهر
-│   ├── utils/                 # دوال مساعدة
-│   ├── view_models/           # منطق التطبيق
-│   └── views/                 # الواجهات
-├── assets/
-│   ├── fonts/                 # الخطوط العربية المخصصة
-│   │   ├── Amiri/
-│   │   ├── Cairo/
-│   │   ├── Tajawal/
-│   ├── images/                # الصور
-│   ├── icons/                 # الأيقونات
-│   └── json/                  # ملفات JSON
-├── android/                   # مشروع Android
-├── ios/                       # مشروع iOS
-├── pubspec.yaml               # ملف التبعيات
-└── README.md                  # هذا الملف
-```
-
-### 🛠️ التكنولوجيات والمكتبات المستخدمة
-
-#### إدارة الحالة
-
-- **Flutter Riverpod** - إدارة حالة قوية وفعالة
-
-#### قاعدة البيانات
-
-- **Isar** - قاعدة بيانات محلية سريعة
-
-#### التصميم والمظهر
-
-- **Flex Color Scheme** - نظام ألوان مخصص
-- **Flutter ScreenUtil** - استجابة حجم الشاشة
-
-#### التوطين والترجمة
-
-- **Intl** - دعم لغات متعددة
-- **Flutter Localizations** - توطين محلي
-
-#### أدوات أخرى
-
-- **Dio** - للطلبات HTTP
-- **Shared Preferences** - تخزين محلي
-- **Flutter SVG** - دعم ملفات SVG
-- **Logger** - تسجيل الأخطاء والعمليات
+- **معمارية نظيفة**: فصل واضح بين الطبقات والمسؤوليات
+- **إدارة الحالة المتقدمة**: استخدام Riverpod لإدارة الحالة بكفاءة
+- **قاعدة بيانات محلية**: تخزين البيانات محلياً باستخدام Isar
+- **دعم كامل للغات**: العربية، الإنجليزية، والألمانية
+- **تصميم متجاوب**: يعمل على جميع أحجام الشاشات
+- **أداء عالي**: تحسينات للأداء والذاكرة
+- **إشعارات ذكية**: تذكيرات الصلاة والأذكار
+- **واجهة حديثة**: تصميم Material Design مع تخصيصات إسلامية
 
 ### 📝 كيفية المساهمة
 
@@ -144,12 +188,6 @@ noor_bayan/
 
 هذا المشروع مرخص تحت رخصة MIT - انظر ملف [LICENSE](LICENSE) للتفاصيل.
 
-### 📞 التواصل
-
-- **البريد الإلكتروني**: your.email@example.com
-- **تويتر**: [@yourhandle](https://twitter.com/yourhandle)
-- **الموقع**: [yourwebsite.com](https://yourwebsite.com)
-
 ### 🙏 شكر وتقدير
 
 شكر خاص لجميع المساهمين والمطورين الذين ساهموا في هذا المشروع.
@@ -160,18 +198,113 @@ noor_bayan/
 
 ### About the Application
 
-**Noor Bayan** is a comprehensive Quranic application developed with Flutter, providing a modern and seamless experience for reading the Holy Quran. The application combines advanced technology with elegant design to offer the best user experience.
+**Noor Bayan** is a comprehensive Islamic application developed with Flutter using Clean Architecture, providing an integrated set of Islamic features in one application. The application combines advanced technology with elegant design to offer the best experience for Muslim users.
 
 ### ✨ Key Features
 
-- 📖 **Quran Display** - Complete display of all Quran chapters in high-quality format
-- 🔍 **Search Functionality** - Search through the Quran easily
-- 🌙 **Dark Mode** - Full support for dark and light themes
-- 🎨 **Professional Design** - Modern and user-friendly interface
-- 🌐 **Multi-Language Support** - Arabic, English, German, and more
-- 💾 **Local Storage** - Save preferences and bookmarks
-- ⚡ **High Performance** - Fast and lightweight application
-- 📱 **Cross-Platform** - Works on Android and iOS
+#### 📖 Holy Quran
+
+- Complete display of all Quran chapters in high-quality format
+- Advanced search functionality in verses and chapters
+- Save bookmarks and references
+- Display interpretation of verses
+
+#### 📚 Hadith
+
+- Comprehensive collection of prophetic hadith
+- Easy search in hadith
+- Classification of hadith by authenticity and source
+
+#### 🕌 Prayer Times
+
+- Accurate calculation of prayer times based on geographical location
+- Prayer reminders via notifications
+- Display remaining time for next prayer
+
+#### 🧭 Qibla Direction
+
+- Accurate determination of Qibla direction using GPS
+- Visual display of direction with map
+
+#### 📿 Dhikr and Prayers
+
+- Comprehensive collection of daily dhikr
+- Interactive dhikr counter
+- Special dhikr for each time of day
+
+#### ⚙️ Settings
+
+- Full support for dark and light themes
+- Customize application colors
+- Multi-language support (Arabic, English, German)
+- Manage notifications and reminders
+
+### 🏗️ Technical Architecture
+
+The application uses **Clean Architecture** with clear separation of responsibilities:
+
+```
+lib/
+├── core/                    # Core layer
+│   ├── common/             # Shared components
+│   ├── constants/          # Constants and static variables
+│   ├── database/           # Database (Isar)
+│   ├── di/                 # Dependency Injection
+│   ├── errors/             # Error handling
+│   ├── extensions/         # Custom extensions
+│   ├── l10n/               # Localization and translation
+│   ├── themes/             # Theme management
+│   └── utils/              # Helper utilities
+├── features/               # Independent features
+│   ├── quran/              # Quran reading
+│   ├── hadith/             # Prophetic hadith
+│   ├── pray_time/          # Prayer times
+│   ├── qebla/              # Qibla direction
+│   ├── tafsser/            # Interpretation
+│   ├── adkar/              # Dhikr
+│   └── settings/           # Settings
+└── main.dart               # Entry point
+```
+
+### 🛠️ Technologies Used
+
+#### State Management
+
+- **Flutter Riverpod** - Powerful and efficient state management
+
+#### Database
+
+- **Isar** - Fast and reliable local database
+
+#### Network & Requests
+
+- **Dio** - Powerful HTTP library for requests
+- **Connectivity Plus** - Monitor internet connection status
+
+#### Location & Maps
+
+- **Geolocator** - Geographical location determination
+- **Geocoding** - Convert coordinates to addresses
+- **Adhan** - Accurate prayer time calculation
+
+#### Design & UI
+
+- **Flex Color Scheme** - Custom and flexible color system
+- **Flutter ScreenUtil** - Screen size responsiveness
+- **Flutter SVG** - SVG file support
+
+#### Notifications & Services
+
+- **Flutter Local Notifications** - Local notifications
+- **Flutter Native Splash** - Native splash screen
+- **Shared Preferences** - Simple data storage
+
+#### Development Tools
+
+- **GetIt** - Dependency Injection
+- **Dartz** - Functional Programming
+- **Logger** - Event and error logging
+- **Build Runner** - Code generation
 
 ### 📋 Requirements
 
@@ -197,6 +330,46 @@ flutter pub run build_runner build
 ```
 
 #### 3. Run the Application
+
+```bash
+# For Android
+flutter run -d android
+
+# For iOS
+flutter run -d ios
+
+# For all devices
+flutter run
+```
+
+### 📱 Technical Features
+
+- **Clean Architecture**: Clear separation between layers and responsibilities
+- **Advanced State Management**: Using Riverpod for efficient state management
+- **Local Database**: Store data locally using Isar
+- **Full Language Support**: Arabic, English, and German
+- **Responsive Design**: Works on all screen sizes
+- **High Performance**: Performance and memory optimizations
+- **Smart Notifications**: Prayer and dhikr reminders
+- **Modern Interface**: Material Design with Islamic customizations
+
+### 📝 How to Contribute
+
+We welcome your contributions! Follow these steps:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push your branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### 🙏 Acknowledgments
+
+Special thanks to all contributors and developers who contributed to this project.
 
 ```bash
 # For Android
