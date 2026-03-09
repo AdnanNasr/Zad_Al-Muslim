@@ -38,9 +38,9 @@ const HadithSchema = CollectionSchema(
       name: r'hadithNarrator',
       type: IsarType.string,
     ),
-    r'isFeautred': PropertySchema(
+    r'isFeatured': PropertySchema(
       id: 4,
-      name: r'isFeautred',
+      name: r'isFeatured',
       type: IsarType.bool,
     ),
     r'topic': PropertySchema(
@@ -86,7 +86,7 @@ void _hadithSerialize(
   writer.writeByte(offsets[1], object.grade.index);
   writer.writeString(offsets[2], object.hadith);
   writer.writeString(offsets[3], object.hadithNarrator);
-  writer.writeBool(offsets[4], object.isFeautred);
+  writer.writeBool(offsets[4], object.isFeatured);
   writer.writeString(offsets[5], object.topic);
 }
 
@@ -103,7 +103,7 @@ Hadith _hadithDeserialize(
   object.hadith = reader.readString(offsets[2]);
   object.hadithNarrator = reader.readString(offsets[3]);
   object.id = id;
-  object.isFeautred = reader.readBool(offsets[4]);
+  object.isFeatured = reader.readBool(offsets[4]);
   object.topic = reader.readString(offsets[5]);
   return object;
 }
@@ -727,11 +727,11 @@ extension HadithQueryFilter on QueryBuilder<Hadith, Hadith, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Hadith, Hadith, QAfterFilterCondition> isFeautredEqualTo(
+  QueryBuilder<Hadith, Hadith, QAfterFilterCondition> isFeaturedEqualTo(
       bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isFeautred',
+        property: r'isFeatured',
         value: value,
       ));
     });
@@ -921,15 +921,15 @@ extension HadithQuerySortBy on QueryBuilder<Hadith, Hadith, QSortBy> {
     });
   }
 
-  QueryBuilder<Hadith, Hadith, QAfterSortBy> sortByIsFeautred() {
+  QueryBuilder<Hadith, Hadith, QAfterSortBy> sortByIsFeatured() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isFeautred', Sort.asc);
+      return query.addSortBy(r'isFeatured', Sort.asc);
     });
   }
 
-  QueryBuilder<Hadith, Hadith, QAfterSortBy> sortByIsFeautredDesc() {
+  QueryBuilder<Hadith, Hadith, QAfterSortBy> sortByIsFeaturedDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isFeautred', Sort.desc);
+      return query.addSortBy(r'isFeatured', Sort.desc);
     });
   }
 
@@ -1007,15 +1007,15 @@ extension HadithQuerySortThenBy on QueryBuilder<Hadith, Hadith, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Hadith, Hadith, QAfterSortBy> thenByIsFeautred() {
+  QueryBuilder<Hadith, Hadith, QAfterSortBy> thenByIsFeatured() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isFeautred', Sort.asc);
+      return query.addSortBy(r'isFeatured', Sort.asc);
     });
   }
 
-  QueryBuilder<Hadith, Hadith, QAfterSortBy> thenByIsFeautredDesc() {
+  QueryBuilder<Hadith, Hadith, QAfterSortBy> thenByIsFeaturedDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isFeautred', Sort.desc);
+      return query.addSortBy(r'isFeatured', Sort.desc);
     });
   }
 
@@ -1061,9 +1061,9 @@ extension HadithQueryWhereDistinct on QueryBuilder<Hadith, Hadith, QDistinct> {
     });
   }
 
-  QueryBuilder<Hadith, Hadith, QDistinct> distinctByIsFeautred() {
+  QueryBuilder<Hadith, Hadith, QDistinct> distinctByIsFeatured() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'isFeautred');
+      return query.addDistinctBy(r'isFeatured');
     });
   }
 
@@ -1106,9 +1106,9 @@ extension HadithQueryProperty on QueryBuilder<Hadith, Hadith, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Hadith, bool, QQueryOperations> isFeautredProperty() {
+  QueryBuilder<Hadith, bool, QQueryOperations> isFeaturedProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isFeautred');
+      return query.addPropertyName(r'isFeatured');
     });
   }
 

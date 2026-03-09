@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:noor_quran/features/quran/data/models/quran_models.dart';
 import 'package:noor_quran/core/utils/arabic_numbers.dart';
-import 'package:noor_quran/features/tafsser/data/models/tafsser_surah.dart';
+import 'package:noor_quran/features/tafsser/domain/entities/tafsser_entities.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_provider.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
@@ -51,12 +51,11 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
     _recognizers.clear();
   }
 
-  // دالة إظهار القائمة المحسنة
   void _showHorizontalMenu(
     BuildContext context,
     Ayah ayah,
     Offset position,
-    EditionModel edition,
+    TafsserBookEntity? selectedBook,
   ) {
     final menuWidth = 250.0.w;
     final menuHeight = 70.0.h;
@@ -65,7 +64,6 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
     double left = position.dx - (menuWidth / 2);
     double top = position.dy - menuHeight - 20;
 
-    // قيود الشاشة
     if (left < 10) left = 10;
     if (left + menuWidth > screenSize.width - 10) {
       left = screenSize.width - menuWidth - 10;
@@ -77,7 +75,6 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
       barrierDismissible: true,
       barrierLabel: "Dismiss",
       barrierColor: Colors.transparent,
-
       pageBuilder: (ctx, anim1, anim2) => Stack(
         children: [
           Positioned(
@@ -115,22 +112,28 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                       }),
                       _divider(),
                       _menuAction(ctx, Icons.menu_book, "تفسير", () async {
-                        final tafsserAyah = await ref
-                            .read(tafsserProvider.notifier)
-                            .getTafsserByAyahNumber(
-                              edition: edition,
-                              surahNumber: ayah.surahNumber,
-                              ayahNumber: ayah.ayahNumber,
-                            );
+                        final effectiveBookId = selectedBook?.id ?? 'ar.jalalayn';
 
-                        if (context.mounted && tafsserAyah != null) {
+                        final tafsserAsync = await ref.read(ayahTafsserProvider((
+                          tafsserId: effectiveBookId,
+                          surahNumber: ayah.surahNumber,
+                          ayahNumber: ayah.ayahNumber,
+                        )).future);
+
+                        if (context.mounted && tafsserAsync != null) {
                           await showTafsserModalBottom(
                             context,
                             ref,
                             ayah,
-                            tafsserAyah,
+                            effectiveBookId,
+                            tafsserAsync,
                           );
                           if (!ctx.mounted) return;
+                          Navigator.of(ctx).pop();
+                        } else if (context.mounted) {
+                           ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("تعذر تحميل التفسير، تأكد من تحميل الكتاب أولاً"))
+                          );
                           Navigator.of(ctx).pop();
                         }
                       }),
@@ -149,7 +152,9 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
           ),
         ],
       ),
-    ).then((_) => setState(() => _selectedAyahId = null));
+    ).then((_) {
+      if (mounted) setState(() => _selectedAyahId = null);
+    });
   }
 
   Widget _menuAction(
@@ -186,7 +191,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
 
   @override
   Widget build(BuildContext context) {
-    final currentEdtion = ref.watch(tafsserBookProvider);
+    final selectedBook = ref.watch(selectedTafsserBookProvider);
     final themeMode = ref.watch(themeProvider);
     final bgColor = themeMode == ThemeMode.light
         ? const Color(0xFFF8F3E7)
@@ -203,7 +208,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                 child: _buildDynamicSurahContent(
                   context,
                   themeMode,
-                  currentEdtion.value!,
+                  selectedBook,
                 ),
               ),
               _buildPageNumber(),
@@ -217,7 +222,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
   Widget _buildDynamicSurahContent(
     BuildContext context,
     ThemeMode themeMode,
-    EditionModel edition,
+    TafsserBookEntity? selectedBook,
   ) {
     if (widget.ayahs.isEmpty) return const SizedBox.shrink();
     _disposeRecognizers();
@@ -229,30 +234,24 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
     }
 
     surahsInPage.forEach((surahName, ayahs) {
-      // (Header and Basmalah logic remains same)
       children.add(_buildSurahHeader(ayahs.first, themeMode));
-      // ... (basmalah logic)
 
       final List<TextSpan> ayahSpans = [];
       for (final ayah in ayahs) {
         final int uniqueId = (ayah.surahNumber * 1000) + ayah.ayahNumber;
 
-        // استخدام TapGestureRecognizer مع مهلة بسيطة أو LongPress
-        // التحسن هنا: نستخدم LongPress لضمان أن السحب العادي (Drag) لا يفعّل القائمة
-        final recognizer =
-            LongPressGestureRecognizer(
-                duration: const Duration(milliseconds: 400),
-              )
-              ..onLongPressStart = (details) {
-                HapticFeedback.lightImpact(); // اهتزاز بسيط لتحسين التجربة
-                setState(() => _selectedAyahId = uniqueId);
-                _showHorizontalMenu(
-                  context,
-                  ayah,
-                  details.globalPosition,
-                  edition,
-                );
-              };
+        final recognizer = LongPressGestureRecognizer(
+          duration: const Duration(milliseconds: 400),
+        )..onLongPressStart = (details) {
+            HapticFeedback.lightImpact();
+            setState(() => _selectedAyahId = uniqueId);
+            _showHorizontalMenu(
+              context,
+              ayah,
+              details.globalPosition,
+              selectedBook,
+            );
+          };
         _recognizers.add(recognizer);
 
         ayahSpans.add(
@@ -262,9 +261,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
               fontFamily: widget.fontFamily,
               fontSize: widget.fontSize,
               height: widget.height,
-              color: themeMode == ThemeMode.light
-                  ? Colors.black87
-                  : Colors.white,
+              color: themeMode == ThemeMode.light ? Colors.black87 : Colors.white,
               backgroundColor: _selectedAyahId == uniqueId
                   ? Theme.of(context).primaryColor.withValues(alpha: .2)
                   : null,
@@ -280,7 +277,6 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
           child: Text.rich(
             TextSpan(children: ayahSpans),
             textAlign: TextAlign.justify,
-            // منع تداخل النصوص مع حواف الشاشة
             softWrap: true,
           ),
         ),
@@ -289,14 +285,11 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
 
     return SingleChildScrollView(
       controller: _scrollController,
-      // هذا الجزء يحل مشكلة التقليب: يسمح للإيماءات بالتمرير للأعلى والأسفل
-      // دون حظر الإيماءات الأفقية من PageView الأب
       physics: const BouncingScrollPhysics(),
       child: Column(children: children),
     );
   }
 
-  // (Helper widgets like _buildSurahHeader, _buildPageNumber follow)
   Widget _buildPageNumber() {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
@@ -324,9 +317,7 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
             style: TextStyle(
               fontFamily: 'Quran',
               fontSize: 22.sp,
-              color: themeMode == ThemeMode.light
-                  ? Colors.black87
-                  : Colors.white,
+              color: themeMode == ThemeMode.light ? Colors.black87 : Colors.white,
             ),
           ),
         ],

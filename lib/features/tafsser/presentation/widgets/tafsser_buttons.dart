@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import '../../domain/entities/tafsser_entities.dart';
 
 class TafsserItem extends StatefulWidget {
-  final TafsserInfo info;
+  final TafsserBookEntity info;
   final void Function() onPressed;
   final VoidCallback? onTap;
   final bool isDownloaded;
@@ -34,11 +35,9 @@ class TafsserItemState extends State<TafsserItem> {
   @override
   void didUpdateWidget(TafsserItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // تحديث الحالة عند تغيير widget.isDownloaded من الأب
     if (oldWidget.isDownloaded != widget.isDownloaded) {
       setState(() {
         isDownloaded = widget.isDownloaded;
-        // إذا كان التفسير قد تم تحميله للتو، قم بتحديث UI
         if (isDownloaded && isDownloading) {
           isDownloading = false;
           downloadProgress = 0.0;
@@ -61,7 +60,6 @@ class TafsserItemState extends State<TafsserItem> {
             padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
             decoration: BoxDecoration(
               color: context.color.surface,
-
               border: Border(
                 bottom: BorderSide(
                   color: context.color.outlineVariant.withValues(alpha: 0.4),
@@ -103,9 +101,7 @@ class TafsserItemState extends State<TafsserItem> {
                     ],
                   ),
                 ),
-
                 SizedBox(width: 10.w),
-
                 _buildDownloadButton(context),
               ],
             ),
@@ -120,7 +116,6 @@ class TafsserItemState extends State<TafsserItem> {
       isDownloading = true;
       downloadProgress = 0.0;
     });
-
     widget.onPressed.call();
   }
 
@@ -150,18 +145,16 @@ class TafsserItemState extends State<TafsserItem> {
   }
 
   Widget _buildDownloadButton(BuildContext context) {
-    // استخدم widget.isDownloaded أو isDownloaded المحلي (whichever is true)
     final actualDownloaded = isDownloaded || widget.isDownloaded;
 
     if (actualDownloaded) {
-      // عند اكتمال التحميل
       return Container(
         decoration: BoxDecoration(
           color: context.color.primary.withValues(alpha: .3),
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          onPressed: null, // زر معطل
+          onPressed: null,
           icon: Icon(
             Icons.check_circle_rounded,
             size: 22.sp,
@@ -172,7 +165,6 @@ class TafsserItemState extends State<TafsserItem> {
     }
 
     if (isDownloading) {
-      // أثناء التحميل
       return Container(
         decoration: BoxDecoration(
           color: context.color.primaryContainer.withValues(alpha: 0.5),
@@ -182,7 +174,6 @@ class TafsserItemState extends State<TafsserItem> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // الخلفية الدائرية للتقدم
             SizedBox(
               width: 40.w,
               height: 40.w,
@@ -195,7 +186,6 @@ class TafsserItemState extends State<TafsserItem> {
                 backgroundColor: context.color.primary.withValues(alpha: 0.2),
               ),
             ),
-            // رسالة النسبة المئوية
             Text(
               "${(downloadProgress * 100).toStringAsFixed(0)}%",
               style: TextStyle(
@@ -209,7 +199,6 @@ class TafsserItemState extends State<TafsserItem> {
       );
     }
 
-    // الحالة الافتراضية - زر التنزيل
     return Container(
       decoration: BoxDecoration(
         color: context.color.primaryContainer.withValues(alpha: 0.5),
@@ -225,16 +214,4 @@ class TafsserItemState extends State<TafsserItem> {
       ),
     );
   }
-}
-
-class TafsserInfo {
-  final String name;
-  final String description;
-  final String id;
-
-  TafsserInfo({
-    required this.name,
-    required this.description,
-    required this.id,
-  });
 }

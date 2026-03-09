@@ -27,7 +27,7 @@ Future<void> insertHadithToIsar() async {
         ..book = hadith["book"] ?? ""
         ..hadithNarrator = hadith["hadithNarrator"] ?? ""
         ..grade = parseHadithGrade(hadith["grade"])
-        ..isFeautred = hadith["isFeautred"] ?? false
+        ..isFeatured = hadith["isFeautred"] ?? false
         ..topic = hadith["topic"] ?? "";
 
       await db.hadiths.put(hadithObj);

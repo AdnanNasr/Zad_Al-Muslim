@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/features/hadith/data/models/hadith.dart';
+import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
 
 class HadithModalBottom extends ConsumerWidget {
-  final Hadith hadith;
+  final HadithEntity hadith;
   const HadithModalBottom({super.key, required this.hadith});
 
   @override

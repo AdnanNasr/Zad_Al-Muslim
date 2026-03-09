@@ -150,10 +150,10 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                             onPressed: () async {
                               await ref
                                   .read(hadithProvider.notifier)
-                                  .toggleIsFeatured(hadith.hadith);
+                                  .toggleIsFeatured(hadith);
                             },
                             icon: Icon(
-                              hadith.isFeautred ? Icons.star : Icons.star_border,
+                              hadith.isFeatured ? Icons.star : Icons.star_border,
                               color: Theme.of(context).primaryColor,
                             ),
                           ),

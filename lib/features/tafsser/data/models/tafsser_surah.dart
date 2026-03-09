@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import "package:noor_quran/features/tafsser/data/models/ayah.dart";
+import '../../domain/entities/tafsser_entities.dart';
 
 part 'tafsser_surah.g.dart';
 
@@ -18,6 +19,15 @@ class TafsserSurah {
 
   // embedded edition, optional
   EditionModel? edition;
+
+  TafsserBookEntity toBookEntity(bool isDownloaded) {
+    return TafsserBookEntity(
+      id: edition?.identifier ?? '',
+      name: edition?.name ?? name,
+      description: edition?.englishName ?? englishName,
+      isDownloaded: isDownloaded,
+    );
+  }
 }
 
 @embedded

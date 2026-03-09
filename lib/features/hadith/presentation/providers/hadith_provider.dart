@@ -1,106 +1,72 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
-import 'package:noor_quran/features/hadith/data/models/hadith.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
+import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
+import 'package:noor_quran/features/hadith/domain/usecases/get_hadiths_usecase.dart';
+import 'package:noor_quran/features/hadith/domain/usecases/update_hadith_usecase.dart';
+import 'package:noor_quran/core/di/injection_container.dart';
 
-/// كلاس لتخزين قيم الفلاتر الحالية
-class HadithFilters {
-  String? book;
-  String? narrator;
-  String? topic;
-  HadithGrade? grade;
-  bool featuredOnly = false;
-}
-
-class HadithNotifier extends AsyncNotifier<List<Hadith>> {
-  late Isar _db;
-  List<Hadith> _allHadith = [];
-  final HadithFilters _filters = HadithFilters();
+class HadithNotifier extends AsyncNotifier<List<HadithEntity>> {
+  HadithFiltersEntity _filters = HadithFiltersEntity();
+  
+  GetHadithsUseCase get _getHadithsUseCase => sl<GetHadithsUseCase>();
+  UpdateHadithUseCase get _updateHadithUseCase => sl<UpdateHadithUseCase>();
 
   @override
-  FutureOr<List<Hadith>> build() async {
-    // 1. الحصول على نسخة قاعدة البيانات
-    final database = IsarDb.database;
-    if (database == null) throw Exception("Isar not initialized");
-    _db = database;
+  FutureOr<List<HadithEntity>> build() async {
+    return _fetchHadiths();
+  }
 
-    // 2. تحميل البيانات الأولية من Isar
-    _allHadith = await _db.hadiths.where().findAll();
-    
-    // 3. تطبيق الفلاتر (التي تكون فارغة في البداية) وإرجاع النتيجة
-    return _applyFiltersLocally();
+  Future<List<HadithEntity>> _fetchHadiths() async {
+    final result = await _getHadithsUseCase(_filters);
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (hadiths) => hadiths,
+    );
   }
 
   // ---------------- CRUD (العمليات على البيانات) ----------------
 
-  Future<void> addHadith(Hadith hadith) async {
+  Future<void> updateHadithGrade(HadithEntity entity, HadithGrade grade) async {
+    final updatedEntity = HadithEntity(
+      id: entity.id,
+      hadith: entity.hadith,
+      hadithNarrator: entity.hadithNarrator,
+      isFeatured: entity.isFeatured,
+      topic: entity.topic,
+      grade: grade,
+      book: entity.book,
+    );
+
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await _db.writeTxn(() => _db.hadiths.put(hadith));
-      _allHadith = [..._allHadith, hadith];
-      return _applyFiltersLocally();
+      final result = await _updateHadithUseCase(updatedEntity);
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (_) => _fetchHadiths(),
+      );
     });
   }
 
-  Future<void> updateHadithGrade(Id id, HadithGrade grade) async {
-    final index = _allHadith.indexWhere((h) => h.id == id);
-    if (index == -1) return;
+  Future<void> toggleIsFeatured(HadithEntity entity) async {
+    final updatedEntity = HadithEntity(
+      id: entity.id,
+      hadith: entity.hadith,
+      hadithNarrator: entity.hadithNarrator,
+      isFeatured: !entity.isFeatured,
+      topic: entity.topic,
+      grade: entity.grade,
+      book: entity.book,
+    );
 
+    state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      _allHadith[index].grade = grade;
-      await _db.writeTxn(() => _db.hadiths.put(_allHadith[index]));
-      return _applyFiltersLocally();
+      final result = await _updateHadithUseCase(updatedEntity);
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (_) => _fetchHadiths(),
+      );
     });
-  }
-
-  Future<void> deleteHadith(Id id) async {
-    state = await AsyncValue.guard(() async {
-      await _db.writeTxn(() => _db.hadiths.delete(id));
-      _allHadith.removeWhere((h) => h.id == id);
-      return _applyFiltersLocally();
-    });
-  }
-
-  Future<void> toggleIsFeatured(String hadithText) async {
-    final index = _allHadith.indexWhere((h) => h.hadith == hadithText);
-    if (index == -1) return;
-
-    state = await AsyncValue.guard(() async {
-      _allHadith[index].isFeautred = !_allHadith[index].isFeautred;
-      await _db.writeTxn(() => _db.hadiths.put(_allHadith[index]));
-      return _applyFiltersLocally();
-    });
-  }
-
-  // ---------------- FILTER LOGIC (منطق التصفية) ----------------
-
-  List<Hadith> _applyFiltersLocally() {
-    Iterable<Hadith> result = _allHadith;
-
-    if (_filters.book != null) {
-      result = result.where((h) => h.book == _filters.book);
-    }
-    if (_filters.narrator != null) {
-      result = result.where((h) => h.hadithNarrator == _filters.narrator);
-    }
-    if (_filters.topic != null) {
-      result = result.where((h) => h.topic == _filters.topic);
-    }
-    if (_filters.grade != null) {
-      result = result.where((h) => h.grade == _filters.grade);
-    }
-    if (_filters.featuredOnly) {
-      result = result.where((h) => h.isFeautred);
-    }
-
-    return result.toList();
-  }
-
-  /// تحديث حالة الـ Provider لإخطار الواجهات بالتغيير
-  void _updateStateWithFilters() {
-    state = AsyncData(_applyFiltersLocally());
   }
 
   // ---------------- GETTERS (الحصول على القيم الحالية) ----------------
@@ -116,7 +82,6 @@ class HadithNotifier extends AsyncNotifier<List<Hadith>> {
   String? get currentNarrator => _filters.narrator;
   String? get currentTopic => _filters.topic;
   
-  /// تحويل الدرجة البرمجية إلى نص عربي للواجهة
   String? get currentGradeText {
     if (_filters.grade == null) return null;
     switch (_filters.grade!) {
@@ -129,55 +94,44 @@ class HadithNotifier extends AsyncNotifier<List<Hadith>> {
   // ---------------- SETTERS (تعديل قيم الفلاتر) ----------------
 
   void setBook(String? value) { 
-    _filters.book = value; 
-    _updateStateWithFilters(); 
+    _filters = _filters.copyWith(book: value, clearBook: value == null); 
+    ref.invalidateSelf();
   }
 
   void setNarrator(String? value) { 
-    _filters.narrator = value; 
-    _updateStateWithFilters(); 
+    _filters = _filters.copyWith(narrator: value, clearNarrator: value == null); 
+    ref.invalidateSelf();
   }
 
   void setTopic(String? value) { 
-    _filters.topic = value; 
-    _updateStateWithFilters(); 
+    _filters = _filters.copyWith(topic: value, clearTopic: value == null); 
+    ref.invalidateSelf();
   }
   
   void setGradeFromText(String? value) {
+    HadithGrade? grade;
     switch (value) {
-      case "صحيح": 
-        _filters.grade = HadithGrade.sahih; 
-        break;
-      case "حسن": 
-        _filters.grade = HadithGrade.hasan; 
-        break;
-      case "ضعيف": 
-        _filters.grade = HadithGrade.daif; 
-        break;
-      default: 
-        _filters.grade = null;
+      case "صحيح": grade = HadithGrade.sahih; break;
+      case "حسن": grade = HadithGrade.hasan; break;
+      case "ضعيف": grade = HadithGrade.daif; break;
     }
-    _updateStateWithFilters();
+    _filters = _filters.copyWith(grade: grade, clearGrade: value == null);
+    ref.invalidateSelf();
   }
 
   void setFeatured(bool value) {
-    _filters.featuredOnly = value;
-    _updateStateWithFilters();
+    _filters = _filters.copyWith(featuredOnly: value);
+    ref.invalidateSelf();
   }
 
   void clearFilters() {
-    _filters
-      ..book = null
-      ..narrator = null
-      ..topic = null
-      ..grade = null
-      ..featuredOnly = false;
-    _updateStateWithFilters();
+    _filters = HadithFiltersEntity();
+    ref.invalidateSelf();
   }
 }
 
 // ---------------- PROVIDER DEFINITION ----------------
 
-final hadithProvider = AsyncNotifierProvider<HadithNotifier, List<Hadith>>(() {
+final hadithProvider = AsyncNotifierProvider<HadithNotifier, List<HadithEntity>>(() {
   return HadithNotifier();
 });

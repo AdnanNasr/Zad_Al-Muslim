@@ -18,7 +18,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
       error: (error, stack) => Center(child: Text("حدث خطأ: $error")),
       data: (allHadiths) {
         // 3. فلترة الأحاديث المميزة من قائمة البيانات الجاهزة
-        final featuredHadiths = allHadiths.where((h) => h.isFeautred).toList();
+        final featuredHadiths = allHadiths.where((h) => h.isFeatured).toList();
 
         if (featuredHadiths.isEmpty) {
           return const Center(child: Text("لا توجد أحاديث مميزة حالياً"));
@@ -72,10 +72,10 @@ class FeaturedHadithsTab extends ConsumerWidget {
                         // استخدام notifier لتعديل الحالة
                         await ref
                             .read(hadithProvider.notifier)
-                            .toggleIsFeatured(hadith.hadith);
+                            .toggleIsFeatured(hadith);
                       },
                       icon: Icon(
-                        hadith.isFeautred ? Icons.star : Icons.star_border,
+                        hadith.isFeatured ? Icons.star : Icons.star_border,
                         color: Theme.of(context).primaryColor,
                       ),
                     ),

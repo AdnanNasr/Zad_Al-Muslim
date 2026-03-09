@@ -8,6 +8,7 @@ import 'package:noor_quran/core/utils/notifications/notification_service.dart';
 import 'package:noor_quran/core/common/pages/onboarding/onboarding_init.dart';
 import 'package:noor_quran/core/database/isar_db.dart';
 import 'package:noor_quran/core/common/providers/language_provider.dart';
+import 'package:noor_quran/core/di/injection_container.dart' as di;
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/features/adkar/presentation/pages/adkar_page.dart';
@@ -25,6 +26,9 @@ import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_ba
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Dependency Injection
+  await di.init();
 
   // إعدادات البنية التحتية
   await IsarDb.initDatabase();

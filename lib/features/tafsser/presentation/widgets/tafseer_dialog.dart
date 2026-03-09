@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/features/tafsser/presentation/widgets/tafsser_buttons.dart';
+import '../../domain/entities/tafsser_entities.dart';
 
 class TafseerDialog extends StatelessWidget {
-  final TafsserInfo tafsserInfo;
+  final TafsserBookEntity tafsserInfo;
   const TafseerDialog({super.key, required this.tafsserInfo});
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      // backgroundColor: Colors.black,
       title: Center(
         child: Text(
           tafsserInfo.name,
@@ -20,8 +19,7 @@ class TafseerDialog extends StatelessWidget {
           ),
         ),
       ),
-
-      contentPadding: EdgeInsetsGeometry.all(16.r),
+      contentPadding: EdgeInsets.all(16.r),
       children: [
         Text(
           tafsserInfo.description,

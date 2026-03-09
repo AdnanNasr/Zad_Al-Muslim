@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran/data/models/quran_models.dart';
-import 'package:noor_quran/features/tafsser/data/models/ayah.dart';
-import 'package:noor_quran/features/tafsser/presentation/providers/avalible_tafsser_books.dart';
+import 'package:noor_quran/features/tafsser/domain/entities/tafsser_entities.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_provider.dart';
 
@@ -12,7 +11,8 @@ Future<dynamic> showTafsserModalBottom(
   BuildContext context,
   WidgetRef ref,
   Ayah ayah,
-  AyahTafsser tafsserAyah,
+  String bookId,
+  AyahTafsserEntity initialTafsser,
 ) async {
   return showModalBottomSheet(
     context: context,
@@ -22,8 +22,8 @@ Future<dynamic> showTafsserModalBottom(
     builder: (context) {
       return Consumer(
         builder: (context, ref, child) {
-          final tafsserBook = ref.watch(tafsserBookProvider);
-          final availableBooksAsync = ref.watch(availableTafsserBooksProvider);
+          final selectedBook = ref.watch(selectedTafsserBookProvider);
+          final booksAsync = ref.watch(tafsserBooksProvider);
 
           return Container(
             decoration: BoxDecoration(
@@ -50,9 +50,8 @@ Future<dynamic> showTafsserModalBottom(
                             fontSize: 18.sp,
                           ),
                         ),
-
                         MenuAnchor(
-                          key: ValueKey(availableBooksAsync.value?.length ?? 0),
+                          key: ValueKey(booksAsync.value?.length ?? 0),
                           builder: (context, controller, child) {
                             return OutlinedButton.icon(
                               onPressed: () {
@@ -63,29 +62,24 @@ Future<dynamic> showTafsserModalBottom(
                                 }
                               },
                               label: Text(
-                                tafsserBook.value?.name ?? "اختار التفسير",
+                                selectedBook?.name ?? "اختار التفسير",
                                 style: TextStyle(fontSize: 14.sp),
                               ),
-                              icon: Icon(Icons.arrow_drop_down),
+                              icon: const Icon(Icons.arrow_drop_down),
                               style: _buttonStyle(context),
                             );
                           },
-                          menuChildren: availableBooksAsync.when(
-                            data: (books) => books.map((edition) {
+                          menuChildren: booksAsync.when(
+                            data: (books) => books
+                                .where((book) => book.isDownloaded)
+                                .map((book) {
                               return MenuItemButton(
-                                onPressed: () async {
-                                  ref
-                                      .read(tafsserBookProvider.notifier)
-                                      .setTafsserBook(
-                                        tafseerName: edition!.name!,
-                                      );
-                                  ref.invalidate(tafsserProvider);
+                                onPressed: () {
+                                  ref.read(selectedTafsserBookProvider.notifier).state = book;
                                 },
                                 child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w,
-                                  ),
-                                  child: Text(edition?.name ?? ""),
+                                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                  child: Text(book.name),
                                 ),
                               );
                             }).toList(),
@@ -97,9 +91,7 @@ Future<dynamic> showTafsserModalBottom(
                             ],
                             error: (err, stack) => [
                               MenuItemButton(
-                                onPressed: () => ref.invalidate(
-                                  availableTafsserBooksProvider,
-                                ),
+                                onPressed: () => ref.invalidate(tafsserBooksProvider),
                                 child: const Text("خطأ، اضغط للتحديث"),
                               ),
                             ],
@@ -108,39 +100,25 @@ Future<dynamic> showTafsserModalBottom(
                       ],
                     ),
                     const Divider(),
-
                     Expanded(
                       child: Consumer(
                         builder: (context, ref, child) {
-                          // 1. مراقبة الكتاب المختار حالياً
-                          final currentBook = ref.watch(tafsserBookProvider);
+                          final currentBook = ref.watch(selectedTafsserBookProvider);
+                          
+                          // If no book selected, use the passed bookId
+                          final finalBookId = currentBook?.id ?? bookId;
 
-                          // 2. استخدام FutureBuilder لجلب نص التفسير للكتاب الجديد
-                          return FutureBuilder<AyahTafsser?>(
-                            // نستدعي دالة البحث التي أصلحناها سابقاً
-                            future: ref
-                                .read(tafsserProvider.notifier)
-                                .getTafsserByAyahNumber(
-                                  surahNumber: ayah.surahNumber,
-                                  ayahNumber: ayah.ayahNumber,
-                                  edition: currentBook.value!,
-                                ),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                          final tafsserAsync = ref.watch(ayahTafsserProvider((
+                            tafsserId: finalBookId,
+                            surahNumber: ayah.surahNumber,
+                            ayahNumber: ayah.ayahNumber,
+                          )));
+
+                          return tafsserAsync.when(
+                            data: (tafsser) {
+                              if (tafsser == null) {
+                                return const Center(child: Text("تعذر تحميل التفسير لهذا الكتاب"));
                               }
-
-                              if (snapshot.hasError || snapshot.data == null) {
-                                return const Center(
-                                  child: Text("تعذر تحميل التفسير لهذا الكتاب"),
-                                );
-                              }
-
-                              final newTafsserText = snapshot.data!.text;
-
                               return ListView(
                                 controller: scrollController,
                                 children: [
@@ -148,16 +126,12 @@ Future<dynamic> showTafsserModalBottom(
                                     width: double.infinity,
                                     padding: EdgeInsets.all(8.r),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.surface,
+                                      color: Theme.of(context).colorScheme.surface,
                                       borderRadius: BorderRadius.circular(15.r),
-                                      border: Border.all(
-                                        color: Colors.grey.shade200,
-                                      ),
+                                      border: Border.all(color: Colors.grey.shade200),
                                     ),
                                     child: Text(
-                                      newTafsserText, // النص الجديد القادم من قاعدة البيانات
+                                      tafsser.text,
                                       textAlign: TextAlign.justify,
                                       style: TextStyle(
                                         fontSize: 21.sp,
@@ -170,6 +144,8 @@ Future<dynamic> showTafsserModalBottom(
                                 ],
                               );
                             },
+                            loading: () => const Center(child: CircularProgressIndicator()),
+                            error: (err, stack) => const Center(child: Text("خطأ في تحميل التفسير")),
                           );
                         },
                       ),
