@@ -39,6 +39,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   get_it: ^9.2.1
   dartz: ^0.10.1
+  equatable: ^2.0.8
   # qcf_quran: ^0.0.5
 
 dev_dependencies:

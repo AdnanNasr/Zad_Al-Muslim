@@ -31,7 +31,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       backgroundColor: themeMode == ThemeMode.light
           ? context.color.onPrimary
           : context.color.scrim,
-      appBar: const CustomAppBar(title: "تفسير", center: false, profile: false),
+      appBar: const CustomAppBar(title: "التفسير", center: false, profile: false),
       body: booksAsync.when(
         data: (books) {
           return ListView.builder(

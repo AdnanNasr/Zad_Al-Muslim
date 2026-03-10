@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
 
@@ -36,7 +37,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: context.witdthScreen * 0.06,
+          fontSize: 20.sp,
           color: Theme.of(context).colorScheme.onPrimary,
           fontWeight: FontWeight.bold,
           fontFamily: "Cairo",
@@ -103,7 +104,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Size get preferredSize {
     double height = kToolbarHeight;
     if (bottom != null) {
-      height += bottom!.preferredSize.height; // يزيد ارتفاع AppBar حسب TabBar
+      height += bottom!.preferredSize.height; 
     }
     return Size.fromHeight(height);
   }

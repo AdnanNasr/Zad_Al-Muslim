@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:noor_quran/core/utils/location/location_locator.dart';
 import 'package:noor_quran/core/common/providers/location_status_provider.dart';
 import 'package:noor_quran/core/common/providers/network_info_provider.dart';
+import 'package:noor_quran/features/pray_time/presentation/providers/user_address_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/pray_times_provider.dart';
@@ -109,20 +110,22 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       }
     });
 
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              context.color.primary,
-              context.color.primary.withValues(alpha: .8),
-            ],
-          ),
+    final userAddress = ref.watch(userAddressProvider);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            context.color.primary,
+            context.color.primary.withValues(alpha: .8),
+          ],
         ),
-        child: SafeArea(
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: Column(
             children: [
               Align(
@@ -141,146 +144,150 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                     if (model != null) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (mounted) {
-                          ref.read(locationStatusProvider.notifier).clearStatus();
+                          ref
+                              .read(locationStatusProvider.notifier)
+                              .clearStatus();
                         }
                       });
                     }
 
-                        if (model == null) {
-                          return _buildErrorState(
-                            error: "تعذر الحصول على مواقيت الصلاة",
-                            context: context,
-                            status: locationStatusMessage,
-                            networkState: networkState,
-                            prayerTimes: model
-                          );
-                        }
-
-                        final prayerList = [
-                          {"name": "الفجر", "time": model.fajr},
-                          {"name": "الشروق", "time": model.sunrise},
-                          {"name": "الظهر", "time": model.dhuhr},
-                          {"name": "العصر", "time": model.asr},
-                          {"name": "المغرب", "time": model.maghrib},
-                          {"name": "العشاء", "time": model.isha},
-                        ];
-
-                        final currentPrayer = _currentPrayerFromModel(model);
-
-                        return Column(
-                          children: [
-                            SizedBox(height: 15.h),
-                            Text(
-                              "مواقيت الصلاة",
-                              style: TextStyle(
-                                color: topContentColor,
-                                fontSize: 26.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 5.h),
-                            Text(
-                              "ألمانيا، برلين", // يمكنك جلب اسم المدينة برمجياً لاحقاً
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16.sp,
-                              ),
-                            ),
-                            SizedBox(height: 30.h),
-
-                            // عرض الصلاة القادمة والعداد التنازلي
-                            _buildNextPrayerCard(
-                              context,
-                              model,
-                              topContentColor,
-                            ),
-
-                            SizedBox(height: 30.h),
-
-                            // قائمة المواقيت
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.only(
-                                  top: 30.h,
-                                  left: 20.w,
-                                  right: 20.w,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: context.color.surface,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(40.r),
-                                    topRight: Radius.circular(40.r),
-                                  ),
-                                ),
-                                child: ListView.builder(
-                                  itemCount: prayerList.length,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemBuilder: (context, index) {
-                                    final item = prayerList[index];
-                                    final name = item['name'] as String;
-                                    final time = item['time'] as DateTime;
-                                    // فحص إذا كانت هذه هي الصلاة الحالية
-                                    bool isCurrent = _checkIfCurrent(
-                                      name,
-                                      currentPrayer,
-                                    );
-
-                                    return _buildPrayerRow(
-                                      context,
-                                      name,
-                                      DateFormat.jm().format(time.toLocal()),
-                                      prayerIcons[name] ?? Icons.circle,
-                                      isCurrent: isCurrent,
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                      loading: () {
-                        // إذا تم منح الإذن لكن البيانات لم يتم تحميلها بعد
-                        if (locationStatusMessage.isNotEmpty &&
-                            locationStatusMessage.keys.first ==
-                                LocationMessage.locationAllowed) {
-                          return Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "جاري التحميل...",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: context.color.primary,
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 20.h),
-                                CircularProgressIndicator(
-                                  color: context.color.onPrimary,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        // الحالة الافتراضية أثناء التحميل
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: context.color.onPrimary,
-                          ),
-                        );
-                      },
-
-                      error: (err, _) => _buildErrorState(
-                        error: err.toString(),
+                    if (model == null) {
+                      return _buildErrorState(
+                        error: "تعذر الحصول على مواقيت الصلاة",
                         context: context,
                         status: locationStatusMessage,
                         networkState: networkState,
+                        prayerTimes: model,
+                      );
+                    }
+
+                    final prayerList = [
+                      {"name": "الفجر", "time": model.fajr},
+                      {"name": "الشروق", "time": model.sunrise},
+                      {"name": "الظهر", "time": model.dhuhr},
+                      {"name": "العصر", "time": model.asr},
+                      {"name": "المغرب", "time": model.maghrib},
+                      {"name": "العشاء", "time": model.isha},
+                    ];
+
+                    final currentPrayer = _currentPrayerFromModel(model);
+
+                    return Column(
+                      children: [
+                        SizedBox(height: 15.h),
+                        Text(
+                          "أوقات الصلاة",
+                          style: TextStyle(
+                            color: topContentColor,
+                            fontSize: 26.sp,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Cairo",
+                          ),
+                        ),
+                        SizedBox(height: 5.h),
+                        userAddress.when(
+                          data: (data) => Text(
+                            "${data?.country} | ${data?.locality}",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 20.sp,
+                            ),
+                          ),
+                          error: (error, stackTrace) =>
+                              Text("حدث خطأ اثناء جلب العنوان"),
+                          loading: () => LinearProgressIndicator(),
+                        ),
+                        SizedBox(height: 30.h),
+
+                        // عرض الصلاة القادمة والعداد التنازلي
+                        _buildNextPrayerCard(context, model, topContentColor),
+
+                        SizedBox(height: 30.h),
+
+                        // قائمة المواقيت
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.only(
+                              top: 30.h,
+                              left: 20.w,
+                              right: 20.w,
+                            ),
+                            decoration: BoxDecoration(
+                              color: context.color.surface,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(40.r),
+                                topRight: Radius.circular(40.r),
+                              ),
+                            ),
+                            child: ListView.builder(
+                              itemCount: prayerList.length,
+                              physics: const BouncingScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final item = prayerList[index];
+                                final name = item['name'] as String;
+                                final time = item['time'] as DateTime;
+                                // فحص إذا كانت هذه هي الصلاة الحالية
+                                bool isCurrent = _checkIfCurrent(
+                                  name,
+                                  currentPrayer,
+                                );
+
+                                return _buildPrayerRow(
+                                  context,
+                                  name,
+                                  DateFormat.jm().format(time.toLocal()),
+                                  prayerIcons[name] ?? Icons.circle,
+                                  isCurrent: isCurrent,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () {
+                    // إذا تم منح الإذن لكن البيانات لم يتم تحميلها بعد
+                    if (locationStatusMessage.isNotEmpty &&
+                        locationStatusMessage.keys.first ==
+                            LocationMessage.locationAllowed) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "جاري التحميل...",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: context.color.primary,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            CircularProgressIndicator(
+                              color: context.color.onPrimary,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    // الحالة الافتراضية أثناء التحميل
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: context.color.onPrimary,
                       ),
-                    ),
+                    );
+                  },
+
+                  error: (err, _) => _buildErrorState(
+                    error: err.toString(),
+                    context: context,
+                    status: locationStatusMessage,
+                    networkState: networkState,
+                  ),
+                ),
               ),
             ],
           ),
@@ -329,7 +336,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required BuildContext context,
     required Map<LocationMessage, String> status,
     required NetworkInfoState networkState,
-    PrayerTimesModel? prayerTimes
+    PrayerTimesModel? prayerTimes,
   }) {
     // 1. حالة تحميل التحقق من الشبكة
     if (networkState == NetworkInfoState.loading) {
@@ -353,10 +360,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             SizedBox(height: 16.h),
             Text(
               "جاري التحقق من صلاحيات الموقع...",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 16.sp),
             ),
           ],
         ),
@@ -628,46 +632,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     );
   }
 
-  // Future<dynamic> _showPermissionDialog(BuildContext context) {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         backgroundColor: context.color.errorContainer,
-  //         title: Text(
-  //           "لم يتم منح صلاحيات الموقع",
-  //           style: TextStyle(
-  //             fontFamily: "Cairo",
-  //             color: context.color.error,
-  //             fontWeight: FontWeight.w600,
-  //           ),
-  //           textAlign: TextAlign.center,
-  //         ),
-  //         content: Text(
-  //           "يرجى منح صلاحيات الموقع من اجل حساب مواقيت الصلاة",
-  //           style: TextStyle(
-  //             fontSize: 16.5.sp,
-  //             color: context.color.onErrorContainer,
-  //             fontWeight: FontWeight.w400,
-  //           ),
-  //           textAlign: TextAlign.center,
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: Text(
-  //               "إغلاق",
-  //               style: TextStyle(fontSize: 16.sp, color: context.color.error),
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _buildNextPrayerCard(
     BuildContext context,
     PrayerTimesModel prayerModel,
@@ -680,6 +644,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final remaining = nextTime.difference(DateTime.now());
     final hours = remaining.inHours;
     final minutes = remaining.inMinutes.remainder(60);
+    final seconds = remaining.inSeconds.remainder(60);
 
     return Container(
       padding: EdgeInsets.all(20.h),
@@ -694,14 +659,14 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         children: [
           Text(
             "الصلاة القادمة: ${_translatePrayer(next)}",
-            style: TextStyle(color: textColor, fontSize: 16.sp),
+            style: TextStyle(color: textColor, fontSize: 18.sp),
           ),
           SizedBox(height: 10.h),
           Text(
-            "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}",
+            "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, "0")}",
             style: TextStyle(
               color: textColor,
-              fontSize: 38.sp,
+              fontSize: 25.sp,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
             ),
@@ -709,7 +674,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           SizedBox(height: 5.h),
           Text(
             "متبقي على الأذان",
-            style: TextStyle(color: Colors.white70, fontSize: 15.sp),
+            style: TextStyle(color: Colors.white70, fontSize: 18.sp),
           ),
         ],
       ),

@@ -30,8 +30,6 @@ void main() async {
   // Initialize Dependency Injection
   await di.init();
 
-  // إعدادات البنية التحتية
-  await IsarDb.initDatabase();
   await NotificationService.init();
 
   final container = ProviderContainer();
