@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/common/pages/onboarding/first_page_onborading.dart';
-import 'package:noor_quran/core/common/pages/onboarding/second_page_onborading.dart';
-import 'package:noor_quran/core/common/pages/onboarding/third_page_onborading.dart';
+import 'package:noor_quran/features/splash/presentation/pages/onboarding/first_page_onborading.dart';
+import 'package:noor_quran/features/splash/presentation/pages/onboarding/second_page_onborading.dart';
+import 'package:noor_quran/features/splash/presentation/pages/onboarding/third_page_onborading.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

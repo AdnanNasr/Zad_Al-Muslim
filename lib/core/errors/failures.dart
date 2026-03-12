@@ -14,3 +14,7 @@ class CacheFailure extends Failure {
 class LocationFailure extends Failure {
   LocationFailure([super.message = "Location Failure"]);
 }
+
+class NetworkFailure extends Failure {
+  NetworkFailure([super.message = "Network Failure"]);
+}

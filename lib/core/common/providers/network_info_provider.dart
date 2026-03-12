@@ -1,21 +1,39 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/core/utils/network/network_info.dart';
-import 'package:noor_quran/core/common/providers/location_status_provider.dart';
+import 'package:noor_quran/core/utils/location/providers/location_status_provider.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
 
 class NetworkInfoNotifier extends StateNotifier<NetworkInfoState> {
   final Ref ref;
+  StreamSubscription? _subscription;
 
-  /// [ref] is provided by the caller so that we can read/refresh other
-  /// providers from within the notifier methods. It replaces the previously
-  /// undeclared `ref` variable.
   NetworkInfoNotifier(this.ref) : super(NetworkInfoState.loading) {
     checkNetworkState();
+    _listenToConnectivity();
+  }
+
+  void _listenToConnectivity() {
+    _subscription = InternetConnection().onStatusChange.listen((status) {
+      if (status == InternetStatus.connected) {
+        state = NetworkInfoState.connected;
+        ref.read(locationStatusProvider.notifier).clearStatus();
+      } else {
+        state = NetworkInfoState.notConnected;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
   Future<bool> checkNetworkState() async {
-    final isConnectionValid = await NetworkInfo.hasValidConnection();
+    final isConnectionValid = await NetworkInfo().hasValidConnection();
 
     if (isConnectionValid) {
       state = NetworkInfoState.connected;
@@ -37,3 +55,4 @@ final networkInfoProvider =
       ref.invalidate(locationStatusProvider);
       return NetworkInfoNotifier(ref);
     });
+

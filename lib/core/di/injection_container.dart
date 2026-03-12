@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:isar/isar.dart';
+import 'package:noor_quran/core/utils/location/location_locator.dart';
+import 'package:noor_quran/core/utils/network/network_info.dart';
 import 'package:noor_quran/features/pray_time/data/datasources/prayer_times_local_data_source.dart';
 import 'package:noor_quran/features/pray_time/data/datasources/user_address_local_data_source.dart';
 import 'package:noor_quran/features/pray_time/data/datasources/user_address_remote_data_source.dart';
@@ -41,6 +43,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => Dio());
 
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfo());
+
 
 
   // Features - Pray Time
@@ -71,9 +75,13 @@ Future<void> init() async {
 
   sl.registerLazySingleton<UserAddressRemoteDataSource>(() => UserAddressRemoteDataSourceImpl());
 
-  sl.registerLazySingleton<UserAddressRepository>(() => UserAddressImpl(sl(), sl()));
+  sl.registerLazySingleton<UserAddressRepository>(() => UserAddressImpl(sl(), sl(), sl()));
 
   sl.registerLazySingleton<GetUserAddress>(() => GetUserAddress(sl()));
+
+  // User Position
+  sl.registerLazySingleton<LocationLocator>(() => LocationLocatorImpl(sl()));
+  sl.registerLazySingleton<LocationLocatorImpl>(() => LocationLocatorImpl(sl()));
   
   // Features - Pray Time
   // ... (previous registrations)

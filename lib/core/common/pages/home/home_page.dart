@@ -6,6 +6,7 @@ import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
+
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/home/home_button.dart';
@@ -49,31 +50,25 @@ class _HomePageState extends ConsumerState<HomePage>
     final colorScheme = theme.colorScheme;
     final themeMode = ref.watch(themeProvider);
     final marksProvider = ref.watch(marksProvder);
+    
     Mark? lastReadingPostion;
-
     if (marksProvider.isNotEmpty) {
       lastReadingPostion = marksProvider.last;
     }
 
     return Scaffold(
-      body: 
-           SingleChildScrollView(
-              child: BodyContent(
-                colorScheme: colorScheme,
-                themeMode: themeMode,
-                lastReadingPostion: lastReadingPostion,
-              ),
-            )
-          // : BodyContent(
-          //     colorScheme: colorScheme,
-          //     themeMode: themeMode,
-          //     lastReadingPostion: lastReadingPostion,
-          //   ),
+      body: SingleChildScrollView(
+        child: BodyContent(
+          colorScheme: colorScheme,
+          themeMode: themeMode,
+          lastReadingPostion: lastReadingPostion,
+        ),
+      ),
     );
   }
 }
 
-class BodyContent extends StatelessWidget {
+class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWidget لمراقبة الـ Providers
   const BodyContent({
     super.key,
     required this.colorScheme,
@@ -86,8 +81,9 @@ class BodyContent extends StatelessWidget {
   final Mark? lastReadingPostion;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
+
       children: [
         const PrayTimesContainer(),
         Material(
@@ -119,11 +115,10 @@ class BodyContent extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
-                      child: Divider(
-                        color: colorScheme.primary,
-                        thickness: 2,
+                    Expanded( // أضفت Expanded هنا ليعمل الـ Divider بشكل صحيح
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
+                        child: Divider(color: colorScheme.primary, thickness: 2),
                       ),
                     ),
                   ],
@@ -164,6 +159,8 @@ class BodyContent extends StatelessWidget {
                         Navigator.of(context).pushNamed("/sunah_page");
                       },
                     ),
+                    
+                    // --- زر مواقيت الصلاة ---
                     HomeButton(
                       text: AppLocalizations.of(context)!.pray_times,
                       iconImage: "assets/icons/mosque.png",
@@ -172,6 +169,9 @@ class BodyContent extends StatelessWidget {
                         Navigator.of(context).pushNamed("/pray_time_page");
                       },
                     ),
+                    // ----------------------------
+
+
                     HomeButton(
                       text: AppLocalizations.of(context)!.qebla_direction,
                       iconImage: "assets/icons/kaaba.png",
@@ -194,142 +194,80 @@ class BodyContent extends StatelessWidget {
             ],
           ),
         ),
-
         SizedBox(height: 8.h),
-
         if (lastReadingPostion != null)
-          Padding(
-            padding: EdgeInsets.all(8.0.r),
-            child: Material(
-              surfaceTintColor: colorScheme.primary,
-              shadowColor: themeMode == ThemeMode.light
-                  ? colorScheme.surface
-                  : colorScheme.primary,
-              elevation: 2,
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(8.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+          // ... (كود الـ "آخر قراءة" يبقى كما هو) ...
+          _buildLastReadingWidget(context, colorScheme, themeMode, lastReadingPostion!),
+        
+        SizedBox(height: 8.h),
+        TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
+      ],
+    );
+  }
+
+  // دالة مساعدة لتنظيم كود الـ Last Reading
+  Widget _buildLastReadingWidget(BuildContext context, ColorScheme colorScheme, ThemeMode themeMode, Mark lastReadingPostion) {
+    return Padding(
+      padding: EdgeInsets.all(8.0.r),
+      child: Material(
+        surfaceTintColor: colorScheme.primary,
+        shadowColor: themeMode == ThemeMode.light ? colorScheme.surface : colorScheme.primary,
+        elevation: 2,
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(8.r),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0.r),
+                  child: Text(
+                    AppLocalizations.of(context)!.last_reading_surah,
+                    style: TextStyle(fontSize: 20.sp, fontFamily: "Cairo", fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(child: Divider(thickness: 2, color: colorScheme.primary)),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            InkWell(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => QuranPageAppBar(lastReadingPostion: lastReadingPostion.pageNumber),
+              )),
+              child: Ink(
+                decoration: BoxDecoration(color: colorScheme.primary, borderRadius: BorderRadius.circular(6.r)),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0.r),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0.r),
-                        child: Text(
-                          AppLocalizations.of(context)!.last_reading_surah,
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontFamily: "Cairo",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      Row(
+                        children: [
+                          Text("سُورَةَ ${lastReadingPostion.surahName}", 
+                               style: TextStyle(fontSize: 25.sp, fontFamily: "Amiri", color: colorScheme.onPrimary)),
+                          SizedBox(width: 20.w),
+                          Text("|", style: TextStyle(fontSize: 35.sp, color: colorScheme.onPrimary)),
+                          SizedBox(width: 20.w),
+                          Text("${AppLocalizations.of(context)!.page_number}: ${lastReadingPostion.pageNumber}",
+                               style: TextStyle(fontSize: 18.sp, color: colorScheme.onPrimary)),
+                        ],
                       ),
-                      SizedBox(width: 5.w),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                        child: Divider(
-                          thickness: 2,
-                          color: colorScheme.primary,
-                        ),
-                      ),
+                      Icon(Icons.arrow_forward_ios, color: colorScheme.onPrimary),
                     ],
                   ),
-                  SizedBox(height: 8.h),
-                  Padding(
-                    padding: EdgeInsets.all(8.0.r),
-                    child: InkWell(
-                      splashColor: colorScheme.surface.withValues(alpha: .1),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return QuranPageAppBar(
-                                lastReadingPostion:
-                                    lastReadingPostion!.pageNumber,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(6.r),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0.r),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    "سُورَةَ ${lastReadingPostion?.surahName}",
-                                    style: TextStyle(
-                                      fontSize: 25.sp,
-                                      fontFamily: "Amiri",
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary,
-                                    ),
-                                  ),
-                                  SizedBox(width: 20.w),
-                                  Text(
-                                    "|",
-                                    style: TextStyle(
-                                      fontSize: 35.sp,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 35.w),
-                                  Text(
-                                    "${AppLocalizations.of(context)!.page_number}: ${lastReadingPostion?.pageNumber}",
-                                    style: TextStyle(
-                                      fontSize: 18.sp,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        SizedBox(height: 8.h),
-
-        lastReadingPostion == null
-            ? TodayDuaa(
-              colorScheme: colorScheme,
-              themeMode: themeMode,
-            )
-            : TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
-      ],
+          ],
+        ),
+      ),
     );
   }
 }
 
 class TodayDuaa extends StatelessWidget {
-  const TodayDuaa({
-    super.key,
-    required this.colorScheme,
-    required this.themeMode,
-  });
-
+  const TodayDuaa({super.key, required this.colorScheme, required this.themeMode});
   final ColorScheme colorScheme;
   final ThemeMode themeMode;
 
@@ -337,9 +275,7 @@ class TodayDuaa extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       surfaceTintColor: colorScheme.primary,
-      shadowColor: themeMode == ThemeMode.light
-          ? colorScheme.surface
-          : colorScheme.primary,
+      shadowColor: themeMode == ThemeMode.light ? colorScheme.surface : colorScheme.primary,
       elevation: 2,
       color: colorScheme.surface,
       borderRadius: BorderRadius.circular(8.r),
@@ -347,44 +283,20 @@ class TodayDuaa extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                  child: Divider(thickness: 2.sp, color: colorScheme.primary),
-                ),
-              ),
+              Expanded(child: Divider(thickness: 2.sp, color: colorScheme.primary)),
               Padding(
                 padding: EdgeInsets.all(8.0.r),
-                child: Text(
-                  "دعاء اليوم",
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontFamily: "Cairo",
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: Text("دعاء اليوم", style: TextStyle(fontSize: 20.sp, fontFamily: "Cairo", fontWeight: FontWeight.bold)),
               ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                  child: Divider(thickness: 2.sp, color: colorScheme.primary),
-                ),
-              ),
+              Expanded(child: Divider(thickness: 2.sp, color: colorScheme.primary)),
             ],
           ),
-          Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: EdgeInsets.only(left: 8.r, right: 8.r),
-              child: Text(
-                "كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ",
-                style: TextStyle(
-                  fontSize: 19.5.sp,
-                  fontFamily: "Tajawal",
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
+          Padding(
+            padding: EdgeInsets.all(8.r),
+            child: Text(
+              "كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ",
+              style: TextStyle(fontSize: 19.5.sp, fontFamily: "Tajawal", fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
             ),
           ),
         ],

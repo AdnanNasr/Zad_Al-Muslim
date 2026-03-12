@@ -1,7 +1,7 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:noor_quran/core/utils/network/network_info.dart';
+import 'package:noor_quran/core/database/isar_db.dart';
+
+
 import 'package:noor_quran/features/pray_time/presentation/providers/schedule_prayer_time_notification.dart';
 import 'package:noor_quran/features/pray_time/data/models/prayer_times_model.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
@@ -9,9 +9,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:adhan/adhan.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
+
+import 'package:noor_quran/core/di/injection_container.dart';
+import 'package:noor_quran/core/utils/location/location_locator.dart';
 
 part 'pray_times_notifier.g.dart';
+
 
 @riverpod
 class PrayTimesNotifier extends _$PrayTimesNotifier {
@@ -83,107 +86,11 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
     double lat,
     double lng,
   ) async {
-    try {
-      final internetConnected = await NetworkInfo.hasValidConnection();
-      List<Placemark> placemarks = [];
-
-      // 2. المحاولة فقط في حال وجود إنترنت
-      if (internetConnected) {
-        // تصحيح: يجب إسناد النتيجة للمتغير
-        placemarks = await placemarkFromCoordinates(lat, lng);
-      }
-
-      // 3. التحقق من أن القائمة ليست فارغة قبل محاولة الوصول لـ .first
-      String countryCode = '';
-      if (placemarks.isNotEmpty) {
-        countryCode = placemarks.first.isoCountryCode?.toUpperCase() ?? '';
-      }
-
-      switch (countryCode) {
-        // --- طريقة أم القرى ---
-        case 'SA': // السعودية
-          return CalculationMethod.umm_al_qura.getParameters();
-
-        // --- الهيئة المصرية العامة للمساحة ---
-        case 'EG': // مصر
-        case 'SD': // السودان
-        case 'LY': // ليبيا
-        case 'SY': // سوريا
-        case 'JO': // الأردن
-        case 'PS': // فلسطين
-        case 'LB': // لبنان
-          return CalculationMethod.egyptian.getParameters();
-
-        // --- طريقة دبي ---
-        case 'AE': // الإمارات
-        case 'BH': // البحرين
-        case 'OM': // عمان
-          return CalculationMethod.dubai.getParameters();
-
-        // --- طريقة الكويت ---
-        case 'KW': // الكويت
-          return CalculationMethod.kuwait.getParameters();
-
-        // --- طريقة قطر (متوفرة في الإصدارات الحديثة) ---
-        case 'QA':
-          return CalculationMethod.qatar.getParameters();
-
-        // --- رئاسة الشؤون الدينية التركية ---
-        case 'TR':
-          return CalculationMethod.turkey.getParameters();
-
-        // --- جامعة العلوم الإسلامية بكراتشي (المذهب الحنفي غالباً) ---
-        case 'PK': // باكستان
-        case 'AF': // أفغانستان
-        case 'IN': // الهند
-        case 'BD': // بنغلاديش
-          final params = CalculationMethod.karachi.getParameters();
-          params.madhab = Madhab.hanafi; // يفضل ضبط المذهب الحنفي لهذه الدول
-          return params;
-
-        // --- الجمعية الإسلامية لأمريكا الشمالية (ISNA) ---
-        case 'US': // أمريكا
-        case 'CA': // كندا
-        case 'MX': // المكسيك
-          return CalculationMethod.north_america.getParameters();
-
-        // --- المجلس الديني الإسلامي في سنغافورة (MUIS) ---
-        case 'SG': // سنغافورة
-        case 'MY': // ماليزيا
-        case 'ID': // إندونيسيا
-          return CalculationMethod.singapore.getParameters();
-
-        // --- معهد الجيوفيزياء بجامعة طهران ---
-        case 'IR': // إيران
-        case 'IQ': // العراق (للمناطق التي تتبع هذا الحساب)
-          return CalculationMethod.tehran.getParameters();
-
-        // --- روسيا ودول الاتحاد السوفيتي السابق ---
-        case 'RU':
-        case 'UA':
-          return CalculationMethod.moon_sighting_committee.getParameters();
-
-        // --- المغرب والجزائر (يدوياً لعدم وجود دالة جاهزة) ---
-        case 'MA':
-        case 'DZ':
-        case 'TN':
-          return CalculationParameters(fajrAngle: 19.0, ishaAngle: 17.0);
-
-        // --- الخيار الافتراضي (رابطة العالم الإسلامي) ---
-        // يغطي أوروبا (مثل بريطانيا وألمانيا) وبقية دول العالم
-        default:
-          return CalculationMethod.muslim_world_league.getParameters();
-      }
-    } on PlatformException catch (e) {
-      // هذا سيمسك الخطأ الذي ظهر لك (IO_ERROR)
-      AppLogger.logger.e("خطأ في خدمات النظام الجغرافية: ${e.message}");
-      // العودة للخيار الافتراضي بدلاً من انهيار التطبيق
-      return CalculationMethod.muslim_world_league.getParameters();
-    } catch (e) {
-      AppLogger.logger.e("خطأ غير متوقع: $e");
-      return CalculationMethod.muslim_world_league.getParameters();
-    }
+    final locationLocator = sl<LocationLocatorImpl>();
+    return await locationLocator.getCalculationParameters(lat, lng);
   }
+
+
 
   /// تحويل كائن المكتبة الخارجية إلى موديل قاعدة البيانات المحلي
   PrayerTimesModel _convertToDbModel(PrayerTimes adhanTimes, DateTime date) {

@@ -63,7 +63,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
   }
 
   Future<void> _handleDownload(TafsserBookEntity book) async {
-    final bool internetConnected = await NetworkInfo.hasValidConnection();
+    final bool internetConnected = await NetworkInfo().hasValidConnection();
 
     if (!internetConnected) {
       _showErrorMessage("لا يوجد إتصال بالإنترنت");

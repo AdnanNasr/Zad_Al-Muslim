@@ -1,10 +1,11 @@
-import 'dart:io';
+import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:noor_quran/core/constants/env.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
 
 class NetworkInfo {
-  static Future<bool> hasValidConnection() async {
+  // دالة الفحص الرئيسية (بقيت كما هي في التسمية والمنطق)
+  Future<bool> hasValidConnection() async {
     final isWiFiOrPhoneDataActive = await _isWiFiOrPhoneDataActive();
 
     if (!isWiFiOrPhoneDataActive) {
@@ -25,31 +26,22 @@ class NetworkInfo {
     return true;
   }
 
-  // الفحص اذا كان هناك اتصال حقيقي بالانترنت
-  static Future<bool> _hasActualInternet() async {
-    final domainName = Env.pingDomain;
-    AppLogger.logger.d("Current Pinging domain is: $domainName");
-    try {
-      final result = await InternetAddress.lookup(
-        domainName,
-      ).timeout(Duration(seconds: 3));
-
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-    } on SocketException catch (_) {
-      return false;
-    } on Exception catch (_) {
-      return false;
-    }
-    return false;
+  // الفحص المطور باستخدام مكتبة internet_connection_checker_plus
+  Future<bool> _hasActualInternet() async {
+    // المكتبة تقوم داخلياً بعمل فحص لعدة عناوين (Google, Cloudflare)
+    // وهذا يغنيك عن تمرير domainName واحد يدوياً
+    bool result = await InternetConnection().hasInternetAccess;
+    
+    AppLogger.logger.d("نتيجة فحص الاتصال الحقيقي: $result");
+    return result;
   }
 
-  // الفحص اذا كان المستخدم قد قام بتفعيل بيانات الجوال او الواي فاي
-  static Future<bool> _isWiFiOrPhoneDataActive() async {
-    final List<ConnectivityResult> connectivityResult = await (Connectivity()
-        .checkConnectivity());
+  // فحص تفعيل الوايفاي أو البيانات (باستخدام التحديثات الأخيرة لـ connectivity_plus)
+  Future<bool> _isWiFiOrPhoneDataActive() async {
+    final List<ConnectivityResult> connectivityResult = 
+        await (Connectivity().checkConnectivity());
 
+    // ملاحظة: الإصدارات الجديدة من connectivity_plus تعيد List
     if (connectivityResult.contains(ConnectivityResult.none)) {
       return false;
     }

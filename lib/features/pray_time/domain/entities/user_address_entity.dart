@@ -1,7 +1,14 @@
 class UserAddressEntity {
   // TODO
-  final String? country;
-  final String? locality;
+  final String country;
+  final String locality;
+  final String countryCode;
 
-  UserAddressEntity({required this.country, required this.locality});
+  UserAddressEntity({
+    this.country = '',
+    this.locality = '',
+    this.countryCode = '',
+  });
+
+
 }

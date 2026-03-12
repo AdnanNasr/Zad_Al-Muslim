@@ -13,6 +13,17 @@ enum LocationMessage {
   locationDisabled,
   locationNotAllowed,
   locationNotAllowedEver,
+  loading,
+  error,
+}
+
+extension LocationMessageExtension on LocationMessage {
+  static LocationMessage fromString(String status) {
+    return LocationMessage.values.firstWhere(
+      (e) => e.name == status,
+      orElse: () => LocationMessage.error, // قيمة افتراضية في حال عدم المطابقة
+    );
+  }
 }
 
 // Hadith book names

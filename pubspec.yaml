@@ -35,11 +35,12 @@ dependencies:
   geocoding: ^4.0.0
   flutter_local_notifications: ^20.1.0
   timezone: ^0.10.1
-  connectivity_plus: ^7.0.0
   flutter_native_splash: ^2.4.7
   get_it: ^9.2.1
   dartz: ^0.10.1
   equatable: ^2.0.8
+  internet_connection_checker_plus: ^2.9.1+2
+  connectivity_plus: ^7.0.0
   # qcf_quran: ^0.0.5
 
 dev_dependencies:

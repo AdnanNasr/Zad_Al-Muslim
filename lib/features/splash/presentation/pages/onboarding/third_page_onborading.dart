@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/common/pages/onboarding/onboarding_init.dart';
+import 'package:noor_quran/features/splash/presentation/pages/onboarding/onboarding_init.dart';
 
 class ThirdPageOnboarding extends StatelessWidget {
   const ThirdPageOnboarding({super.key});

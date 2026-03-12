@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:isar/isar.dart';
+import 'package:noor_quran/core/utils/location/providers/location_status_provider.dart';
 import 'package:noor_quran/core/common/providers/user_position_provider.dart';
-import 'package:noor_quran/core/utils/network/network_info.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
+import 'package:noor_quran/core/di/injection_container.dart';
 import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_notifier.dart';
 import 'package:noor_quran/features/hadith/data/repositories/insert_hadith.dart';
 import 'package:noor_quran/features/quran/data/repositories/insert_quran_pages.dart';
 import 'package:noor_quran/features/tafsser/data/repositories/insert_tafsser.dart';
 import 'package:noor_quran/core/utils/location/location_locator.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
 import 'package:noor_quran/features/hadith/data/models/hadith.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
@@ -34,10 +34,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _initializeApp() async {
     try {
-      final isar = IsarDb.database;
+      final isar = sl<Isar>();
 
       // 1. فحص هل قاعدة البيانات تحتوي على بيانات (لتجنب التكرار)
-      final hadithCount = await isar!.hadiths.count();
+      final hadithCount = await isar.hadiths.count();
 
       if (hadithCount == 0) {
         // المرحلة 1: القرآن (30%)
@@ -68,25 +68,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         _progress = 0.85;
       });
 
-      // الحصول على موقع المستخدم
-      final internetConnection = await NetworkInfo.hasValidConnection();
-      // اذا كان هناك اتصال بالانترنت
-      if (internetConnection) {
-        final position = await LocationLocator.determinePosition(ref);
+      final locationLocator = sl<LocationLocatorImpl>();
 
-        // if (position != null) {
-        //   AppLogger.logger.i(
-        //     "تم جلب موقع المستخدم بنجاح\nخطوط العرض: ${position.latitude}\nخطوط الطول: ${position.longitude}",
-        //   );
-        // } else {
-        //   AppLogger.logger.e(
-        //     "خطأ في جلب موقع المستخدم\nخطوط العرض: ${position?.latitude}\nخطوط الطول: ${position?.longitude}",
-        //   );
-        // }
+      final pos = await locationLocator.determinePosition();
 
-        if (position != null) {
-          // حفظ الموقع في الموفر حتى يتمكن باقي التطبيق من الوصول له لاحقاً
-          // (مثلاً داخل PrayTimesContainer عند القراءة من اليوم).
+      pos.fold(
+        (failure) {
+          ref.read(locationStatusProvider.notifier).setStatus({
+            LocationMessage.error: failure.message,
+          });
+        },
+        (position) async {
           ref.read(userPositionProvider.notifier).state = position;
 
           await ref
@@ -95,25 +87,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 latitude: position.latitude,
                 longitude: position.longitude,
               );
-        }
-      }
-
-      // اذا كان هناك اتصال بالانترنت
-      if (!internetConnection) {
-        final prefs = await SharedPreferences.getInstance();
-
-        final lat = prefs.getDouble("lat");
-        final long = prefs.getDouble("long");
-
-        if (lat != null && long != null) {
-          await ref
-              .read(prayTimesNotifierProvider.notifier)
-              .fetchAndSaveMonthlyTimes(latitude: lat, longitude: long);
-        }
-        AppLogger.logger.e(
-          "ليس هناك اتصال حالي بالانترنت\nلم يتم طلب الحصول على بيانات الموقع الخاصة بالمستخدم",
-        );
-      }
+        },
+      );
 
       setState(() {
         _progress = 1.0;
@@ -137,10 +112,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        width: double.infinity,
-        child: _error != null ? _buildErrorState() : _buildLoadingState(),
-      ),
+      body: SizedBox(width: double.infinity, child: _buildLoadingState()),
     );
   }
 
@@ -231,54 +203,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildErrorState() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: 80.r,
-              color: Colors.redAccent,
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              "حدث خطأ أثناء التهيئة",
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                fontFamily: "Cairo",
-              ),
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              "تأكد من الإنترنت والـ GPS: $_error",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey,
-                fontFamily: "Cairo",
-              ),
-            ),
-            SizedBox(height: 30.h),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _error = null;
-                  _progress = 0;
-                });
-                _initializeApp();
-              },
-              child: const Text("إعادة المحاولة"),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
