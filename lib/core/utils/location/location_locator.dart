@@ -57,7 +57,7 @@ class LocationLocatorImpl implements LocationLocator {
     // 3. جلب الموقع الفعلي
     try {
       final LocationSettings locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.medium,
+        accuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 15),
       );
 

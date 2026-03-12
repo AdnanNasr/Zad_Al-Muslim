@@ -72,6 +72,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   Future<void> _recheckLocationOnResume() async {
     final networkState = ref.read(networkInfoProvider);
     if (networkState == NetworkInfoState.connected) {
+      // If status is empty, we must check permissions/GPS first
+      final status = ref.read(locationStatusProvider);
+      if (status.isEmpty) {
+        await ref.read(locationStatusProvider.notifier).refreshStatus();
+      }
+
       // Check GPS service before starting
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -368,6 +374,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     // Only proceed if all conditions are met
 
     if (networkState == NetworkInfoState.connected && userPos == null) {
+      // If status is empty, we must check permissions/GPS first
+      final status = ref.read(locationStatusProvider);
+      if (status.isEmpty) {
+        await ref.read(locationStatusProvider.notifier).refreshStatus();
+      }
+
       // Check GPS service before starting
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -679,7 +691,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             ),
           )
         : Text(
-            "سيتم التحديث تلقائياً عند حل المشكلة",
+            "سيتم التحديث تلقائياً عند تفعيل الـ GPS",
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white70,
@@ -696,10 +708,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     Color textColor,
   ) {
     final Prayer next = _nextPrayerFromModel(prayerModel);
-    final nextTime = _timeForPrayerFromModel(prayerModel, next);
+    DateTime nextTime = _timeForPrayerFromModel(prayerModel, next);
+    final now = DateTime.now();
+
+    // إذا كان وقت الصلاة القادمة قد مضى بالفعل اليوم (مثلاً بعد العشاء ننتظر فجر الغد)
+    // نقوم بإضافة يوم واحد للوقت المحسوب
+    if (nextTime.isBefore(now)) {
+      nextTime = nextTime.add(const Duration(days: 1));
+    }
 
     // حساب المتبقي (ساعات ودقائق)
-    final remaining = nextTime.difference(DateTime.now());
+    final remaining = nextTime.difference(now);
     final hours = remaining.inHours;
     final minutes = remaining.inMinutes.remainder(60);
     final seconds = remaining.inSeconds.remainder(60);
