@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
 
 class QuranSearchSheet extends StatefulWidget {
   const QuranSearchSheet({super.key});
@@ -120,27 +119,25 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                         color: context.color.primary.withValues(alpha: .1),
                       ),
                     ),
-                    child: Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        style: TextStyle(fontFamily: 'Cairo', fontSize: 16.sp),
-                        decoration: InputDecoration(
-                          hintText: 'ابحث عن سورة أو آية...',
-                          fillColor: context.color.primary.withValues(
-                            alpha: .05,
-                          ),
-                          hintStyle: TextStyle(
-                            fontFamily: 'Cairo',
-                            color: Colors.grey[400],
-                            fontSize: 14.sp,
-                          ),
-                          border: InputBorder.none,
-                          maintainHintSize: true,
-                          icon: Icon(
-                            Icons.search_rounded,
-                            color: context.color.primary,
-                            size: 22.sp,
-                          ),
+                    child: TextField(
+                      controller: _searchController,
+                      style: TextStyle(fontFamily: 'Cairo', fontSize: 16.sp),
+                      decoration: InputDecoration(
+                        hintText: 'ابحث عن سورة أو آية...',
+                        fillColor: context.color.primary.withValues(
+                          alpha: .05,
+                        ),
+                        hintStyle: TextStyle(
+                          fontFamily: 'Cairo',
+                          color: Colors.grey[400],
+                          fontSize: 14.sp,
+                        ),
+                        border: InputBorder.none,
+                        maintainHintSize: true,
+                        icon: Icon(
+                          Icons.search_rounded,
+                          color: context.color.primary,
+                          size: 22.sp,
                         ),
                       ),
                     ),
@@ -181,7 +178,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                     ),
                   ),
                   SizedBox(height: 12.h),
-
+            
                   // Recent Search Chips
                   Wrap(
                     spacing: 8.w,
@@ -212,9 +209,9 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                       );
                     }).toList(),
                   ),
-
+            
                   SizedBox(height: 24.h),
-
+            
                   // Results Title
                   Text(
                     'نتائج مقترحة',
@@ -226,7 +223,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                     ),
                   ),
                   SizedBox(height: 12.h),
-
+            
                   // Mockup Results
                   ...List.generate(_dummyResults.length, (index) {
                     final item = _dummyResults[index];

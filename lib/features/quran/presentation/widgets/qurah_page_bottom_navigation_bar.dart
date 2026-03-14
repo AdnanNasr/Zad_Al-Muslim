@@ -74,12 +74,23 @@ class _QurahPageBottomNavigationBarState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  _buildNavItem(
+                    context,
+                    Icons.auto_stories_rounded,
+                    "الفهرس",
+                    () {
+                      // TODO: drawer menu
+                    },
+                  ),
+                  _buildDivider(context),
                   _buildNavItem(context, Icons.search_rounded, "بحث", () {
                     showModalBottomSheet(
                       isScrollControlled: true,
-                      sheetAnimationStyle: AnimationStyle(duration: Duration(milliseconds: 800), curve: Curves.decelerate),
+                      sheetAnimationStyle: AnimationStyle(
+                        duration: Duration(milliseconds: 800),
+                        curve: Curves.decelerate,
+                      ),
                       constraints: BoxConstraints(
-                        // minHeight: context.mediaQueryHeight - 100.h,
                         maxHeight: context.mediaQueryHeight - 100.h,
                       ),
                       context: context,
@@ -88,13 +99,6 @@ class _QurahPageBottomNavigationBarState
                       },
                     );
                   }),
-                  _buildDivider(context),
-                  _buildNavItem(
-                    context,
-                    Icons.auto_stories_rounded,
-                    "الفهرس",
-                    () {},
-                  ),
                   _buildDivider(context),
                   _buildNavItem(
                     context,
