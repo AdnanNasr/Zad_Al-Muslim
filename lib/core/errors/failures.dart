@@ -18,3 +18,7 @@ class LocationFailure extends Failure {
 class NetworkFailure extends Failure {
   NetworkFailure([super.message = "Network Failure"]);
 }
+
+class DataFailure extends Failure {
+  DataFailure([super.message = "Data Failure"]);
+}

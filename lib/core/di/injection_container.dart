@@ -9,6 +9,10 @@ import 'package:noor_quran/features/pray_time/data/datasources/user_address_remo
 import 'package:noor_quran/features/pray_time/data/repositories/user_address_impl.dart';
 import 'package:noor_quran/features/pray_time/domain/repositories/user_address.dart';
 import 'package:noor_quran/features/pray_time/domain/usecases/get_user_address.dart';
+import 'package:noor_quran/features/quran/data/datasources/surahs_meta_local.dart';
+import 'package:noor_quran/features/quran/data/repositories/surah_meta_impl.dart';
+import 'package:noor_quran/features/quran/domain/repositories/surahs_meta_repository.dart';
+import 'package:noor_quran/features/quran/domain/usecases/get_surahs_meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/pray_time/data/repositories/prayer_notification_service_impl.dart';
 import '../../features/pray_time/domain/repositories/prayer_notification_service.dart';
@@ -122,4 +126,9 @@ Future<void> init() async {
   sl.registerLazySingleton<HadithLocalDataSource>(
     () => HadithLocalDataSourceImpl(sl()),
   );
+
+  // Features - Quran
+  sl.registerLazySingleton<SurahsMetaLocalImpl>(() => SurahsMetaLocalImpl());
+  sl.registerLazySingleton<SurahsDataRepository>(() => SurahsMetaRepositoryImpl(sl()));
+  sl.registerLazySingleton<GetSurahsMeta>(() => GetSurahsMeta(sl()));
 }

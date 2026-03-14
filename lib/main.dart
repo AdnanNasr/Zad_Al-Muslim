@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
+import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
+import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
 import 'package:noor_quran/features/splash/presentation/pages/splash_screen.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
 import 'package:noor_quran/core/utils/notifications/notification_service.dart';
@@ -21,7 +23,7 @@ import 'package:noor_quran/features/qebla/presentation/pages/qebla_page.dart';
 import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
 import 'package:noor_quran/features/tafsser/presentation/pages/tafseer_page.dart';
 import 'package:noor_quran/core/common/widgets/custom_navigation_bar.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +50,7 @@ void main() async {
       container: container,
       child: ScreenUtilInit(
         minTextAdapt: true,
-        designSize: const Size(411.4, 853.3),
+        designSize: const Size(392.72727272727275, 800.7272727272727), // const Size(411.4, 853.3)
         builder: (context, child) => MyApp(hasSeenOnboarding: hasSeen),
       ),
     ),
@@ -82,7 +84,8 @@ class MyApp extends ConsumerWidget {
         "/splash_screen": (_) =>
             SplashScreen(hasSeenOnboarding: hasSeenOnboarding),
         "/home_page": (_) => const HomePage(),
-        "/quran_pages": (_) => const QuranPageAppBar(),
+        "/quran_pages": (_) =>  const QuranPages(),
+        "/select_surah_page": (_) => SelectSurahPage(),
         "/settings_page": (_) => const SettingsPage(),
         "/change_app_color_page": (_) => const ChangeAppColorPage(),
         "/tafseer_page": (_) => const TafseerPage(),

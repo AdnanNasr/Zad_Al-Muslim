@@ -6,6 +6,7 @@ import 'package:noor_quran/core/utils/location/providers/location_status_provide
 import 'package:noor_quran/core/common/providers/user_position_provider.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/core/di/injection_container.dart';
+import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_notifier.dart';
 import 'package:noor_quran/features/hadith/data/repositories/insert_hadith.dart';
 import 'package:noor_quran/features/quran/data/repositories/insert_quran_pages.dart';
@@ -24,7 +25,6 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   double _progress = 0.0;
   String _loadingText = "جاري تهيئة التطبيق...";
-  Object? _error;
 
   @override
   void initState() {
@@ -103,9 +103,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         );
       }
     } catch (e) {
-      setState(() {
-        _error = e;
-      });
+      AppLogger.logger.e("حصل مشكلة اثناء تهيئة التطبيق: ${e.toString()}");
     }
   }
 

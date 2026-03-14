@@ -41,7 +41,8 @@ dependencies:
   equatable: ^2.0.8
   internet_connection_checker_plus: ^2.9.1+2
   connectivity_plus: ^7.0.0
-  # qcf_quran: ^0.0.5
+  qcf_quran: ^0.0.5
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:

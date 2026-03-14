@@ -13,8 +13,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final Widget? flexibleSpace;
   final bool shape;
-  final TabBar? bottom;
+  // تم تغيير النوع هنا من TabBar? إلى PreferredSizeWidget?
+  final PreferredSizeWidget? bottom; 
   final void Function()? customVoid;
+
   const CustomAppBar({
     super.key,
     required this.title,
@@ -33,7 +35,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AppBar(
       bottom: bottom,
-      iconTheme: IconThemeData(color: Theme.of(context).colorScheme.surface),
+      // تم تعديل لون الأيقونة ليتناسب مع الخلفية الأساسية
+      iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
       title: Text(
         title,
         style: TextStyle(
@@ -43,7 +46,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           fontFamily: "Cairo",
         ),
       ),
-      actionsPadding: const EdgeInsets.all(8),
+      actionsPadding: EdgeInsets.symmetric(horizontal: 12.w),
       centerTitle: center,
       leading: icon != null
           ? IconButton(
@@ -66,33 +69,34 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           : null,
       actions: [
         if (profile)
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              color: Theme.of(context).colorScheme.onPrimary,
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 300),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                          return ScaleTransition(
-                            scale: animation,
-                            child: child,
-                          );
-                        },
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return const SettingsPage();
-                    },
-                  ),
-                );
-              },
-              icon: Icon(
-                Icons.person,
-                color: Theme.of(context).colorScheme.primary,
+          Center( // استخدام Center لضمان التوسط العمودي للأيقونة
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onPrimary,
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 300),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return const SettingsPage();
+                      },
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.person,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20.sp,
+                ),
               ),
             ),
           ),
@@ -104,7 +108,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Size get preferredSize {
     double height = kToolbarHeight;
     if (bottom != null) {
-      height += bottom!.preferredSize.height; 
+      // الآن سيتم حساب الطول ديناميكياً لأي ويدجت تمررها في الأسفل
+      height += bottom!.preferredSize.height;
     }
     return Size.fromHeight(height);
   }

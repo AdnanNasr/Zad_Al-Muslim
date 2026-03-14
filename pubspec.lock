@@ -435,6 +435,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.3"
+  flutter_staggered_animations:
+    dependency: "direct main"
+    description:
+      name: flutter_staggered_animations
+      sha256: "81d3c816c9bb0dca9e8a5d5454610e21ffb068aedb2bde49d2f8d04f75538351"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -957,6 +965,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  qcf_quran:
+    dependency: "direct main"
+    description:
+      name: qcf_quran
+      sha256: "86c09ebe96008a3e1f7e73780f2ba4406fa861766b4e67710a41611e57c16f3a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   riverpod:
     dependency: transitive
     description:

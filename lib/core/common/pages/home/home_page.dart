@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
+import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
 
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/home/home_button.dart';
 import 'package:noor_quran/features/pray_time/presentation/widgets/pray_times_container.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -140,7 +141,7 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                       iconImage: "assets/icons/quran.png",
                       color: context.color.primary,
                       onTap: () {
-                        Navigator.pushNamed(context, "/quran_pages");
+                        Navigator.pushNamed(context, Routes.selectSurahPage);
                       },
                     ),
                     HomeButton(
@@ -233,7 +234,8 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
             SizedBox(height: 8.h),
             InkWell(
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => QuranPageAppBar(lastReadingPostion: lastReadingPostion.pageNumber),
+                // must represent last reading position in Quran section
+                builder: (context) => SelectSurahPage(),
               )),
               child: Ink(
                 decoration: BoxDecoration(color: colorScheme.primary, borderRadius: BorderRadius.circular(6.r)),
