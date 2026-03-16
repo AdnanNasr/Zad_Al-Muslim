@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
@@ -128,7 +129,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         verseNumberHeight: 2.h,
                         verseHeight: 2.h,
                       ),
-                sp: context.mediaQueryWidth * 0.00255,
+                sp: context.isSmallMobile
+                    ? context.mediaQueryWidth * 0.00255
+                    : context.isMobile
+                    ? context.mediaQueryWidth * 0.0022
+                    : 1.sp,
                 h: 1.29.h,
                 initialPageNumber: widget.surahNumber ?? 0,
                 verseBackgroundColor: (surahNumber, verseNumber) {
