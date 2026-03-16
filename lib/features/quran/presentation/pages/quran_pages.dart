@@ -132,7 +132,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 sp: context.isSmallMobile
                     ? context.mediaQueryWidth * 0.00255
                     : context.isMobile
-                    ? context.mediaQueryWidth * 0.0022.sp
+                    ? context.mediaQueryWidth * 0.0023
                     : 1.sp,
                 h: context.isSmallMobile ? 1.29.h : 0,
                 initialPageNumber: widget.surahNumber ?? 0,
