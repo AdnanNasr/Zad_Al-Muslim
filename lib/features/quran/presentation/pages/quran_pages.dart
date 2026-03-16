@@ -134,7 +134,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                     : context.isMobile
                     ? context.mediaQueryWidth * 0.0022
                     : 1.sp,
-                h: 1.29.h,
+                h: context.isSmallMobile ? 1.29.h : 0,
                 initialPageNumber: widget.surahNumber ?? 0,
                 verseBackgroundColor: (surahNumber, verseNumber) {
                   if (surahNumber == _surahNumber &&
