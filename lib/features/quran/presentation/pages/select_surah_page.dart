@@ -58,9 +58,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo",
                 ),
-                unselectedLabelStyle: TextStyle(
-                  fontFamily: "Cairo"
-                ),
+                unselectedLabelStyle: TextStyle(fontFamily: "Cairo"),
                 tabs: const [
                   Tab(text: "السور"),
                   Tab(text: "الأجزاء"),
@@ -101,7 +99,11 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
               duration: const Duration(milliseconds: 700),
               child: SlideAnimation(
                 verticalOffset: 50,
-                child: FadeInAnimation(child: _buildSurahItem(context, surahs[index]))));
+                child: FadeInAnimation(
+                  child: _buildSurahItem(context, surahs[index]),
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -127,7 +129,12 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16.r),
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => QuranPages(surahNumber: surah.pageNumber,),));
+            print(surah.pageNumber);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => QuranPages(surahNumber: surah.pageNumber),
+              ),
+            );
           },
           child: Padding(
             padding: EdgeInsets.all(12.dg),
@@ -152,21 +159,27 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                         ),
                       ),
                       // اسم السورة بالإنجليزي
-                          Text(
-                            surah.englishName,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.grey[400],
-                            ),
-                          ),
+                      Text(
+                        surah.englishName,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[400],
+                        ),
+                      ),
                       SizedBox(height: 6.h),
                       // معلومات إضافية (آياتها، الجزء)
                       Row(
                         children: [
-                          _buildInfoChip(Icons.menu_book_rounded, "${surah.verseCount} آية"),
+                          _buildInfoChip(
+                            Icons.menu_book_rounded,
+                            "${surah.verseCount} آية",
+                          ),
                           SizedBox(width: 12.w),
-                          _buildInfoChip(Icons.grid_view_rounded, "الجزء ${surah.juzzNumber}"),
+                          _buildInfoChip(
+                            Icons.grid_view_rounded,
+                            "الجزء ${surah.juzzNumber}",
+                          ),
                         ],
                       ),
                     ],
@@ -254,7 +267,9 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(color: context.color.primary.withValues(alpha: .1)),
+                    border: Border.all(
+                      color: context.color.primary.withValues(alpha: .1),
+                    ),
                   ),
                   child: Material(
                     color: Colors.transparent,
@@ -266,7 +281,11 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                         children: [
                           Text(
                             "جزء",
-                            style: TextStyle(fontFamily: "Cairo", fontSize: 12.sp, color: Colors.grey),
+                            style: TextStyle(
+                              fontFamily: "Cairo",
+                              fontSize: 12.sp,
+                              color: Colors.grey,
+                            ),
                           ),
                           Text(
                             juzNo.toString(),

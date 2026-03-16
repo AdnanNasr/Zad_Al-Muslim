@@ -1,20 +1,25 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_search_sheet.dart';
+import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
 
-class QurahPageBottomNavigationBar extends StatefulWidget {
-  const QurahPageBottomNavigationBar({super.key});
+class QurahPageBottomNavigationBar extends ConsumerStatefulWidget {
+  final VoidCallback? onIndexPressed;
+
+  const QurahPageBottomNavigationBar({super.key, this.onIndexPressed});
 
   @override
-  State<QurahPageBottomNavigationBar> createState() =>
+  ConsumerState<QurahPageBottomNavigationBar> createState() =>
       _QurahPageBottomNavigationBarState();
 }
 
 class _QurahPageBottomNavigationBarState
-    extends State<QurahPageBottomNavigationBar>
+    extends ConsumerState<QurahPageBottomNavigationBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
@@ -46,6 +51,7 @@ class _QurahPageBottomNavigationBarState
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.read(themeProvider);
     return SlideTransition(
       position: _offsetAnimation,
       child: Padding(
@@ -57,7 +63,7 @@ class _QurahPageBottomNavigationBarState
             child: Container(
               height: 65.h,
               decoration: BoxDecoration(
-                color: context.color.primary.withValues(alpha: .9),
+                color: context.color.primary,
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: .1),
@@ -79,8 +85,11 @@ class _QurahPageBottomNavigationBarState
                     Icons.auto_stories_rounded,
                     "الفهرس",
                     () {
-                      // TODO: drawer menu
+                      if (widget.onIndexPressed != null) {
+                        widget.onIndexPressed!();
+                      }
                     },
+                    themeMode,
                   ),
                   _buildDivider(context),
                   _buildNavItem(context, Icons.search_rounded, "بحث", () {
@@ -98,20 +107,29 @@ class _QurahPageBottomNavigationBarState
                         return QuranSearchSheet();
                       },
                     );
-                  }),
+                  }, themeMode),
                   _buildDivider(context),
                   _buildNavItem(
                     context,
                     Icons.bookmarks_rounded,
                     "العلامات",
                     () {},
+                    themeMode,
                   ),
                   _buildDivider(context),
                   _buildNavItem(
                     context,
                     Icons.settings_rounded,
                     "الإعدادات",
-                    () {},
+                    () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return SettingsPage();
+                        },
+                      );
+                    },
+                    themeMode,
                   ),
                 ],
               ),
@@ -128,6 +146,7 @@ class _QurahPageBottomNavigationBarState
     IconData icon,
     String label,
     VoidCallback onTap,
+    ThemeMode themeMode,
   ) {
     return Material(
       color: Colors.transparent,
@@ -139,13 +158,22 @@ class _QurahPageBottomNavigationBarState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: context.color.onPrimary, size: 24.sp),
+              Icon(
+                icon,
+                color: themeMode == ThemeMode.light
+                    ? context.color.surface
+                    : context.color.surface.withValues(alpha: .7),
+                size: 24.sp,
+              ),
               SizedBox(height: 2.h),
               Text(
                 label,
                 style: TextStyle(
-                  color: context.color.onPrimary,
-                  fontSize: 10.sp,
+                  color: themeMode == ThemeMode.light
+                      ? context.color.onPrimary
+                      : context.color.surface.withValues(alpha: .7),
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
                   fontFamily: "Cairo", // تأكد من وجود الخط في مشروعك
                 ),
               ),
