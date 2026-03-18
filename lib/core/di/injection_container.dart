@@ -9,9 +9,13 @@ import 'package:noor_quran/features/pray_time/data/datasources/user_address_remo
 import 'package:noor_quran/features/pray_time/data/repositories/user_address_impl.dart';
 import 'package:noor_quran/features/pray_time/domain/repositories/user_address.dart';
 import 'package:noor_quran/features/pray_time/domain/usecases/get_user_address.dart';
+import 'package:noor_quran/features/quran/data/datasources/juzz_local.dart';
 import 'package:noor_quran/features/quran/data/datasources/surahs_meta_local.dart';
+import 'package:noor_quran/features/quran/data/repositories/juzz_repository_impl.dart';
 import 'package:noor_quran/features/quran/data/repositories/surah_meta_impl.dart';
+import 'package:noor_quran/features/quran/domain/repositories/juzz_repository.dart';
 import 'package:noor_quran/features/quran/domain/repositories/surahs_meta_repository.dart';
+import 'package:noor_quran/features/quran/domain/usecases/get_juzz.dart';
 import 'package:noor_quran/features/quran/domain/usecases/get_surahs_meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/pray_time/data/repositories/prayer_notification_service_impl.dart';
@@ -49,13 +53,11 @@ Future<void> init() async {
 
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfo());
 
-
-
   // Features - Pray Time
-  
+
   // Use cases
   sl.registerLazySingleton(() => GetPrayerTimesUseCase(sl()));
-  
+
   // Repository
   sl.registerLazySingleton<PrayerTimesRepository>(
     () => PrayerTimesRepositoryImpl(
@@ -65,8 +67,10 @@ Future<void> init() async {
   );
 
   // Datasource
-  sl.registerLazySingleton<PrayerTimesLocalDataSource>(() => PrayerTimesLocalDataSourceImpl());
-  
+  sl.registerLazySingleton<PrayerTimesLocalDataSource>(
+    () => PrayerTimesLocalDataSourceImpl(),
+  );
+
   // Notification Service
   sl.registerLazySingleton<IPrayerNotificationService>(
     () => PrayerNotificationServiceImpl(),
@@ -75,21 +79,29 @@ Future<void> init() async {
   // Get Adress
 
   // Local Datasource
-  sl.registerLazySingleton<UserAddressLocalDataSource>(() => UserAddressLocalDataSourceImpl(sl()));
+  sl.registerLazySingleton<UserAddressLocalDataSource>(
+    () => UserAddressLocalDataSourceImpl(sl()),
+  );
 
-  sl.registerLazySingleton<UserAddressRemoteDataSource>(() => UserAddressRemoteDataSourceImpl());
+  sl.registerLazySingleton<UserAddressRemoteDataSource>(
+    () => UserAddressRemoteDataSourceImpl(),
+  );
 
-  sl.registerLazySingleton<UserAddressRepository>(() => UserAddressImpl(sl(), sl(), sl()));
+  sl.registerLazySingleton<UserAddressRepository>(
+    () => UserAddressImpl(sl(), sl(), sl()),
+  );
 
   sl.registerLazySingleton<GetUserAddress>(() => GetUserAddress(sl()));
 
   // User Position
   sl.registerLazySingleton<LocationLocator>(() => LocationLocatorImpl(sl()));
-  sl.registerLazySingleton<LocationLocatorImpl>(() => LocationLocatorImpl(sl()));
-  
+  sl.registerLazySingleton<LocationLocatorImpl>(
+    () => LocationLocatorImpl(sl()),
+  );
+
   // Features - Pray Time
   // ... (previous registrations)
-  
+
   // Features - Tafsir
   // Use cases
   sl.registerLazySingleton(() => GetAyahTafsserUseCase(sl()));
@@ -98,10 +110,7 @@ Future<void> init() async {
 
   // Repository
   sl.registerLazySingleton<TafsserRepository>(
-    () => TafsserRepositoryImpl(
-      localDataSource: sl(),
-      remoteDataSource: sl(),
-    ),
+    () => TafsserRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
   );
 
   // Data sources
@@ -129,6 +138,13 @@ Future<void> init() async {
 
   // Features - Quran
   sl.registerLazySingleton<SurahsMetaLocalImpl>(() => SurahsMetaLocalImpl());
-  sl.registerLazySingleton<SurahsDataRepository>(() => SurahsMetaRepositoryImpl(sl()));
+  sl.registerLazySingleton<SurahsDataRepository>(
+    () => SurahsMetaRepositoryImpl(sl()),
+  );
   sl.registerLazySingleton<GetSurahsMeta>(() => GetSurahsMeta(sl()));
+
+  sl.registerLazySingleton<JuzzLocalImpl>(() => JuzzLocalImpl());
+  sl.registerLazySingleton<JuzzRepository>(() => JuzzRepositoryImpl(sl()));
+  sl.registerLazySingleton<GetJuzz>(() => GetJuzz(sl()));
+  sl.registerLazySingleton<GetAllJuzz>(() => GetAllJuzz(sl()));
 }

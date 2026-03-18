@@ -4,9 +4,12 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import "package:noor_quran/core/errors/failures.dart";
 import "package:noor_quran/core/extensions/color_ext.dart";
+import "package:noor_quran/features/quran/data/models/juzz_model.dart";
 import "package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart";
 import "package:noor_quran/features/quran/presentation/pages/quran_pages.dart";
+import "package:noor_quran/features/quran/presentation/providers/all_juzz_provider.dart";
 import "package:noor_quran/features/quran/presentation/providers/surahs_meta_provider.dart";
+import "package:qcf_quran/qcf_quran.dart"; // تأكد من استيراد المكتبة
 
 class IndexSurahMenu extends ConsumerStatefulWidget {
   const IndexSurahMenu({super.key});
@@ -16,12 +19,11 @@ class IndexSurahMenu extends ConsumerStatefulWidget {
 }
 
 class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
-  // nice green color Color(0xFF006B54)
-  // nice green bg color Color(0xFFF8F9FA)
-
   @override
   Widget build(BuildContext context) {
+    // مراقبة البيانات من الـ Providers
     final surahsMetaAsync = ref.watch(surahsMetaProvider);
+    final juzzDataAsync = ref.watch(allJuzzProvider);
 
     final Color primary = context.color.primary;
     final Color bgGrey = context.color.primaryContainer.withValues(alpha: .1);
@@ -33,14 +35,16 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
           length: 2,
           child: Column(
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 20),
               _IndexMenuTabBar(primaryColor: primary),
               const SizedBox(height: 10),
               Expanded(
                 child: TabBarView(
                   children: [
+                    // التبويب الأول: السور
                     _buildSurahsTab(surahsMetaAsync, primary),
-                    _buildAjzaTab(surahsMetaAsync, primary),
+                    // التبويب الثاني: الأجزاء
+                    _buildAjzaTab(surahsMetaAsync, juzzDataAsync, primary),
                   ],
                 ),
               ),
@@ -56,25 +60,27 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
     Color primary,
   ) {
     return data.fold(
-      (failure) => const Center(child: Text("خطأ في تحميل البيانات")),
+      (failure) => Center(child: Text(failure.message)),
       (list) => _SurahList(surahList: list, primaryColor: primary),
     );
   }
 
   Widget _buildAjzaTab(
-    Either<Failure, List<SurahMetaEntity>> data,
+    Either<Failure, List<SurahMetaEntity>> surahsMeta,
+    Either<Failure, List<JuzzModel>> juzzData,
     Color primary,
   ) {
-    return data.fold(
-      (failure) => const Center(child: Text("خطأ في تحميل البيانات")),
-      (list) => _JuzList(count: 30, primaryColor: primary),
+    return _JuzList(
+      primaryColor: primary,
+      surahsMeta: surahsMeta,
+      juzzData: juzzData,
     );
   }
 }
 
+// --- مكون التبويب العلوي ---
 class _IndexMenuTabBar extends StatelessWidget {
   final Color primaryColor;
-
   const _IndexMenuTabBar({required this.primaryColor});
 
   @override
@@ -96,6 +102,7 @@ class _IndexMenuTabBar extends StatelessWidget {
         ),
         child: TabBar(
           indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
           indicator: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: primaryColor,
@@ -104,6 +111,7 @@ class _IndexMenuTabBar extends StatelessWidget {
           unselectedLabelColor: Colors.grey,
           labelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
+            fontFamily: "Cairo",
             fontSize: 15,
           ),
           tabs: const [
@@ -116,10 +124,10 @@ class _IndexMenuTabBar extends StatelessWidget {
   }
 }
 
+// --- قائمة السور ---
 class _SurahList extends StatelessWidget {
   final List<SurahMetaEntity> surahList;
   final Color primaryColor;
-
   const _SurahList({required this.surahList, required this.primaryColor});
 
   @override
@@ -127,18 +135,18 @@ class _SurahList extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: surahList.length,
-      itemBuilder: (context, i) {
-        final surah = surahList[i];
+      itemBuilder: (context, index) {
+        final surah = surahList[index];
         return _SurahCard(
-          index: surah.pageNumber,
+          index: surah.surahNumber,
           surahName: 'surah${surah.surahNumber.toString().padLeft(3, '0')}',
           englishName: surah.englishName,
           primaryColor: primaryColor,
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => QuranPages(surahNumber: surah.pageNumber),
+                builder: (context) => QuranPages(pageNumber: surah.pageNumber),
               ),
             );
           },
@@ -148,33 +156,66 @@ class _SurahList extends StatelessWidget {
   }
 }
 
+// --- قائمة الأجزاء ---
 class _JuzList extends StatelessWidget {
-  final int count;
+  final Either<Failure, List<SurahMetaEntity>> surahsMeta;
+  final Either<Failure, List<JuzzModel>> juzzData;
   final Color primaryColor;
 
-  const _JuzList({required this.count, required this.primaryColor});
+  const _JuzList({
+    required this.primaryColor,
+    required this.surahsMeta,
+    required this.juzzData,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: count,
-      itemBuilder: (context, i) {
-        final juz = i + 1;
-        return _JuzCard(
-          index: juz,
-          partLabel: 'الجزء $juz',
-          partDescription: 'بداية من السورة ...',
-          primaryColor: primaryColor,
-          onTap: () {
-            // TODO: navigate to juz start
+    return juzzData.fold((failure) => Center(child: Text(failure.message)), (
+      data,
+    ) {
+      return surahsMeta.fold((failure) => Center(child: Text(failure.message)), (
+        surahs,
+      ) {
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            final currentJuz = data[index];
+            final surahNumber = currentJuz.versesEntity.verses.keys.first;
+            final verseNumber =
+                currentJuz.versesEntity.verses.values.first.first;
+
+            return _JuzCard(
+              index: currentJuz.id,
+              partLabel: 'الجزء ${currentJuz.id}',
+              partDescription:
+                  'سورة ${getSurahNameArabic(surahNumber)} - صفحة ${getPageNumber(surahNumber, verseNumber)}',
+              partVerse: getVerse(
+                surahNumber,
+                verseNumber,
+                verseEndSymbol: false,
+              ),
+              pageNumber: surahNumber,
+              primaryColor: primaryColor,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QuranPages(
+                      pageNumber: getPageNumber(surahNumber, verseNumber),
+                    ),
+                  ),
+                );
+              },
+            );
           },
         );
-      },
-    );
+      });
+    });
   }
 }
 
+// --- بطاقة السورة ---
 class _SurahCard extends StatelessWidget {
   final int index;
   final String surahName;
@@ -195,8 +236,9 @@ class _SurahCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withValues(alpha: .2)),
+        border: Border.all(color: Colors.grey.withValues(alpha: .1)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(12),
@@ -206,11 +248,14 @@ class _SurahCard extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'surahname',
             package: 'qcf_quran',
-            fontSize: 37.sp,
+            fontSize: 35.sp,
             color: primaryColor,
           ),
         ),
-        subtitle: Text(englishName, style: TextStyle(fontSize: 14.sp)),
+        subtitle: Text(
+          englishName,
+          style: TextStyle(fontSize: 13.sp, color: Colors.grey),
+        ),
         trailing: const Icon(
           Icons.arrow_forward_ios,
           size: 14,
@@ -222,10 +267,13 @@ class _SurahCard extends StatelessWidget {
   }
 }
 
+// --- بطاقة الجزء ---
 class _JuzCard extends StatelessWidget {
   final int index;
   final String partLabel;
   final String partDescription;
+  final String partVerse;
+  final int pageNumber;
   final Color primaryColor;
   final VoidCallback onTap;
 
@@ -233,61 +281,113 @@ class _JuzCard extends StatelessWidget {
     required this.index,
     required this.partLabel,
     required this.partDescription,
+    required this.partVerse,
+    required this.pageNumber,
     required this.primaryColor,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withValues(alpha: .2)),
-      ),
-      child: ListTile(
-        contentPadding: EdgeInsets.all(12.r),
-        leading: _SurahIndexCircle(index: index, primaryColor: primaryColor),
-        title: Text(
-          partLabel,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20.sp,
-            color: primaryColor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: 6.h, right: 4.w, top: 10.h),
+          child: Text(
+            partLabel,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontFamily: "Cairo",
+              fontWeight: FontWeight.bold,
+              color: primaryColor,
+            ),
           ),
         ),
-        subtitle: Text(partDescription, style: TextStyle(fontSize: 12.sp)),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 14.sp,
-          color: Colors.grey,
+        Container(
+          margin: EdgeInsets.only(bottom: 15.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15.r),
+            border: Border.all(color: Colors.grey.withValues(alpha: .2)),
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 12.h,
+            ),
+            leading: _SurahIndexCircle(
+              index: index,
+              primaryColor: primaryColor,
+            ),
+            title: Padding(
+              padding: EdgeInsets.only(bottom: 8.h),
+              child: Text(
+                partVerse,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontFamily: "Quran",
+                  fontSize: 20.sp,
+                  height: 1.5.h,
+                  color: context.color.onSurface,
+                  // fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+              ),
+            ),
+            subtitle: Text(
+              partDescription,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontFamily: "Cairo",
+                color: context.color.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Icon(
+              Icons.arrow_forward_ios,
+              size: 14.sp,
+              color: Colors.grey[400],
+            ),
+            onTap: onTap,
+          ),
         ),
-        onTap: onTap,
-      ),
+      ],
     );
   }
 }
 
+// --- دائرة رقم الفهرس ---
 class _SurahIndexCircle extends StatelessWidget {
   final int index;
   final Color primaryColor;
-
   const _SurahIndexCircle({required this.index, required this.primaryColor});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 45,
-      height: 45,
-      decoration: BoxDecoration(
-        color: primaryColor.withValues(alpha: .08),
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return Stack(
       alignment: Alignment.center,
-      child: Text(
-        '$index',
-        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-      ),
+      children: [
+        Transform.rotate(
+          angle: 0.8,
+          child: Container(
+            width: 35.w,
+            height: 35.w,
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: .1),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+          ),
+        ),
+        Text(
+          index.toString(),
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+      ],
     );
   }
 }

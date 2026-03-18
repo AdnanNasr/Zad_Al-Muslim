@@ -7,7 +7,6 @@ import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_search_sheet.dart';
-import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
 
 class QurahPageBottomNavigationBar extends ConsumerStatefulWidget {
   final VoidCallback? onIndexPressed;
@@ -125,14 +124,7 @@ class _QurahPageBottomNavigationBarState
                     context,
                     Icons.settings_rounded,
                     "الإعدادات",
-                    () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return SettingsPage();
-                        },
-                      );
-                    },
+                    () {},
                     themeMode,
                   ),
                 ],

@@ -6,9 +6,12 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/errors/failures.dart';
+import 'package:noor_quran/features/quran/data/models/juzz_model.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
+import 'package:noor_quran/features/quran/presentation/providers/all_juzz_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/surahs_meta_provider.dart';
 import 'package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart';
+import "package:qcf_quran/qcf_quran.dart";
 
 class SelectSurahPage extends ConsumerStatefulWidget {
   const SelectSurahPage({super.key});
@@ -21,7 +24,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   @override
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsMetaProvider);
-
+    final juzzData = ref.watch(allJuzzProvider);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -58,7 +61,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo",
                 ),
-                unselectedLabelStyle: TextStyle(fontFamily: "Cairo"),
+                unselectedLabelStyle: const TextStyle(fontFamily: "Cairo"),
                 tabs: const [
                   Tab(text: "السور"),
                   Tab(text: "الأجزاء"),
@@ -72,20 +75,21 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
             // التبويب الأول: قائمة السور
             _buildSurahTab(surahsMeta),
 
-            // التبويب الثاني: شبكة الأجزاء
-            _buildJuzTab(),
+            // التبويب الثاني: قائمة الأجزاء (تم تعديلها لتشبه السور)
+            _buildJuzTab(juzzData, surahsMeta),
           ],
         ),
       ),
     );
   }
 
+  // --- بناء تبويب السور ---
   Widget _buildSurahTab(Either<Failure, List<SurahMetaEntity>> surahsMeta) {
     return surahsMeta.fold(
       (failure) => Center(
         child: Text(
           failure.message,
-          style: TextStyle(fontFamily: "Cairo", color: Colors.red),
+          style: const TextStyle(fontFamily: "Cairo", color: Colors.red),
         ),
       ),
       (surahs) => AnimationLimiter(
@@ -110,99 +114,248 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
     );
   }
 
+  // --- بناء عنصر السورة الواحد ---
   Widget _buildSurahItem(BuildContext context, SurahMetaEntity surah) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: context.color.primary.withValues(alpha: .05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return _buildListTileContainer(
+      context: context,
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => QuranPages(pageNumber: surah.pageNumber),
           ),
-        ],
+        );
+      },
+      leading: _buildNumberIndicator(context, surah.surahNumber),
+      title: Text(
+        'surah${surah.surahNumber.toString().padLeft(3, '0')}',
+        style: TextStyle(
+          fontFamily: 'surahname',
+          package: 'qcf_quran',
+          fontSize: 38.sp,
+          color: context.color.primary,
+        ),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16.r),
-          onTap: () {
-            print(surah.pageNumber);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => QuranPages(surahNumber: surah.pageNumber),
-              ),
-            );
-          },
-          child: Padding(
-            padding: EdgeInsets.all(12.dg),
-            child: Row(
-              children: [
-                // تصميم رقم السورة
-                _buildSurahNumberIndicator(context, surah.surahNumber),
-                SizedBox(width: 16.w),
-
-                // تفاصيل السورة
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'surah${surah.surahNumber.toString().padLeft(3, '0')}',
-                        style: TextStyle(
-                          fontFamily: 'surahname',
-                          package: 'qcf_quran',
-                          fontSize: 38.sp,
-                          color: context.color.primary,
-                        ),
-                      ),
-                      // اسم السورة بالإنجليزي
-                      Text(
-                        surah.englishName,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      SizedBox(height: 6.h),
-                      // معلومات إضافية (آياتها، الجزء)
-                      Row(
-                        children: [
-                          _buildInfoChip(
-                            Icons.menu_book_rounded,
-                            "${surah.verseCount} آية",
-                          ),
-                          SizedBox(width: 12.w),
-                          _buildInfoChip(
-                            Icons.grid_view_rounded,
-                            "الجزء ${surah.juzzNumber}",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14.sp,
-                  color: context.color.primary.withValues(alpha: .2),
-                ),
-              ],
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            surah.englishName,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w300,
+              color: Colors.grey[400],
             ),
           ),
-        ),
+          SizedBox(height: 6.h),
+          Row(
+            children: [
+              _buildInfoChip(
+                Icons.menu_book_rounded,
+                "${surah.verseCount} آية",
+                context,
+              ),
+              SizedBox(width: 12.w),
+              _buildInfoChip(
+                Icons.grid_view_rounded,
+                "الجزء ${surah.juzzNumber}",
+                context,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSurahNumberIndicator(BuildContext context, int number) {
+  // --- بناء تبويب الأجزاء ---
+  Widget _buildJuzTab(
+    Either<Failure, List<JuzzModel>> juzz,
+    Either<Failure, List<SurahMetaEntity>> surahsMeta,
+  ) {
+    return juzz.fold(
+      (failure) {
+        return Center(
+          child: Text(
+            failure.message,
+            style: TextStyle(fontSize: 20.sp, fontFamily: "Cairo"),
+          ),
+        );
+      },
+      (data) {
+        return surahsMeta.fold(
+          (failure) {
+            return Center(
+              child: Text(failure.message, style: TextStyle(fontSize: 20.sp)),
+            );
+          },
+          (surahsMeta) {
+            return AnimationLimiter(
+              child: ListView.separated(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                itemCount: data.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  final pageNumber = data[index].versesEntity.verses.keys.first;
+                  final verseNumber =
+                      data[index].versesEntity.verses.values.first.first;
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 700),
+                    child: SlideAnimation(
+                      verticalOffset: 50,
+                      child: FadeInAnimation(
+                        child: _buildJuzItem(
+                          context,
+                          data[index].id,
+                          getSurahNameArabic(pageNumber),
+                          getPageNumber(pageNumber, verseNumber),
+                          getVerse(
+                            pageNumber,
+                            verseNumber,
+                            verseEndSymbol: false,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // --- بناء عنصر الجزء الواحد (تم توحيده مع تصميم السور) ---
+  Widget _buildJuzItem(
+    BuildContext context,
+    int juzNo,
+    String surahName,
+    int pageNumber,
+    String verse,
+  ) {
+    return _buildListTileContainer(
+      context: context,
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return QuranPages(pageNumber: pageNumber);
+            },
+          ),
+        );
+      },
+      juzzNumber: juzNo,
+      leading: _buildNumberIndicator(context, juzNo),
+      title: Text(
+        verse,
+        style: TextStyle(
+          fontFamily: "Quran",
+          fontSize: 19.sp,
+          height: 2,
+          color: context.color.onSurface,
+        ),
+        maxLines: 1,
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 4.h),
+          Row(
+            children: [
+              _buildInfoChip(
+                Icons.auto_stories_outlined,
+                "سورة $surahName",
+                context,
+              ),
+              SizedBox(width: 12.w),
+              _buildInfoChip(
+                Icons.tag_rounded,
+                "صفحة رقم $pageNumber",
+                context,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- مكون مشترك للحاوية (Container) لتقليل تكرار الكود ---
+  Widget _buildListTileContainer({
+    required BuildContext context,
+    required VoidCallback onTap,
+    required Widget leading,
+    required Widget title,
+    required Widget subtitle,
+    int? juzzNumber,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (juzzNumber != null)
+          Text(
+            "الجزء $juzzNumber",
+            style: TextStyle(
+              fontSize: 17.sp,
+              fontFamily: "Cairo",
+              fontWeight: FontWeight.bold,
+              color: context.color.primary,
+            ),
+          ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: context.color.primary.withValues(alpha: .2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16.r),
+              onTap: onTap,
+              child: Padding(
+                padding: EdgeInsets.all(12.dg),
+                child: Row(
+                  children: [
+                    leading,
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [title, subtitle],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14.sp,
+                      color: context.color.primary.withValues(alpha: .2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // --- مكون رقم السورة/الجزء ---
+  Widget _buildNumberIndicator(BuildContext context, int number) {
     return Stack(
       alignment: Alignment.center,
       children: [
-        // شكل إسلامي مبسط كخلفية للرقم
         Transform.rotate(
           angle: 0.8,
           child: Container(
@@ -226,85 +379,27 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
     );
   }
 
-  Widget _buildInfoChip(IconData icon, String label) {
+  // --- مكون المعلومات الصغيرة (Chip) ---
+  Widget _buildInfoChip(IconData icon, String label, BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 12.sp, color: Colors.grey[400]),
+        Icon(
+          icon,
+          size: 13.sp,
+          color: context.color.primary.withValues(alpha: .5),
+          fontWeight: FontWeight.bold,
+        ),
         SizedBox(width: 4.w),
         Text(
           label,
           style: TextStyle(
-            fontSize: 11.sp,
-            color: Colors.grey[600],
+            fontSize: 11.5.sp,
+            color: context.color.primary,
+            fontWeight: FontWeight.bold,
             fontFamily: "Cairo",
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildJuzTab() {
-    return AnimationLimiter(
-      child: GridView.builder(
-        padding: EdgeInsets.all(16.dg),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // عرض 3 أجزاء في الصف الواحد
-          crossAxisSpacing: 12.w,
-          mainAxisSpacing: 12.h,
-          childAspectRatio: 1,
-        ),
-        itemCount: 30,
-        itemBuilder: (context, index) {
-          final int juzNo = index + 1;
-          return AnimationConfiguration.staggeredGrid(
-            position: index,
-            columnCount: 3,
-            child: SlideAnimation(
-              verticalOffset: 20,
-              duration: Duration(milliseconds: 900),
-              child: FadeInAnimation(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: context.color.primary.withValues(alpha: .1),
-                    ),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16.r),
-                      onTap: () {},
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "جزء",
-                            style: TextStyle(
-                              fontFamily: "Cairo",
-                              fontSize: 12.sp,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          Text(
-                            juzNo.toString(),
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: context.color.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

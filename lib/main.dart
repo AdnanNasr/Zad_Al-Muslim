@@ -24,7 +24,6 @@ import 'package:noor_quran/features/settings/presentation/pages/settings_page.da
 import 'package:noor_quran/features/tafsser/presentation/pages/tafseer_page.dart';
 import 'package:noor_quran/core/common/widgets/custom_navigation_bar.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -50,7 +49,10 @@ void main() async {
       container: container,
       child: ScreenUtilInit(
         minTextAdapt: true,
-        designSize: const Size(392.72, 800.72), // const Size(411.4, 853.3) && Size(392.72727272727275, 800.7272727272727)
+        designSize: const Size(
+          392.72,
+          800.72,
+        ), // const Size(411.4, 853.3) && Size(392.72727272727275, 800.7272727272727)
         builder: (context, child) => MyApp(hasSeenOnboarding: hasSeen),
       ),
     ),
@@ -84,7 +86,7 @@ class MyApp extends ConsumerWidget {
         "/splash_screen": (_) =>
             SplashScreen(hasSeenOnboarding: hasSeenOnboarding),
         "/home_page": (_) => const HomePage(),
-        "/quran_pages": (_) =>  const QuranPages(),
+        "/quran_pages": (_) => const QuranPages(),
         "/select_surah_page": (_) => SelectSurahPage(),
         "/settings_page": (_) => const SettingsPage(),
         "/change_app_color_page": (_) => const ChangeAppColorPage(),
