@@ -120,92 +120,92 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
             _toggleShowAppBar();
           }
         },
-        child: SafeArea(
-          child: Stack(
-            children: [
-              PageviewQuran(
-                theme: themeMode == ThemeMode.light
-                    ? QcfThemeData(
-                        verseNumberHeight: 2.h,
-                        verseHeight: 2.h,
-                        basmalaColor: context.color.primary,
-                        customHeaderBuilder: (surahNumber) {
-                          return customQuranPageHeader(
-                            context,
-                            surahNumber,
-                            themeColor,
-                            themeMode,
-                          );
-                        },
-                      )
-                    : QcfThemeData(
-                        verseTextColor: Color(0xFFE0E0E0),
-                        verseNumberColor: Colors.grey, // amber
-                        basmalaColor: context.color.primary,
-                        headerTextColor: Colors.white,
-                        headerBackgroundColor: Colors.white,
-                        pageBackgroundColor:
-                            context.color.scrim, // Color(0xFF1E1E1E)
-                        verseNumberHeight: 2.h,
-                        verseHeight: 2.h,
-                        customHeaderBuilder: (surahNumber) {
-                          return customQuranPageHeader(
-                            context,
-                            surahNumber,
-                            themeColor,
-                            themeMode,
-                          );
-                        },
-                      ),
-                sp: context.large
-                    ? context.mediaQueryWidth * 0.00255
-                    : context.small
-                    ? context.mediaQueryWidth * 0.002425
-                    : 1.sp,
-                // h: context.large ? 1.29.h : 0,
-                initialPageNumber: widget.pageNumber ?? 0,
-                verseBackgroundColor: (surahNumber, verseNumber) {
-                  if (surahNumber == _surahNumber &&
-                      verseNumber == _verseNumber &&
-                      _highlightAyah) {
-                    return context.color.primary.withValues(alpha: 0.25);
-                  }
-                  return null;
-                },
-                onLongPress: (surahNumber, verseNumber) async {
-                  _surahNumber = surahNumber;
-                  _verseNumber = verseNumber;
-                  setState(() {});
+        child: Stack(
+          children: [
+            PageviewQuran(
+              theme: themeMode == ThemeMode.light
+                  ? QcfThemeData(
+                      pageBackgroundColor: Color(0xFFF5E6D3),
+                      verseNumberHeight: 2.h,
+                      verseHeight: 2.h,
+                      basmalaColor: context.color.primary,
+                      customHeaderBuilder: (surahNumber) {
+                        return customQuranPageHeader(
+                          context,
+                          surahNumber,
+                          themeColor,
+                          themeMode,
+                        );
+                      },
+                    )
+                  : QcfThemeData(
+                      verseTextColor: Color(0xFFE0E0E0),
+                      verseNumberColor: Colors.grey, // amber
+                      basmalaColor: context.color.primary,
+                      headerTextColor: Colors.white,
+                      headerBackgroundColor: Colors.white,
+                      pageBackgroundColor: Color(
+                        0xFF1E1E1E,
+                      ), // Color(0xFF1E1E1E)
+                      verseNumberHeight: 2.h,
+                      verseHeight: 2.h,
+                      customHeaderBuilder: (surahNumber) {
+                        return customQuranPageHeader(
+                          context,
+                          surahNumber,
+                          themeColor,
+                          themeMode,
+                        );
+                      },
+                    ),
+              sp: context.large
+                  ? context.mediaQueryWidth * 0.00255
+                  : context.small
+                  ? context.mediaQueryWidth * 0.002425
+                  : 1.sp,
+              // h: context.large ? 1.29.h : 0,
+              initialPageNumber: widget.pageNumber ?? 0,
+              verseBackgroundColor: (surahNumber, verseNumber) {
+                if (surahNumber == _surahNumber &&
+                    verseNumber == _verseNumber &&
+                    _highlightAyah) {
+                  return context.color.primary.withValues(alpha: 0.25);
+                }
+                return null;
+              },
+              onLongPress: (surahNumber, verseNumber) async {
+                _surahNumber = surahNumber;
+                _verseNumber = verseNumber;
+                setState(() {});
 
-                  _toggleHighlightAyah(_surahNumber, _verseNumber);
-                },
-                onPageChanged: (_) {
-                  _hideAppBar();
-                  _removeHighlightAyah();
-                  _closeMenu();
-                },
+                _toggleHighlightAyah(_surahNumber, _verseNumber);
+              },
+              onPageChanged: (_) {
+                _hideAppBar();
+                _removeHighlightAyah();
+                _closeMenu();
+              },
+            ),
+
+            if (_showAppAndBottomBar)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                // TODO: change params
+                child: QuranPageAppBar(surahName: "الفاتحة", juzzNumber: 1),
               ),
 
-              if (_showAppAndBottomBar)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  // TODO: change params
-                  child: QuranPageAppBar(surahName: "الفاتحة", juzzNumber: 1),
+            if (_showAppAndBottomBar)
+              Positioned(
+                bottom: kBottomNavigationBarHeight / 2,
+                left: 0,
+                right: 0,
+                child: QurahPageBottomNavigationBar(
+                  onIndexPressed: _toggleMenu,
                 ),
-
-              if (_showAppAndBottomBar)
-                Positioned(
-                  bottom: kBottomNavigationBarHeight / 2,
-                  left: 0,
-                  right: 0,
-                  child: QurahPageBottomNavigationBar(
-                    onIndexPressed: _toggleMenu,
-                  ),
-                ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
@@ -266,8 +266,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   fontSize: isPortrait
                       // ignore: unrelated_type_equality_checks
                       ? getScreenType(context) == ScreenType(context).large
-                            ? effectiveTheme.headerFontSizeLarge
-                            : effectiveTheme.headerFontSizeSmall
+                            ? effectiveTheme.headerFontSizeLarge + 10.sp
+                            : effectiveTheme.headerFontSizeSmall + 10.sp
                       : MediaQuery.of(context).size.width * 0.05,
                   color: themeMode == ThemeMode.light
                       ? context.color.onSurface

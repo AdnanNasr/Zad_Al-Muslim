@@ -57,11 +57,15 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                 labelColor: context.color.primary,
                 unselectedLabelColor: context.color.onPrimary,
                 labelStyle: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo",
                 ),
-                unselectedLabelStyle: const TextStyle(fontFamily: "Cairo"),
+                unselectedLabelStyle: TextStyle(
+                  fontFamily: "Cairo",
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
                 tabs: const [
                   Tab(text: "السور"),
                   Tab(text: "الأجزاء"),
@@ -132,7 +136,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           fontFamily: 'surahname',
           package: 'qcf_quran',
           fontSize: 38.sp,
-          color: context.color.primary,
+          color: context.color.onSurface.withValues(alpha: .8),
         ),
       ),
       subtitle: Column(
@@ -151,7 +155,9 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
             children: [
               _buildInfoChip(
                 Icons.menu_book_rounded,
-                "${surah.verseCount} آية",
+                surah.verseCount >= 10
+                    ? "${surah.verseCount} آية"
+                    : "${surah.verseCount} آيات",
                 context,
               ),
               SizedBox(width: 12.w),
@@ -254,7 +260,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           fontFamily: "Quran",
           fontSize: 19.sp,
           height: 2,
-          color: context.color.onSurface,
+          color: context.color.onSurface.withValues(alpha: .9),
         ),
         maxLines: 1,
       ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
+import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
@@ -124,7 +125,9 @@ class _QurahPageBottomNavigationBarState
                     context,
                     Icons.settings_rounded,
                     "الإعدادات",
-                    () {},
+                    () {
+                      Navigator.of(context).pushNamed(Routes.settingsPage);
+                    },
                     themeMode,
                   ),
                 ],
@@ -158,7 +161,7 @@ class _QurahPageBottomNavigationBarState
                 icon,
                 color: themeMode == ThemeMode.light
                     ? context.color.surface
-                    : context.color.surface.withValues(alpha: .7),
+                    : Colors.white,
                 size: 24.sp,
               ),
               SizedBox(height: 2.h),
@@ -167,7 +170,7 @@ class _QurahPageBottomNavigationBarState
                 style: TextStyle(
                   color: themeMode == ThemeMode.light
                       ? context.color.onPrimary
-                      : context.color.surface.withValues(alpha: .7),
+                      : Colors.white,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo", // تأكد من وجود الخط في مشروعك

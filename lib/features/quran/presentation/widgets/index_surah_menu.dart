@@ -90,8 +90,8 @@ class _IndexMenuTabBar extends StatelessWidget {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
+          color: context.color.surface,
+          borderRadius: BorderRadius.circular(8.dg),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: .05),
@@ -101,6 +101,7 @@ class _IndexMenuTabBar extends StatelessWidget {
           ],
         ),
         child: TabBar(
+          splashBorderRadius: BorderRadius.circular(8.dg),
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
           indicator: BoxDecoration(
@@ -108,11 +109,17 @@ class _IndexMenuTabBar extends StatelessWidget {
             color: primaryColor,
           ),
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.grey,
-          labelStyle: const TextStyle(
+          unselectedLabelColor: context.color.onSurface,
+          unselectedLabelStyle: TextStyle(
+            fontSize: 14.sp,
+            fontFamily: "Cairo",
+            fontWeight: FontWeight.bold,
+          ),
+          labelStyle: TextStyle(
             fontWeight: FontWeight.bold,
             fontFamily: "Cairo",
-            fontSize: 15,
+            color: context.color.onPrimary,
+            fontSize: 16.sp,
           ),
           tabs: const [
             Tab(text: "السور"),
@@ -236,7 +243,7 @@ class _SurahCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.color.surface,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.grey.withValues(alpha: .1)),
       ),
@@ -307,7 +314,7 @@ class _JuzCard extends StatelessWidget {
         Container(
           margin: EdgeInsets.only(bottom: 15.h),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.color.surface,
             borderRadius: BorderRadius.circular(15.r),
             border: Border.all(color: Colors.grey.withValues(alpha: .2)),
           ),
