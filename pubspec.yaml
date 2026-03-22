@@ -43,6 +43,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   qcf_quran: ^0.0.5
   flutter_staggered_animations: ^1.1.1
+  share_plus: ^12.0.1
 
 dev_dependencies:
   flutter_test:

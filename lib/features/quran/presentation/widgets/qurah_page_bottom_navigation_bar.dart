@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,82 +56,58 @@ class _QurahPageBottomNavigationBarState
       position: _offsetAnimation,
       child: Padding(
         padding: EdgeInsets.only(bottom: 20.h, left: 24.w, right: 24.w),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-            child: Container(
-              height: 65.h,
-              decoration: BoxDecoration(
-                color: context.color.primary,
-                borderRadius: BorderRadius.circular(20.r),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: .1),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(
-                    context,
-                    Icons.auto_stories_rounded,
-                    "الفهرس",
-                    () {
-                      if (widget.onIndexPressed != null) {
-                        widget.onIndexPressed!();
-                      }
-                    },
-                    themeMode,
-                  ),
-                  _buildDivider(context),
-                  _buildNavItem(context, Icons.search_rounded, "بحث", () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      sheetAnimationStyle: AnimationStyle(
-                        duration: Duration(milliseconds: 800),
-                        curve: Curves.decelerate,
-                      ),
-                      constraints: BoxConstraints(
-                        maxHeight: context.mediaQueryHeight - 100.h,
-                      ),
-                      context: context,
-                      builder: (context) {
-                        return QuranSearchSheet();
-                      },
-                    );
-                  }, themeMode),
-                  _buildDivider(context),
-                  _buildNavItem(
-                    context,
-                    Icons.bookmarks_rounded,
-                    "العلامات",
-                    () {
-                      final width = ScreenUtil().screenWidth;
-                      AppLogger.logger.i("عرض الشاشة الحالية: $width");
-                    },
-                    themeMode,
-                  ),
-                  _buildDivider(context),
-                  _buildNavItem(
-                    context,
-                    Icons.settings_rounded,
-                    "الإعدادات",
-                    () {
-                      Navigator.of(context).pushNamed(Routes.settingsPage);
-                    },
-                    themeMode,
-                  ),
-                ],
-              ),
+        child: Container(
+          height: 65.h,
+          decoration: BoxDecoration(
+            color: context.color.primary,
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(
+              color: context.color.onPrimary.withValues(alpha: .1),
+              width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .15),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNavItem(context, Icons.auto_stories_rounded, "الفهرس", () {
+                if (widget.onIndexPressed != null) {
+                  widget.onIndexPressed!();
+                }
+              }, themeMode),
+              _buildDivider(context),
+              _buildNavItem(context, Icons.search_rounded, "بحث", () {
+                showModalBottomSheet(
+                  isScrollControlled: true,
+                  sheetAnimationStyle: AnimationStyle(
+                    duration: Duration(milliseconds: 800),
+                    curve: Curves.decelerate,
+                  ),
+                  constraints: BoxConstraints(
+                    maxHeight: context.mediaQueryHeight - 100.h,
+                  ),
+                  context: context,
+                  builder: (context) {
+                    return QuranSearchSheet();
+                  },
+                );
+              }, themeMode),
+              _buildDivider(context),
+              _buildNavItem(context, Icons.bookmarks_rounded, "العلامات", () {
+                final width = ScreenUtil().screenWidth;
+                AppLogger.logger.i("عرض الشاشة الحالية: $width");
+              }, themeMode),
+              _buildDivider(context),
+              _buildNavItem(context, Icons.settings_rounded, "الإعدادات", () {
+                Navigator.of(context).pushNamed(Routes.settingsPage);
+              }, themeMode),
+            ],
           ),
         ),
       ),
@@ -161,7 +136,7 @@ class _QurahPageBottomNavigationBarState
                 icon,
                 color: themeMode == ThemeMode.light
                     ? context.color.surface
-                    : Colors.white,
+                    : context.color.onPrimary,
                 size: 24.sp,
               ),
               SizedBox(height: 2.h),
@@ -170,7 +145,7 @@ class _QurahPageBottomNavigationBarState
                 style: TextStyle(
                   color: themeMode == ThemeMode.light
                       ? context.color.onPrimary
-                      : Colors.white,
+                      : context.color.onPrimary,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo", // تأكد من وجود الخط في مشروعك

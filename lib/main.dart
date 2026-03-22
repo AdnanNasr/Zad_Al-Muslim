@@ -50,8 +50,8 @@ void main() async {
       child: ScreenUtilInit(
         minTextAdapt: true,
         designSize: const Size(
-          392.72,
-          800.72,
+          392.72727272727275,
+          800.7272727272727,
         ), // const Size(411.4, 853.3) && Size(392.72727272727275, 800.7272727272727)
         builder: (context, child) => MyApp(hasSeenOnboarding: hasSeen),
       ),

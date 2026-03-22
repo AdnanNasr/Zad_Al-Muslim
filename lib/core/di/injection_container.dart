@@ -10,12 +10,15 @@ import 'package:noor_quran/features/pray_time/data/repositories/user_address_imp
 import 'package:noor_quran/features/pray_time/domain/repositories/user_address.dart';
 import 'package:noor_quran/features/pray_time/domain/usecases/get_user_address.dart';
 import 'package:noor_quran/features/quran/data/datasources/juzz_local.dart';
+import 'package:noor_quran/features/quran/data/datasources/surah_name_by_page_number_data.dart';
 import 'package:noor_quran/features/quran/data/datasources/surahs_meta_local.dart';
 import 'package:noor_quran/features/quran/data/repositories/juzz_repository_impl.dart';
 import 'package:noor_quran/features/quran/data/repositories/surah_meta_impl.dart';
+import 'package:noor_quran/features/quran/data/repositories/surah_name_by_page_number_impl.dart';
 import 'package:noor_quran/features/quran/domain/repositories/juzz_repository.dart';
 import 'package:noor_quran/features/quran/domain/repositories/surahs_meta_repository.dart';
 import 'package:noor_quran/features/quran/domain/usecases/get_juzz.dart';
+import 'package:noor_quran/features/quran/domain/usecases/get_surah_number_by_page_number.dart';
 import 'package:noor_quran/features/quran/domain/usecases/get_surahs_meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/pray_time/data/repositories/prayer_notification_service_impl.dart';
@@ -147,4 +150,15 @@ Future<void> init() async {
   sl.registerLazySingleton<JuzzRepository>(() => JuzzRepositoryImpl(sl()));
   sl.registerLazySingleton<GetJuzz>(() => GetJuzz(sl()));
   sl.registerLazySingleton<GetAllJuzz>(() => GetAllJuzz(sl()));
+
+  // get sruah by page number
+  sl.registerLazySingleton<SurahNameByPageNumberDataImpl>(
+    () => SurahNameByPageNumberDataImpl(),
+  );
+  sl.registerLazySingleton<SurahNameByPageNumberImpl>(
+    () => SurahNameByPageNumberImpl(sl()),
+  );
+  sl.registerLazySingleton<GetSurahNumberByPageNumber>(
+    () => GetSurahNumberByPageNumber(sl()),
+  );
 }

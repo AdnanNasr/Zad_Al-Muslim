@@ -7,14 +7,25 @@ import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
+import 'package:noor_quran/features/quran/presentation/providers/surah_by_page_number_provider.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
+import 'package:flutter/services.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
+import 'package:share_plus/share_plus.dart';
 
 class QuranPages extends ConsumerStatefulWidget {
   final int? pageNumber;
-  const QuranPages({super.key, this.pageNumber});
+  final int? highlightSurah;
+  final int? highlightVerse;
+
+  const QuranPages({
+    super.key,
+    this.pageNumber,
+    this.highlightSurah,
+    this.highlightVerse,
+  });
 
   @override
   ConsumerState<QuranPages> createState() => _QuranPagesState();
@@ -64,6 +75,26 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
 
   int _surahNumber = 0;
   int _verseNumber = 0;
+  int _onPageChanged = 1;
+  Offset? _tapPosition;
+
+  void onChnageSurahNumber(int surahNumber) => setState(() {
+    _onPageChanged = surahNumber;
+  });
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.pageNumber != null) {
+      _onPageChanged = widget.pageNumber!;
+    }
+    if (widget.highlightSurah != null && widget.highlightVerse != null) {
+      _surahNumber = widget.highlightSurah!;
+      _verseNumber = widget.highlightVerse!;
+      _highlightAyah = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.read(themeProvider);
@@ -104,6 +135,12 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     ThemeMode themeMode,
     FlexScheme themeColor,
   ) {
+    var globalSurahNumber = ref.read(
+      surahByPageNumberProvider.call(_onPageChanged),
+    )["surah"]!;
+    var globalStartOfSurah = ref.read(
+      surahByPageNumberProvider.call(_onPageChanged),
+    )["start"]!;
     return Scaffold(
       extendBody: true,
       body: GestureDetector(
@@ -115,6 +152,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
 
           if (_highlightAyah) {
             _highlightAyah = false;
+            _tapPosition = null;
             setState(() {});
           } else {
             _toggleShowAppBar();
@@ -126,7 +164,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               theme: themeMode == ThemeMode.light
                   ? QcfThemeData(
                       pageBackgroundColor: Color(0xFFF5E6D3),
-                      verseNumberHeight: 2.h,
+                      verseNumberHeight: 1.h,
                       verseHeight: 2.h,
                       basmalaColor: context.color.primary,
                       customHeaderBuilder: (surahNumber) {
@@ -161,10 +199,13 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               sp: context.large
                   ? context.mediaQueryWidth * 0.00255
                   : context.small
-                  ? context.mediaQueryWidth * 0.002425
+                  ? .93.sp
                   : 1.sp,
-              // h: context.large ? 1.29.h : 0,
-              initialPageNumber: widget.pageNumber ?? 0,
+              h: context.large ? 1.45.h : 0.h,
+              initialPageNumber:
+                  widget.pageNumber != null && widget.pageNumber! > 0
+                  ? widget.pageNumber!
+                  : 1,
               verseBackgroundColor: (surahNumber, verseNumber) {
                 if (surahNumber == _surahNumber &&
                     verseNumber == _verseNumber &&
@@ -173,6 +214,9 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 }
                 return null;
               },
+              onLongPressDown: (_, _, details) {
+                _tapPosition = details.globalPosition;
+              },
               onLongPress: (surahNumber, verseNumber) async {
                 _surahNumber = surahNumber;
                 _verseNumber = verseNumber;
@@ -180,9 +224,13 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
 
                 _toggleHighlightAyah(_surahNumber, _verseNumber);
               },
-              onPageChanged: (_) {
+              onPageChanged: (pageNumber) {
+                ref.read(surahByPageNumberProvider.call(pageNumber));
+                _onPageChanged = pageNumber;
+                setState(() {});
                 _hideAppBar();
                 _removeHighlightAyah();
+                _tapPosition = null;
                 _closeMenu();
               },
             ),
@@ -192,8 +240,15 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 top: 0,
                 left: 0,
                 right: 0,
-                // TODO: change params
-                child: QuranPageAppBar(surahName: "الفاتحة", juzzNumber: 1),
+                child: QuranPageAppBar(
+                  surahName: getSurahNameArabic(globalSurahNumber),
+                  juzzNumber: getJuzNumber(
+                    globalSurahNumber,
+                    globalStartOfSurah,
+                  ),
+                  placeOfRevelation: getPlaceOfRevelation(globalSurahNumber),
+                  verseCount: getVerseCount(globalSurahNumber),
+                ),
               ),
 
             if (_showAppAndBottomBar)
@@ -205,6 +260,144 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   onIndexPressed: _toggleMenu,
                 ),
               ),
+
+            if (_highlightAyah)
+              Positioned(
+                top: _tapPosition != null
+                    ? (_tapPosition!.dy - 100.h).clamp(
+                        100.0,
+                        context.mediaQueryHeight - 150.0,
+                      )
+                    : null,
+                bottom: _tapPosition == null
+                    ? (_showAppAndBottomBar ? 120.h : 80.h)
+                    : null,
+                left: 20.w,
+                right: 20.w,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutBack,
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, 50 * (1 - value)),
+                      child: Opacity(
+                        opacity: value.clamp(0.0, 1.0),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: ayahMenu(themeMode, context),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container ayahMenu(ThemeMode themeMode, BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 5.h,
+        // horizontal: 16.w,
+      ),
+      decoration: BoxDecoration(
+        color: themeMode == ThemeMode.light
+            ? Colors.white
+            : const Color(0xFF2C2C2C),
+        borderRadius: BorderRadius.circular(24.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .15),
+            blurRadius: 15,
+            spreadRadius: 2,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _actionButton(
+            icon: Icons.copy_rounded,
+            label: 'نسخ',
+            onTap: () async {
+              final text = getVerse(
+                _surahNumber,
+                _verseNumber,
+                verseEndSymbol: true,
+              );
+              await Clipboard.setData(ClipboardData(text: text));
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('تم نسخ الآية بنجاح')),
+              );
+              _highlightAyah = false;
+              setState(() {});
+            },
+          ),
+          _actionButton(
+            icon: Icons.play_arrow_rounded,
+            label: 'قراءة',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('قراءة الآية (قريباً)')),
+              );
+            },
+          ),
+          _actionButton(
+            icon: Icons.menu_book_rounded,
+            label: 'تفسير',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('تفسير الآية (قريباً)')),
+              );
+            },
+          ),
+          _actionButton(
+            icon: Icons.share_rounded,
+            label: 'مشاركة',
+            onTap: () async {
+              final text = getVerse(
+                _surahNumber,
+                _verseNumber,
+                verseEndSymbol: true,
+              );
+              final sharePlusInstance = SharePlus.instance;
+
+              await sharePlusInstance.share(ShareParams(text: text));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12.r),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 22.sp, color: context.color.primary),
+            SizedBox(height: 4.h),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 12.sp,
+                fontWeight: FontWeight.bold,
+                color: context.color.onSurface,
+              ),
+            ),
           ],
         ),
       ),
