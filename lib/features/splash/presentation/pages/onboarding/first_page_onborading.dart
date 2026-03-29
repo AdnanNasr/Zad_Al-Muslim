@@ -9,49 +9,47 @@ class FirstPageOnboarding extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30.w),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Container(
-              width: 300.w,
-              height: 250.h,
+              margin: EdgeInsets.only(top: 40.h),
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/quran_onboarding.png',
-                  ),
+                  image: AssetImage('assets/images/quran_onboarding.png'),
                   fit: BoxFit.contain,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 20.h),
-
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Column(
               children: [
                 Text(
                   'القرآن الكريم',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 26.sp,
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor,
                     fontFamily: 'Cairo',
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 12.h),
                 Text(
                   'استكشف آيات القرآن الكريم بسهولة ويسر، مع إمكانية البحث والتنقل بين السور والآيات بطريقة منظمة لتسهيل قراءتك اليومية.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 15.sp,
                     color: Colors.black54,
-                    height: 1.5.h,
+                    fontFamily: "Cairo",
+                    height: 1.6,
                   ),
                 ),
+                const Spacer(),
+                // ترك مساحة فارغة توازي حجم الزر في الصفحة الأخيرة لثبات التصميم
+                SizedBox(height: 56.h + 40.h),
               ],
             ),
           ),

@@ -5,7 +5,7 @@ import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:noor_quran/features/quran/presentation/widgets/marks_modal_bottom_sheet.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_search_sheet.dart';
 
 class QurahPageBottomNavigationBar extends ConsumerStatefulWidget {
@@ -100,8 +100,18 @@ class _QurahPageBottomNavigationBarState
               }, themeMode),
               _buildDivider(context),
               _buildNavItem(context, Icons.bookmarks_rounded, "العلامات", () {
-                final width = ScreenUtil().screenWidth;
-                AppLogger.logger.i("عرض الشاشة الحالية: $width");
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  sheetAnimationStyle: AnimationStyle(
+                    duration: Duration(milliseconds: 600),
+                    curve: Curves.decelerate,
+                  ),
+                  builder: (context) {
+                    return MarksModalBottomSheet();
+                  },
+                );
               }, themeMode),
               _buildDivider(context),
               _buildNavItem(context, Icons.settings_rounded, "الإعدادات", () {

@@ -7,11 +7,15 @@ import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
+import 'package:noor_quran/features/quran/data/models/mark.dart';
+import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/features/quran/presentation/providers/surah_by_page_number_provider.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
 import 'package:flutter/services.dart';
+import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:noor_quran/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
 import 'package:share_plus/share_plus.dart';
 
@@ -142,6 +146,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
       surahByPageNumberProvider.call(_onPageChanged),
     )["start"]!;
     return Scaffold(
+      backgroundColor: Color(0xFFF5E6D3),
       extendBody: true,
       body: GestureDetector(
         onTap: () {
@@ -159,96 +164,260 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
           }
         },
         child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
           children: [
-            PageviewQuran(
-              theme: themeMode == ThemeMode.light
-                  ? QcfThemeData(
-                      pageBackgroundColor: Color(0xFFF5E6D3),
-                      verseNumberHeight: 1.h,
-                      verseHeight: 2.h,
-                      basmalaColor: context.color.primary,
-                      customHeaderBuilder: (surahNumber) {
-                        return customQuranPageHeader(
-                          context,
-                          surahNumber,
-                          themeColor,
-                          themeMode,
-                        );
-                      },
-                    )
-                  : QcfThemeData(
-                      verseTextColor: Color(0xFFE0E0E0),
-                      verseNumberColor: Colors.grey, // amber
-                      basmalaColor: context.color.primary,
-                      headerTextColor: Colors.white,
-                      headerBackgroundColor: Colors.white,
-                      pageBackgroundColor: Color(
-                        0xFF1E1E1E,
-                      ), // Color(0xFF1E1E1E)
-                      verseNumberHeight: 2.h,
-                      verseHeight: 2.h,
-                      customHeaderBuilder: (surahNumber) {
-                        return customQuranPageHeader(
-                          context,
-                          surahNumber,
-                          themeColor,
-                          themeMode,
-                        );
-                      },
-                    ),
-              sp: context.large
-                  ? context.mediaQueryWidth * 0.00255
-                  : context.small
-                  ? .93.sp
-                  : 1.sp,
-              h: context.large ? 1.45.h : 0.h,
-              initialPageNumber:
-                  widget.pageNumber != null && widget.pageNumber! > 0
-                  ? widget.pageNumber!
-                  : 1,
-              verseBackgroundColor: (surahNumber, verseNumber) {
-                if (surahNumber == _surahNumber &&
-                    verseNumber == _verseNumber &&
-                    _highlightAyah) {
-                  return context.color.primary.withValues(alpha: 0.25);
-                }
-                return null;
-              },
-              onLongPressDown: (_, _, details) {
-                _tapPosition = details.globalPosition;
-              },
-              onLongPress: (surahNumber, verseNumber) async {
-                _surahNumber = surahNumber;
-                _verseNumber = verseNumber;
-                setState(() {});
+            Padding(
+              padding: EdgeInsets.only(top: context.mediaQueryHeight * 0.045),
+              child: Align(
+                alignment: Alignment.center,
+                child: PageviewQuran(
+                  theme: themeMode == ThemeMode.light
+                      ? QcfThemeData(
+                          pageBackgroundColor: Color(0xFFF5E6D3),
+                          verseNumberHeight: 2,
+                          verseHeight: 2,
+                          basmalaColor: context.color.primary,
+                          customHeaderBuilder: (surahNumber) {
+                            return customQuranPageHeader(
+                              context,
+                              surahNumber,
+                              themeColor,
+                              themeMode,
+                            );
+                          },
+                        )
+                      : QcfThemeData(
+                          verseTextColor: Color(0xFFE0E0E0),
+                          verseNumberColor: Colors.grey, // amber
+                          basmalaColor: context.color.primary,
+                          headerTextColor: Colors.white,
+                          headerBackgroundColor: Colors.white,
+                          pageBackgroundColor: Color(
+                            0xFF1E1E1E,
+                          ), // Color(0xFF1E1E1E)
+                          verseNumberHeight: 2,
+                          verseHeight: 2,
+                          customHeaderBuilder: (surahNumber) {
+                            return customQuranPageHeader(
+                              context,
+                              surahNumber,
+                              themeColor,
+                              themeMode,
+                            );
+                          },
+                        ),
+                  sp: context.small
+                      ? 1
+                      : context.medium
+                      ? 1.145
+                      : 1.145, // large size: 1.145
+                  // h: 1.05, // large
+                  initialPageNumber:
+                      widget.pageNumber != null && widget.pageNumber! > 0
+                      ? widget.pageNumber!
+                      : 1,
+                  verseBackgroundColor: (surahNumber, verseNumber) {
+                    if (surahNumber == _surahNumber &&
+                        verseNumber == _verseNumber &&
+                        _highlightAyah) {
+                      return context.color.primary.withValues(alpha: 0.25);
+                    }
+                    return null;
+                  },
+                  onLongPressDown: (_, _, details) {
+                    _tapPosition = details.globalPosition;
+                  },
+                  onLongPress: (surahNumber, verseNumber) {
+                    _surahNumber = surahNumber;
+                    _verseNumber = verseNumber;
+                    setState(() {});
 
-                _toggleHighlightAyah(_surahNumber, _verseNumber);
-              },
-              onPageChanged: (pageNumber) {
-                ref.read(surahByPageNumberProvider.call(pageNumber));
-                _onPageChanged = pageNumber;
-                setState(() {});
-                _hideAppBar();
-                _removeHighlightAyah();
-                _tapPosition = null;
-                _closeMenu();
-              },
-            ),
-
-            if (_showAppAndBottomBar)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: QuranPageAppBar(
-                  surahName: getSurahNameArabic(globalSurahNumber),
-                  juzzNumber: getJuzNumber(
-                    globalSurahNumber,
-                    globalStartOfSurah,
-                  ),
-                  placeOfRevelation: getPlaceOfRevelation(globalSurahNumber),
-                  verseCount: getVerseCount(globalSurahNumber),
+                    _toggleHighlightAyah(_surahNumber, _verseNumber);
+                  },
+                  onPageChanged: (pageNumber) {
+                    ref.read(surahByPageNumberProvider.call(pageNumber));
+                    _onPageChanged = pageNumber;
+                    setState(() {});
+                    _hideAppBar();
+                    _removeHighlightAyah();
+                    _tapPosition = null;
+                    _closeMenu();
+                  },
                 ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            getSurahNameArabic(globalSurahNumber),
+                            style: TextStyle(
+                              fontFamily: "Cairo",
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: context.color.primary,
+                            ),
+                          ),
+                          // جهة اليسار: رقم الجزء
+                          Text(
+                            "الجزء ${getJuzNumber(globalSurahNumber, globalStartOfSurah)}",
+                            style: TextStyle(
+                              fontFamily: "Cairo",
+                              fontSize: 14.sp,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final marks = ref.watch(marksProvder);
+                              final isMarked = marks.any(
+                                (m) => m.pageNumber == _onPageChanged,
+                              );
+                              return IconButton(
+                                onPressed: () async {
+                                  if (!isMarked) {
+                                    await ref
+                                        .read(marksProvder.notifier)
+                                        .addMark(
+                                          Mark()
+                                            ..surahName = getSurahNameArabic(
+                                              globalSurahNumber,
+                                            )
+                                            ..pageNumber = _onPageChanged,
+                                        );
+
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context)
+                                      ..hideCurrentSnackBar()
+                                      ..showSnackBar(
+                                        SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10.r,
+                                            ),
+                                          ),
+                                          backgroundColor:
+                                              context.color.primary,
+                                          content: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.bookmark_added_rounded,
+                                                color: context.color.onPrimary,
+                                              ),
+                                              SizedBox(width: 10.w),
+                                              Text(
+                                                "تم إضافة علامة القراءة",
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontFamily: "Cairo",
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      context.color.onPrimary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                  } else {
+                                    await ref
+                                        .read(marksProvder.notifier)
+                                        .removeMark(_onPageChanged);
+
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context)
+                                      ..hideCurrentSnackBar()
+                                      ..showSnackBar(
+                                        SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10.r,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.grey.shade800,
+                                          content: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.bookmark_remove_rounded,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 10.w),
+                                              Text(
+                                                "تم إزالة العلامة",
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontFamily: "Cairo",
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                  }
+                                },
+                                icon: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, anim) =>
+                                      ScaleTransition(
+                                        scale: anim,
+                                        child: child,
+                                      ),
+                                  child: Icon(
+                                    isMarked
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_outline_rounded,
+                                    key: ValueKey(isMarked),
+                                    color: isMarked
+                                        ? context.color.primary
+                                        : Colors.grey[600],
+                                    size: 26.sp,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Divider(
+                    //   height: 1,
+                    //   thickness: 2,
+                    //   indent: 10.w,
+                    //   endIndent: 10.w,
+                    //   color: context.color.primary,
+                    // ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0.h,
+              child: Text(
+                _onPageChanged.toString(), // رقم الصفحة الحالية
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontFamily: "Cairo",
+                  fontWeight: FontWeight.w500,
+                  color: context.color.primary,
+                ),
+              ),
+            ),
+            if (_showAppAndBottomBar)
+              AppAndBottomBar(
+                globalSurahNumber: globalSurahNumber,
+                globalStartOfSurah: globalStartOfSurah,
               ),
 
             if (_showAppAndBottomBar)
@@ -326,10 +495,10 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               final text = getVerse(
                 _surahNumber,
                 _verseNumber,
-                verseEndSymbol: true,
+                verseEndSymbol: false,
               );
               await Clipboard.setData(ClipboardData(text: text));
-              if (!mounted) return;
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('تم نسخ الآية بنجاح')),
               );
@@ -346,12 +515,125 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               );
             },
           ),
+          Consumer(
+            builder: (context, ref, child) {
+              final marks = ref.watch(marksProvder);
+              final isMarked = marks.any(
+                (m) =>
+                    m.surahNumber == _surahNumber &&
+                    m.ayahNumber == _verseNumber,
+              );
+
+              return _actionButton(
+                icon: isMarked
+                    ? Icons.bookmark_added_rounded
+                    : Icons.bookmark_add_outlined,
+                label: 'علامة',
+                onTap: () async {
+                  final notifier = ref.read(marksProvder.notifier);
+                  if (!isMarked) {
+                    await notifier.addMark(
+                      Mark()
+                        ..surahName = getSurahNameArabic(_surahNumber)
+                        ..pageNumber = _onPageChanged
+                        ..surahNumber = _surahNumber
+                        ..ayahNumber = _verseNumber,
+                    );
+
+                    if (!context.mounted) return;
+                    _highlightAyah = false;
+                    setState(() {});
+
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          backgroundColor: context.color.primary,
+                          content: Row(
+                            children: [
+                              Icon(
+                                Icons.bookmark_added_rounded,
+                                color: context.color.onPrimary,
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                "تم حفظ الآية!",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontFamily: "Cairo",
+                                  fontWeight: FontWeight.bold,
+                                  color: context.color.onPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                  } else {
+                    await notifier.removeAyahMark(_surahNumber, _verseNumber);
+
+                    if (!context.mounted) return;
+                    _highlightAyah = false;
+                    setState(() {});
+
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          backgroundColor: Colors.grey.shade800,
+                          content: Row(
+                            children: [
+                              Icon(
+                                Icons.bookmark_remove_rounded,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                "تم إزالة العلامة",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontFamily: "Cairo",
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                  }
+                },
+              );
+            },
+          ),
           _actionButton(
             icon: Icons.menu_book_rounded,
             label: 'تفسير',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تفسير الآية (قريباً)')),
+              final books = ref.read(tafsserBooksProvider).value;
+              String defaultBookId = 'ar.jalalayn';
+
+              if (books != null && books.isNotEmpty) {
+                final defaultBook = books.firstWhere(
+                  (b) => b.isDownloaded,
+                  orElse: () => books.first,
+                );
+                defaultBookId = defaultBook.id;
+              }
+
+              showTafsserModalBottom(
+                context,
+                ref,
+                _surahNumber,
+                _verseNumber,
+                defaultBookId,
               );
             },
           ),
@@ -470,6 +752,32 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class AppAndBottomBar extends StatelessWidget {
+  const AppAndBottomBar({
+    super.key,
+    required this.globalSurahNumber,
+    required this.globalStartOfSurah,
+  });
+
+  final int globalSurahNumber;
+  final int globalStartOfSurah;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: QuranPageAppBar(
+        surahName: getSurahNameArabic(globalSurahNumber),
+        juzzNumber: getJuzNumber(globalSurahNumber, globalStartOfSurah),
+        placeOfRevelation: getPlaceOfRevelation(globalSurahNumber),
+        verseCount: getVerseCount(globalSurahNumber),
       ),
     );
   }

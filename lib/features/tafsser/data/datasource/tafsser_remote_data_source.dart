@@ -2,7 +2,10 @@ import 'package:dio/dio.dart';
 import '../../../../core/utils/log/app_logger.dart';
 
 abstract class TafsserRemoteDataSource {
-  Future<dynamic> downloadTafsserJson(String url, {required void Function(double) onProgress});
+  Future<dynamic> downloadTafsserJson(
+    String url, {
+    required void Function(double) onProgress,
+  });
 }
 
 class TafsserRemoteDataSourceImpl implements TafsserRemoteDataSource {
@@ -11,7 +14,10 @@ class TafsserRemoteDataSourceImpl implements TafsserRemoteDataSource {
   TafsserRemoteDataSourceImpl(this.dio);
 
   @override
-  Future<dynamic> downloadTafsserJson(String url, {required void Function(double) onProgress}) async {
+  Future<dynamic> downloadTafsserJson(
+    String url, {
+    required void Function(double) onProgress,
+  }) async {
     try {
       final response = await dio.get(
         url,

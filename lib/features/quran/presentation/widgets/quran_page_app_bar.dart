@@ -101,7 +101,6 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                       Align(
                         alignment: Alignment.center,
                         child: Text(
-                          // TODO
                           "سورة ${widget.surahName}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -115,39 +114,7 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                         ),
                       ),
                       SizedBox(height: 8.h),
-                      Row(
-                        spacing: 16.w,
-                        children: [
-                          Text(
-                            'الجزء ${widget.juzzNumber}',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.bold,
-                              color: context.color.onPrimary,
-                              fontFamily: "Cairo",
-                            ),
-                          ),
-                          Text(
-                            // TODO
-                            "مكان النزول: ${widget.placeOfRevelation == "Makkah" ? "مكية" : "مدنية"}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12.sp,
-                              color: context.color.onPrimary,
-                              fontFamily: "Cairo",
-                            ),
-                          ),
-                          Text(
-                            "${widget.verseCount} آيات",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12.sp,
-                              color: context.color.onPrimary,
-                              fontFamily: "Cairo",
-                            ),
-                          ),
-                        ],
-                      ),
+                      // TODO: add buttons
                     ],
                   ),
                 ),

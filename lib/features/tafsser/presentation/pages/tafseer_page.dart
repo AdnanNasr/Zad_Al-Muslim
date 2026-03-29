@@ -31,7 +31,11 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       backgroundColor: themeMode == ThemeMode.light
           ? context.color.onPrimary
           : context.color.scrim,
-      appBar: const CustomAppBar(title: "التفسير", center: false, profile: false),
+      appBar: const CustomAppBar(
+        title: "التفسير",
+        center: false,
+        profile: false,
+      ),
       body: booksAsync.when(
         data: (books) {
           return ListView.builder(
@@ -39,8 +43,11 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index];
-              itemKeys.putIfAbsent(book.id, () => GlobalKey<TafsserItemState>());
-              
+              itemKeys.putIfAbsent(
+                book.id,
+                () => GlobalKey<TafsserItemState>(),
+              );
+
               return TafsserItem(
                 key: itemKeys[book.id],
                 info: book,
@@ -77,7 +84,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
     }
 
     final String url = "${Env.tafseerEndpint}/${book.id}";
-    
+
     // سنستخدم TafseerUtils مؤقتاً للتقدم حتى يتم تحسين الـ Repository
     TafseerUtils.downloadTafseer(
       url: url,

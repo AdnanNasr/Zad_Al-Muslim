@@ -22,8 +22,13 @@ const UserAddressModelSchema = CollectionSchema(
       name: r'country',
       type: IsarType.string,
     ),
-    r'locality': PropertySchema(
+    r'countryCode': PropertySchema(
       id: 1,
+      name: r'countryCode',
+      type: IsarType.string,
+    ),
+    r'locality': PropertySchema(
+      id: 2,
       name: r'locality',
       type: IsarType.string,
     )
@@ -55,6 +60,12 @@ int _userAddressModelEstimateSize(
     }
   }
   {
+    final value = object.countryCode;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.locality;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -70,7 +81,8 @@ void _userAddressModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.country);
-  writer.writeString(offsets[1], object.locality);
+  writer.writeString(offsets[1], object.countryCode);
+  writer.writeString(offsets[2], object.locality);
 }
 
 UserAddressModel _userAddressModelDeserialize(
@@ -81,7 +93,8 @@ UserAddressModel _userAddressModelDeserialize(
 ) {
   final object = UserAddressModel(
     country: reader.readStringOrNull(offsets[0]),
-    locality: reader.readStringOrNull(offsets[1]),
+    countryCode: reader.readStringOrNull(offsets[1]),
+    locality: reader.readStringOrNull(offsets[2]),
   );
   object.id = id;
   return object;
@@ -97,6 +110,8 @@ P _userAddressModelDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    case 2:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -352,6 +367,160 @@ extension UserAddressModelQueryFilter
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'countryCode',
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'countryCode',
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'countryCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'countryCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'countryCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'countryCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'countryCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'countryCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'countryCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'countryCode',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'countryCode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+      countryCodeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'countryCode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
       idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -585,6 +754,20 @@ extension UserAddressModelQuerySortBy
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
+      sortByCountryCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'countryCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
+      sortByCountryCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'countryCode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
       sortByLocality() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'locality', Sort.asc);
@@ -612,6 +795,20 @@ extension UserAddressModelQuerySortThenBy
       thenByCountryDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'country', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
+      thenByCountryCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'countryCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
+      thenByCountryCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'countryCode', Sort.desc);
     });
   }
 
@@ -653,6 +850,13 @@ extension UserAddressModelQueryWhereDistinct
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QDistinct>
+      distinctByCountryCode({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'countryCode', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QDistinct>
       distinctByLocality({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'locality', caseSensitive: caseSensitive);
@@ -671,6 +875,13 @@ extension UserAddressModelQueryProperty
   QueryBuilder<UserAddressModel, String?, QQueryOperations> countryProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'country');
+    });
+  }
+
+  QueryBuilder<UserAddressModel, String?, QQueryOperations>
+      countryCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'countryCode');
     });
   }
 

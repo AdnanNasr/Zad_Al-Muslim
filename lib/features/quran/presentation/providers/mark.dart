@@ -25,6 +25,7 @@ class MarksProvider extends StateNotifier<List<Mark>> {
     final mark = await db?.marks
         .filter()
         .pageNumberEqualTo(pageNumber)
+        .ayahNumberIsNull()
         .findFirst();
 
     if (mark != null) {
@@ -43,9 +44,39 @@ class MarksProvider extends StateNotifier<List<Mark>> {
     final mark = await db?.marks
         .filter()
         .pageNumberEqualTo(pageNumber)
+        .ayahNumberIsNull()
         .findFirst();
 
     return mark != null; // true = exists
+  }
+
+  // remove ayah mark
+  Future<void> removeAyahMark(int surahNumber, int ayahNumber) async {
+    final list = await db?.marks
+        .filter()
+        .surahNumberEqualTo(surahNumber)
+        .ayahNumberEqualTo(ayahNumber)
+        .findAll();
+
+    if (list != null && list.isNotEmpty) {
+      final mark = list.first;
+      state = state.where((m) => m.id != mark.id).toList();
+
+      await db?.writeTxn(() async {
+        await db!.marks.delete(mark.id);
+      });
+    }
+  }
+
+  // check if ayah mark exists
+  Future<bool> existsAyah(int surahNumber, int ayahNumber) async {
+    final mark = await db?.marks
+        .filter()
+        .surahNumberEqualTo(surahNumber)
+        .ayahNumberEqualTo(ayahNumber)
+        .findFirst();
+
+    return mark != null; 
   }
 
   Future<void> loadMarks() async {

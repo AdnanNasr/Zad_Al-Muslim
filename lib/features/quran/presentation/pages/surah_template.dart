@@ -8,7 +8,6 @@ import 'package:noor_quran/features/quran/data/models/quran_models.dart';
 import 'package:noor_quran/core/utils/arabic_numbers.dart';
 import 'package:noor_quran/features/tafsser/domain/entities/tafsser_entities.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
-import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_provider.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 
 class SurahTemplate extends ConsumerStatefulWidget {
@@ -111,31 +110,19 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
                         );
                       }),
                       _divider(),
-                      _menuAction(ctx, Icons.menu_book, "تفسير", () async {
-                        final effectiveBookId = selectedBook?.id ?? 'ar.jalalayn';
+                      _menuAction(ctx, Icons.menu_book, "تفسير", () {
+                        final effectiveBookId =
+                            selectedBook?.id ?? 'ar.jalalayn';
 
-                        final tafsserAsync = await ref.read(ayahTafsserProvider((
-                          tafsserId: effectiveBookId,
-                          surahNumber: ayah.surahNumber,
-                          ayahNumber: ayah.ayahNumber,
-                        )).future);
+                        Navigator.pop(ctx);
 
-                        if (context.mounted && tafsserAsync != null) {
-                          await showTafsserModalBottom(
-                            context,
-                            ref,
-                            ayah,
-                            effectiveBookId,
-                            tafsserAsync,
-                          );
-                          if (!ctx.mounted) return;
-                          Navigator.of(ctx).pop();
-                        } else if (context.mounted) {
-                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("تعذر تحميل التفسير، تأكد من تحميل الكتاب أولاً"))
-                          );
-                          Navigator.of(ctx).pop();
-                        }
+                        showTafsserModalBottom(
+                          context,
+                          ref,
+                          ayah.surahNumber,
+                          ayah.ayahNumber,
+                          effectiveBookId,
+                        );
                       }),
                       _divider(),
                       _menuAction(
@@ -240,18 +227,20 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
       for (final ayah in ayahs) {
         final int uniqueId = (ayah.surahNumber * 1000) + ayah.ayahNumber;
 
-        final recognizer = LongPressGestureRecognizer(
-          duration: const Duration(milliseconds: 400),
-        )..onLongPressStart = (details) {
-            HapticFeedback.lightImpact();
-            setState(() => _selectedAyahId = uniqueId);
-            _showHorizontalMenu(
-              context,
-              ayah,
-              details.globalPosition,
-              selectedBook,
-            );
-          };
+        final recognizer =
+            LongPressGestureRecognizer(
+                duration: const Duration(milliseconds: 400),
+              )
+              ..onLongPressStart = (details) {
+                HapticFeedback.lightImpact();
+                setState(() => _selectedAyahId = uniqueId);
+                _showHorizontalMenu(
+                  context,
+                  ayah,
+                  details.globalPosition,
+                  selectedBook,
+                );
+              };
         _recognizers.add(recognizer);
 
         ayahSpans.add(
@@ -261,7 +250,9 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
               fontFamily: widget.fontFamily,
               fontSize: widget.fontSize,
               height: widget.height,
-              color: themeMode == ThemeMode.light ? Colors.black87 : Colors.white,
+              color: themeMode == ThemeMode.light
+                  ? Colors.black87
+                  : Colors.white,
               backgroundColor: _selectedAyahId == uniqueId
                   ? Theme.of(context).primaryColor.withValues(alpha: .2)
                   : null,
@@ -317,7 +308,9 @@ class _SurahTemplateState extends ConsumerState<SurahTemplate>
             style: TextStyle(
               fontFamily: 'Quran',
               fontSize: 22.sp,
-              color: themeMode == ThemeMode.light ? Colors.black87 : Colors.white,
+              color: themeMode == ThemeMode.light
+                  ? Colors.black87
+                  : Colors.white,
             ),
           ),
         ],

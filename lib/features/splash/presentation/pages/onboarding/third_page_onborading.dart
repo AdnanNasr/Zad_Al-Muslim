@@ -10,13 +10,11 @@ class ThirdPageOnboarding extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30.w),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Container(
-              width: 300.w,
-              height: 250.h,
+              margin: EdgeInsets.only(top: 40.h),
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/kaaba.png'),
@@ -25,64 +23,63 @@ class ThirdPageOnboarding extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20.h),
-
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Column(
               children: [
                 Text(
-                  'أوقات الصلاة واتجاه القبلة',
+                  'أوقات الصلاة والقبلة',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 26.sp,
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor,
                     fontFamily: "Cairo",
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 12.h),
                 Text(
                   'تابع أوقات الصلاة بدقة، وحدد اتجاه القبلة بسهولة، مع إمكانية حفظ الأذكار والأحاديث المفضلة للوصول السريع في أي وقت.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 15.sp,
                     color: Colors.black54,
-                    height: 1.6.h,
+                    fontFamily: "Cairo",
+                    height: 1.6,
                   ),
                 ),
-
                 const Spacer(),
-
                 SizedBox(
-                  width: 250.w,
-                  height: 55.h,
+                  width: double.infinity,
+                  height: 56.h,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
-                      elevation: 2,
+                      elevation: 0,
                     ),
                     onPressed: () async {
                       await OnboardingInit.markAsSeen();
                       if (!context.mounted) return;
-                      Navigator.pushReplacementNamed(context, '/custom_navigation_bar');
+                      Navigator.pushReplacementNamed(
+                        context,
+                        '/custom_navigation_bar',
+                      );
                     },
                     child: Text(
                       'ابدأ الاستخدام الآن',
                       style: TextStyle(
-                        fontSize: 18.sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         fontFamily: "Cairo",
                       ),
                     ),
                   ),
                 ),
-
-                SizedBox(height: 20.h),
+                SizedBox(height: 40.h),
               ],
             ),
           ),

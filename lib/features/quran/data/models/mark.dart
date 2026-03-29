@@ -8,5 +8,7 @@ class Mark {
 
   late String surahName;
   late int pageNumber;
-  late DateTime date;
+  int? ayahNumber;
+  int? surahNumber;
+  late DateTime date = DateTime.now();
 }

@@ -1,5 +1,4 @@
 class UserAddressEntity {
-  // TODO
   final String country;
   final String locality;
   final String countryCode;
@@ -9,6 +8,4 @@ class UserAddressEntity {
     this.locality = '',
     this.countryCode = '',
   });
-
-
 }

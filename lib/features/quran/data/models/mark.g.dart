@@ -17,20 +17,30 @@ const MarkSchema = CollectionSchema(
   name: r'Mark',
   id: 3533883685707149477,
   properties: {
-    r'date': PropertySchema(
+    r'ayahNumber': PropertySchema(
       id: 0,
+      name: r'ayahNumber',
+      type: IsarType.long,
+    ),
+    r'date': PropertySchema(
+      id: 1,
       name: r'date',
       type: IsarType.dateTime,
     ),
     r'pageNumber': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'pageNumber',
       type: IsarType.long,
     ),
     r'surahName': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'surahName',
       type: IsarType.string,
+    ),
+    r'surahNumber': PropertySchema(
+      id: 4,
+      name: r'surahNumber',
+      type: IsarType.long,
     )
   },
   estimateSize: _markEstimateSize,
@@ -63,9 +73,11 @@ void _markSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.date);
-  writer.writeLong(offsets[1], object.pageNumber);
-  writer.writeString(offsets[2], object.surahName);
+  writer.writeLong(offsets[0], object.ayahNumber);
+  writer.writeDateTime(offsets[1], object.date);
+  writer.writeLong(offsets[2], object.pageNumber);
+  writer.writeString(offsets[3], object.surahName);
+  writer.writeLong(offsets[4], object.surahNumber);
 }
 
 Mark _markDeserialize(
@@ -75,10 +87,12 @@ Mark _markDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Mark();
-  object.date = reader.readDateTime(offsets[0]);
+  object.ayahNumber = reader.readLongOrNull(offsets[0]);
+  object.date = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.pageNumber = reader.readLong(offsets[1]);
-  object.surahName = reader.readString(offsets[2]);
+  object.pageNumber = reader.readLong(offsets[2]);
+  object.surahName = reader.readString(offsets[3]);
+  object.surahNumber = reader.readLongOrNull(offsets[4]);
   return object;
 }
 
@@ -90,11 +104,15 @@ P _markDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
+    case 4:
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -188,6 +206,75 @@ extension MarkQueryWhere on QueryBuilder<Mark, Mark, QWhereClause> {
 }
 
 extension MarkQueryFilter on QueryBuilder<Mark, Mark, QFilterCondition> {
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> ayahNumberIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'ayahNumber',
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> ayahNumberIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'ayahNumber',
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> ayahNumberEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ayahNumber',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> ayahNumberGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ayahNumber',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> ayahNumberLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ayahNumber',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> ayahNumberBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ayahNumber',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Mark, Mark, QAfterFilterCondition> dateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -473,6 +560,75 @@ extension MarkQueryFilter on QueryBuilder<Mark, Mark, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> surahNumberIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'surahNumber',
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> surahNumberIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'surahNumber',
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> surahNumberEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'surahNumber',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> surahNumberGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'surahNumber',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> surahNumberLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'surahNumber',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterFilterCondition> surahNumberBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'surahNumber',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension MarkQueryObject on QueryBuilder<Mark, Mark, QFilterCondition> {}
@@ -480,6 +636,18 @@ extension MarkQueryObject on QueryBuilder<Mark, Mark, QFilterCondition> {}
 extension MarkQueryLinks on QueryBuilder<Mark, Mark, QFilterCondition> {}
 
 extension MarkQuerySortBy on QueryBuilder<Mark, Mark, QSortBy> {
+  QueryBuilder<Mark, Mark, QAfterSortBy> sortByAyahNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ayahNumber', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterSortBy> sortByAyahNumberDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ayahNumber', Sort.desc);
+    });
+  }
+
   QueryBuilder<Mark, Mark, QAfterSortBy> sortByDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.asc);
@@ -515,9 +683,33 @@ extension MarkQuerySortBy on QueryBuilder<Mark, Mark, QSortBy> {
       return query.addSortBy(r'surahName', Sort.desc);
     });
   }
+
+  QueryBuilder<Mark, Mark, QAfterSortBy> sortBySurahNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'surahNumber', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterSortBy> sortBySurahNumberDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'surahNumber', Sort.desc);
+    });
+  }
 }
 
 extension MarkQuerySortThenBy on QueryBuilder<Mark, Mark, QSortThenBy> {
+  QueryBuilder<Mark, Mark, QAfterSortBy> thenByAyahNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ayahNumber', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterSortBy> thenByAyahNumberDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ayahNumber', Sort.desc);
+    });
+  }
+
   QueryBuilder<Mark, Mark, QAfterSortBy> thenByDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.asc);
@@ -565,9 +757,27 @@ extension MarkQuerySortThenBy on QueryBuilder<Mark, Mark, QSortThenBy> {
       return query.addSortBy(r'surahName', Sort.desc);
     });
   }
+
+  QueryBuilder<Mark, Mark, QAfterSortBy> thenBySurahNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'surahNumber', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Mark, Mark, QAfterSortBy> thenBySurahNumberDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'surahNumber', Sort.desc);
+    });
+  }
 }
 
 extension MarkQueryWhereDistinct on QueryBuilder<Mark, Mark, QDistinct> {
+  QueryBuilder<Mark, Mark, QDistinct> distinctByAyahNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'ayahNumber');
+    });
+  }
+
   QueryBuilder<Mark, Mark, QDistinct> distinctByDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'date');
@@ -586,12 +796,24 @@ extension MarkQueryWhereDistinct on QueryBuilder<Mark, Mark, QDistinct> {
       return query.addDistinctBy(r'surahName', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<Mark, Mark, QDistinct> distinctBySurahNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'surahNumber');
+    });
+  }
 }
 
 extension MarkQueryProperty on QueryBuilder<Mark, Mark, QQueryProperty> {
   QueryBuilder<Mark, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Mark, int?, QQueryOperations> ayahNumberProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'ayahNumber');
     });
   }
 
@@ -610,6 +832,12 @@ extension MarkQueryProperty on QueryBuilder<Mark, Mark, QQueryProperty> {
   QueryBuilder<Mark, String, QQueryOperations> surahNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'surahName');
+    });
+  }
+
+  QueryBuilder<Mark, int?, QQueryOperations> surahNumberProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'surahNumber');
     });
   }
 }

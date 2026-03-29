@@ -28,6 +28,55 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
   static final List<Map<String, dynamic>> _recentSearches = [];
 
   List<Map> _searchResults = [];
+  
+  static List<Map<String, dynamic>> _quranNormalizedCacheV2 = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _indexQuranForSearch();
+  }
+
+  void _indexQuranForSearch() {
+    if (_quranNormalizedCacheV2.isNotEmpty) return;
+
+    final List<Map<String, dynamic>> tempIndex = [];
+    for (int s = 1; s <= 114; s++) {
+      int vCount = qcf.getVerseCount(s);
+      for (int v = 1; v <= vCount; v++) {
+        String rawVerse = qcf.getVerse(s, v, verseEndSymbol: false);
+        String normal = _robustNormalize(rawVerse);
+        tempIndex.add({
+          'surahNumber': s,
+          'ayahNumber': v,
+          'surah': qcf.getSurahNameArabic(s),
+          'ayah': v.toString(),
+          'text': rawVerse,
+          'normalized': normal,
+        });
+      }
+    }
+    _quranNormalizedCacheV2 = tempIndex;
+  }
+
+  String _robustNormalize(String input) {
+    // 1. تحويل العلامات القرآنية الصغيرة إلى حروف مقابلة لتُحفظ في الفهرس
+    String s = input.replaceAll('\u0670', 'ا'); // الألف الخنجرية
+    s = s.replaceAll('\u06E5', 'و'); // الواو الصغيرة
+    s = s.replaceAll('\u06E6', 'ى'); // الياء الصغيرة
+    
+    // 2. إزالة جميع التشكيلات وعلامات الوقف القرآنية والتطويل
+    String clean = s.replaceAll(RegExp(r'[\u064B-\u065F\u06D6-\u06ED\u0640]'), '');
+    
+    // 3. توحيد الحروف للبحث المرن
+    return clean
+        .replaceAll(RegExp(r'[أإآاٱ]'), 'ا') // توحيد الألف وهمزة الوصل
+        .replaceAll('ة', 'ه') // توحيد التاء المربوطة
+        .replaceAll(RegExp(r'[يىئ]'), 'ى') // توحيد الياء والألف المقصورة والنبرة
+        .replaceAll('ؤ', 'و')
+        .replaceAll(RegExp(r'\s+'), ' ') // إزالة المسافات المزدوجة
+        .trim();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,34 +144,22 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                         ),
                       ),
                       onChanged: (words) {
-                        if (words.isEmpty) {
+                        final query = words.trim();
+                        if (query.isEmpty) {
                           setState(() => _searchResults = []);
                           return;
                         }
-
-                        final normalizedWords = qcf.removeDiacritics(
-                          words.trim(),
-                        );
-                        final searchResponse = qcf.searchWords(normalizedWords);
+                        
+                        final searchStr = _robustNormalize(query);
+                        // جعل البحث مرناً (Fuzzy) بوضع احتمالية وجود ألف أو واو أو ياء خنجرية 
+                        // بين أي حرفين، مما يحل مشكلة الإملاء القياسي ضد الرسم العثماني.
+                        final regexPattern = searchStr.split('').join('(?:[اوى]*)');
+                        final searchRegex = RegExp(regexPattern);
+                        
                         setState(() {
-                          final results = List<Map>.from(
-                            searchResponse["result"] ?? [],
-                          );
-                          _searchResults = results.map((e) {
-                            final surahNumber = e["suraNumber"] as int;
-                            final verseNumber = e["verseNumber"] as int;
-                            return {
-                              'surahNumber': surahNumber,
-                              'ayahNumber': verseNumber,
-                              'surah': qcf.getSurahNameArabic(surahNumber),
-                              'ayah': verseNumber.toString(),
-                              'text': qcf.getVerse(
-                                surahNumber,
-                                verseNumber,
-                                verseEndSymbol: true,
-                              ),
-                            };
-                          }).toList();
+                          _searchResults = _quranNormalizedCacheV2.where((ayah) {
+                            return searchRegex.hasMatch(ayah['normalized'] as String);
+                          }).take(50).toList();
                         });
                       },
                     ),
@@ -230,7 +267,6 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                     ),
                   SizedBox(height: 12.h),
 
-                  // Mockup Results
                   // TODO
                   if (_searchResults.isNotEmpty) ...[
                     Text(
@@ -362,8 +398,8 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
               style: TextStyle(
-                fontFamily: '', // Assuming this exists or falls back
-                fontSize: 18.sp,
+                fontFamily: 'Quran', // Assuming this exists or falls back
+                fontSize: 19.sp,
                 height: 1.8,
                 color: Colors.grey[800],
               ),
