@@ -8,9 +8,13 @@ import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
+import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
+import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/features/quran/presentation/providers/surah_by_page_number_provider.dart';
+import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.dart';
+import 'package:noor_quran/features/quran/presentation/widgets/mini_audio_player.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
 import 'package:flutter/services.dart';
@@ -87,6 +91,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   });
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     if (widget.pageNumber != null) {
@@ -145,6 +154,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     var globalStartOfSurah = ref.read(
       surahByPageNumberProvider.call(_onPageChanged),
     )["start"]!;
+
+    final currentAyah = ref.watch(currentPlayingAyahProvider);
+    final isAudioPlaying = currentAyah != null;
+    final showBars = _showAppAndBottomBar && !isAudioPlaying;
+
     return Scaffold(
       backgroundColor: Color(0xFFF5E6D3),
       extendBody: true,
@@ -207,16 +221,26 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                           },
                         ),
                   sp: context.small
-                      ? 1
+                      ? 0.94.sp
                       : context.medium
-                      ? 1.145
-                      : 1.145, // large size: 1.145
-                  // h: 1.05, // large
+                      ? 1.sp
+                      : 1.sp, // large size: 1.145
+                  h: 1.05, // large
                   initialPageNumber:
                       widget.pageNumber != null && widget.pageNumber! > 0
                       ? widget.pageNumber!
                       : 1,
                   verseBackgroundColor: (surahNumber, verseNumber) {
+                    // تظليل الآية التي يتم قراءتها حالياً
+                    if (currentAyah != null &&
+                        currentAyah.surahNumber == surahNumber &&
+                        currentAyah.ayahNumber == verseNumber) {
+                      return context.color.primary.withValues(
+                        alpha: 0.4,
+                      ); // لون أغمق للمقروءة
+                    }
+
+                    // تظليل الآية عند التحديد العادي
                     if (surahNumber == _surahNumber &&
                         verseNumber == _verseNumber &&
                         _highlightAyah) {
@@ -414,13 +438,13 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 ),
               ),
             ),
-            if (_showAppAndBottomBar)
+            if (showBars)
               AppAndBottomBar(
                 globalSurahNumber: globalSurahNumber,
                 globalStartOfSurah: globalStartOfSurah,
               ),
 
-            if (_showAppAndBottomBar)
+            if (showBars)
               Positioned(
                 bottom: kBottomNavigationBarHeight / 2,
                 left: 0,
@@ -459,6 +483,14 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   child: ayahMenu(themeMode, context),
                 ),
               ),
+
+            // Mini Audio Player widget
+            Positioned(
+              bottom: kBottomNavigationBarHeight + 10.h,
+              left: 0,
+              right: 0,
+              child: const MiniAudioPlayer(),
+            ),
           ],
         ),
       ),
@@ -509,9 +541,51 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
           _actionButton(
             icon: Icons.play_arrow_rounded,
             label: 'قراءة',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('قراءة الآية (قريباً)')),
+            onTap: () async {
+              final url = ref.read(
+                voiceAyahByAyahProvider(
+                  AyahVoiceParameter(_surahNumber, _verseNumber),
+                ),
+              );
+
+              url.fold(
+                (failure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "حدث خطأ",
+                        style: TextStyle(fontSize: 20.sp),
+                      ),
+                    ),
+                  );
+                },
+                (url) async {
+                  try {
+                    final player = ref.read(audioPlayerProvider);
+                    await player.stop(); // Stop previous audio if any
+
+                    ref
+                        .read(currentPlayingAyahProvider.notifier)
+                        .state = CurrentPlayingAyah(
+                      surahNumber: _surahNumber,
+                      ayahNumber: _verseNumber,
+                      surahName: getSurahNameArabic(_surahNumber),
+                    );
+
+                    await player.setUrl(url);
+                    await player.play();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "تعذر تشغيل الصوت. تحقق من اتصالك بالإنترنت.",
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
               );
             },
           ),

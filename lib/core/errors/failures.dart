@@ -22,3 +22,7 @@ class NetworkFailure extends Failure {
 class DataFailure extends Failure {
   DataFailure([super.message = "Data Failure"]);
 }
+
+class UrlFailure extends Failure {
+  UrlFailure([super.message = "Url Failure"]);
+}

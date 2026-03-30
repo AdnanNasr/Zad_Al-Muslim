@@ -1,0 +1,98 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
+import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
+import 'package:qcf_quran/qcf_quran.dart';
+import 'package:rxdart/rxdart.dart';
+
+// --- فئة لتخزين معلومات الآية الحالية ---
+class CurrentPlayingAyah {
+  final int surahNumber;
+  final int ayahNumber;
+  final String surahName;
+
+  CurrentPlayingAyah({
+    required this.surahNumber,
+    required this.ayahNumber,
+    required this.surahName,
+  });
+}
+
+// مزود لتخزين الآية الحالية النشطة
+final currentPlayingAyahProvider = StateProvider<CurrentPlayingAyah?>((ref) => null);
+
+// --- مزود مشغل الصوت العام (Global) ---
+// يعمل هذا كمشغل وحيد للتطبيق لمنع تسريب الذاكرة (Memory Leak)
+final audioPlayerProvider = Provider<AudioPlayer>((ref) {
+  final player = AudioPlayer();
+
+  player.playerStateStream.listen((state) {
+    if (state.processingState == ProcessingState.completed) {
+      if (player.loopMode == LoopMode.one) return;
+
+      final currentAyah = ref.read(currentPlayingAyahProvider);
+      if (currentAyah == null) return;
+
+      int nextAyah = currentAyah.ayahNumber + 1;
+      int nextSurah = currentAyah.surahNumber;
+      final verseCount = getVerseCount(nextSurah);
+
+      if (nextAyah > verseCount) {
+        if (nextSurah == 114) {
+          if (player.loopMode == LoopMode.all) {
+            nextSurah = 1;
+            nextAyah = 1;
+          } else {
+            ref.read(currentPlayingAyahProvider.notifier).state = null;
+            return;
+          }
+        } else {
+          nextSurah += 1;
+          nextAyah = 1;
+        }
+      }
+
+      ref.read(currentPlayingAyahProvider.notifier).state = CurrentPlayingAyah(
+        surahNumber: nextSurah,
+        ayahNumber: nextAyah,
+        surahName: getSurahNameArabic(nextSurah),
+      );
+
+      final urlEither = ref.read(voiceAyahByAyahProvider(AyahVoiceParameter(nextSurah, nextAyah)));
+      urlEither.fold(
+        (failure) {},
+        (url) async {
+          await player.setUrl(url);
+          player.play();
+        },
+      );
+    }
+  });
+
+  ref.onDispose(() => player.dispose());
+  return player;
+});
+
+// --- فئة مساعدة لدمج بيانات شريط التقدم ---
+class PositionData {
+  final Duration position;
+  final Duration bufferedPosition;
+  final Duration duration;
+
+  PositionData(this.position, this.bufferedPosition, this.duration);
+}
+
+// مزود لجلب بيانات الموضع المدمجة (Position, Buffered, Duration)
+final audioPositionStreamProvider = Provider<Stream<PositionData>>((ref) {
+  final player = ref.watch(audioPlayerProvider);
+  return Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+    player.positionStream,
+    player.bufferedPositionStream,
+    player.durationStream,
+    (position, bufferedPosition, duration) => PositionData(
+      position,
+      bufferedPosition,
+      duration ?? Duration.zero,
+    ),
+  ).asBroadcastStream();
+});
