@@ -202,7 +202,6 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                 itemCount: data.length,
                 separatorBuilder: (context, index) => SizedBox(height: 12.h),
                 itemBuilder: (context, index) {
-                  AppLogger.logger.e("index: $index");
                   final pageNumber = data[index].versesEntity.verses.keys.first;
                   final verseNumber =
                       data[index].versesEntity.verses.values.first.first;

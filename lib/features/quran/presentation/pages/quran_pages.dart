@@ -108,10 +108,19 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     }
   }
 
+  List<String> surahsInPage = []; // TODO: come back to me
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.read(themeProvider);
     final themeColor = ref.read(userThemeProvider);
+
+    List<dynamic> pageData = getPageData(_onPageChanged);
+    surahsInPage.clear();
+    for (int i = 0; i < pageData.length; i++) {
+      final surahName = getSurahNameArabic(pageData[i]["surah"] as int);
+      surahsInPage.add(surahName);
+    }
     return Scaffold(
       body: Stack(
         children: [
@@ -184,12 +193,14 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               padding: EdgeInsets.only(top: context.mediaQueryHeight * 0.045),
               child: Align(
                 alignment: Alignment.center,
+                // TODO
                 child: PageviewQuran(
                   theme: themeMode == ThemeMode.light
                       ? QcfThemeData(
                           pageBackgroundColor: Color(0xFFF5E6D3),
                           verseNumberHeight: 2,
                           verseHeight: 2,
+                          verseNumberColor: context.color.primary,
                           basmalaColor: context.color.primary,
                           customHeaderBuilder: (surahNumber) {
                             return customQuranPageHeader(
@@ -220,8 +231,10 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                             );
                           },
                         ),
-                  sp: context.small
-                      ? 0.94.sp
+                  sp:
+                      context
+                          .small // 0.915.sp for small & medium sizes without designSize
+                      ? 1.sp
                       : context.medium
                       ? 1.sp
                       : 1.sp, // large size: 1.145
@@ -283,134 +296,149 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            getSurahNameArabic(globalSurahNumber),
+                            // TODO: display more thant one name
+                            surahsInPage.join(" "),
                             style: TextStyle(
                               fontFamily: "Cairo",
-                              fontSize: 16.sp,
+                              fontSize: 15.sp,
                               fontWeight: FontWeight.bold,
                               color: context.color.primary,
                             ),
                           ),
                           // جهة اليسار: رقم الجزء
-                          Text(
-                            "الجزء ${getJuzNumber(globalSurahNumber, globalStartOfSurah)}",
-                            style: TextStyle(
-                              fontFamily: "Cairo",
-                              fontSize: 14.sp,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              final marks = ref.watch(marksProvder);
-                              final isMarked = marks.any(
-                                (m) => m.pageNumber == _onPageChanged,
-                              );
-                              return IconButton(
-                                onPressed: () async {
-                                  if (!isMarked) {
-                                    await ref
-                                        .read(marksProvder.notifier)
-                                        .addMark(
-                                          Mark()
-                                            ..surahName = getSurahNameArabic(
-                                              globalSurahNumber,
-                                            )
-                                            ..pageNumber = _onPageChanged,
-                                        );
-
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context)
-                                      ..hideCurrentSnackBar()
-                                      ..showSnackBar(
-                                        SnackBar(
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10.r,
-                                            ),
-                                          ),
-                                          backgroundColor:
-                                              context.color.primary,
-                                          content: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.bookmark_added_rounded,
-                                                color: context.color.onPrimary,
-                                              ),
-                                              SizedBox(width: 10.w),
-                                              Text(
-                                                "تم إضافة علامة القراءة",
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontFamily: "Cairo",
-                                                  fontWeight: FontWeight.bold,
-                                                  color:
-                                                      context.color.onPrimary,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                  } else {
-                                    await ref
-                                        .read(marksProvder.notifier)
-                                        .removeMark(_onPageChanged);
-
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context)
-                                      ..hideCurrentSnackBar()
-                                      ..showSnackBar(
-                                        SnackBar(
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10.r,
-                                            ),
-                                          ),
-                                          backgroundColor: Colors.grey.shade800,
-                                          content: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.bookmark_remove_rounded,
-                                                color: Colors.white,
-                                              ),
-                                              SizedBox(width: 10.w),
-                                              Text(
-                                                "تم إزالة العلامة",
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontFamily: "Cairo",
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                  }
-                                },
-                                icon: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
-                                  transitionBuilder: (child, anim) =>
-                                      ScaleTransition(
-                                        scale: anim,
-                                        child: child,
-                                      ),
-                                  child: Icon(
-                                    isMarked
-                                        ? Icons.bookmark_rounded
-                                        : Icons.bookmark_outline_rounded,
-                                    key: ValueKey(isMarked),
-                                    color: isMarked
-                                        ? context.color.primary
-                                        : Colors.grey[600],
-                                    size: 26.sp,
-                                  ),
+                          Row(
+                            children: [
+                              Text(
+                                "الجزء ${getJuzNumber(globalSurahNumber, globalStartOfSurah)}",
+                                style: TextStyle(
+                                  fontFamily: "Cairo",
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: context.color.primary,
                                 ),
-                              );
-                            },
+                              ),
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  final marks = ref.watch(marksProvder);
+                                  final isMarked = marks.any(
+                                    (m) => m.pageNumber == _onPageChanged,
+                                  );
+                                  return IconButton(
+                                    onPressed: () async {
+                                      if (!isMarked) {
+                                        await ref
+                                            .read(marksProvder.notifier)
+                                            .addMark(
+                                              Mark()
+                                                ..surahName =
+                                                    getSurahNameArabic(
+                                                      globalSurahNumber,
+                                                    )
+                                                ..pageNumber = _onPageChanged,
+                                            );
+
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(context)
+                                          ..hideCurrentSnackBar()
+                                          ..showSnackBar(
+                                            SnackBar(
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
+                                              ),
+                                              backgroundColor:
+                                                  context.color.primary,
+                                              content: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .bookmark_added_rounded,
+                                                    color:
+                                                        context.color.onPrimary,
+                                                  ),
+                                                  SizedBox(width: 10.w),
+                                                  Text(
+                                                    "تم إضافة علامة القراءة",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontFamily: "Cairo",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: context
+                                                          .color
+                                                          .onPrimary,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                      } else {
+                                        await ref
+                                            .read(marksProvder.notifier)
+                                            .removeMark(_onPageChanged);
+
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(context)
+                                          ..hideCurrentSnackBar()
+                                          ..showSnackBar(
+                                            SnackBar(
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
+                                              ),
+                                              backgroundColor:
+                                                  Colors.grey.shade800,
+                                              content: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .bookmark_remove_rounded,
+                                                    color: Colors.white,
+                                                  ),
+                                                  SizedBox(width: 10.w),
+                                                  Text(
+                                                    "تم إزالة العلامة",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontFamily: "Cairo",
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                      }
+                                    },
+                                    icon: AnimatedSwitcher(
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      transitionBuilder: (child, anim) =>
+                                          ScaleTransition(
+                                            scale: anim,
+                                            child: child,
+                                          ),
+                                      child: Icon(
+                                        isMarked
+                                            ? Icons.bookmark_rounded
+                                            : Icons.bookmark_outline_rounded,
+                                        key: ValueKey(isMarked),
+                                        color: isMarked
+                                            ? context.color.primary
+                                            : context.color.primary,
+                                        size: 26.sp,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),

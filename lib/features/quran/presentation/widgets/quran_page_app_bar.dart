@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/quran_more_menu.dart';
 
 class QuranPageAppBar extends ConsumerStatefulWidget {
   final String surahName; // أضفت هذا ليكون الكود تفاعلياً
@@ -98,48 +97,44 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "سورة ${widget.surahName}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17.sp,
-                            color: context.color.onPrimary,
-                            fontFamily: "Cairo",
-                            letterSpacing: 0.5,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        "سورة ${widget.surahName}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17.sp,
+                          color: context.color.onPrimary,
+                          fontFamily: "Cairo",
+                          letterSpacing: 0.5,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 8.h),
-                      // TODO: add buttons
-                    ],
-                  ),
-                ),
-
-                // زر المزيد بتنسيق متناسق
-                _buildSquareAction(
-                  icon: Icons.more_vert_rounded,
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      backgroundColor:
-                          Colors.transparent, // لجعل القائمة زجاجية أيضاً
-                      builder: (context) => QuranMoreMenu(
-                        menuItems: [
-                          MenuItem(
-                            icon: Icons.widgets_rounded,
-                            label: "لوحة التحكم",
-                            backgroundColor: Colors.blueAccent,
-                            onTap: () {},
+                      Row(
+                        spacing: 16.w,
+                        children: [
+                          Text(
+                            "الجزء ${widget.juzzNumber}",
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: "Cairo",
+                              color: context.color.onPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "عدد الآيات ${widget.verseCount}",
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: "Cairo",
+                              color: context.color.onPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
-                    );
-                  },
-                  themeMode: themeMode,
+                    ],
+                  ),
                 ),
               ],
             ),

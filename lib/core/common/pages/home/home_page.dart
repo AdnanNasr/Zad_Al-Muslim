@@ -51,7 +51,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final colorScheme = theme.colorScheme;
     final themeMode = ref.watch(themeProvider);
     final marksProvider = ref.watch(marksProvder);
-    
+
     Mark? lastReadingPostion;
     if (marksProvider.isNotEmpty) {
       lastReadingPostion = marksProvider.last;
@@ -69,7 +69,8 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 }
 
-class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWidget لمراقبة الـ Providers
+class BodyContent extends ConsumerWidget {
+  // تم تحويله لـ ConsumerWidget لمراقبة الـ Providers
   const BodyContent({
     super.key,
     required this.colorScheme,
@@ -84,7 +85,6 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
-
       children: [
         const PrayTimesContainer(),
         Material(
@@ -116,10 +116,14 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded( // أضفت Expanded هنا ليعمل الـ Divider بشكل صحيح
+                    Expanded(
+                      // أضفت Expanded هنا ليعمل الـ Divider بشكل صحيح
                       child: Padding(
                         padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
-                        child: Divider(color: colorScheme.primary, thickness: 2),
+                        child: Divider(
+                          color: colorScheme.primary,
+                          thickness: 2,
+                        ),
                       ),
                     ),
                   ],
@@ -145,6 +149,14 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                       },
                     ),
                     HomeButton(
+                      text: "القرآن مرتل",
+                      iconImage: "assets/icons/voice.png",
+                      color: context.color.primary,
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.selectSurahPage);
+                      },
+                    ),
+                    HomeButton(
                       text: AppLocalizations.of(context)!.tafseer,
                       iconImage: "assets/icons/book.png",
                       color: context.color.primary,
@@ -160,7 +172,7 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                         Navigator.of(context).pushNamed("/sunah_page");
                       },
                     ),
-                    
+
                     // --- زر مواقيت الصلاة ---
                     HomeButton(
                       text: AppLocalizations.of(context)!.pray_times,
@@ -170,9 +182,8 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                         Navigator.of(context).pushNamed("/pray_time_page");
                       },
                     ),
+
                     // ----------------------------
-
-
                     HomeButton(
                       text: AppLocalizations.of(context)!.qebla_direction,
                       iconImage: "assets/icons/kaaba.png",
@@ -198,8 +209,13 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
         SizedBox(height: 8.h),
         if (lastReadingPostion != null)
           // ... (كود الـ "آخر قراءة" يبقى كما هو) ...
-          _buildLastReadingWidget(context, colorScheme, themeMode, lastReadingPostion!),
-        
+          _buildLastReadingWidget(
+            context,
+            colorScheme,
+            themeMode,
+            lastReadingPostion!,
+          ),
+
         SizedBox(height: 8.h),
         TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
       ],
@@ -207,12 +223,19 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
   }
 
   // دالة مساعدة لتنظيم كود الـ Last Reading
-  Widget _buildLastReadingWidget(BuildContext context, ColorScheme colorScheme, ThemeMode themeMode, Mark lastReadingPostion) {
+  Widget _buildLastReadingWidget(
+    BuildContext context,
+    ColorScheme colorScheme,
+    ThemeMode themeMode,
+    Mark lastReadingPostion,
+  ) {
     return Padding(
       padding: EdgeInsets.all(8.0.r),
       child: Material(
         surfaceTintColor: colorScheme.primary,
-        shadowColor: themeMode == ThemeMode.light ? colorScheme.surface : colorScheme.primary,
+        shadowColor: themeMode == ThemeMode.light
+            ? colorScheme.surface
+            : colorScheme.primary,
         elevation: 2,
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8.r),
@@ -225,20 +248,31 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                   padding: EdgeInsets.all(8.0.r),
                   child: Text(
                     AppLocalizations.of(context)!.last_reading_surah,
-                    style: TextStyle(fontSize: 20.sp, fontFamily: "Cairo", fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontFamily: "Cairo",
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Expanded(child: Divider(thickness: 2, color: colorScheme.primary)),
+                Expanded(
+                  child: Divider(thickness: 2, color: colorScheme.primary),
+                ),
               ],
             ),
             SizedBox(height: 8.h),
             InkWell(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                // must represent last reading position in Quran section
-                builder: (context) => SelectSurahPage(),
-              )),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  // must represent last reading position in Quran section
+                  builder: (context) => SelectSurahPage(),
+                ),
+              ),
               child: Ink(
-                decoration: BoxDecoration(color: colorScheme.primary, borderRadius: BorderRadius.circular(6.r)),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
                 child: Padding(
                   padding: EdgeInsets.all(8.0.r),
                   child: Row(
@@ -246,16 +280,36 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
                     children: [
                       Row(
                         children: [
-                          Text("سُورَةَ ${lastReadingPostion.surahName}", 
-                               style: TextStyle(fontSize: 25.sp, fontFamily: "Amiri", color: colorScheme.onPrimary)),
+                          Text(
+                            "سُورَةَ ${lastReadingPostion.surahName}",
+                            style: TextStyle(
+                              fontSize: 25.sp,
+                              fontFamily: "Amiri",
+                              color: colorScheme.onPrimary,
+                            ),
+                          ),
                           SizedBox(width: 20.w),
-                          Text("|", style: TextStyle(fontSize: 35.sp, color: colorScheme.onPrimary)),
+                          Text(
+                            "|",
+                            style: TextStyle(
+                              fontSize: 35.sp,
+                              color: colorScheme.onPrimary,
+                            ),
+                          ),
                           SizedBox(width: 20.w),
-                          Text("${AppLocalizations.of(context)!.page_number}: ${lastReadingPostion.pageNumber}",
-                               style: TextStyle(fontSize: 18.sp, color: colorScheme.onPrimary)),
+                          Text(
+                            "${AppLocalizations.of(context)!.page_number}: ${lastReadingPostion.pageNumber}",
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              color: colorScheme.onPrimary,
+                            ),
+                          ),
                         ],
                       ),
-                      Icon(Icons.arrow_forward_ios, color: colorScheme.onPrimary),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: colorScheme.onPrimary,
+                      ),
                     ],
                   ),
                 ),
@@ -269,7 +323,11 @@ class BodyContent extends ConsumerWidget { // تم تحويله لـ ConsumerWid
 }
 
 class TodayDuaa extends StatelessWidget {
-  const TodayDuaa({super.key, required this.colorScheme, required this.themeMode});
+  const TodayDuaa({
+    super.key,
+    required this.colorScheme,
+    required this.themeMode,
+  });
   final ColorScheme colorScheme;
   final ThemeMode themeMode;
 
@@ -277,7 +335,9 @@ class TodayDuaa extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       surfaceTintColor: colorScheme.primary,
-      shadowColor: themeMode == ThemeMode.light ? colorScheme.surface : colorScheme.primary,
+      shadowColor: themeMode == ThemeMode.light
+          ? colorScheme.surface
+          : colorScheme.primary,
       elevation: 2,
       color: colorScheme.surface,
       borderRadius: BorderRadius.circular(8.r),
@@ -285,19 +345,34 @@ class TodayDuaa extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Divider(thickness: 2.sp, color: colorScheme.primary)),
+              Expanded(
+                child: Divider(thickness: 2.sp, color: colorScheme.primary),
+              ),
               Padding(
                 padding: EdgeInsets.all(8.0.r),
-                child: Text("دعاء اليوم", style: TextStyle(fontSize: 20.sp, fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+                child: Text(
+                  "دعاء اليوم",
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontFamily: "Cairo",
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              Expanded(child: Divider(thickness: 2.sp, color: colorScheme.primary)),
+              Expanded(
+                child: Divider(thickness: 2.sp, color: colorScheme.primary),
+              ),
             ],
           ),
           Padding(
             padding: EdgeInsets.all(8.r),
             child: Text(
               "كانَ رَسولُ اللَّهِ صَلَّى اللهُ عليه وسلَّمَ يَتَعَوَّذُ مِن جَهْدِ البَلَاءِ، ودَرَكِ الشَّقَاءِ، وسُوءِ القَضَاءِ، وشَمَاتَةِ الأعْدَاءِ",
-              style: TextStyle(fontSize: 19.5.sp, fontFamily: "Tajawal", fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 19.5.sp,
+                fontFamily: "Tajawal",
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
