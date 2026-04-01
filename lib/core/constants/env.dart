@@ -14,7 +14,10 @@ class Env {
       "https://unadmonitory-yuki-unconsigned.ngrok-free.dev/tafsser/tafsser_file";
 
   static String voiceAyahByAyahBaseUrl = "https://verse.mp3quran.net/arabic";
-  // default voice mishary_alafasy
+  // default voice for quran section mishary_alafasy
   static String voiceAyahByAyahMisharyAlafasy =
       "$voiceAyahByAyahBaseUrl/mishary_alafasy/64";
+
+  // TODO: routes for Qaris in quran moratal seciton
+  static const String baseQuranVoiceUrl = "https://server8.mp3quran.net";
 }

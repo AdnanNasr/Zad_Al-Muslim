@@ -23,6 +23,9 @@ import 'package:noor_quran/features/quran/domain/usecases/get_juzz.dart';
 import 'package:noor_quran/features/quran/domain/usecases/get_surah_number_by_page_number.dart';
 import 'package:noor_quran/features/quran/domain/usecases/get_surahs_meta.dart';
 import 'package:noor_quran/features/quran/domain/usecases/get_voice_ayah_by_ayah.dart';
+import 'package:noor_quran/features/quran_moratal/data/datasources/surah_qari_remote_sources.dart';
+import 'package:noor_quran/features/quran_moratal/data/repositories/surah_qari_voice_impl.dart';
+import 'package:noor_quran/features/quran_moratal/domain/usecases/get_surah_qari_voice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/pray_time/data/repositories/prayer_notification_service_impl.dart';
 import '../../features/pray_time/domain/repositories/prayer_notification_service.dart';
@@ -173,4 +176,11 @@ Future<void> init() async {
     () => VoiceAyahByAyahRemoteImpl(),
   );
   sl.registerLazySingleton<GetVoiceAyahByAyah>(() => GetVoiceAyahByAyah(sl()));
+
+  // Qari Moratal
+  sl.registerLazySingleton<SurahQariRemoteSourcesImpl>(
+    () => SurahQariRemoteSourcesImpl(),
+  );
+  sl.registerLazySingleton<SurahQariVoiceImpl>(() => SurahQariVoiceImpl(sl()));
+  sl.registerLazySingleton<GetSurahQariVoice>(() => GetSurahQariVoice(sl()));
 }

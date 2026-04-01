@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
 import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
+import 'package:noor_quran/features/quran_moratal/presentation/pages/quran_moratal_page.dart';
 import 'package:noor_quran/features/splash/presentation/pages/splash_screen.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
 import 'package:noor_quran/core/utils/notifications/notification_service.dart';
@@ -88,6 +89,7 @@ class MyApp extends ConsumerWidget {
             SplashScreen(hasSeenOnboarding: hasSeenOnboarding),
         "/home_page": (_) => const HomePage(),
         "/quran_pages": (_) => const QuranPages(),
+        "/quran_moratal": (_) => const QuranMoratalPage(),
         "/select_surah_page": (_) => SelectSurahPage(),
         "/settings_page": (_) => const SettingsPage(),
         "/change_app_color_page": (_) => const ChangeAppColorPage(),

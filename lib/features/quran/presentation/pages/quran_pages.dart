@@ -193,12 +193,14 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               padding: EdgeInsets.only(top: context.mediaQueryHeight * 0.045),
               child: Align(
                 alignment: Alignment.center,
-                // TODO
                 child: PageviewQuran(
                   theme: themeMode == ThemeMode.light
                       ? QcfThemeData(
                           pageBackgroundColor: Color(0xFFF5E6D3),
-                          verseNumberHeight: 2,
+                          verseNumberHeight:
+                              _onPageChanged == 1 || _onPageChanged == 2
+                              ? 2.2
+                              : 2,
                           verseHeight: 2,
                           verseNumberColor: context.color.primary,
                           basmalaColor: context.color.primary,

@@ -1,0 +1,227 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart';
+import 'package:noor_quran/features/quran/presentation/providers/surahs_meta_provider.dart';
+import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
+import 'package:noor_quran/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
+
+class SelectQariSurahPage extends ConsumerStatefulWidget {
+  final Map<String, String> qariData;
+  const SelectQariSurahPage({super.key, required this.qariData});
+
+  @override
+  ConsumerState<SelectQariSurahPage> createState() => _SelectQariSurahPageState();
+}
+
+class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
+  @override
+  Widget build(BuildContext context) {
+    final surahsMeta = ref.watch(surahsMetaProvider);
+
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: "سور القرآن - ${widget.qariData['name']}",
+        center: true,
+        profile: false,
+      ),
+      body: Stack(
+        children: [
+          surahsMeta.fold(
+            (failure) => Center(
+              child: Text(
+                failure.message,
+                style: const TextStyle(fontFamily: "Cairo", color: Colors.red),
+              ),
+            ),
+            (surahs) => AnimationLimiter(
+              child: ListView.separated(
+                padding: EdgeInsets.only(
+                  left: 16.w,
+                  right: 16.w,
+                  top: 20.h,
+                  bottom: 100.h, // padding for mini player
+                ),
+                itemCount: surahs.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 700),
+                    child: SlideAnimation(
+                      verticalOffset: 50,
+                      child: FadeInAnimation(
+                        child: _buildSurahItem(context, surahs[index]),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 20.0),
+              child: MoratalMiniPlayer(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSurahItem(BuildContext context, SurahMetaEntity surah) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: context.color.primary.withValues(alpha: .2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16.r),
+              onTap: () {
+                final currentSurah = CurrentMoratalSurah(
+                  surahNumber: surah.surahNumber,
+                  surahName: surah.arabicName,
+                  qariName: widget.qariData['name'] ?? "",
+                  serverUrl: widget.qariData['server'] ?? "",
+                );
+                // Call the action provider
+                ref.read(playMoratalSurahActionProvider)(currentSurah);
+              },
+              child: Padding(
+                padding: EdgeInsets.all(12.dg),
+                child: Row(
+                  children: [
+                    _buildNumberIndicator(context, surah.surahNumber),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'surah${surah.surahNumber.toString().padLeft(3, '0')}',
+                            style: TextStyle(
+                              fontFamily: 'surahname',
+                              package: 'qcf_quran',
+                              fontSize: 38.sp,
+                              color: context.color.onSurface.withValues(alpha: .8),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                surah.englishName,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                              SizedBox(height: 6.h),
+                              Row(
+                                children: [
+                                  _buildInfoChip(
+                                    Icons.menu_book_rounded,
+                                    surah.verseCount >= 10
+                                        ? "${surah.verseCount} آية"
+                                        : "${surah.verseCount} آيات",
+                                    context,
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  _buildInfoChip(
+                                    Icons.grid_view_rounded,
+                                    "الجزء ${surah.juzzNumber}",
+                                    context,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.play_circle_outline_rounded,
+                      size: 28.sp,
+                      color: context.color.primary.withValues(alpha: .8),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNumberIndicator(BuildContext context, int number) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Transform.rotate(
+          angle: 0.8,
+          child: Container(
+            width: 35.w,
+            height: 35.w,
+            decoration: BoxDecoration(
+              color: context.color.primary.withValues(alpha: .1),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+          ),
+        ),
+        Text(
+          number.toString(),
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+            color: context.color.primary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoChip(IconData icon, String label, BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 13.sp,
+          color: context.color.primary.withValues(alpha: .5),
+        ),
+        SizedBox(width: 4.w),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11.5.sp,
+            color: context.color.primary,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Cairo",
+          ),
+        ),
+      ],
+    );
+  }
+}

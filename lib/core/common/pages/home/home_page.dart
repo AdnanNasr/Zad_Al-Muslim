@@ -7,6 +7,7 @@ import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
+import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
 import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
 
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
@@ -149,11 +150,11 @@ class BodyContent extends ConsumerWidget {
                       },
                     ),
                     HomeButton(
-                      text: "القرآن مرتل",
+                      text: "القرآن مُرتل",
                       iconImage: "assets/icons/voice.png",
                       color: context.color.primary,
                       onTap: () {
-                        Navigator.pushNamed(context, Routes.selectSurahPage);
+                        Navigator.pushNamed(context, Routes.quranMoratal);
                       },
                     ),
                     HomeButton(
@@ -265,7 +266,11 @@ class BodyContent extends ConsumerWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   // must represent last reading position in Quran section
-                  builder: (context) => SelectSurahPage(),
+                  builder: (context) => QuranPages(
+                    highlightVerse: lastReadingPostion.ayahNumber,
+                    highlightSurah: lastReadingPostion.surahNumber,
+                    pageNumber: lastReadingPostion.pageNumber,
+                  ),
                 ),
               ),
               child: Ink(
