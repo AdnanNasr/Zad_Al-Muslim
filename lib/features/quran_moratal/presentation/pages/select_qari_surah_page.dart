@@ -14,7 +14,8 @@ class SelectQariSurahPage extends ConsumerStatefulWidget {
   const SelectQariSurahPage({super.key, required this.qariData});
 
   @override
-  ConsumerState<SelectQariSurahPage> createState() => _SelectQariSurahPageState();
+  ConsumerState<SelectQariSurahPage> createState() =>
+      _SelectQariSurahPageState();
 }
 
 class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
@@ -62,7 +63,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
               ),
             ),
           ),
-          
+
           const Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -104,6 +105,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                   surahName: surah.arabicName,
                   qariName: widget.qariData['name'] ?? "",
                   serverUrl: widget.qariData['server'] ?? "",
+                  qariId: widget.qariData['id'] ?? "",
                 );
                 // Call the action provider
                 ref.read(playMoratalSurahActionProvider)(currentSurah);
@@ -124,7 +126,9 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                               fontFamily: 'surahname',
                               package: 'qcf_quran',
                               fontSize: 38.sp,
-                              color: context.color.onSurface.withValues(alpha: .8),
+                              color: context.color.onSurface.withValues(
+                                alpha: .8,
+                              ),
                             ),
                           ),
                           Column(

@@ -41,7 +41,7 @@ class SecondPageOnboarding extends StatelessWidget {
                   'ابحث واستعرض الأحاديث النبوية بسهولة، اختر حسب الكتاب أو الراوي أو الموضوع، واحصل على عرض فوري لدرجة صحة الحديث.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 18.sp,
                     color: Colors.black54,
                     fontFamily: "Cairo",
                     height: 1.6,

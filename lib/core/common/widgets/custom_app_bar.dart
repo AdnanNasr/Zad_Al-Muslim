@@ -13,9 +13,9 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final Widget? flexibleSpace;
   final bool shape;
-  // تم تغيير النوع هنا من TabBar? إلى PreferredSizeWidget?
-  final PreferredSizeWidget? bottom; 
+  final PreferredSizeWidget? bottom;
   final void Function()? customVoid;
+  final String? tooltip;
 
   const CustomAppBar({
     super.key,
@@ -29,88 +29,99 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.shape = false,
     this.bottom,
     this.customVoid,
+    this.tooltip,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppBar(
-      bottom: bottom,
-      // تم تعديل لون الأيقونة ليتناسب مع الخلفية الأساسية
-      iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 20.sp,
+    return SafeArea(
+      top: false,
+      child: AppBar(
+        toolbarHeight: kToolbarHeight,
+        bottom: bottom,
+        iconTheme: IconThemeData(
           color: Theme.of(context).colorScheme.onPrimary,
-          fontWeight: FontWeight.bold,
-          fontFamily: "Cairo",
         ),
-      ),
-      actionsPadding: EdgeInsets.symmetric(horizontal: 12.w),
-      centerTitle: center,
-      leading: icon != null
-          ? IconButton(
-              icon: Icon(icon),
-              color: Theme.of(context).colorScheme.onPrimary,
-              onPressed: () {
-                customVoid?.call();
-                Navigator.of(context).pop();
-              },
-            )
-          : null,
-      backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
-      shape: shape
-          ? RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(context.witdthScreen * 0.08),
-                bottomLeft: Radius.circular(context.witdthScreen * 0.08),
-              ),
-            )
-          : null,
-      actions: [
-        if (profile)
-          Center( // استخدام Center لضمان التوسط العمودي للأيقونة
-            child: Container(
-              decoration: BoxDecoration(
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 20.sp,
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Cairo",
+          ),
+        ),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 12.w),
+        centerTitle: center,
+        leading: icon != null
+            ? IconButton(
+                tooltip: tooltip,
+                icon: Icon(icon),
                 color: Theme.of(context).colorScheme.onPrimary,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 300),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        return ScaleTransition(
-                          scale: animation,
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return const SettingsPage();
-                      },
-                    ),
-                  );
+                  customVoid?.call();
+                  Navigator.of(context).pop();
                 },
-                icon: Icon(
-                  Icons.person,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20.sp,
+              )
+            : null,
+        // تأكدنا من أن لون الخلفية يغطي منطقة الـ SafeArea أيضاً عبر Scaffold إذا لزم الأمر،
+        // ولكن هنا نكتفي بلون الـ AppBar
+        backgroundColor:
+            backgroundColor ?? Theme.of(context).colorScheme.primary,
+        shape: shape
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(context.widthScreen * 0.08),
+                  bottomLeft: Radius.circular(context.widthScreen * 0.08),
+                ),
+              )
+            : null,
+        actions: [
+          if (profile)
+            Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        transitionDuration: const Duration(milliseconds: 300),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                              return ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              );
+                            },
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          return const SettingsPage();
+                        },
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.person,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20.sp,
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   Size get preferredSize {
-    double height = kToolbarHeight;
+    // نحتاج لإضافة ارتفاع الـ Status Bar إلى الارتفاع الإجمالي إذا لم يكن الـ Scaffold يتعامل معه
+    double totalHeight = kToolbarHeight;
     if (bottom != null) {
-      // الآن سيتم حساب الطول ديناميكياً لأي ويدجت تمررها في الأسفل
-      height += bottom!.preferredSize.height;
+      totalHeight += bottom!.preferredSize.height;
     }
-    return Size.fromHeight(height);
+    return Size.fromHeight(totalHeight);
   }
 }

@@ -9,7 +9,8 @@ extension SizesExt on BuildContext {
   // get full height size
   double get heightScreen => ScreenUtil().screenHeight;
   // get full width size
-  double get witdthScreen => ScreenUtil().screenWidth;
+  double get widthScreen => ScreenUtil().screenWidth;
+  double get witdthScreen => ScreenUtil().screenWidth; // Keep for compatibility
 
   //-----------------MediaQuery------------------------
   Size get mediaQuery => MediaQuery.of(this).size;

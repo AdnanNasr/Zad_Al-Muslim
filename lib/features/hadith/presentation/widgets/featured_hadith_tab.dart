@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
+import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_modal_bottom.dart';
 
 class FeaturedHadithsTab extends ConsumerWidget {
@@ -24,68 +25,34 @@ class FeaturedHadithsTab extends ConsumerWidget {
           return const Center(child: Text("لا توجد أحاديث مميزة حالياً"));
         }
 
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-            itemCount: featuredHadiths.length,
-            itemBuilder: (context, index) {
-              final hadith = featuredHadiths[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                color: Theme.of(context).cardColor,
-                child: InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isDismissible: true,
-                      enableDrag: true,
-                      showDragHandle: true,
-                      useSafeArea: true,
-                      isScrollControlled: true,
-                      builder: (context) => HadithModalBottom(hadith: hadith),
-                    );
-                  },
-                  child: ListTile(
-                    title: Text(
-                      hadith.hadith,
-                      style: TextStyle(
-                        fontSize: context.witdthScreen * 0.04,
-                        fontFamily: "Amiri",
-                        fontWeight: FontWeight.w400,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      maxLines: 2,
-                    ),
-                    subtitle: Text(
-                      hadith.hadithNarrator,
-                      style: TextStyle(
-                        fontSize: context.witdthScreen * 0.035,
-                        fontFamily: "Cairo",
-                      ),
-                    ),
-                    leading: Text(
-                      "${index + 1}",
-                      style: TextStyle(fontSize: context.witdthScreen * 0.04),
-                    ),
-                    trailing: IconButton(
-                      onPressed: () async {
-                        // استخدام notifier لتعديل الحالة
-                        await ref
-                            .read(hadithProvider.notifier)
-                            .toggleIsFeatured(hadith);
-                      },
-                      icon: Icon(
-                        hadith.isFeatured ? Icons.star : Icons.star_border,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+        return ListView.builder(
+          padding: EdgeInsets.symmetric(vertical: 8.h),
+          itemCount: featuredHadiths.length,
+          itemBuilder: (context, index) {
+            final hadith = featuredHadiths[index];
+            return HadithCard(
+              hadith: hadith,
+              index: index,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isDismissible: true,
+                  enableDrag: true,
+                  showDragHandle: true,
+                  useSafeArea: true,
+                  isScrollControlled: true,
+                  builder: (context) => HadithModalBottom(hadith: hadith),
+                );
+              },
+              onToggleFavorite: () async {
+                await ref
+                    .read(hadithProvider.notifier)
+                    .toggleIsFeatured(hadith);
+              },
+            );
+          },
         );
       },
     );
   }
-}
+}

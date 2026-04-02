@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/constants/enums/qari_names.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/pages/select_qari_surah_page.dart';
 
-class QuranMoratalPage extends StatelessWidget {
+class QuranMoratalPage extends ConsumerWidget {
   const QuranMoratalPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
     return Scaffold(
       appBar: CustomAppBar(
         title: "القرآن مُرتل",
@@ -23,14 +26,22 @@ class QuranMoratalPage extends StatelessWidget {
         separatorBuilder: (context, index) => SizedBox(height: 12.h),
         itemBuilder: (context, index) {
           final Map<String, String> qariData = QariNames.allQaris[index];
-          return qariListTile(qariData: qariData, context: context);
+          return qariListTile(
+            qariData: qariData,
+            context: context,
+            themeMode: themeMode,
+          );
         },
       ),
     );
   }
 }
 
-Widget qariListTile({required Map<String, String> qariData, required BuildContext context}) {
+Widget qariListTile({
+  required Map<String, String> qariData,
+  required BuildContext context,
+  required ThemeMode themeMode,
+}) {
   return Material(
     color: Colors.transparent,
     child: InkWell(
@@ -45,7 +56,9 @@ Widget qariListTile({required Map<String, String> qariData, required BuildContex
       child: Ink(
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: themeMode == ThemeMode.light
+              ? context.color.onPrimary
+              : context.color.onPrimary,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
           boxShadow: [
@@ -62,9 +75,6 @@ Widget qariListTile({required Map<String, String> qariData, required BuildContex
               width: 55.w,
               height: 55.w,
               decoration: BoxDecoration(
-                // gradient: LinearGradient(
-                //   colors: [mainColor, mainColor.withValues(alpha: 0.7)],
-                // ),
                 color: context.color.primary,
                 shape: BoxShape.circle,
               ),

@@ -143,7 +143,7 @@ class BodyContent extends ConsumerWidget {
                   children: [
                     HomeButton(
                       text: AppLocalizations.of(context)!.quran_kareem,
-                      iconImage: "assets/icons/quran.png",
+                      iconImage: "assets/icons/quran.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.pushNamed(context, Routes.selectSurahPage);
@@ -151,7 +151,7 @@ class BodyContent extends ConsumerWidget {
                     ),
                     HomeButton(
                       text: "القرآن مُرتل",
-                      iconImage: "assets/icons/voice.png",
+                      iconImage: "assets/icons/voice.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.pushNamed(context, Routes.quranMoratal);
@@ -159,7 +159,7 @@ class BodyContent extends ConsumerWidget {
                     ),
                     HomeButton(
                       text: AppLocalizations.of(context)!.tafseer,
-                      iconImage: "assets/icons/book.png",
+                      iconImage: "assets/icons/book.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.pushNamed(context, "/tafseer_page");
@@ -167,7 +167,7 @@ class BodyContent extends ConsumerWidget {
                     ),
                     HomeButton(
                       text: AppLocalizations.of(context)!.sunah,
-                      iconImage: "assets/icons/quran2.png",
+                      iconImage: "assets/icons/quran2.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.of(context).pushNamed("/sunah_page");
@@ -177,7 +177,7 @@ class BodyContent extends ConsumerWidget {
                     // --- زر مواقيت الصلاة ---
                     HomeButton(
                       text: AppLocalizations.of(context)!.pray_times,
-                      iconImage: "assets/icons/mosque.png",
+                      iconImage: "assets/icons/mosque.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.of(context).pushNamed("/pray_time_page");
@@ -187,7 +187,7 @@ class BodyContent extends ConsumerWidget {
                     // ----------------------------
                     HomeButton(
                       text: AppLocalizations.of(context)!.qebla_direction,
-                      iconImage: "assets/icons/kaaba.png",
+                      iconImage: "assets/icons/kaaba.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.of(context).pushNamed("/qebla_page");
@@ -195,7 +195,7 @@ class BodyContent extends ConsumerWidget {
                     ),
                     HomeButton(
                       text: AppLocalizations.of(context)!.adkar_adia,
-                      iconImage: "assets/icons/prayer.png",
+                      iconImage: "assets/icons/prayer.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
                         Navigator.of(context).pushNamed("/adkar_page");

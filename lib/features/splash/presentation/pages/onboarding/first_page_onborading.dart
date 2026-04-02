@@ -41,7 +41,7 @@ class FirstPageOnboarding extends StatelessWidget {
                   'استكشف آيات القرآن الكريم بسهولة ويسر، مع إمكانية البحث والتنقل بين السور والآيات بطريقة منظمة لتسهيل قراءتك اليومية.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 18.sp,
                     color: Colors.black54,
                     fontFamily: "Cairo",
                     height: 1.6,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/filter_container.dart';
+import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_modal_bottom.dart';
 
 class HadithTab extends ConsumerStatefulWidget {
@@ -30,46 +30,51 @@ class _HadithTabState extends ConsumerState<HadithTab> {
           // قسم الفلاتر (يبقى ثابتاً في الأعلى)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              spacing: 8.w,
-              children: [
-                FilterContainer(
-                  title: "الكتاب",
-                  iconData: Icons.book_outlined,
-                  options: [
-                    AppLocalizations.of(context)!.sahih_bukhari,
-                    AppLocalizations.of(context)!.sahih_muslim,
-                    AppLocalizations.of(context)!.sunan_abi_dawud,
-                    AppLocalizations.of(context)!.sunan_at_tirmidhi,
-                    AppLocalizations.of(context)!.sunan_an_nasai,
-                    AppLocalizations.of(context)!.sunan_ibn_majah,
-                  ],
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                FilterContainer(
-                  title: "الرواي",
-                  iconData: Icons.person_outline_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                  options: [
-                    "أبو هريرة",
-                    "عمر بن الخطاب",
-                    "علي بن ابي طالب",
-                    "عائشة بنت خويلد",
-                  ],
-                ),
-                FilterContainer(
-                  title: "الموضوع",
-                  iconData: Icons.category_outlined,
-                  color: Theme.of(context).colorScheme.primary,
-                  options: ["الفرائض", "السنن", "النوافل", "المباحات"],
-                ),
-                FilterContainer(
-                  title: "الدرجة",
-                  iconData: Icons.grade,
-                  color: Theme.of(context).colorScheme.primary,
-                  options: ["صحيح", "حسن", "ضعيف"],
-                ),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              child: Row(
+                children: [
+                  FilterContainer(
+                    title: "الكتاب",
+                    iconData: Icons.book_outlined,
+                    options: [
+                      AppLocalizations.of(context)!.sahih_bukhari,
+                      AppLocalizations.of(context)!.sahih_muslim,
+                      AppLocalizations.of(context)!.sunan_abi_dawud,
+                      AppLocalizations.of(context)!.sunan_at_tirmidhi,
+                      AppLocalizations.of(context)!.sunan_an_nasai,
+                      AppLocalizations.of(context)!.sunan_ibn_majah,
+                    ],
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 8.w),
+                  FilterContainer(
+                    title: "الراوي",
+                    iconData: Icons.person_outline_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    options: [
+                      "أبو هريرة",
+                      "عمر بن الخطاب",
+                      "علي بن ابي طالب",
+                      "عائشة بنت خويلد",
+                    ],
+                  ),
+                  SizedBox(width: 8.w),
+                  FilterContainer(
+                    title: "الموضوع",
+                    iconData: Icons.category_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                    options: ["الفرائض", "السنن", "النوافل", "المباحات"],
+                  ),
+                  SizedBox(width: 8.w),
+                  FilterContainer(
+                    title: "الدرجة",
+                    iconData: Icons.grade,
+                    color: Theme.of(context).colorScheme.primary,
+                    options: ["صحيح", "حسن", "ضعيف"],
+                  ),
+                ],
+              ),
             ),
           ),
           
@@ -94,71 +99,29 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                 }
                 
                 return ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
                   itemCount: hadiths.length,
                   itemBuilder: (context, index) {
                     final hadith = hadiths[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                      color: Theme.of(context).cardColor,
-                      child: InkWell(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isDismissible: true,
-                            enableDrag: true,
-                            showDragHandle: true,
-                            useSafeArea: true,
-                            isScrollControlled: true,
-                            builder: (context) => HadithModalBottom(hadith: hadith),
-                          );
-                        },
-                        child: ListTile(
-                          title: Text(
-                            hadith.hadith,
-                            style: TextStyle(
-                              fontSize: context.witdthScreen * 0.04,
-                              fontFamily: "Cairo",
-                              fontWeight: FontWeight.w400,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            maxLines: 2,
-                          ),
-                          subtitle: Row(
-                            children: [
-                              Text(
-                                "الرواي:",
-                                style: TextStyle(
-                                  fontSize: context.witdthScreen * 0.038,
-                                  fontFamily: "Cairo",
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                hadith.hadithNarrator,
-                                style: TextStyle(
-                                  fontSize: context.witdthScreen * 0.038,
-                                  fontFamily: "Cairo",
-                                ),
-                              ),
-                            ],
-                          ),
-                          leading: Text(
-                            "${index + 1}",
-                            style: TextStyle(fontSize: context.witdthScreen * 0.04),
-                          ),
-                          trailing: IconButton(
-                            onPressed: () async {
-                              await ref
-                                  .read(hadithProvider.notifier)
-                                  .toggleIsFeatured(hadith);
-                            },
-                            icon: Icon(
-                              hadith.isFeatured ? Icons.star : Icons.star_border,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
+                    return HadithCard(
+                      hadith: hadith,
+                      index: index,
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isDismissible: true,
+                          enableDrag: true,
+                          showDragHandle: true,
+                          useSafeArea: true,
+                          isScrollControlled: true,
+                          builder: (context) => HadithModalBottom(hadith: hadith),
+                        );
+                      },
+                      onToggleFavorite: () async {
+                        await ref
+                            .read(hadithProvider.notifier)
+                            .toggleIsFeatured(hadith);
+                      },
                     );
                   },
                 );
@@ -177,24 +140,24 @@ class ClearAllFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16.r),
-        onTap: () {
-          ref.read(hadithProvider.notifier).clearFilters();
-        },
-        child: Container(
-          width: context.mediaQueryWidth * 0.44,
-          height: context.mediaQueryHeight * 0.05,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: .2),
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12.r),
+          onTap: () {
+            ref.read(hadithProvider.notifier).clearFilters();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.error.withValues(alpha: .1),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: .2)),
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.filter_alt_off_outlined, 
                      size: 18.sp,
@@ -203,10 +166,10 @@ class ClearAllFilters extends StatelessWidget {
                 Text(
                   "حذف كل الفلاتر",
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 14.sp,
                     fontFamily: "Cairo",
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
               ],

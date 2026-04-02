@@ -42,7 +42,7 @@ class ThirdPageOnboarding extends StatelessWidget {
                   'تابع أوقات الصلاة بدقة، وحدد اتجاه القبلة بسهولة، مع إمكانية حفظ الأذكار والأحاديث المفضلة للوصول السريع في أي وقت.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 18.sp,
                     color: Colors.black54,
                     fontFamily: "Cairo",
                     height: 1.6,

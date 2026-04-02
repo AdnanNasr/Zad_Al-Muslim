@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
+import 'package:noor_quran/features/quran_moratal/presentation/providers/ayah_timing_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -28,8 +30,7 @@ class MoratalMiniPlayer extends ConsumerWidget {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           barrierColor: Colors.black.withValues(alpha: .7),
-          builder: (_) =>
-              _MoratalFullPlayerSheet(surah: currentMoratalSurah),
+          builder: (_) => _MoratalFullPlayerSheet(surah: currentMoratalSurah),
         );
       },
       child: Container(
@@ -38,13 +39,6 @@ class MoratalMiniPlayer extends ConsumerWidget {
         decoration: BoxDecoration(
           color: context.color.surface,
           borderRadius: BorderRadius.circular(12.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
         ),
         child: Column(
           children: [
@@ -60,14 +54,15 @@ class MoratalMiniPlayer extends ConsumerWidget {
                     : 0.0;
 
                 return ClipRRect(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(12.r)),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(12.r),
+                  ),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor:
-                        context.color.primary.withValues(alpha: .2),
-                    valueColor:
-                        AlwaysStoppedAnimation(context.color.primary),
+                    backgroundColor: context.color.primary.withValues(
+                      alpha: .2,
+                    ),
+                    valueColor: AlwaysStoppedAnimation(context.color.primary),
                     minHeight: 2.h,
                   ),
                 );
@@ -84,8 +79,7 @@ class MoratalMiniPlayer extends ConsumerWidget {
                       height: 40.h,
                       width: 40.w,
                       decoration: BoxDecoration(
-                        color:
-                            context.color.primary.withValues(alpha: .15),
+                        color: context.color.primary.withValues(alpha: .15),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Icon(
@@ -116,8 +110,9 @@ class MoratalMiniPlayer extends ConsumerWidget {
                             style: TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 11.sp,
-                              color: context.color.onSurface
-                                  .withValues(alpha: .6),
+                              color: context.color.onSurface.withValues(
+                                alpha: .6,
+                              ),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -181,9 +176,8 @@ class MoratalMiniPlayer extends ConsumerWidget {
                       constraints: const BoxConstraints(),
                       onPressed: () async {
                         await audioPlayer.stop();
-                        ref
-                            .read(currentMoratalSurahProvider.notifier)
-                            .state = null;
+                        ref.read(currentMoratalSurahProvider.notifier).state =
+                            null;
                       },
                     ),
                   ],
@@ -251,6 +245,7 @@ class _MoratalFullPlayerSheetState
       surahName: _arabicName(number),
       qariName: base.qariName,
       serverUrl: base.serverUrl,
+      qariId: base.qariId,
     );
     ref.read(playMoratalSurahActionProvider)(newSurah);
   }
@@ -271,8 +266,8 @@ class _MoratalFullPlayerSheetState
       _loopMode = _loopMode == LoopMode.off
           ? LoopMode.one
           : _loopMode == LoopMode.one
-              ? LoopMode.all
-              : LoopMode.off;
+          ? LoopMode.all
+          : LoopMode.off;
       player.setLoopMode(_loopMode);
     });
   }
@@ -282,8 +277,7 @@ class _MoratalFullPlayerSheetState
   @override
   Widget build(BuildContext context) {
     final player = ref.watch(audioPlayerProvider);
-    final currentSurah =
-        ref.watch(currentMoratalSurahProvider) ?? widget.surah;
+    final currentSurah = ref.watch(currentMoratalSurahProvider) ?? widget.surah;
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
@@ -301,8 +295,8 @@ class _MoratalFullPlayerSheetState
 
           SizedBox(height: 8.h),
 
-          // album art
-          _albumArt(context),
+          // ── Ayah display (replaces album art) ──────────────────────────
+          Expanded(child: _ayahDisplay(context, currentSurah, player)),
 
           SizedBox(height: 24.h),
 
@@ -358,18 +352,165 @@ class _MoratalFullPlayerSheetState
     );
   }
 
-  Widget _albumArt(BuildContext context) {
-    return Container(
-      height: 210.w,
-      width: 210.w,
-      decoration: BoxDecoration(
-        color: context.color.primary.withValues(alpha: .07),
-        borderRadius: BorderRadius.circular(26.r),
-      ),
-      child: Icon(
-        Icons.my_library_music_rounded,
-        size: 84.sp,
-        color: context.color.primary.withValues(alpha: .5),
+  // ── Ayah Display ───────────────────────────────────────────────────────────
+
+  Widget _ayahDisplay(
+    BuildContext context,
+    CurrentMoratalSurah currentSurah,
+    AudioPlayer player,
+  ) {
+    final timingParams = AyahTimingParams(
+      surahNumber: currentSurah.surahNumber,
+      qariId: currentSurah.qariId,
+    );
+    final timingAsync = ref.watch(ayahTimingProvider(timingParams));
+
+    return timingAsync.when(
+      loading: () => _ayahPlaceholder(context, isLoading: true),
+      error: (_, __) => _ayahPlaceholder(context, isLoading: false),
+      data: (timings) {
+        if (timings.isEmpty) {
+          return _ayahPlaceholder(context, isLoading: false);
+        }
+
+        // Static background layer that NEVER rebuilds on position changes
+        return Container(
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            image: const DecorationImage(
+              image: AssetImage("assets/images/night_clouds.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+            ),
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(
+              color: context.color.primary.withValues(alpha: .12),
+              width: 5,
+            ),
+          ),
+          child: StreamBuilder<PositionData>(
+            stream: ref.watch(audioPositionStreamProvider),
+            builder: (context, snapshot) {
+              final position = snapshot.data?.position ?? Duration.zero;
+              final ayahNumber =
+                  currentAyahFromTimings(timings, position) ??
+                  timings.first.ayah;
+
+              // Only the CONTENT of the verse animates, not the background
+              return _ayahContent(
+                context,
+                currentSurah.surahNumber,
+                ayahNumber,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  /// Fallback when no timing data is available
+  Widget _ayahPlaceholder(BuildContext context, {required bool isLoading}) {
+    return Center(
+      child: isLoading
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  color: context.color.primary,
+                  strokeWidth: 2,
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  'جاري تحميل الآيات...',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 13.sp,
+                    color: context.color.onSurface.withValues(alpha: .5),
+                  ),
+                ),
+              ],
+            )
+          : Container(
+              width: 210.w,
+              height: 210.w,
+              decoration: BoxDecoration(
+                color: context.color.primary.withValues(alpha: .07),
+                borderRadius: BorderRadius.circular(26.r),
+              ),
+              child: Icon(
+                Icons.my_library_music_rounded,
+                size: 84.sp,
+                color: context.color.primary.withValues(alpha: .45),
+              ),
+            ),
+    );
+  }
+
+  Widget _ayahContent(BuildContext context, int surahNumber, int ayahNumber) {
+    AppLogger.logger.e("رقم السورة: $surahNumber\nرقم الآية: $ayahNumber");
+    // TODO: fix bug when play abdul basit voice or other
+    // Only the Text and Badge participate in the AnimatedSwitcher
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 600),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+      child: Column(
+        key: ValueKey('$surahNumber:$ayahNumber'),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Verse text layer
+          Expanded(
+            child: Center(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20.w),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .1),
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(12.0.r),
+                  child: Text(
+                    getVerse(surahNumber, ayahNumber, verseEndSymbol: false),
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontFamily: 'surahname',
+                      package: "qcf_quran",
+                      fontSize: 24.sp,
+                      wordSpacing: 1.5,
+                      height: 2.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 12.h),
+
+          // Ayah number badge
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+            margin: EdgeInsets.only(bottom: 16.h),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: Text(
+              'الآية $ayahNumber',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 13.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -443,8 +584,8 @@ class _MoratalFullPlayerSheetState
             message: _loopMode == LoopMode.off
                 ? 'تفعيل التكرار'
                 : _loopMode == LoopMode.one
-                    ? 'تكرار الكل'
-                    : 'إيقاف التكرار',
+                ? 'تكرار الكل'
+                : 'إيقاف التكرار',
             child: IconButton(
               icon: Icon(
                 _loopMode == LoopMode.one
@@ -475,8 +616,10 @@ class _MoratalFullPlayerSheetState
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 icon: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 5.h,
+                  ),
                   decoration: BoxDecoration(
                     color: context.color.primary.withValues(alpha: .12),
                     borderRadius: BorderRadius.circular(10.r),
@@ -550,13 +693,18 @@ class _MoratalFullPlayerSheetState
                 return _loadingCircle(context);
               } else if (playing != true) {
                 return _playCircle(
-                    context, Icons.play_arrow_rounded, player.play);
+                  context,
+                  Icons.play_arrow_rounded,
+                  player.play,
+                );
               } else if (processing != ProcessingState.completed) {
-                return _playCircle(
-                    context, Icons.pause_rounded, player.pause);
+                return _playCircle(context, Icons.pause_rounded, player.pause);
               } else {
                 return _playCircle(
-                    context, Icons.replay_rounded, () => player.seek(Duration.zero));
+                  context,
+                  Icons.replay_rounded,
+                  () => player.seek(Duration.zero),
+                );
               }
             },
           ),
@@ -595,11 +743,7 @@ class _MoratalFullPlayerSheetState
     );
   }
 
-  Widget _playCircle(
-    BuildContext context,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+  Widget _playCircle(BuildContext context, IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -608,13 +752,6 @@ class _MoratalFullPlayerSheetState
         decoration: BoxDecoration(
           color: context.color.primary,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: context.color.primary.withValues(alpha: .38),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
-            ),
-          ],
         ),
         child: Icon(icon, color: context.color.onPrimary, size: 40.sp),
       ),

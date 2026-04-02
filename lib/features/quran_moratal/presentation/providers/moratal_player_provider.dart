@@ -9,37 +9,41 @@ class CurrentMoratalSurah {
   final String surahName;
   final String qariName;
   final String serverUrl;
+  final String qariId;
 
   CurrentMoratalSurah({
     required this.surahNumber,
     required this.surahName,
     required this.qariName,
     required this.serverUrl,
+    required this.qariId,
   });
 }
 
 // Provider to store the active Moratal Surah state
-final currentMoratalSurahProvider = StateProvider<CurrentMoratalSurah?>((ref) => null);
+final currentMoratalSurahProvider = StateProvider<CurrentMoratalSurah?>(
+  (ref) => null,
+);
 
 // Action provider to handle playing a full Surah for a specific Qari
 final playMoratalSurahActionProvider = Provider((ref) {
   return (CurrentMoratalSurah surah) async {
     final audioPlayer = ref.read(audioPlayerProvider);
-    
+
     // Stop any Ayah-by-Ayah playback to prevent conflicts
     ref.read(currentPlayingAyahProvider.notifier).state = null;
-    
+
     // Set the new Moratal state
     ref.read(currentMoratalSurahProvider.notifier).state = surah;
-    
+
     final params = QariParameters(
       serverUrl: surah.serverUrl,
       surahNumber: surah.surahNumber,
     );
-    
+
     // Retrieve the URL
     final urlEither = ref.read(surahQariVoiceProvider(params));
-    
+
     await urlEither.fold(
       (failure) async {
         // Handle failure if needed
