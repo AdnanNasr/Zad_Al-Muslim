@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
+import 'package:noor_quran/features/hadith/presentation/widgets/highlighted_text.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 
-class HadithCard extends StatelessWidget {
+class HadithCard extends ConsumerWidget {
   final HadithEntity hadith;
   final int index;
   final VoidCallback onTap;
@@ -18,14 +21,14 @@ class HadithCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
     // تحسين الألوان: في الفاتح نستخدم لون خفيف جداً، وفي الداكن نستخدم درجة أفتح من الخلفية الأساسية
-    final cardBackground = isDark 
-        ? colorScheme.surfaceContainerHigh 
+    final cardBackground = isDark
+        ? colorScheme.surfaceContainerHigh
         : colorScheme.primary.withValues(alpha: 0.05);
 
     return Container(
@@ -59,13 +62,29 @@ class HadithCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildDecorativeNumber(context, index + 1),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w),
+                        child: Text(
+                          "كتاب ${hadith.bookName} • ${hadith.reference.hadith}",
+                          style: TextStyle(
+                            fontFamily: "Cairo",
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                          textAlign: TextAlign.center,
+                          textDirection: TextDirection.rtl,
+                        ),
+                      ),
+                    ),
                     IconButton(
                       onPressed: onToggleFavorite,
                       icon: Icon(
-                        hadith.isFeatured 
-                           ? Icons.star_rounded 
-                           : Icons.star_outline_rounded,
-                        color: hadith.isFeatured ? Colors.amber : colorScheme.primary,
+                        hadith.isFavorite
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        color: Colors.amber.shade600,
                         size: 26.sp,
                       ),
                     ),
@@ -73,36 +92,43 @@ class HadithCard extends StatelessWidget {
                 ),
                 SizedBox(height: 12.h),
 
-                // Hadith Text
-                Text(
-                  hadith.hadith,
-                  maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.justify,
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    height: 1.8,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: "Naskh",
-                    color: colorScheme.onSurface.withValues(alpha: 0.9),
-                  ),
+                // Hadith Text with Highlight support
+                Consumer(
+                  builder: (context, ref, child) {
+                    final searchQuery = ref
+                        .watch(hadithProvider.notifier)
+                        .currentSearchQuery;
+                    return HighlightedText(
+                      text: hadith.text,
+                      highlight: searchQuery,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        height: 1.8,
+                        fontWeight: FontWeight.w500,
+                        // TODO : change font (Amiri vs Naskh comparison)
+                        fontFamily: "Naskh",
+                        color: colorScheme.onSurface.withValues(alpha: 0.9),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 16.h),
 
                 // Bottom Metadata Chips
-                Row(
-                  children: [
-                    _buildSmallChip(
-                      context,
-                      icon: Icons.person_outline_rounded,
-                      label: hadith.hadithNarrator,
-                      color: colorScheme.secondary,
-                    ),
-                    SizedBox(width: 8.w),
-                    _buildGradeBadge(context, hadith.grade),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     _buildSmallChip(
+                //       context,
+                //       icon: Icons.person_outline_rounded,
+                //       label: hadith.,
+                //       color: colorScheme.secondary,
+                //     ),
+                //     SizedBox(width: 8.w),
+                //     // _buildGradeBadge(context, hadith.grade),
+                //   ],
+                // ),
               ],
             ),
           ),

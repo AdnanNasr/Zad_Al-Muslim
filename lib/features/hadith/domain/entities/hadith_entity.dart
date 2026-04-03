@@ -1,57 +1,74 @@
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
 
 class HadithEntity {
-  final int id;
-  final String hadith;
-  final String hadithNarrator;
-  final bool isFeatured;
-  final String topic;
-  final HadithGrade grade;
-  final String book;
+  final int isarId; // Isar autoIncrement id للتعديل المباشر
+  final String hadithnumber;
+  final String text;
+  final String textNormalized;
+  final Reference reference;
+  final bool isFavorite;
 
   HadithEntity({
-    required this.id,
-    required this.hadith,
-    required this.hadithNarrator,
-    required this.isFeatured,
-    required this.topic,
-    required this.grade,
-    required this.book,
+    this.isarId = 0,
+    required this.hadithnumber,
+    required this.reference,
+    required this.text,
+    required this.textNormalized,
+    this.isFavorite = false,
   });
+
+  HadithEntity copyWith({bool? isFavorite, String? textNormalized}) {
+    return HadithEntity(
+      isarId: isarId,
+      hadithnumber: hadithnumber,
+      text: text,
+      textNormalized: textNormalized ?? this.textNormalized,
+      reference: reference,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
+
+  /// اسم الكتاب بالعربية بناءً على رقمه
+  String get bookName =>
+      SahihBukhariBook.fromId(reference.book).arabicName;
 }
 
 class HadithFiltersEntity {
-  final String? book;
-  final String? narrator;
-  final String? topic;
-  final HadithGrade? grade;
-  final bool featuredOnly;
+  final int? bookNumber;
+  final String? searchQuery;
+  final bool favoritesOnly;
+  final int offset;
+  final int limit;
 
   HadithFiltersEntity({
-    this.book,
-    this.narrator,
-    this.topic,
-    this.grade,
-    this.featuredOnly = false,
+    this.bookNumber,
+    this.searchQuery,
+    this.favoritesOnly = false,
+    this.offset = 0,
+    this.limit = 30,
   });
 
   HadithFiltersEntity copyWith({
-    String? book,
+    int? bookNumber,
     bool clearBook = false,
-    String? narrator,
-    bool clearNarrator = false,
-    String? topic,
-    bool clearTopic = false,
-    HadithGrade? grade,
-    bool clearGrade = false,
-    bool? featuredOnly,
+    String? searchQuery,
+    bool clearSearch = false,
+    bool? favoritesOnly,
+    int? offset,
+    int? limit,
   }) {
     return HadithFiltersEntity(
-      book: clearBook ? null : (book ?? this.book),
-      narrator: clearNarrator ? null : (narrator ?? this.narrator),
-      topic: clearTopic ? null : (topic ?? this.topic),
-      grade: clearGrade ? null : (grade ?? this.grade),
-      featuredOnly: featuredOnly ?? this.featuredOnly,
+      bookNumber: clearBook ? null : (bookNumber ?? this.bookNumber),
+      searchQuery: clearSearch ? null : (searchQuery ?? this.searchQuery),
+      favoritesOnly: favoritesOnly ?? this.favoritesOnly,
+      offset: offset ?? this.offset,
+      limit: limit ?? this.limit,
     );
   }
+}
+
+class Reference {
+  final int book;
+  final int hadith;
+  Reference({required this.book, required this.hadith});
 }

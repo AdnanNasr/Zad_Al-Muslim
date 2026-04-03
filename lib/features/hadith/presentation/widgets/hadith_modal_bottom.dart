@@ -29,36 +29,26 @@ class HadithModalBottom extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle
-          Container(
-            width: 40.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-          ),
-          SizedBox(height: 24.h),
-
           // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildGradeBadge(hadith.grade),
+              _InfoItem(
+                icon: Icons.person,
+                title: "المصدر",
+                value: "صحيح البخاري",
+              ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   _ActionButton(
                     icon: Icons.copy_rounded,
+                    showCopyFeedback: true,
                     onTap: () {
                       Clipboard.setData(
                         ClipboardData(
                           text:
-                              "${hadith.hadith}\n\nالراوي: ${hadith.hadithNarrator}\nالمصدر: ${hadith.book}",
-                        ),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("تم نسخ الحديث إلى الحافظة"),
+                              "${hadith.text}\n\n📖 صحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق نور القرآن",
                         ),
                       );
                     },
@@ -66,9 +56,12 @@ class HadithModalBottom extends ConsumerWidget {
                   SizedBox(width: 12.w),
                   _ActionButton(
                     icon: Icons.share_rounded,
-                    onTap: () {
-                      Share.share(
-                        "${hadith.hadith}\n\nالراوي: ${hadith.hadithNarrator}\nالمصدر: ${hadith.book}",
+                    onTap: () async {
+                      SharePlus.instance.share(
+                        ShareParams(
+                          text:
+                              "${hadith.text}\n\n📖 صحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق نور القرآن",
+                        ),
                       );
                     },
                   ),
@@ -102,12 +95,11 @@ class HadithModalBottom extends ConsumerWidget {
                       ],
                     ),
                     child: SelectableText(
-                      hadith.hadith,
-                      textAlign: TextAlign.center,
+                      hadith.text,
+                      textAlign: TextAlign.justify,
                       style: TextStyle(
-                        fontSize: 22.sp,
-                        height: 2.0,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 22.5.sp,
+                        height: 1.5.h,
                         fontFamily: "Naskh",
                         color: colorScheme.onSurface,
                       ),
@@ -117,19 +109,14 @@ class HadithModalBottom extends ConsumerWidget {
 
                   // Info Section
                   _InfoItem(
-                    icon: Icons.person_outline_rounded,
-                    title: "الراوي",
-                    value: hadith.hadithNarrator,
-                  ),
-                  _InfoItem(
                     icon: Icons.book_outlined,
-                    title: "المصدر",
-                    value: hadith.book,
+                    title: "الكتاب",
+                    value: hadith.bookName,
                   ),
                   _InfoItem(
-                    icon: Icons.topic_outlined,
-                    title: "الموضوع",
-                    value: hadith.topic,
+                    icon: Icons.numbers_rounded,
+                    title: "رقم الحديث",
+                    value: hadith.reference.hadith.toString(),
                   ),
                 ],
               ),
@@ -179,29 +166,83 @@ class HadithModalBottom extends ConsumerWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
+class _ActionButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final bool showCopyFeedback; // لتفعيل ميزة الرسالة فقط لزر النسخ
 
-  const _ActionButton({required this.icon, required this.onTap});
+  const _ActionButton({
+    required this.icon,
+    required this.onTap,
+    this.showCopyFeedback = false,
+  });
+
+  @override
+  State<_ActionButton> createState() => _ActionButtonState();
+}
+
+class _ActionButtonState extends State<_ActionButton> {
+  bool _showCopiedMessage = false;
+
+  void _handleTap() {
+    widget.onTap();
+
+    if (widget.showCopyFeedback) {
+      setState(() => _showCopiedMessage = true);
+      // إخفاء الرسالة بعد ثانية ونصف
+      Future.delayed(const Duration(seconds: 1, milliseconds: 500), () {
+        if (mounted) setState(() => _showCopiedMessage = false);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
-      child: Container(
-        padding: EdgeInsets.all(10.r),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Stack(
+      alignment: Alignment.centerRight,
+      clipBehavior: Clip.none,
+      children: [
+        // Container رسالة "تم النسخ"
+        Positioned(
+          left: 45.w, // يظهر بجانب الأيقونة من جهة اليمين (حسب اتجاه الـ Stack)
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: _showCopiedMessage ? 1.0 : 0.0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Text(
+                "تم النسخ",
+                style: TextStyle(
+                  color: colorScheme.onPrimary,
+                  fontSize: 12.sp,
+                  fontFamily: "Cairo",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // زر الأكشن الأساسي
+        InkWell(
+          onTap: _handleTap,
           borderRadius: BorderRadius.circular(12.r),
+          child: Container(
+            padding: EdgeInsets.all(10.r),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Icon(widget.icon, size: 22.sp, color: colorScheme.primary),
+          ),
         ),
-        child: Icon(
-          icon,
-          size: 22.sp,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
+      ],
     );
   }
 }

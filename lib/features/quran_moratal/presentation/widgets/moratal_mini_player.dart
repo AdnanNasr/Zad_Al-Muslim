@@ -449,7 +449,7 @@ class _MoratalFullPlayerSheetState
   }
 
   Widget _ayahContent(BuildContext context, int surahNumber, int ayahNumber) {
-    AppLogger.logger.e("رقم السورة: $surahNumber\nرقم الآية: $ayahNumber");
+    // AppLogger.logger.e("رقم السورة: $surahNumber\nرقم الآية: $ayahNumber");
     // TODO: fix bug when play abdul basit voice or other
     // Only the Text and Badge participate in the AnimatedSwitcher
     return AnimatedSwitcher(

@@ -12,7 +12,7 @@ import 'package:noor_quran/features/hadith/data/repositories/insert_hadith.dart'
 import 'package:noor_quran/features/quran/data/repositories/insert_quran_pages.dart';
 import 'package:noor_quran/features/tafsser/data/repositories/insert_tafsser.dart';
 import 'package:noor_quran/core/utils/location/location_locator.dart';
-import 'package:noor_quran/features/hadith/data/models/hadith.dart';
+import 'package:noor_quran/features/hadith/data/models/hadith_model.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/l10n/app_localizations.dart';
+import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/filter_container.dart';
+import 'package:noor_quran/features/hadith/presentation/widgets/hadith_search_bar.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_modal_bottom.dart';
 
@@ -15,93 +16,119 @@ class HadithTab extends ConsumerStatefulWidget {
 }
 
 class _HadithTabState extends ConsumerState<HadithTab> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(hadithProvider.notifier).loadMore();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // 1. مراقبة الـ AsyncValue
     final hadithState = ref.watch(hadithProvider);
-    // 2. الوصول للـ Notifier للتحقق من الفلاتر (نستخدم watch للمتابعة المستمرة)
     final notifier = ref.watch(hadithProvider.notifier);
+
+    // Smart Tags list defined by user
+    final smartTags = [
+      SahihBukhariBook.belief, // الإيمان
+      SahihBukhariBook.salat, // الصلاة
+      SahihBukhariBook.knowledge, // العلم
+      SahihBukhariBook.salesAndTrade, // البيوع
+      SahihBukhariBook.adab, // الأدب
+      SahihBukhariBook.riqaq, // الرقاق
+      SahihBukhariBook.invocations, // الدعوات
+      SahihBukhariBook.tawheel, // التوحيد
+    ];
 
     return Padding(
       padding: EdgeInsets.all(8.0.r),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // قسم الفلاتر (يبقى ثابتاً في الأعلى)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: Row(
-                children: [
-                  FilterContainer(
-                    title: "الكتاب",
-                    iconData: Icons.book_outlined,
-                    options: [
-                      AppLocalizations.of(context)!.sahih_bukhari,
-                      AppLocalizations.of(context)!.sahih_muslim,
-                      AppLocalizations.of(context)!.sunan_abi_dawud,
-                      AppLocalizations.of(context)!.sunan_at_tirmidhi,
-                      AppLocalizations.of(context)!.sunan_an_nasai,
-                      AppLocalizations.of(context)!.sunan_ibn_majah,
-                    ],
-                    color: Theme.of(context).colorScheme.primary,
+          // Search Bar
+          const HadithSearchBar(),
+          SizedBox(height: 8.h),
+          // Smart Tags
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 40.h),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: smartTags.length,
+              separatorBuilder: (context, index) => SizedBox(width: 8.w),
+              itemBuilder: (context, index) {
+                final tag = smartTags[index];
+                final isSelected = notifier.currentBookNumber == tag.id;
+                return ChoiceChip(
+                  label: Text(
+                    tag.arabicName,
+                    style: TextStyle(fontFamily: "Cairo", fontSize: 13.sp),
                   ),
-                  SizedBox(width: 8.w),
-                  FilterContainer(
-                    title: "الراوي",
-                    iconData: Icons.person_outline_rounded,
-                    color: Theme.of(context).colorScheme.primary,
-                    options: [
-                      "أبو هريرة",
-                      "عمر بن الخطاب",
-                      "علي بن ابي طالب",
-                      "عائشة بنت خويلد",
-                    ],
-                  ),
-                  SizedBox(width: 8.w),
-                  FilterContainer(
-                    title: "الموضوع",
-                    iconData: Icons.category_outlined,
-                    color: Theme.of(context).colorScheme.primary,
-                    options: ["الفرائض", "السنن", "النوافل", "المباحات"],
-                  ),
-                  SizedBox(width: 8.w),
-                  FilterContainer(
-                    title: "الدرجة",
-                    iconData: Icons.grade,
-                    color: Theme.of(context).colorScheme.primary,
-                    options: ["صحيح", "حسن", "ضعيف"],
-                  ),
-                ],
-              ),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    ref
+                        .read(hadithProvider.notifier)
+                        .setBook(selected ? tag.id : null);
+                  },
+                );
+              },
             ),
           ),
-          
-          SizedBox(height: 10.h),
+          SizedBox(height: 12.h),
 
-          // إظهار زر الحذف فقط عند وجود فلاتر نشطة
-          if (!notifier.isFilterEmpty)
-            ClearAllFilters(ref: ref),
+          // Filters and Search (Future)
+          Row(
+            children: [
+              const BookFilterContainer(
+                title: "الكتاب",
+                iconData: Icons.book_outlined,
+              ),
+              const Spacer(),
+              if (!notifier.isFilterEmpty) const ClearAllFilters(),
+            ],
+          ),
 
           const SizedBox(height: 8),
           Divider(color: Theme.of(context).dividerColor, thickness: 2),
           const SizedBox(height: 8),
 
-          // 3. معالجة القائمة بناءً على حالة الـ AsyncValue
           Expanded(
             child: hadithState.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text("خطأ في تحميل الأحاديث: $err")),
+              error: (err, stack) =>
+                  Center(child: Text("خطأ في تحميل الأحاديث: $err")),
               data: (hadiths) {
                 if (hadiths.isEmpty) {
-                  return const Center(child: Text("لا يوجد أحاديث في الوقت الحالي"));
+                  return const Center(
+                    child: Text("لا توجد أحاديث مطابقة للفلاتر"),
+                  );
                 }
-                
+
                 return ListView.builder(
+                  controller: _scrollController,
                   padding: EdgeInsets.symmetric(vertical: 8.h),
-                  itemCount: hadiths.length,
+                  itemCount: hadiths.length + (notifier.hasMore ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index == hadiths.length) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
                     final hadith = hadiths[index];
                     return HadithCard(
                       hadith: hadith,
@@ -114,7 +141,8 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                           showDragHandle: true,
                           useSafeArea: true,
                           isScrollControlled: true,
-                          builder: (context) => HadithModalBottom(hadith: hadith),
+                          builder: (context) =>
+                              HadithModalBottom(hadith: hadith),
                         );
                       },
                       onToggleFavorite: () async {
@@ -134,46 +162,46 @@ class _HadithTabState extends ConsumerState<HadithTab> {
   }
 }
 
-class ClearAllFilters extends StatelessWidget {
-  final WidgetRef ref;
-  const ClearAllFilters({super.key, required this.ref});
+class ClearAllFilters extends ConsumerWidget {
+  const ClearAllFilters({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12.r),
-          onTap: () {
-            ref.read(hadithProvider.notifier).clearFilters();
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.error.withValues(alpha: .1),
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: .2)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12.r),
+        onTap: () {
+          ref.read(hadithProvider.notifier).clearFilters();
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.error.withValues(alpha: .1),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.error.withValues(alpha: .2),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.filter_alt_off_outlined, 
-                     size: 18.sp,
-                     color: Theme.of(context).colorScheme.error),
-                SizedBox(width: 8.w),
-                Text(
-                  "حذف كل الفلاتر",
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: "Cairo",
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.filter_alt_off_outlined,
+                size: 18.sp,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                "حذف الفلاتر",
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontFamily: "Cairo",
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.error,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

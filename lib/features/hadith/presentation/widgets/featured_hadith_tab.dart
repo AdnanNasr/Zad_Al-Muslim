@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
+import 'package:noor_quran/features/hadith/presentation/providers/favorites_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_modal_bottom.dart';
 
@@ -10,19 +11,14 @@ class FeaturedHadithsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 1. مراقبة الـ Provider الذي يعيد AsyncValue
-    final hadithState = ref.watch(hadithProvider);
+    final favoritesState = ref.watch(favoritesProvider);
 
-    // 2. استخدام .when للتعامل مع الحالات الثلاث (بيانات، تحميل، خطأ)
-    return hadithState.when(
+    return favoritesState.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text("حدث خطأ: $error")),
-      data: (allHadiths) {
-        // 3. فلترة الأحاديث المميزة من قائمة البيانات الجاهزة
-        final featuredHadiths = allHadiths.where((h) => h.isFeatured).toList();
-
+      data: (featuredHadiths) {
         if (featuredHadiths.isEmpty) {
-          return const Center(child: Text("لا توجد أحاديث مميزة حالياً"));
+          return const Center(child: Text("لا توجد أحاديث مفضلة حالياً"));
         }
 
         return ListView.builder(
@@ -55,4 +51,4 @@ class FeaturedHadithsTab extends ConsumerWidget {
       },
     );
   }
-}
+}
