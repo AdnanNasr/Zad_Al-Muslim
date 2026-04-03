@@ -71,8 +71,8 @@ Future<void> insertHadithToIsar() async {
           ..reference = ReferenceModel(
             book: referenceRaw?["book"] as int?,
             hadith: referenceRaw?["hadith"] as int?,
-          );
-
+          )
+          ..textNormalized = normlizeHadithText(text);
         hadiths.add(hadithObj);
       }
 
@@ -94,4 +94,12 @@ Future<void> insertHadithToIsar() async {
       stackTrace: stackTrace,
     );
   }
+}
+
+String normlizeHadithText(String text) {
+  return text
+      .replaceAll(RegExp(r'[\u064B-\u065F]'), '')
+      .replaceAll(RegExp(r'[أإآ]'), 'ا')
+      .replaceAll(RegExp(r'ة'), 'ه')
+      .replaceAll(RegExp(r'ى'), 'ي');
 }

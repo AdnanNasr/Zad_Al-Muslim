@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: experimental_member_use
+
 part of 'prayer_times_model.dart';
 
 // **************************************************************************
@@ -17,31 +19,11 @@ const PrayerTimesModelSchema = CollectionSchema(
   name: r'PrayerTimesModel',
   id: 5717370750754320027,
   properties: {
-    r'asr': PropertySchema(
-      id: 0,
-      name: r'asr',
-      type: IsarType.dateTime,
-    ),
-    r'date': PropertySchema(
-      id: 1,
-      name: r'date',
-      type: IsarType.dateTime,
-    ),
-    r'dhuhr': PropertySchema(
-      id: 2,
-      name: r'dhuhr',
-      type: IsarType.dateTime,
-    ),
-    r'fajr': PropertySchema(
-      id: 3,
-      name: r'fajr',
-      type: IsarType.dateTime,
-    ),
-    r'isha': PropertySchema(
-      id: 4,
-      name: r'isha',
-      type: IsarType.dateTime,
-    ),
+    r'asr': PropertySchema(id: 0, name: r'asr', type: IsarType.dateTime),
+    r'date': PropertySchema(id: 1, name: r'date', type: IsarType.dateTime),
+    r'dhuhr': PropertySchema(id: 2, name: r'dhuhr', type: IsarType.dateTime),
+    r'fajr': PropertySchema(id: 3, name: r'fajr', type: IsarType.dateTime),
+    r'isha': PropertySchema(id: 4, name: r'isha', type: IsarType.dateTime),
     r'maghrib': PropertySchema(
       id: 5,
       name: r'maghrib',
@@ -51,7 +33,7 @@ const PrayerTimesModelSchema = CollectionSchema(
       id: 6,
       name: r'sunrise',
       type: IsarType.dateTime,
-    )
+    ),
   },
   estimateSize: _prayerTimesModelEstimateSize,
   serialize: _prayerTimesModelSerialize,
@@ -69,9 +51,9 @@ const PrayerTimesModelSchema = CollectionSchema(
           name: r'date',
           type: IndexType.value,
           caseSensitive: false,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -158,7 +140,10 @@ List<IsarLinkBase<dynamic>> _prayerTimesModelGetLinks(PrayerTimesModel object) {
 }
 
 void _prayerTimesModelAttach(
-    IsarCollection<dynamic> col, Id id, PrayerTimesModel object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  PrayerTimesModel object,
+) {
   object.id = id;
 }
 
@@ -211,8 +196,10 @@ extension PrayerTimesModelByIndex on IsarCollection<PrayerTimesModel> {
     return putAllByIndex(r'date', objects);
   }
 
-  List<Id> putAllByDateSync(List<PrayerTimesModel> objects,
-      {bool saveLinks = true}) {
+  List<Id> putAllByDateSync(
+    List<PrayerTimesModel> objects, {
+    bool saveLinks = true,
+  }) {
     return putAllByIndexSync(r'date', objects, saveLinks: saveLinks);
   }
 }
@@ -237,17 +224,15 @@ extension PrayerTimesModelQueryWhereSort
 extension PrayerTimesModelQueryWhere
     on QueryBuilder<PrayerTimesModel, PrayerTimesModel, QWhereClause> {
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause> idEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+  idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -270,7 +255,7 @@ extension PrayerTimesModelQueryWhere
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+  idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -279,7 +264,7 @@ extension PrayerTimesModelQueryWhere
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
+  idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -294,105 +279,114 @@ extension PrayerTimesModelQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      dateEqualTo(DateTime date) {
+  dateEqualTo(DateTime date) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'date',
-        value: [date],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'date', value: [date]),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      dateNotEqualTo(DateTime date) {
+  dateNotEqualTo(DateTime date) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'date',
-              lower: [],
-              upper: [date],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'date',
-              lower: [date],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'date',
+                lower: [],
+                upper: [date],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'date',
+                lower: [date],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'date',
-              lower: [date],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'date',
-              lower: [],
-              upper: [date],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'date',
+                lower: [date],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'date',
+                lower: [],
+                upper: [date],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      dateGreaterThan(
-    DateTime date, {
-    bool include = false,
-  }) {
+  dateGreaterThan(DateTime date, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'date',
-        lower: [date],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'date',
+          lower: [date],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      dateLessThan(
-    DateTime date, {
-    bool include = false,
-  }) {
+  dateLessThan(DateTime date, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'date',
-        lower: [],
-        upper: [date],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'date',
+          lower: [],
+          upper: [date],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterWhereClause>
-      dateBetween(
+  dateBetween(
     DateTime lowerDate,
     DateTime upperDate, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'date',
-        lower: [lowerDate],
-        includeLower: includeLower,
-        upper: [upperDate],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'date',
+          lower: [lowerDate],
+          includeLower: includeLower,
+          upper: [upperDate],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -400,450 +394,442 @@ extension PrayerTimesModelQueryWhere
 extension PrayerTimesModelQueryFilter
     on QueryBuilder<PrayerTimesModel, PrayerTimesModel, QFilterCondition> {
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrEqualTo(DateTime value) {
+  asrEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'asr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'asr', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  asrGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'asr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'asr',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  asrLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'asr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'asr',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrBetween(
+  asrBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'asr',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'asr',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dateEqualTo(DateTime value) {
+  dateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'date', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dateGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dateGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'date',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dateLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dateLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'date',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dateBetween(
+  dateBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'date',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'date',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrEqualTo(DateTime value) {
+  dhuhrEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dhuhr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'dhuhr', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dhuhrGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dhuhr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'dhuhr',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dhuhrLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dhuhr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'dhuhr',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrBetween(
+  dhuhrBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dhuhr',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'dhuhr',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrEqualTo(DateTime value) {
+  fajrEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'fajr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'fajr', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  fajrGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'fajr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'fajr',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  fajrLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'fajr',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'fajr',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrBetween(
+  fajrBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'fajr',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'fajr',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      idEqualTo(Id value) {
+  idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      idBetween(
+  idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaEqualTo(DateTime value) {
+  ishaEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isha',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isha', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  ishaGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'isha',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'isha',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  ishaLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'isha',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'isha',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaBetween(
+  ishaBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'isha',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'isha',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribEqualTo(DateTime value) {
+  maghribEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'maghrib',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'maghrib', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  maghribGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'maghrib',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'maghrib',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  maghribLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'maghrib',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'maghrib',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribBetween(
+  maghribBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'maghrib',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'maghrib',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseEqualTo(DateTime value) {
+  sunriseEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sunrise',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'sunrise', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  sunriseGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'sunrise',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'sunrise',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  sunriseLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'sunrise',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'sunrise',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseBetween(
+  sunriseBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'sunrise',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'sunrise',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -863,7 +849,7 @@ extension PrayerTimesModelQuerySortBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByAsrDesc() {
+  sortByAsrDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'asr', Sort.desc);
     });
@@ -876,7 +862,7 @@ extension PrayerTimesModelQuerySortBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByDateDesc() {
+  sortByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
     });
@@ -889,7 +875,7 @@ extension PrayerTimesModelQuerySortBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByDhuhrDesc() {
+  sortByDhuhrDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhuhr', Sort.desc);
     });
@@ -902,7 +888,7 @@ extension PrayerTimesModelQuerySortBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByFajrDesc() {
+  sortByFajrDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'fajr', Sort.desc);
     });
@@ -915,35 +901,35 @@ extension PrayerTimesModelQuerySortBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByIshaDesc() {
+  sortByIshaDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isha', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByMaghrib() {
+  sortByMaghrib() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghrib', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByMaghribDesc() {
+  sortByMaghribDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghrib', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortBySunrise() {
+  sortBySunrise() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sunrise', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortBySunriseDesc() {
+  sortBySunriseDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sunrise', Sort.desc);
     });
@@ -959,7 +945,7 @@ extension PrayerTimesModelQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByAsrDesc() {
+  thenByAsrDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'asr', Sort.desc);
     });
@@ -972,7 +958,7 @@ extension PrayerTimesModelQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByDateDesc() {
+  thenByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
     });
@@ -985,7 +971,7 @@ extension PrayerTimesModelQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByDhuhrDesc() {
+  thenByDhuhrDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhuhr', Sort.desc);
     });
@@ -998,7 +984,7 @@ extension PrayerTimesModelQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByFajrDesc() {
+  thenByFajrDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'fajr', Sort.desc);
     });
@@ -1011,7 +997,7 @@ extension PrayerTimesModelQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
@@ -1024,35 +1010,35 @@ extension PrayerTimesModelQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByIshaDesc() {
+  thenByIshaDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isha', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByMaghrib() {
+  thenByMaghrib() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghrib', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByMaghribDesc() {
+  thenByMaghribDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghrib', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenBySunrise() {
+  thenBySunrise() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sunrise', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenBySunriseDesc() {
+  thenBySunriseDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sunrise', Sort.desc);
     });
@@ -1074,7 +1060,7 @@ extension PrayerTimesModelQueryWhereDistinct
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
-      distinctByDhuhr() {
+  distinctByDhuhr() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dhuhr');
     });
@@ -1093,14 +1079,14 @@ extension PrayerTimesModelQueryWhereDistinct
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
-      distinctByMaghrib() {
+  distinctByMaghrib() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'maghrib');
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
-      distinctBySunrise() {
+  distinctBySunrise() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'sunrise');
     });

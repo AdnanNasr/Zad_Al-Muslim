@@ -8,8 +8,6 @@ import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
-import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
-
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/home/home_button.dart';
