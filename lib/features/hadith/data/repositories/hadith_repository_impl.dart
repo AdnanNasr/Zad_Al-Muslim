@@ -3,7 +3,6 @@ import '../../../../core/errors/failures.dart';
 import '../../domain/entities/hadith_entity.dart';
 import '../../domain/repositories/hadith_repository.dart';
 import '../datasources/hadith_local_data_source.dart';
-import '../models/hadith_model.dart';
 
 class HadithRepositoryImpl implements HadithRepository {
   final HadithLocalDataSource localDataSource;
@@ -43,7 +42,9 @@ class HadithRepositoryImpl implements HadithRepository {
   }
 
   @override
-  Future<Either<Failure, HadithEntity>> updateHadith(HadithEntity hadith) async {
+  Future<Either<Failure, HadithEntity>> updateHadith(
+    HadithEntity hadith,
+  ) async {
     try {
       final result = await localDataSource.saveHadith(hadith);
       return Right(result);

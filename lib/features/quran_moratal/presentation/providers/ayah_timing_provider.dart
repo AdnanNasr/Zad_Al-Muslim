@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noor_quran/core/utils/log/app_logger.dart';
 
 class AyahTiming {
   final int ayah;
@@ -52,10 +53,18 @@ final ayahTimingProvider =
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        return data
+        final ayahsTiming = data
             .map((json) => AyahTiming.fromJson(json))
-            .where((e) => e.ayah != 0) // Filter out index 0 as it's not a valid verse
+            .where(
+              (e) => e.ayah >= 0,
+            ) // Filter out index 0 as it's not a valid verse
             .toList();
+        for (final ayah in ayahsTiming) {
+          AppLogger.logger.e(
+            "رقم الآية: ${ayah.ayah}\nوقت البداية: ${ayah.startTime}\nوقت النهاية: ${ayah.endTime}",
+          );
+        }
+        return ayahsTiming;
       } else {
         throw Exception('Failed to load ayah timing');
       }
@@ -72,16 +81,16 @@ int? currentAyahFromTimings(List<AyahTiming> timings, Duration position) {
   }
 
   // If before the first recorded ayah, return the first one
-  if (currentMs < timings.first.startTime) {
-    return timings.first.ayah;
-  }
+  // if (currentMs < timings.first.startTime) {
+  //   return timings.first.ayah;
+  // }
 
-  for (int i = 0; i < timings.length - 1; i++) {
-    if (currentMs > timings[i].endTime &&
-        currentMs < timings[i + 1].startTime) {
-      return timings[i + 1].ayah;
-    }
-  }
+  // for (int i = 0; i < timings.length - 1; i++) {
+  //   if (currentMs > timings[i].endTime &&
+  //       currentMs < timings[i + 1].startTime) {
+  //     return timings[i + 1].ayah;
+  //   }
+  // }
 
   return null;
 }

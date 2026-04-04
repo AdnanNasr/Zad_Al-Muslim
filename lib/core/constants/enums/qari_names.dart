@@ -7,7 +7,7 @@ class QariNames {
   static const Map<String, String> abdulBaset = {
     "id": "51",
     "name": "عبد الباسط عبد الصمد",
-    "server": "https://server7.mp3quran.net/basit/",
+    "server": "https://server7.mp3quran.net/basit/Almusshaf-Al-Mojawwad/",
   };
   static const Map<String, String> alHossary = {
     "id": "118",

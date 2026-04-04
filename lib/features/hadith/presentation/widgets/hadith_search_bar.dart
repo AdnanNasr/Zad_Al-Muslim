@@ -19,6 +19,9 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
   @override
   void initState() {
     super.initState();
+    _controller.addListener(() {
+      if (mounted) setState(() {});
+    });
     // Initialize controller with current search query if present
     final initialQuery = ref.read(hadithProvider.notifier).currentSearchQuery;
     if (initialQuery != null) {
@@ -33,21 +36,22 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
     super.dispose();
   }
 
-  void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(hadithProvider.notifier).setSearchQuery(query.isEmpty ? null : query);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    void _onSearchChanged(String query) {
+      if (_debounce?.isActive ?? false) _debounce!.cancel();
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        ref
+            .read(hadithProvider.notifier)
+            .setSearchQuery(query.isEmpty ? null : query);
+      });
+    }
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: context.color.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: context.color.primary.withValues(alpha: 0.1)),
       ),
       child: TextField(
         controller: _controller,
@@ -64,8 +68,8 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
             fontSize: 14.sp,
             fontFamily: "Cairo",
           ),
-          prefixIcon: Icon(Icons.search_rounded, color: context.color.primary),
-          suffixIcon: _controller.text.isNotEmpty
+          // prefixIcon: Icon(Icons.search_rounded, color: context.color.primary),
+          prefixIcon: _controller.text.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear_rounded, color: context.color.primary),
                   onPressed: () {
@@ -74,9 +78,12 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
                     setState(() {});
                   },
                 )
-              : null,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              : Icon(Icons.search_rounded, color: context.color.primary),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r)),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+            vertical: 12.h,
+          ),
         ),
       ),
     );

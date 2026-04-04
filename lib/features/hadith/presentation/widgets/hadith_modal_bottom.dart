@@ -48,7 +48,7 @@ class HadithModalBottom extends ConsumerWidget {
                       Clipboard.setData(
                         ClipboardData(
                           text:
-                              "${hadith.text}\n\n📖 صحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق نور القرآن",
+                              "${hadith.text}\n\nصحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق نور البيان",
                         ),
                       );
                     },

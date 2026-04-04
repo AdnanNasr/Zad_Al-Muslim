@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/ayah_timing_provider.dart';
@@ -305,6 +304,8 @@ class _MoratalFullPlayerSheetState
 
           SizedBox(height: 24.h),
 
+          // _ayahDisplay(context, currentSurah, player),
+
           // progress bar
           _progressBar(context, player),
 
@@ -370,20 +371,21 @@ class _MoratalFullPlayerSheetState
       error: (_, __) => _ayahPlaceholder(context, isLoading: false),
       data: (timings) {
         if (timings.isEmpty) {
+          // TODO: fix 0 index
           return _ayahPlaceholder(context, isLoading: false);
         }
 
         // Static background layer that NEVER rebuilds on position changes
         return Container(
           width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          // margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
           decoration: BoxDecoration(
             image: const DecorationImage(
               image: AssetImage("assets/images/night_clouds.jpg"),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
             ),
-            borderRadius: BorderRadius.circular(20.r),
+            // borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
               color: context.color.primary.withValues(alpha: .12),
               width: 5,
@@ -402,6 +404,7 @@ class _MoratalFullPlayerSheetState
                 context,
                 currentSurah.surahNumber,
                 ayahNumber,
+                currentSurah,
               );
             },
           ),
@@ -448,69 +451,100 @@ class _MoratalFullPlayerSheetState
     );
   }
 
-  Widget _ayahContent(BuildContext context, int surahNumber, int ayahNumber) {
-    // AppLogger.logger.e("رقم السورة: $surahNumber\nرقم الآية: $ayahNumber");
-    // TODO: fix bug when play abdul basit voice or other
+  Widget _ayahContent(
+    BuildContext context,
+    int surahNumber,
+    int ayahNumber,
+    CurrentMoratalSurah currentSurah,
+  ) {
     // Only the Text and Badge participate in the AnimatedSwitcher
+    final ayahText = getVerse(
+      surahNumber,
+      ayahNumber == 0
+          ? 1
+          : int.parse(currentSurah.qariId) ==
+                118 // المعرف الخاص بالحصري، لأن سورة الفاتحة في ملف التوقيت تنقص آية
+          ? surahNumber == 1
+                ? ayahNumber + 1
+                : ayahNumber
+          : ayahNumber,
+      verseEndSymbol: false,
+    );
+
+    final ayahWords = ayahText.split(" ");
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 600),
       transitionBuilder: (Widget child, Animation<double> animation) {
         return FadeTransition(opacity: animation, child: child);
       },
-      child: Column(
-        key: ValueKey('$surahNumber:$ayahNumber'),
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Verse text layer
-          Expanded(
-            child: Center(
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 20.w),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(12.0.r),
-                  child: Text(
-                    getVerse(surahNumber, ayahNumber, verseEndSymbol: false),
-                    textAlign: TextAlign.center,
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(
-                      fontFamily: 'surahname',
-                      package: "qcf_quran",
-                      fontSize: 24.sp,
-                      wordSpacing: 1.5,
-                      height: 2.0,
-                      color: Colors.white,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  key: ValueKey('$surahNumber:$ayahNumber'),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Spacer(),
+                    // Verse text layer
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 8.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: .1),
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.r),
+                          child: Text(
+                            ayahText,
+                            textAlign: ayahWords.length >= 25
+                                ? TextAlign.justify
+                                : TextAlign.center,
+                            softWrap: true,
+                            style: TextStyle(
+                              fontFamily: 'Quran',
+                              fontSize: 24.sp,
+                              height: 1.7,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+
+                    Spacer(),
+                    SizedBox(height: 12.h),
+                    // Ayah number badge
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 4.h,
+                      ),
+                      margin: EdgeInsets.only(bottom: 16.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: Text(
+                        'الآية $ayahNumber',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-
-          SizedBox(height: 12.h),
-
-          // Ayah number badge
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-            margin: EdgeInsets.only(bottom: 16.h),
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              'الآية $ayahNumber',
-              style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 13.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
