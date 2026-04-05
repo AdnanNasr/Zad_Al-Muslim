@@ -2,6 +2,8 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
@@ -602,7 +604,19 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       surahName: getSurahNameArabic(_surahNumber),
                     );
 
-                    await player.setUrl(url);
+                    await player.setAudioSource(
+                      AudioSource.uri(
+                        Uri.parse(url),
+                        tag: MediaItem(
+                          id: 'ayah_${_surahNumber}_${_verseNumber}',
+                          title: 'سورة ${getSurahNameArabic(_surahNumber)}',
+                          artist: 'الآية $_verseNumber',
+                          artUri: Uri.parse(
+                            'asset:///assets/icons/moon.png',
+                          ), // TODO: change app icon
+                        ),
+                      ),
+                    );
                     await player.play();
                   } catch (e) {
                     if (context.mounted) {

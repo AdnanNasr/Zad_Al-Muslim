@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
 import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
@@ -28,6 +29,14 @@ import 'package:noor_quran/core/common/widgets/custom_navigation_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'نور القرآن - تشغيل الصوت',
+    androidNotificationOngoing: true,
+    androidStopForegroundOnPause: true,
+    notificationColor: const Color(0xFF1E8449),
+  );
 
   // Initialize Dependency Injection
   await di.init();

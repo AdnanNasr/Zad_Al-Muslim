@@ -714,6 +714,20 @@ class _MoratalFullPlayerSheetState
             onPressed: canPrev ? _playPrevSurah : null,
           ),
 
+          // ── Rewind 10s ──
+          IconButton(
+            tooltip: 'تأخير 10 ثوانٍ',
+            iconSize: 30.sp,
+            icon: Icon(
+              Icons.replay_10_rounded,
+              color: context.color.onSurface,
+            ),
+            onPressed: () {
+              final newPos = player.position - const Duration(seconds: 10);
+              player.seek(newPos < Duration.zero ? Duration.zero : newPos);
+            },
+          ),
+
           // ── Play / Pause / Replay ──
           StreamBuilder<PlayerState>(
             stream: player.playerStateStream,
@@ -740,6 +754,21 @@ class _MoratalFullPlayerSheetState
                   () => player.seek(Duration.zero),
                 );
               }
+            },
+          ),
+
+          // ── Fast Forward 10s ──
+          IconButton(
+            tooltip: 'تقديم 10 ثوانٍ',
+            iconSize: 30.sp,
+            icon: Icon(
+              Icons.forward_10_rounded,
+              color: context.color.onSurface,
+            ),
+            onPressed: () {
+              final duration = player.duration ?? Duration.zero;
+              final newPos = player.position + const Duration(seconds: 10);
+              player.seek(newPos > duration ? duration : newPos);
             },
           ),
 

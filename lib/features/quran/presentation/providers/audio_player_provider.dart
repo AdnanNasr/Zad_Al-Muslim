@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
@@ -62,7 +63,17 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
       urlEither.fold(
         (failure) {},
         (url) async {
-          await player.setUrl(url);
+          await player.setAudioSource(
+            AudioSource.uri(
+              Uri.parse(url),
+              tag: MediaItem(
+                id: 'ayah_${nextSurah}_${nextAyah}',
+                title: 'سورة ${getSurahNameArabic(nextSurah)}',
+                artist: 'الآية $nextAyah',
+                artUri: Uri.parse('asset:///assets/icons/moon.png'),
+              ),
+            ),
+          );
           player.play();
         },
       );

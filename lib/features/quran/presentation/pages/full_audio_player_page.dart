@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
@@ -91,7 +92,19 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
       },
       (url) async {
         try {
-          await player.setUrl(url);
+          await player.setAudioSource(
+            AudioSource.uri(
+              Uri.parse(url),
+              tag: MediaItem(
+                id: 'ayah_${surah}_${ayah}',
+                title: 'سورة ${getSurahNameArabic(surah)}',
+                artist: 'الآية $ayah',
+                artUri: Uri.parse(
+                  'asset:///assets/icons/moon.png',
+                ), // TODO: change app icon
+              ),
+            ),
+          );
           await player.play();
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(

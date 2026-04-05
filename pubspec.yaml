@@ -45,9 +45,9 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   share_plus: ^12.0.1
   just_audio: ^0.10.5
+  just_audio_background: ^0.0.1-beta.12
   audio_video_progress_bar: ^2.0.3
   rxdart: ^0.28.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

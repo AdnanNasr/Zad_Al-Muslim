@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "com.nooralbayan.noor_bayan"
-    compileSdk = flutter.compileSdkVersion
+    // compileSdk = flutter.compileSdkVersion
+    // رفع compileSdk إلى 36 لدعم sqflite_android-2.4.x+ الذي يستخدم VERSION_CODES.BAKLAVA
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     packagingOptions {
@@ -16,15 +18,17 @@ android {
     }
 
     compileOptions {
-        // --- أضف هذا السطر هنا ---
-        isCoreLibraryDesugaringEnabled = true 
-        
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
+        // sourceCompatibility = JavaVersion.VERSION_17
+        // targetCompatibility = JavaVersion.VERSION_17
+        // رفع Java إلى 21 لدعم Locale.of() و Thread.threadId() المستخدمتين في sqflite_android-2.4.x+
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        // jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 
     defaultConfig {

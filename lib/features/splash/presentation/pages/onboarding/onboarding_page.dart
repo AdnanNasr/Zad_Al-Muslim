@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/splash/presentation/pages/onboarding/first_page_onborading.dart';
 import 'package:noor_quran/features/splash/presentation/pages/onboarding/second_page_onborading.dart';
 import 'package:noor_quran/features/splash/presentation/pages/onboarding/third_page_onborading.dart';
@@ -30,7 +31,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: AnimatedOpacity(
                   opacity: _index < 2 ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 300),
-                  child: TextButton(
+                  child: FilledButton(
                     onPressed: _index < 2
                         ? () {
                             _controller.animateToPage(
@@ -43,9 +44,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: Text(
                       'تخطي',
                       style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
+                        color: context.color.onPrimary,
+                        // fontWeight: FontWeight.w700,
                         fontSize: 16.sp,
+                        // fontFamily: "Cairo",
                       ),
                     ),
                   ),

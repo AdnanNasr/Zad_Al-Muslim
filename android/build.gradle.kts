@@ -20,7 +20,14 @@ subprojects {
     afterEvaluate {
         if (project.hasProperty("android")) {
             configure<com.android.build.gradle.BaseExtension> {
-                compileSdkVersion(35)
+                // رفع إلى 36 لدعم sqflite_android الذي يستخدم VERSION_CODES.BAKLAVA (API 36)
+                compileSdkVersion(36)
+
+                compileOptions {
+                    // رفع Java إلى 21 لدعم Locale.of() و Thread.threadId() في sqflite_android-2.4.x+
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
+                }
 
                 // 1. حل مشكلة الـ Namespace للمكتبات التي تفتقر إليه
                 if (namespace == null) {
@@ -30,6 +37,13 @@ subprojects {
                 // 2. ضمان قراءة المانيفست بشكل صحيح
                 sourceSets.getByName("main") {
                     manifest.srcFile("src/main/AndroidManifest.xml")
+                }
+            }
+
+            // مطابقة jvmTarget للـ Kotlin مع Java 21 لتجنب خطأ "Inconsistent JVM Target"
+            project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
                 }
             }
             

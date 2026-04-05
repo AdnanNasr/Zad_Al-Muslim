@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/surah_qari_voice_provider.dart';
 import 'package:noor_quran/features/quran_moratal/domain/repositories/surah_qari_voice_repo.dart';
@@ -52,7 +54,19 @@ final playMoratalSurahActionProvider = Provider((ref) {
       (url) async {
         try {
           // Play the Surah
-          await audioPlayer.setUrl(url);
+          await audioPlayer.setAudioSource(
+            AudioSource.uri(
+              Uri.parse(url),
+              tag: MediaItem(
+                id: '${surah.qariId}_${surah.surahNumber}',
+                title: 'سورة ${surah.surahName}',
+                artist: surah.qariName,
+                artUri: Uri.parse(
+                  'asset:///assets/icons/moon.png',
+                ), // TODO: add app icon
+              ),
+            ),
+          );
           audioPlayer.play();
         } catch (e) {
           ref.read(currentMoratalSurahProvider.notifier).state = null;
