@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/constants/enums/qari_names.dart';
+import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/pages/select_qari_surah_page.dart';
 
@@ -56,11 +56,10 @@ Widget qariListTile({
       child: Ink(
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: themeMode == ThemeMode.light
-              ? context.color.onPrimary
-              : context.color.onPrimary,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+          border: Border.all(
+            color: context.color.primary.withValues(alpha: .3),
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),

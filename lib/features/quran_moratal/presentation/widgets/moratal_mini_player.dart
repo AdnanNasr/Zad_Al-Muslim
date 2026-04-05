@@ -385,11 +385,6 @@ class _MoratalFullPlayerSheetState
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
             ),
-            // borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: context.color.primary.withValues(alpha: .12),
-              width: 5,
-            ),
           ),
           child: StreamBuilder<PositionData>(
             stream: ref.watch(audioPositionStreamProvider),
@@ -718,10 +713,7 @@ class _MoratalFullPlayerSheetState
           IconButton(
             tooltip: 'تأخير 10 ثوانٍ',
             iconSize: 30.sp,
-            icon: Icon(
-              Icons.replay_10_rounded,
-              color: context.color.onSurface,
-            ),
+            icon: Icon(Icons.replay_10_rounded, color: context.color.onSurface),
             onPressed: () {
               final newPos = player.position - const Duration(seconds: 10);
               player.seek(newPos < Duration.zero ? Duration.zero : newPos);

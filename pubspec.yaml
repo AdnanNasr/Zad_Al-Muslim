@@ -48,6 +48,7 @@ dependencies:
   just_audio_background: ^0.0.1-beta.12
   audio_video_progress_bar: ^2.0.3
   rxdart: ^0.28.0
+  wakelock_plus: ^1.5.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -13,4 +13,5 @@ class Routes {
   static const String qeblaPage = "/qebla_page";
   static const String adkarPage = "/adkar_page";
   static const String quranMoratal = "/quran_moratal";
+  static const String quranSettingsPage = "/quran_settings_page";
 }

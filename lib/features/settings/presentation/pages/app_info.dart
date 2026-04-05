@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/settings_card.dart';
+import 'package:noor_quran/core/common/widgets/settings_card.dart';
 
 class AppInfo extends StatelessWidget {
   const AppInfo({super.key});

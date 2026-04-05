@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
+import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,7 +22,14 @@ class CurrentPlayingAyah {
 }
 
 // مزود لتخزين الآية الحالية النشطة
-final currentPlayingAyahProvider = StateProvider<CurrentPlayingAyah?>((ref) => null);
+final currentPlayingAyahProvider = StateProvider<CurrentPlayingAyah?>(
+  (ref) => null,
+);
+
+// مزود لتخزين القارئ المختار (يقرأ من الإعدادات المحفوظة)
+final selectedQariProvider = Provider<QariModel>(
+  (ref) => ref.watch(quranSettingsProvider).selectedQari,
+);
 
 // --- مزود مشغل الصوت العام (Global) ---
 // يعمل هذا كمشغل وحيد للتطبيق لمنع تسريب الذاكرة (Memory Leak)
@@ -53,21 +62,46 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
         }
       }
 
+      // إضافة الفاصل الزمني بناءً على إعدادات المستخدم
+      final delaySeconds = ref.read(quranSettingsProvider).ayahDelaySeconds;
+      if (delaySeconds > 0) {
+        Future.delayed(Duration(seconds: delaySeconds), () {
+          _playNextPreparedAyah(ref, player, nextSurah, nextAyah);
+        });
+      } else {
+        _playNextPreparedAyah(ref, player, nextSurah, nextAyah);
+      }
+    }
+  });
+
+  ref.onDispose(() => player.dispose());
+  return player;
+});
+
+// دالة مساعدة لتشغيل الآية التالية بعد الفاصل
+void _playNextPreparedAyah(Ref ref, AudioPlayer player, int nextSurah, int nextAyah) {
       ref.read(currentPlayingAyahProvider.notifier).state = CurrentPlayingAyah(
         surahNumber: nextSurah,
         ayahNumber: nextAyah,
         surahName: getSurahNameArabic(nextSurah),
       );
-
-      final urlEither = ref.read(voiceAyahByAyahProvider(AyahVoiceParameter(nextSurah, nextAyah)));
-      urlEither.fold(
-        (failure) {},
-        (url) async {
+      final selectedQari = ref.read(selectedQariProvider);
+      final urlEither = ref.read(
+        voiceAyahByAyahProvider(
+          AyahVoiceParameter(
+            nextSurah,
+            nextAyah,
+            selectedQari,
+          ),
+        ),
+      );
+      urlEither.fold((failure) {}, (url) async {
+        try {
           await player.setAudioSource(
             AudioSource.uri(
               Uri.parse(url),
               tag: MediaItem(
-                id: 'ayah_${nextSurah}_${nextAyah}',
+                id: 'ayah_${nextSurah}_$nextAyah',
                 title: 'سورة ${getSurahNameArabic(nextSurah)}',
                 artist: 'الآية $nextAyah',
                 artUri: Uri.parse('asset:///assets/icons/moon.png'),
@@ -75,14 +109,13 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
             ),
           );
           player.play();
-        },
-      );
-    }
-  });
-
-  ref.onDispose(() => player.dispose());
-  return player;
-});
+        } on PlayerInterruptedException {
+          // تم إيقاف المشغل أثناء التحميل، لا داعي للقيام بأي شيء
+        } catch (e) {
+          // يمكن هنا إضافة تسجيل للخطأ إذا لزم الأمر
+        }
+      });
+}
 
 // --- فئة مساعدة لدمج بيانات شريط التقدم ---
 class PositionData {
@@ -100,10 +133,7 @@ final audioPositionStreamProvider = Provider<Stream<PositionData>>((ref) {
     player.positionStream,
     player.bufferedPositionStream,
     player.durationStream,
-    (position, bufferedPosition, duration) => PositionData(
-      position,
-      bufferedPosition,
-      duration ?? Duration.zero,
-    ),
+    (position, bufferedPosition, duration) =>
+        PositionData(position, bufferedPosition, duration ?? Duration.zero),
   ).asBroadcastStream();
 });

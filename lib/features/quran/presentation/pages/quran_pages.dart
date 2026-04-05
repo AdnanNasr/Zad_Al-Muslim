@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
+import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
+import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
@@ -116,6 +118,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   Widget build(BuildContext context) {
     final themeMode = ref.read(themeProvider);
     final themeColor = ref.read(userThemeProvider);
+    final currentSelectedQariProvider = ref.watch(selectedQariProvider);
 
     List<dynamic> pageData = getPageData(_onPageChanged);
     surahsInPage.clear();
@@ -147,7 +150,12 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               0,
               0,
             ),
-            child: _quranPages(context, themeMode, themeColor),
+            child: _quranPages(
+              context,
+              themeMode,
+              themeColor,
+              currentSelectedQariProvider,
+            ),
           ),
         ],
       ),
@@ -158,6 +166,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     BuildContext context,
     ThemeMode themeMode,
     FlexScheme themeColor,
+    QariModel currentSelectedQariProvider,
   ) {
     var globalSurahNumber = ref.read(
       surahByPageNumberProvider.call(_onPageChanged),
@@ -171,7 +180,9 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     final showBars = _showAppAndBottomBar && !isAudioPlaying;
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5E6D3),
+      backgroundColor: themeMode == ThemeMode.light
+          ? Color(0xFFF5E6D3)
+          : Color(0xFF1E1E1E),
       extendBody: true,
       body: GestureDetector(
         onTap: () {
@@ -512,7 +523,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       ),
                     );
                   },
-                  child: ayahMenu(themeMode, context),
+                  child: ayahMenu(
+                    themeMode,
+                    context,
+                    currentSelectedQariProvider,
+                  ),
                 ),
               ),
 
@@ -529,7 +544,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     );
   }
 
-  Container ayahMenu(ThemeMode themeMode, BuildContext context) {
+  Container ayahMenu(
+    ThemeMode themeMode,
+    BuildContext context,
+    QariModel currentSelectedQariProvider,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         vertical: 5.h,
@@ -576,7 +595,12 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
             onTap: () async {
               final url = ref.read(
                 voiceAyahByAyahProvider(
-                  AyahVoiceParameter(_surahNumber, _verseNumber),
+                  AyahVoiceParameter(
+                    _surahNumber,
+                    _verseNumber,
+                    // TODO: fix parameters
+                    currentSelectedQariProvider,
+                  ),
                 ),
               );
 
@@ -618,6 +642,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       ),
                     );
                     await player.play();
+                  } on PlayerInterruptedException {
+                    // تم إيقاف المشغل من قبل المستخدم أو تغيير الآية، لا حاجة لإظهار خطأ
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(

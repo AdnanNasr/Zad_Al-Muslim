@@ -1,11 +1,15 @@
+import "dart:io";
+
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_screenutil/flutter_screenutil.dart";
 import "package:noor_quran/core/extensions/sizes_ext.dart";
 import "package:noor_quran/core/common/providers/theme_provider.dart";
 
 class SettingCards extends ConsumerWidget {
   final IconData icon;
   final String text;
+  final String? subText;
   final void Function()? onTap;
   final IconData? trallingIcon;
   final bool? toggle;
@@ -13,6 +17,9 @@ class SettingCards extends ConsumerWidget {
   final void Function(bool)? onChanged;
   final Widget? widget;
   final Color? forgroundColor;
+  final bool? hero;
+  final String? heroId;
+  final bool? switchValue;
   const SettingCards({
     super.key,
     required this.icon,
@@ -24,6 +31,10 @@ class SettingCards extends ConsumerWidget {
     this.onChanged,
     this.widget,
     this.forgroundColor,
+    this.hero,
+    this.heroId,
+    this.switchValue,
+    this.subText,
   });
 
   // checkTheme
@@ -58,7 +69,6 @@ class SettingCards extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Ink(
-          height: context.heightScreen * 0.06,
           width: double.infinity,
           padding: EdgeInsets.only(right: context.witdthScreen * 0.02),
           child: Row(
@@ -75,27 +85,79 @@ class SettingCards extends ConsumerWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(3.0),
-                  child: Icon(
-                    icon,
-                    size: context.witdthScreen * 0.08,
-                    color:
-                        forgroundColor ?? Theme.of(context).colorScheme.primary,
-                  ),
+                  child: hero != null
+                      ? hero! == false
+                            ? Icon(
+                                icon,
+                                size: context.witdthScreen * 0.08,
+                                color:
+                                    forgroundColor ??
+                                    Theme.of(context).colorScheme.primary,
+                              )
+                            : Hero(
+                                tag: heroId!,
+                                child: Icon(
+                                  icon,
+                                  size: context.witdthScreen * 0.08,
+                                  color:
+                                      forgroundColor ??
+                                      Theme.of(context).colorScheme.primary,
+                                ),
+                              )
+                      : Icon(
+                          icon,
+                          size: context.witdthScreen * 0.08,
+                          color:
+                              forgroundColor ??
+                              Theme.of(context).colorScheme.primary,
+                        ),
                 ),
               ),
               const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  text,
-                  style: TextStyle(fontSize: context.witdthScreen * 0.05),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+              if (subText != null)
+                Expanded(
+                  child: Column(
+                    spacing: 4.h,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        text,
+                        style: TextStyle(fontSize: 18.sp),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      Text(
+                        subText!,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              if (subText == null)
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(fontSize: 18.sp),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
               if (toggle != null && toggle!)
-                Switch(value: themeMode == ThemeMode.dark, onChanged: onChanged)
+                Switch(value: switchValue ?? false, onChanged: onChanged)
               else if (widget != null)
                 widget!
+              else if (trallingIcon != null)
+                Icon(
+                  trallingIcon,
+                  color: checkTheme(
+                    themeMode: themeMode,
+                    lightColor: Colors.grey.shade400,
+                    darkColor: Colors.grey.shade700,
+                  ),
+                )
               else
                 Icon(
                   Icons.arrow_forward_ios,

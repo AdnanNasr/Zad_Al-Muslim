@@ -115,7 +115,7 @@ class _QurahPageBottomNavigationBarState
               }, themeMode),
               _buildDivider(context),
               _buildNavItem(context, Icons.settings_rounded, "الإعدادات", () {
-                Navigator.of(context).pushNamed(Routes.settingsPage);
+                Navigator.of(context).pushNamed(Routes.quranSettingsPage);
               }, themeMode),
             ],
           ),

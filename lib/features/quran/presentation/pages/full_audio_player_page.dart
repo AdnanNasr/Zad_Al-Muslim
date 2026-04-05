@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
@@ -79,8 +81,9 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
     );
 
     // جلب الرابط والتحديث
+    final selectedQari = ref.read(selectedQariProvider);
     final urlEither = ref.read(
-      voiceAyahByAyahProvider(AyahVoiceParameter(surah, ayah)),
+      voiceAyahByAyahProvider(AyahVoiceParameter(surah, ayah, selectedQari)),
     );
     urlEither.fold(
       (failure) {
@@ -106,7 +109,11 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
             ),
           );
           await player.play();
+        } on PlayerInterruptedException {
+          AppLogger.logger.i("تم تخطي الآيات من خلال المستخدم");
         } catch (e) {
+          AppLogger.logger.e("رسالة الخطأ: $e");
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("تعذر التشغيل. لا يوجد اتصال.")),
           );
@@ -191,7 +198,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
                 SizedBox(height: 5.h),
                 Text(
                   currentAyah != null
-                      ? "الآية ${currentAyah.ayahNumber} - بصوت مشاري العفاسي"
+                      ? "الآية ${currentAyah.ayahNumber} - بصوت ${ref.watch(selectedQariProvider).name}"
                       : "-",
                   style: TextStyle(
                     fontFamily: "Cairo",

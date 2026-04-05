@@ -112,7 +112,7 @@ class MiniAudioPlayer extends ConsumerWidget {
                             ),
                           ),
                           Text(
-                            "الآية ${currentAyah.ayahNumber} - مشاري العفاسي",
+                            "الآية ${currentAyah.ayahNumber} - ${ref.watch(selectedQariProvider).name}",
                             style: TextStyle(
                               fontFamily: "Cairo",
                               fontSize: 11.sp,

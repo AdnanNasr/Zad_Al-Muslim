@@ -1,3 +1,4 @@
+// ?this file for moratal quran
 class QariNames {
   static const Map<String, String> masharyAlafassy = {
     "id": "123",
