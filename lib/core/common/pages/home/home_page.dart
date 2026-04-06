@@ -115,6 +115,7 @@ class BodyContent extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
+
                     Expanded(
                       // أضفت Expanded هنا ليعمل الـ Divider بشكل صحيح
                       child: Padding(
@@ -153,14 +154,6 @@ class BodyContent extends ConsumerWidget {
                       color: context.color.primary,
                       onTap: () {
                         Navigator.pushNamed(context, Routes.quranMoratal);
-                      },
-                    ),
-                    HomeButton(
-                      text: AppLocalizations.of(context)!.tafseer,
-                      iconImage: "assets/icons/book.png", // TODO: change icon
-                      color: context.color.primary,
-                      onTap: () {
-                        Navigator.pushNamed(context, "/tafseer_page");
                       },
                     ),
                     HomeButton(

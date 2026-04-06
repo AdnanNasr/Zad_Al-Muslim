@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/common/widgets/settings_card.dart';
 import 'package:noor_quran/core/common/widgets/settings_container.dart';
+import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/select_qari_dialog.dart';
@@ -230,7 +231,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                         builder: (context) => const AyahDelayDialog(),
                       );
                     },
-                    trallingIcon: Icons.edit,
                   ),
                   SettingCards(
                     icon: Icons.auto_awesome_motion_rounded,
@@ -244,8 +244,16 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
 
               // --- القسم الثالث: إدارة البيانات والدعم ---
               SettingsContainer(
-                title: "إدارة التطبيق",
+                title: "الإعدادات العامة",
                 settingsCards: [
+                  SettingCards(
+                    icon: Icons.library_books_rounded,
+                    text: "تحميل التفاسير",
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.tafseerPage);
+                    },
+                    trallingIcon: Icons.download,
+                  ),
                   SettingCards(
                     icon: Icons.cleaning_services_rounded,
                     text: "تنظيف المساحة",
@@ -259,6 +267,8 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     onTap: _isClearingCache
                         ? null
                         : () => _clearAudioCache(context),
+
+                    trallingIcon: Icons.delete,
                   ),
                   SettingCards(
                     icon: Icons.notifications_active_rounded,
@@ -268,7 +278,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: Icons.group,
                     text: "نشر التطبيق (صدقة جارية)",
-                    trallingIcon: Icons.share,
                   ),
                 ],
               ),

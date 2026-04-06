@@ -32,7 +32,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
           ? context.color.onPrimary
           : context.color.scrim,
       appBar: const CustomAppBar(
-        title: "التفسير",
+        title: "كتب التفسير",
         center: false,
         profile: false,
       ),
