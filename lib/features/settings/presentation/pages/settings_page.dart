@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/language_dialog.dart';
 import 'package:noor_quran/core/common/widgets/settings_card.dart';
 import 'package:noor_quran/core/common/widgets/settings_container.dart';
 

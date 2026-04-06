@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
 import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
@@ -112,7 +111,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     }
   }
 
-  List<String> surahsInPage = []; // TODO: come back to me
+  List<String> surahsInPage = [];
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +310,6 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            // TODO: display more thant one name
                             surahsInPage.join(" "),
                             style: TextStyle(
                               fontFamily: "Cairo",
@@ -458,13 +456,6 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         ],
                       ),
                     ),
-                    // Divider(
-                    //   height: 1,
-                    //   thickness: 2,
-                    //   indent: 10.w,
-                    //   endIndent: 10.w,
-                    //   color: context.color.primary,
-                    // ),
                   ],
                 ),
               ),
@@ -598,7 +589,6 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   AyahVoiceParameter(
                     _surahNumber,
                     _verseNumber,
-                    // TODO: fix parameters
                     currentSelectedQariProvider,
                   ),
                 ),
@@ -632,7 +622,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       AudioSource.uri(
                         Uri.parse(url),
                         tag: MediaItem(
-                          id: 'ayah_${_surahNumber}_${_verseNumber}',
+                          id: 'ayah_${_surahNumber}s_$_verseNumber',
                           title: 'سورة ${getSurahNameArabic(_surahNumber)}',
                           artist: 'الآية $_verseNumber',
                           artUri: Uri.parse(

@@ -38,7 +38,7 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    void _onSearchChanged(String query) {
+    void onSearchChanged(String query) {
       if (_debounce?.isActive ?? false) _debounce!.cancel();
       _debounce = Timer(const Duration(milliseconds: 500), () {
         ref
@@ -55,7 +55,7 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
       ),
       child: TextField(
         controller: _controller,
-        onChanged: _onSearchChanged,
+        onChanged: onSearchChanged,
         style: TextStyle(
           fontSize: 16.sp,
           fontFamily: "Cairo",
@@ -74,7 +74,7 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
                   icon: Icon(Icons.clear_rounded, color: context.color.primary),
                   onPressed: () {
                     _controller.clear();
-                    _onSearchChanged("");
+                    onSearchChanged("");
                     setState(() {});
                   },
                 )

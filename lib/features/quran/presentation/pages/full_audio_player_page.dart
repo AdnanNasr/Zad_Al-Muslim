@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
@@ -99,7 +98,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
             AudioSource.uri(
               Uri.parse(url),
               tag: MediaItem(
-                id: 'ayah_${surah}_${ayah}',
+                id: 'ayah_${surah}_$ayah',
                 title: 'سورة ${getSurahNameArabic(surah)}',
                 artist: 'الآية $ayah',
                 artUri: Uri.parse(

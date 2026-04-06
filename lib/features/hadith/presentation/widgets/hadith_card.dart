@@ -107,7 +107,6 @@ class HadithCard extends ConsumerWidget {
                         fontSize: 20.sp,
                         height: 1.8,
                         fontWeight: FontWeight.w500,
-                        // TODO : change font (Amiri vs Naskh comparison)
                         fontFamily: "Naskh",
                         color: colorScheme.onSurface.withValues(alpha: 0.9),
                       ),

@@ -7,8 +7,9 @@ class Routes {
   static const String changeAppColorPage = "/change_app_color_page";
   static const String tafseerPage = "/tafseer_page";
   static const String appInfo = "/app_info";
-  static const String sunahPage = "/onboarding";
+  static const String onboardingPage = "/onboarding";
   static const String customNavigationBar = "/custom_navigation_bar";
+  static const String sunnahPage = "/sunah_page";
   static const String prayTimePage = "/pray_time_page";
   static const String qeblaPage = "/qebla_page";
   static const String adkarPage = "/adkar_page";

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
@@ -221,7 +220,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   ),
                   SettingCards(
                     icon: Icons.timer_rounded,
-                    text: "الفاصل الزمني بين الآيات:",
+                    text: "الفاصل الزمني بين الآيات",
                     subText: settings.ayahDelaySeconds == 0
                         ? 'بدون توقف'
                         : '${settings.ayahDelaySeconds} ثوانٍ',

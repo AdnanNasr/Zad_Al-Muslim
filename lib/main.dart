@@ -44,12 +44,12 @@ void main() async {
 
   await NotificationService.init();
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-
   final container = ProviderContainer();
+
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // تحميل الإعدادات التي تؤثر على شكل التطبيق فوراً
   await container.read(themeProvider.notifier).loadTheme();

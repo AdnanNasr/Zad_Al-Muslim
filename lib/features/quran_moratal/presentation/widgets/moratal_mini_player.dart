@@ -371,7 +371,6 @@ class _MoratalFullPlayerSheetState
       error: (_, __) => _ayahPlaceholder(context, isLoading: false),
       data: (timings) {
         if (timings.isEmpty) {
-          // TODO: fix 0 index
           return _ayahPlaceholder(context, isLoading: false);
         }
 

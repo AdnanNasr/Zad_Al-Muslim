@@ -85,7 +85,7 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                   icon: Icons.arrow_back_ios_new_rounded,
                   onTap: () => Navigator.of(
                     context,
-                  ).pushReplacementNamed(Routes.customNavigationBar),
+                  ).popUntil(ModalRoute.withName(Routes.customNavigationBar)),
                   themeMode: themeMode,
                 ),
 

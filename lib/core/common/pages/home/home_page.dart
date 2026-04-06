@@ -168,7 +168,7 @@ class BodyContent extends ConsumerWidget {
                       iconImage: "assets/icons/quran2.png", // TODO: change icon
                       color: context.color.primary,
                       onTap: () {
-                        Navigator.of(context).pushNamed("/sunah_page");
+                        Navigator.of(context).pushNamed(Routes.sunnahPage);
                       },
                     ),
 
