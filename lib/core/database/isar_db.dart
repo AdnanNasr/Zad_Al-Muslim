@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:noor_quran/features/adkar/data/models/adkar_model.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/data/models/quran_models.dart';
 import 'package:noor_quran/features/hadith/data/models/hadith_model.dart';
@@ -24,6 +25,7 @@ class IsarDb {
       TafsserSurahSchema,
       AyahTafsserSchema,
       PrayerTimesModelSchema,
+      AdkarModelSchema,
     ], directory: dir.path);
     AppLogger.logger.i("✅ تم تهيئة قاعدة البيانات بنجاح");
     return database!;

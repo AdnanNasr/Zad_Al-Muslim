@@ -44,6 +44,10 @@ import '../../features/hadith/data/repositories/hadith_repository_impl.dart';
 import '../../features/hadith/domain/repositories/hadith_repository.dart';
 import '../../features/hadith/domain/usecases/get_hadiths_usecase.dart';
 import '../../features/hadith/domain/usecases/update_hadith_usecase.dart';
+import '../../features/adkar/data/repositories/adkar_impl.dart';
+import '../../features/adkar/domain/repositories/adkar_repo.dart';
+import '../../features/adkar/domain/usecases/get_all_adkar.dart';
+import '../../features/adkar/domain/usecases/get_adkar_by_category.dart';
 import '../../core/database/isar_db.dart';
 
 final sl = GetIt.instance;
@@ -183,4 +187,9 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<SurahQariVoiceImpl>(() => SurahQariVoiceImpl(sl()));
   sl.registerLazySingleton<GetSurahQariVoice>(() => GetSurahQariVoice(sl()));
+
+  // Features - Adkar
+  sl.registerLazySingleton<AdkarRepo>(() => AdkarImpl());
+  sl.registerLazySingleton<GetAllAdkar>(() => GetAllAdkar(sl()));
+  sl.registerLazySingleton<GetAdkarByCategory>(() => GetAdkarByCategory(sl()));
 }

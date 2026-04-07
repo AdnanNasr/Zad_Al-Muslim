@@ -11,6 +11,7 @@ import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_
 import 'package:noor_quran/features/hadith/data/repositories/insert_hadith.dart';
 import 'package:noor_quran/features/quran/data/repositories/insert_quran_pages.dart';
 import 'package:noor_quran/features/tafsser/data/repositories/insert_tafsser.dart';
+import 'package:noor_quran/features/adkar/data/repositories/insert_adkar_to_isar.dart';
 import 'package:noor_quran/core/utils/location/location_locator.dart';
 import 'package:noor_quran/features/hadith/data/models/hadith_model.dart';
 
@@ -54,15 +55,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         });
         await insertHadithToIsar();
 
-        // المرحلة 3: التفاسير (80%)
+        // المرحلة 3: التفاسير (75%)
         setState(() {
           _loadingText = "جاري إعداد كتب التفسير...";
-          _progress = 0.7;
+          _progress = 0.6;
         });
         await loadTafsserFromAssest();
+
+        // المرحلة 4: حصن المسلم (الأذكار)
+        setState(() {
+          _loadingText = "جاري تحميل أذكار حصن المسلم...";
+          _progress = 0.75;
+        });
+        await insertAdkarToIsar();
       }
 
-      // المرحلة 4: الموقع وأوقات الصلاة (دائماً تعمل)
+      // المرحلة 5: الموقع وأوقات الصلاة (دائماً تعمل)
       setState(() {
         _loadingText = "جاري تحديد موقعك لمواقيت الصلاة...";
         _progress = 0.85;
