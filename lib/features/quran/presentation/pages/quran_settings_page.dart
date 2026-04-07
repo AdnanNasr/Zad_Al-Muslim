@@ -14,6 +14,7 @@ import 'package:noor_quran/features/quran/presentation/widgets/reading_colors_di
 import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class QuranSettingsPage extends ConsumerStatefulWidget {
   const QuranSettingsPage({super.key});
@@ -158,16 +159,29 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
     final currentSelectedQariProvider = ref.watch(selectedQariProvider);
     final themeMode = ref.watch(themeProvider);
     final theme = Theme.of(context);
-    final isDark = themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
-    
+    final isDark =
+        themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
+
     // قائمة الألوان المستخرجة
-    final List<Color> currentColorsList = isDark 
-      ? [const Color(0xFF1E1E1E), const Color(0xFF000000), const Color(0xFF2C241B), const Color(0xFF111A22)]
-      : [const Color(0xFFF5E6D3), const Color(0xFFFFFFFF), const Color(0xFFF5F5F5), const Color(0xFFFAF6EE)];
-      
-    final Color selectedColor = currentColorsList[
-      settings.readingBackgroundColorIndex.clamp(0, currentColorsList.length - 1)
-    ];
+    final List<Color> currentColorsList = isDark
+        ? [
+            const Color(0xFF1E1E1E),
+            const Color(0xFF000000),
+            const Color(0xFF2C241B),
+            const Color(0xFF111A22),
+          ]
+        : [
+            const Color(0xFFF5E6D3),
+            const Color(0xFFFFFFFF),
+            const Color(0xFFF5F5F5),
+            const Color(0xFFFAF6EE),
+          ];
+
+    final Color selectedColor =
+        currentColorsList[settings.readingBackgroundColorIndex.clamp(
+          0,
+          currentColorsList.length - 1,
+        )];
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -264,6 +278,12 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     icon: Icons.auto_awesome_motion_rounded,
                     text: "التمرير التلقائي مع صوت القارئ",
                     toggle: true,
+                    switchValue: settings.autoScrollWithAudio,
+                    onChanged: (_) {
+                      ref
+                          .read(quranSettingsProvider.notifier)
+                          .toggleAutoScrollWithAudio();
+                    },
                   ),
                 ],
               ),
@@ -306,6 +326,11 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: Icons.group,
                     text: "نشر التطبيق (صدقة جارية)",
+                    onTap: () {
+                      SharePlus.instance.share(
+                        ShareParams(text: "https://noor_bayan.com"),
+                      );
+                    },
                   ),
                 ],
               ),

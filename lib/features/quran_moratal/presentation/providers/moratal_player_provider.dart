@@ -61,9 +61,9 @@ final playMoratalSurahActionProvider = Provider((ref) {
                 id: '${surah.qariId}_${surah.surahNumber}',
                 title: 'سورة ${surah.surahName}',
                 artist: surah.qariName,
-                artUri: Uri.parse(
-                  'asset:///assets/icons/moon.png',
-                ), // TODO: add app icon
+                // artUri: Uri.parse(
+                //   'asset:///assets/icons/moon.png',
+                // ), // TODO: add app icon
               ),
             ),
           );

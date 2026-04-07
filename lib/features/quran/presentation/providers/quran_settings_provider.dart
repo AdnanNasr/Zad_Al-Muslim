@@ -9,12 +9,14 @@ class QuranSettings {
   final int ayahDelaySeconds;
   final QariModel selectedQari;
   final int readingBackgroundColorIndex;
+  final bool autoScrollWithAudio;
 
   QuranSettings({
     required this.keepScreenAwake,
     required this.ayahDelaySeconds,
     required this.selectedQari,
     required this.readingBackgroundColorIndex,
+    required this.autoScrollWithAudio,
   });
 
   QuranSettings copyWith({
@@ -22,12 +24,14 @@ class QuranSettings {
     int? ayahDelaySeconds,
     QariModel? selectedQari,
     int? readingBackgroundColorIndex,
+    bool? autoScrollWithAudio,
   }) {
     return QuranSettings(
       keepScreenAwake: keepScreenAwake ?? this.keepScreenAwake,
       ayahDelaySeconds: ayahDelaySeconds ?? this.ayahDelaySeconds,
       selectedQari: selectedQari ?? this.selectedQari,
       readingBackgroundColorIndex: readingBackgroundColorIndex ?? this.readingBackgroundColorIndex,
+      autoScrollWithAudio: autoScrollWithAudio ?? this.autoScrollWithAudio,
     );
   }
 }
@@ -39,12 +43,14 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
   static const String _ayahDelayKey = 'ayah_delay_key';
   static const String _selectedQariIdKey = 'selected_qari_id_key';
   static const String _readingBackgroundColorIndexKey = 'reading_background_color_index_key';
+  static const String _autoScrollWithAudioKey = 'auto_scroll_with_audio_key';
 
   QuranSettingsNotifier(this._prefs) : super(QuranSettings(
     keepScreenAwake: false, 
     ayahDelaySeconds: 0, 
     selectedQari: QariNamesAyahByAyah.masharyAlafassy,
     readingBackgroundColorIndex: 0,
+    autoScrollWithAudio: true,
   )) {
     _init();
   }
@@ -54,6 +60,7 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     final ayahDelay = _prefs.getInt(_ayahDelayKey) ?? 0;
     final qariId = _prefs.getString(_selectedQariIdKey);
     final bgColorIndex = _prefs.getInt(_readingBackgroundColorIndexKey) ?? 0;
+    final autoScroll = _prefs.getBool(_autoScrollWithAudioKey) ?? true;
     
     QariModel selectedQari = QariNamesAyahByAyah.masharyAlafassy;
     if (qariId != null) {
@@ -69,6 +76,7 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
       ayahDelaySeconds: ayahDelay,
       selectedQari: selectedQari,
       readingBackgroundColorIndex: bgColorIndex,
+      autoScrollWithAudio: autoScroll,
     );
     
     // تفعيل إضاءة الشاشة إذا كانت الميزة مفعلة مسبقاً
@@ -102,6 +110,12 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
   Future<void> setReadingBackgroundColorIndex(int index) async {
     await _prefs.setInt(_readingBackgroundColorIndexKey, index);
     state = state.copyWith(readingBackgroundColorIndex: index);
+  }
+
+  Future<void> toggleAutoScrollWithAudio() async {
+    final newValue = !state.autoScrollWithAudio;
+    await _prefs.setBool(_autoScrollWithAudioKey, newValue);
+    state = state.copyWith(autoScrollWithAudio: newValue);
   }
 }
 

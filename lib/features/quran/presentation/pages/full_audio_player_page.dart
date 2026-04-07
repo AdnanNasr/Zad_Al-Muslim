@@ -101,9 +101,9 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
                 id: 'ayah_${surah}_$ayah',
                 title: 'سورة ${getSurahNameArabic(surah)}',
                 artist: 'الآية $ayah',
-                artUri: Uri.parse(
-                  'asset:///assets/icons/moon.png',
-                ), // TODO: change app icon
+                // artUri: Uri.parse(
+                //   'asset:///assets/icons/moon.png',
+                // ), // TODO: change app icon
               ),
             ),
           );

@@ -43,6 +43,13 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
       final currentAyah = ref.read(currentPlayingAyahProvider);
       if (currentAyah == null) return;
 
+      // التحقق من إعداد التمرير التلقائي (الانتقال للآية التالية)
+      final autoScroll = ref.read(quranSettingsProvider).autoScrollWithAudio;
+      if (!autoScroll) {
+        ref.read(currentPlayingAyahProvider.notifier).state = null;
+        return;
+      }
+
       int nextAyah = currentAyah.ayahNumber + 1;
       int nextSurah = currentAyah.surahNumber;
       final verseCount = getVerseCount(nextSurah);
@@ -104,7 +111,7 @@ void _playNextPreparedAyah(Ref ref, AudioPlayer player, int nextSurah, int nextA
                 id: 'ayah_${nextSurah}_$nextAyah',
                 title: 'سورة ${getSurahNameArabic(nextSurah)}',
                 artist: 'الآية $nextAyah',
-                artUri: Uri.parse('asset:///assets/icons/moon.png'),
+                // artUri: Uri.parse('asset:///assets/icons/moon.png'), // TODO: add app icon
               ),
             ),
           );

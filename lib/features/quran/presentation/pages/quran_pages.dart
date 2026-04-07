@@ -61,6 +61,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   final double menuWidth = 250;
   bool isMenuOpen = false;
 
+  late final PageController _pageController;
+
   void _toggleMenu() {
     isMenuOpen = !isMenuOpen;
     setState(() {});
@@ -96,15 +98,19 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.pageNumber != null) {
-      _onPageChanged = widget.pageNumber!;
-    }
+    final initialPage = (widget.pageNumber != null && widget.pageNumber! > 0)
+        ? widget.pageNumber!
+        : 1;
+    _onPageChanged = initialPage;
+    _pageController = PageController(initialPage: initialPage - 1);
+
     if (widget.highlightSurah != null && widget.highlightVerse != null) {
       _surahNumber = widget.highlightSurah!;
       _verseNumber = widget.highlightVerse!;
@@ -126,6 +132,21 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
       final surahName = getSurahNameArabic(pageData[i]["surah"] as int);
       surahsInPage.add(surahName);
     }
+    // الاستماع لتغيير الآية الحالية للقيام بالتمرير التلقائي
+    ref.listen(currentPlayingAyahProvider, (previous, current) {
+      final autoScroll = ref.read(quranSettingsProvider).autoScrollWithAudio;
+      if (current != null && autoScroll) {
+        final ayahPage = getPageNumber(current.surahNumber, current.ayahNumber);
+        if (ayahPage != _onPageChanged) {
+          _pageController.animateToPage(
+            ayahPage - 1,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    });
+
     return Scaffold(
       body: Stack(
         children: [
@@ -230,6 +251,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
               child: Align(
                 alignment: Alignment.center,
                 child: PageviewQuran(
+                  controller: _pageController,
                   theme: isDark == false
                       ? QcfThemeData(
                           pageBackgroundColor: pageBackgroundColor,
@@ -647,9 +669,9 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                           id: 'ayah_${_surahNumber}s_$_verseNumber',
                           title: 'سورة ${getSurahNameArabic(_surahNumber)}',
                           artist: 'الآية $_verseNumber',
-                          artUri: Uri.parse(
-                            'asset:///assets/icons/moon.png',
-                          ), // TODO: change app icon
+                          // artUri: Uri.parse(
+                          //   'asset:///assets/icons/moon.png',
+                          // ), // TODO: change app icon
                         ),
                       ),
                     );
