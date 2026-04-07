@@ -221,98 +221,131 @@ class BodyContent extends ConsumerWidget {
     ThemeMode themeMode,
     Mark lastReadingPostion,
   ) {
+    final isDark =
+        themeMode == ThemeMode.dark ||
+        Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
-      padding: EdgeInsets.all(8.0.r),
-      child: Material(
-        surfaceTintColor: colorScheme.primary,
-        shadowColor: themeMode == ThemeMode.light
-            ? colorScheme.surface
-            : colorScheme.primary,
-        elevation: 2,
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(8.r),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0.r),
-                  child: Text(
-                    AppLocalizations.of(context)!.last_reading_surah,
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontFamily: "Cairo",
-                      fontWeight: FontWeight.bold,
-                    ),
+      padding: EdgeInsets.symmetric(horizontal: 14.r, vertical: 8.r),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            AppLocalizations.of(context)!.last_reading_surah,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontFamily: "Cairo",
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          SizedBox(height: 12.h),
+
+          // Card
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.r),
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [
+                        colorScheme.primary.withValues(alpha: 0.7),
+                        colorScheme.primary.withValues(alpha: 0.4),
+                      ]
+                    : [
+                        colorScheme.primary,
+                        colorScheme.primary.withValues(alpha: 0.8),
+                      ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.primary.withValues(
+                    alpha: isDark ? 0.2 : 0.3,
                   ),
-                ),
-                Expanded(
-                  child: Divider(thickness: 2, color: colorScheme.primary),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
-            SizedBox(height: 8.h),
-            InkWell(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  // must represent last reading position in Quran section
-                  builder: (context) => QuranPages(
-                    highlightVerse: lastReadingPostion.ayahNumber,
-                    highlightSurah: lastReadingPostion.surahNumber,
-                    pageNumber: lastReadingPostion.pageNumber,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20.r),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => QuranPages(
+                      highlightVerse: lastReadingPostion.ayahNumber,
+                      highlightSurah: lastReadingPostion.surahNumber,
+                      pageNumber: lastReadingPostion.pageNumber,
+                    ),
                   ),
                 ),
-              ),
-              child: Ink(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(6.r),
-                ),
                 child: Padding(
-                  padding: EdgeInsets.all(8.0.r),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 20.h,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Text(
-                            "سُورَةَ ${lastReadingPostion.surahName}",
-                            style: TextStyle(
-                              fontSize: 25.sp,
-                              fontFamily: "Amiri",
-                              color: colorScheme.onPrimary,
+                          Container(
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
                             ),
+                            child: Icon(Icons.bookmark, color: Colors.white),
                           ),
-                          SizedBox(width: 20.w),
-                          Text(
-                            "|",
-                            style: TextStyle(
-                              fontSize: 35.sp,
-                              color: colorScheme.onPrimary,
-                            ),
-                          ),
-                          SizedBox(width: 20.w),
-                          Text(
-                            "${AppLocalizations.of(context)!.page_number}: ${lastReadingPostion.pageNumber}",
-                            style: TextStyle(
-                              fontSize: 18.sp,
-                              color: colorScheme.onPrimary,
-                            ),
+                          SizedBox(width: 16.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "سُورَةَ ${lastReadingPostion.surahName}",
+                                style: TextStyle(
+                                  fontSize: 22.sp,
+                                  fontFamily: "Amiri",
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  height: 1.2,
+                                ),
+                              ),
+                              SizedBox(height: 6.h),
+                              Text(
+                                "${AppLocalizations.of(context)!.page_number} ${lastReadingPostion.pageNumber}",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontFamily: "Cairo",
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: colorScheme.onPrimary,
+                      Container(
+                        padding: EdgeInsets.all(8.r),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: Colors.white,
+                          size: 16.sp,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
