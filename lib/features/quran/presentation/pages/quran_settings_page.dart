@@ -10,7 +10,9 @@ import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/select_qari_dialog.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/ayah_delay_dialog.dart';
+import 'package:noor_quran/features/quran/presentation/widgets/reading_colors_dialog.dart';
 import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
+import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:path_provider/path_provider.dart';
 
 class QuranSettingsPage extends ConsumerStatefulWidget {
@@ -154,6 +156,19 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
   Widget build(BuildContext context) {
     final settings = ref.watch(quranSettingsProvider);
     final currentSelectedQariProvider = ref.watch(selectedQariProvider);
+    final themeMode = ref.watch(themeProvider);
+    final theme = Theme.of(context);
+    final isDark = themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
+    
+    // قائمة الألوان المستخرجة
+    final List<Color> currentColorsList = isDark 
+      ? [const Color(0xFF1E1E1E), const Color(0xFF000000), const Color(0xFF2C241B), const Color(0xFF111A22)]
+      : [const Color(0xFFF5E6D3), const Color(0xFFFFFFFF), const Color(0xFFF5F5F5), const Color(0xFFFAF6EE)];
+      
+    final Color selectedColor = currentColorsList[
+      settings.readingBackgroundColorIndex.clamp(0, currentColorsList.length - 1)
+    ];
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: "إعدادات القرآن الكريم",
@@ -175,8 +190,21 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: Icons.palette_rounded,
                     text: "لون خلفية القراءة",
+                    widget: Container(
+                      width: 24.w,
+                      height: 24.w,
+                      decoration: BoxDecoration(
+                        color: selectedColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                      ),
+                    ),
                     onTap: () {
-                      // هنا تفتح Modal الألوان التي صممناها سابقاً
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const ReadingColorsDialog(),
+                      );
                     },
                   ),
                   SettingCards(

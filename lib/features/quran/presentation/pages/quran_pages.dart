@@ -14,6 +14,7 @@ import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
+import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/surah_by_page_number_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.dart';
@@ -167,6 +168,31 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     FlexScheme themeColor,
     QariModel currentSelectedQariProvider,
   ) {
+    final settings = ref.watch(quranSettingsProvider);
+    final theme = Theme.of(context);
+    final isDark =
+        themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
+
+    final List<Color> currentColorsList = isDark
+        ? [
+            const Color(0xFF1E1E1E),
+            const Color(0xFF000000),
+            const Color(0xFF2C241B),
+            const Color(0xFF111A22),
+          ]
+        : [
+            const Color(0xFFF5E6D3),
+            const Color(0xFFFFFFFF),
+            const Color(0xFFF5F5F5),
+            const Color(0xFFFAF6EE),
+          ];
+
+    final Color pageBackgroundColor =
+        currentColorsList[settings.readingBackgroundColorIndex.clamp(
+          0,
+          currentColorsList.length - 1,
+        )];
+
     var globalSurahNumber = ref.read(
       surahByPageNumberProvider.call(_onPageChanged),
     )["surah"]!;
@@ -179,9 +205,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     final showBars = _showAppAndBottomBar && !isAudioPlaying;
 
     return Scaffold(
-      backgroundColor: themeMode == ThemeMode.light
-          ? Color(0xFFF5E6D3)
-          : Color(0xFF1E1E1E),
+      backgroundColor: pageBackgroundColor,
       extendBody: true,
       body: GestureDetector(
         onTap: () {
@@ -202,13 +226,13 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
           alignment: AlignmentDirectional.bottomCenter,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: context.mediaQueryHeight * 0.045),
+              padding: EdgeInsets.only(top: context.mediaQueryHeight * 0.055),
               child: Align(
                 alignment: Alignment.center,
                 child: PageviewQuran(
-                  theme: themeMode == ThemeMode.light
+                  theme: isDark == false
                       ? QcfThemeData(
-                          pageBackgroundColor: Color(0xFFF5E6D3),
+                          pageBackgroundColor: pageBackgroundColor,
                           verseNumberHeight:
                               _onPageChanged == 1 || _onPageChanged == 2
                               ? 2.2
@@ -231,9 +255,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                           basmalaColor: context.color.primary,
                           headerTextColor: Colors.white,
                           headerBackgroundColor: Colors.white,
-                          pageBackgroundColor: Color(
-                            0xFF1E1E1E,
-                          ), // Color(0xFF1E1E1E)
+                          pageBackgroundColor: pageBackgroundColor,
                           verseNumberHeight: 2,
                           verseHeight: 2,
                           customHeaderBuilder: (surahNumber) {

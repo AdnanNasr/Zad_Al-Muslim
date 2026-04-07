@@ -27,81 +27,84 @@ class HomeButton extends ConsumerStatefulWidget {
 class _HomeButtonState extends ConsumerState<HomeButton> {
   @override
   Widget build(BuildContext context) {
+    // we don't strictly need theme since we are customizing entirely, but we keep it
     final theme = Theme.of(context);
     final themeMode = ref.watch(themeProvider);
+    final isDark =
+        themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
 
     return InkWell(
       onTap: widget.onTap,
-      splashColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2),
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(24.r),
+      splashColor: Colors.white.withValues(alpha: 0.2),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Ink(
         decoration: BoxDecoration(
-          gradient: themeMode == ThemeMode.light
-              ? LinearGradient(
-                  colors: [
-                    widget.color.withValues(alpha: 0.8),
+          borderRadius: BorderRadius.circular(24.r),
+          gradient: LinearGradient(
+            colors: isDark
+                ? [
+                    widget.color.withValues(alpha: 0.6),
                     widget.color.withValues(alpha: 0.9),
-                  ],
-                )
-              : LinearGradient(
-                  colors: [
-                    widget.color.withValues(alpha: 0.8),
-                    widget.color.withValues(alpha: 1),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-          borderRadius: BorderRadius.circular(39.r),
+                  ]
+                : [widget.color.withValues(alpha: 0.8), widget.color],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           boxShadow: [
             BoxShadow(
-              color: widget.color.withValues(alpha: 0.25),
-              blurRadius: 4,
-              offset: const Offset(0, 5),
+              color: widget.color.withValues(alpha: isDark ? 0.25 : 0.35),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+              spreadRadius: 0,
             ),
           ],
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.15),
+            width: 1.5,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (widget.iconImage != null)
+            if (widget.iconImage != null || widget.iconData != null)
               Container(
+                padding: EdgeInsets.all(context.witdthScreen * 0.025),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onPrimary,
+                  color: Colors.white,
                   shape: BoxShape.circle,
-                  boxShadow: themeMode == ThemeMode.light
-                      ? [
-                          BoxShadow(
-                            color: Theme.of(
-                              context,
-                            ).shadowColor.withValues(alpha: 0.6),
-                            offset: const Offset(0, 2),
-                            blurRadius: 10,
-                          ),
-                        ]
-                      : null,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
                 ),
-                padding: EdgeInsets.all(context.witdthScreen * 0.02),
-                child: Image.asset(
-                  widget.iconImage!,
-                  height: context.witdthScreen <= 360 ? 45.h : 40.h,
+                child: widget.iconImage != null
+                    ? Image.asset(
+                        widget.iconImage!,
+                        height: context.witdthScreen <= 360 ? 30.h : 35.h,
+                      )
+                    : Icon(
+                        widget.iconData,
+                        color: Colors.white,
+                        size: context.witdthScreen * 0.07,
+                      ),
+              ),
+            SizedBox(height: context.heightScreen * 0.012),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w),
+              child: Text(
+                widget.text,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Cairo",
+                  fontSize: context.witdthScreen * 0.035,
+                  height: 1.2,
                 ),
-              )
-            else if (widget.iconData != null)
-              Icon(
-                widget.iconData,
-                color: Theme.of(context).colorScheme.onPrimary,
-                size: context.witdthScreen * 0.08,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            SizedBox(height: context.heightScreen * 0.009),
-            Text(
-              widget.text,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.bold,
-                fontFamily: "Cairo",
-                fontSize: context.witdthScreen * 0.035,
-              ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),

@@ -39,7 +39,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tafseer => 'كتب التفسير';
 
   @override
-  String get sunah => 'السنة';
+  String get sunah => 'السنة والحديث';
 
   @override
   String get qebla_direction => 'اتجاه القبلة';
