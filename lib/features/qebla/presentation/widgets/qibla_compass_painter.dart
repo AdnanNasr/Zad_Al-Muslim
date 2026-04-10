@@ -37,11 +37,10 @@ class QiblaCompassPainter extends CustomPainter {
 
   /// الحلقة الخارجية
   void _drawRing(Canvas canvas, Offset center, double radius) {
-    final paint =
-        Paint()
-          ..color = ringColor.withValues(alpha: .25)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.5;
+    final paint = Paint()
+      ..color = ringColor.withValues(alpha: .25)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
     canvas.drawCircle(center, radius - 4, paint);
 
     // حلقة داخلية خفية
@@ -57,14 +56,12 @@ class QiblaCompassPainter extends CustomPainter {
 
   /// خطوط التدريج على حافة البوصلة
   void _drawTicks(Canvas canvas, Offset center, double radius) {
-    final majorPaint =
-        Paint()
-          ..color = ringColor.withValues(alpha: .5)
-          ..strokeWidth = 1.5;
-    final minorPaint =
-        Paint()
-          ..color = ringColor.withValues(alpha: .25)
-          ..strokeWidth = 0.8;
+    final majorPaint = Paint()
+      ..color = ringColor.withValues(alpha: .5)
+      ..strokeWidth = 1.5;
+    final minorPaint = Paint()
+      ..color = ringColor.withValues(alpha: .25)
+      ..strokeWidth = 0.8;
 
     for (int i = 0; i < 360; i += 5) {
       final isMajor = i % 45 == 0;
@@ -87,7 +84,7 @@ class QiblaCompassPainter extends CustomPainter {
   /// نصوص الاتجاهات الأربعة
   void _drawCardinalLabels(Canvas canvas, Offset center, double radius) {
     const labels = {0: 'N', 90: 'E', 180: 'S', 270: 'W'};
-    const arabicLabels = {0: 'ش', 90: 'ش.غ', 180: 'ج', 270: 'غ'};
+    const arabicLabels = {0: 'شمال', 90: 'شرق', 180: 'جنوب', 270: 'غرب'};
 
     labels.forEach((deg, label) {
       final arabicLabel = arabicLabels[deg]!;
@@ -127,31 +124,27 @@ class QiblaCompassPainter extends CustomPainter {
     final arrowWidth = radius * 0.06;
 
     // الجزء العلوي (يشير نحو القبلة)
-    final qiblaPaint =
-        Paint()
-          ..color = qiblaColor
-          ..style = PaintingStyle.fill;
+    final qiblaPaint = Paint()
+      ..color = qiblaColor
+      ..style = PaintingStyle.fill;
 
-    final topArrow =
-        Path()
-          ..moveTo(0, -arrowLength)
-          ..lineTo(-arrowWidth, 0)
-          ..lineTo(arrowWidth, 0)
-          ..close();
+    final topArrow = Path()
+      ..moveTo(0, -arrowLength)
+      ..lineTo(-arrowWidth, 0)
+      ..lineTo(arrowWidth, 0)
+      ..close();
     canvas.drawPath(topArrow, qiblaPaint);
 
     // الجزء السفلي (الذيل)
-    final tailPaint =
-        Paint()
-          ..color = labelColor.withValues(alpha: .35)
-          ..style = PaintingStyle.fill;
+    final tailPaint = Paint()
+      ..color = labelColor.withValues(alpha: .35)
+      ..style = PaintingStyle.fill;
 
-    final bottomArrow =
-        Path()
-          ..moveTo(0, arrowLength * 0.45)
-          ..lineTo(-arrowWidth * 0.7, 0)
-          ..lineTo(arrowWidth * 0.7, 0)
-          ..close();
+    final bottomArrow = Path()
+      ..moveTo(0, arrowLength * 0.45)
+      ..lineTo(-arrowWidth * 0.7, 0)
+      ..lineTo(arrowWidth * 0.7, 0)
+      ..close();
     canvas.drawPath(bottomArrow, tailPaint);
 
     canvas.restore();
@@ -201,16 +194,8 @@ class QiblaCompassPainter extends CustomPainter {
 
   /// النقطة المركزية
   void _drawCenterDot(Canvas canvas, Offset center) {
-    canvas.drawCircle(
-      center,
-      8,
-      Paint()..color = qiblaColor,
-    );
-    canvas.drawCircle(
-      center,
-      4,
-      Paint()..color = Colors.white,
-    );
+    canvas.drawCircle(center, 8, Paint()..color = qiblaColor);
+    canvas.drawCircle(center, 4, Paint()..color = Colors.white);
   }
 
   @override
