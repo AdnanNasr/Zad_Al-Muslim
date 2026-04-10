@@ -6,7 +6,7 @@ part of 'pray_times_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$prayTimesNotifierHash() => r'6fa9f59393c933ef0c6b5b2646ee6ed568e64415';
+String _$prayTimesNotifierHash() => r'84cae27886ffd7f60203aaa9decb82d82cbdf990';
 
 /// See also [PrayTimesNotifier].
 @ProviderFor(PrayTimesNotifier)

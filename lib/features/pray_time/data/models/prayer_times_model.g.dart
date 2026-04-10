@@ -17,40 +17,40 @@ const PrayerTimesModelSchema = CollectionSchema(
   name: r'PrayerTimesModel',
   id: 5717370750754320027,
   properties: {
-    r'asr': PropertySchema(
+    r'asrMinutes': PropertySchema(
       id: 0,
-      name: r'asr',
-      type: IsarType.dateTime,
+      name: r'asrMinutes',
+      type: IsarType.long,
     ),
     r'date': PropertySchema(
       id: 1,
       name: r'date',
       type: IsarType.dateTime,
     ),
-    r'dhuhr': PropertySchema(
+    r'dhuhrMinutes': PropertySchema(
       id: 2,
-      name: r'dhuhr',
-      type: IsarType.dateTime,
+      name: r'dhuhrMinutes',
+      type: IsarType.long,
     ),
-    r'fajr': PropertySchema(
+    r'fajrMinutes': PropertySchema(
       id: 3,
-      name: r'fajr',
-      type: IsarType.dateTime,
+      name: r'fajrMinutes',
+      type: IsarType.long,
     ),
-    r'isha': PropertySchema(
+    r'ishaMinutes': PropertySchema(
       id: 4,
-      name: r'isha',
-      type: IsarType.dateTime,
+      name: r'ishaMinutes',
+      type: IsarType.long,
     ),
-    r'maghrib': PropertySchema(
+    r'maghribMinutes': PropertySchema(
       id: 5,
-      name: r'maghrib',
-      type: IsarType.dateTime,
+      name: r'maghribMinutes',
+      type: IsarType.long,
     ),
-    r'sunrise': PropertySchema(
+    r'sunriseMinutes': PropertySchema(
       id: 6,
-      name: r'sunrise',
-      type: IsarType.dateTime,
+      name: r'sunriseMinutes',
+      type: IsarType.long,
     )
   },
   estimateSize: _prayerTimesModelEstimateSize,
@@ -96,13 +96,13 @@ void _prayerTimesModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.asr);
+  writer.writeLong(offsets[0], object.asrMinutes);
   writer.writeDateTime(offsets[1], object.date);
-  writer.writeDateTime(offsets[2], object.dhuhr);
-  writer.writeDateTime(offsets[3], object.fajr);
-  writer.writeDateTime(offsets[4], object.isha);
-  writer.writeDateTime(offsets[5], object.maghrib);
-  writer.writeDateTime(offsets[6], object.sunrise);
+  writer.writeLong(offsets[2], object.dhuhrMinutes);
+  writer.writeLong(offsets[3], object.fajrMinutes);
+  writer.writeLong(offsets[4], object.ishaMinutes);
+  writer.writeLong(offsets[5], object.maghribMinutes);
+  writer.writeLong(offsets[6], object.sunriseMinutes);
 }
 
 PrayerTimesModel _prayerTimesModelDeserialize(
@@ -112,14 +112,14 @@ PrayerTimesModel _prayerTimesModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = PrayerTimesModel();
-  object.asr = reader.readDateTime(offsets[0]);
+  object.asrMinutes = reader.readLong(offsets[0]);
   object.date = reader.readDateTime(offsets[1]);
-  object.dhuhr = reader.readDateTime(offsets[2]);
-  object.fajr = reader.readDateTime(offsets[3]);
+  object.dhuhrMinutes = reader.readLong(offsets[2]);
+  object.fajrMinutes = reader.readLong(offsets[3]);
   object.id = id;
-  object.isha = reader.readDateTime(offsets[4]);
-  object.maghrib = reader.readDateTime(offsets[5]);
-  object.sunrise = reader.readDateTime(offsets[6]);
+  object.ishaMinutes = reader.readLong(offsets[4]);
+  object.maghribMinutes = reader.readLong(offsets[5]);
+  object.sunriseMinutes = reader.readLong(offsets[6]);
   return object;
 }
 
@@ -131,19 +131,19 @@ P _prayerTimesModelDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 4:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 5:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 6:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -400,53 +400,53 @@ extension PrayerTimesModelQueryWhere
 extension PrayerTimesModelQueryFilter
     on QueryBuilder<PrayerTimesModel, PrayerTimesModel, QFilterCondition> {
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrEqualTo(DateTime value) {
+      asrMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'asr',
+        property: r'asrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrGreaterThan(
-    DateTime value, {
+      asrMinutesGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'asr',
+        property: r'asrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrLessThan(
-    DateTime value, {
+      asrMinutesLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'asr',
+        property: r'asrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      asrBetween(
-    DateTime lower,
-    DateTime upper, {
+      asrMinutesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'asr',
+        property: r'asrMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -512,53 +512,53 @@ extension PrayerTimesModelQueryFilter
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrEqualTo(DateTime value) {
+      dhuhrMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dhuhr',
+        property: r'dhuhrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrGreaterThan(
-    DateTime value, {
+      dhuhrMinutesGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'dhuhr',
+        property: r'dhuhrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrLessThan(
-    DateTime value, {
+      dhuhrMinutesLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'dhuhr',
+        property: r'dhuhrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      dhuhrBetween(
-    DateTime lower,
-    DateTime upper, {
+      dhuhrMinutesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'dhuhr',
+        property: r'dhuhrMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -568,53 +568,53 @@ extension PrayerTimesModelQueryFilter
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrEqualTo(DateTime value) {
+      fajrMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'fajr',
+        property: r'fajrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrGreaterThan(
-    DateTime value, {
+      fajrMinutesGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'fajr',
+        property: r'fajrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrLessThan(
-    DateTime value, {
+      fajrMinutesLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'fajr',
+        property: r'fajrMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      fajrBetween(
-    DateTime lower,
-    DateTime upper, {
+      fajrMinutesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'fajr',
+        property: r'fajrMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -680,53 +680,53 @@ extension PrayerTimesModelQueryFilter
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaEqualTo(DateTime value) {
+      ishaMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isha',
+        property: r'ishaMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaGreaterThan(
-    DateTime value, {
+      ishaMinutesGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'isha',
+        property: r'ishaMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaLessThan(
-    DateTime value, {
+      ishaMinutesLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'isha',
+        property: r'ishaMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      ishaBetween(
-    DateTime lower,
-    DateTime upper, {
+      ishaMinutesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'isha',
+        property: r'ishaMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -736,53 +736,53 @@ extension PrayerTimesModelQueryFilter
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribEqualTo(DateTime value) {
+      maghribMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'maghrib',
+        property: r'maghribMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribGreaterThan(
-    DateTime value, {
+      maghribMinutesGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'maghrib',
+        property: r'maghribMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribLessThan(
-    DateTime value, {
+      maghribMinutesLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'maghrib',
+        property: r'maghribMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      maghribBetween(
-    DateTime lower,
-    DateTime upper, {
+      maghribMinutesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'maghrib',
+        property: r'maghribMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -792,53 +792,53 @@ extension PrayerTimesModelQueryFilter
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseEqualTo(DateTime value) {
+      sunriseMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sunrise',
+        property: r'sunriseMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseGreaterThan(
-    DateTime value, {
+      sunriseMinutesGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'sunrise',
+        property: r'sunriseMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseLessThan(
-    DateTime value, {
+      sunriseMinutesLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'sunrise',
+        property: r'sunriseMinutes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterFilterCondition>
-      sunriseBetween(
-    DateTime lower,
-    DateTime upper, {
+      sunriseMinutesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'sunrise',
+        property: r'sunriseMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -856,16 +856,17 @@ extension PrayerTimesModelQueryLinks
 
 extension PrayerTimesModelQuerySortBy
     on QueryBuilder<PrayerTimesModel, PrayerTimesModel, QSortBy> {
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> sortByAsr() {
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      sortByAsrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'asr', Sort.asc);
+      return query.addSortBy(r'asrMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByAsrDesc() {
+      sortByAsrMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'asr', Sort.desc);
+      return query.addSortBy(r'asrMinutes', Sort.desc);
     });
   }
 
@@ -882,86 +883,90 @@ extension PrayerTimesModelQuerySortBy
     });
   }
 
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> sortByDhuhr() {
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      sortByDhuhrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dhuhr', Sort.asc);
+      return query.addSortBy(r'dhuhrMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByDhuhrDesc() {
+      sortByDhuhrMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dhuhr', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> sortByFajr() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fajr', Sort.asc);
+      return query.addSortBy(r'dhuhrMinutes', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByFajrDesc() {
+      sortByFajrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fajr', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> sortByIsha() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isha', Sort.asc);
+      return query.addSortBy(r'fajrMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByIshaDesc() {
+      sortByFajrMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isha', Sort.desc);
+      return query.addSortBy(r'fajrMinutes', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByMaghrib() {
+      sortByIshaMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maghrib', Sort.asc);
+      return query.addSortBy(r'ishaMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortByMaghribDesc() {
+      sortByIshaMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maghrib', Sort.desc);
+      return query.addSortBy(r'ishaMinutes', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortBySunrise() {
+      sortByMaghribMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sunrise', Sort.asc);
+      return query.addSortBy(r'maghribMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      sortBySunriseDesc() {
+      sortByMaghribMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sunrise', Sort.desc);
+      return query.addSortBy(r'maghribMinutes', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      sortBySunriseMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sunriseMinutes', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      sortBySunriseMinutesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sunriseMinutes', Sort.desc);
     });
   }
 }
 
 extension PrayerTimesModelQuerySortThenBy
     on QueryBuilder<PrayerTimesModel, PrayerTimesModel, QSortThenBy> {
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> thenByAsr() {
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      thenByAsrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'asr', Sort.asc);
+      return query.addSortBy(r'asrMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByAsrDesc() {
+      thenByAsrMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'asr', Sort.desc);
+      return query.addSortBy(r'asrMinutes', Sort.desc);
     });
   }
 
@@ -978,29 +983,31 @@ extension PrayerTimesModelQuerySortThenBy
     });
   }
 
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> thenByDhuhr() {
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      thenByDhuhrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dhuhr', Sort.asc);
+      return query.addSortBy(r'dhuhrMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByDhuhrDesc() {
+      thenByDhuhrMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dhuhr', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> thenByFajr() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fajr', Sort.asc);
+      return query.addSortBy(r'dhuhrMinutes', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByFajrDesc() {
+      thenByFajrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fajr', Sort.desc);
+      return query.addSortBy(r'fajrMinutes', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      thenByFajrMinutesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'fajrMinutes', Sort.desc);
     });
   }
 
@@ -1017,53 +1024,55 @@ extension PrayerTimesModelQuerySortThenBy
     });
   }
 
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy> thenByIsha() {
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
+      thenByIshaMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isha', Sort.asc);
+      return query.addSortBy(r'ishaMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByIshaDesc() {
+      thenByIshaMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isha', Sort.desc);
+      return query.addSortBy(r'ishaMinutes', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByMaghrib() {
+      thenByMaghribMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maghrib', Sort.asc);
+      return query.addSortBy(r'maghribMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenByMaghribDesc() {
+      thenByMaghribMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maghrib', Sort.desc);
+      return query.addSortBy(r'maghribMinutes', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenBySunrise() {
+      thenBySunriseMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sunrise', Sort.asc);
+      return query.addSortBy(r'sunriseMinutes', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QAfterSortBy>
-      thenBySunriseDesc() {
+      thenBySunriseMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sunrise', Sort.desc);
+      return query.addSortBy(r'sunriseMinutes', Sort.desc);
     });
   }
 }
 
 extension PrayerTimesModelQueryWhereDistinct
     on QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct> {
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct> distinctByAsr() {
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
+      distinctByAsrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'asr');
+      return query.addDistinctBy(r'asrMinutes');
     });
   }
 
@@ -1074,35 +1083,37 @@ extension PrayerTimesModelQueryWhereDistinct
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
-      distinctByDhuhr() {
+      distinctByDhuhrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'dhuhr');
-    });
-  }
-
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct> distinctByFajr() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'fajr');
-    });
-  }
-
-  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct> distinctByIsha() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'isha');
+      return query.addDistinctBy(r'dhuhrMinutes');
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
-      distinctByMaghrib() {
+      distinctByFajrMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'maghrib');
+      return query.addDistinctBy(r'fajrMinutes');
     });
   }
 
   QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
-      distinctBySunrise() {
+      distinctByIshaMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'sunrise');
+      return query.addDistinctBy(r'ishaMinutes');
+    });
+  }
+
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
+      distinctByMaghribMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'maghribMinutes');
+    });
+  }
+
+  QueryBuilder<PrayerTimesModel, PrayerTimesModel, QDistinct>
+      distinctBySunriseMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sunriseMinutes');
     });
   }
 }
@@ -1115,9 +1126,9 @@ extension PrayerTimesModelQueryProperty
     });
   }
 
-  QueryBuilder<PrayerTimesModel, DateTime, QQueryOperations> asrProperty() {
+  QueryBuilder<PrayerTimesModel, int, QQueryOperations> asrMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'asr');
+      return query.addPropertyName(r'asrMinutes');
     });
   }
 
@@ -1127,33 +1138,35 @@ extension PrayerTimesModelQueryProperty
     });
   }
 
-  QueryBuilder<PrayerTimesModel, DateTime, QQueryOperations> dhuhrProperty() {
+  QueryBuilder<PrayerTimesModel, int, QQueryOperations> dhuhrMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dhuhr');
+      return query.addPropertyName(r'dhuhrMinutes');
     });
   }
 
-  QueryBuilder<PrayerTimesModel, DateTime, QQueryOperations> fajrProperty() {
+  QueryBuilder<PrayerTimesModel, int, QQueryOperations> fajrMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'fajr');
+      return query.addPropertyName(r'fajrMinutes');
     });
   }
 
-  QueryBuilder<PrayerTimesModel, DateTime, QQueryOperations> ishaProperty() {
+  QueryBuilder<PrayerTimesModel, int, QQueryOperations> ishaMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isha');
+      return query.addPropertyName(r'ishaMinutes');
     });
   }
 
-  QueryBuilder<PrayerTimesModel, DateTime, QQueryOperations> maghribProperty() {
+  QueryBuilder<PrayerTimesModel, int, QQueryOperations>
+      maghribMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'maghrib');
+      return query.addPropertyName(r'maghribMinutes');
     });
   }
 
-  QueryBuilder<PrayerTimesModel, DateTime, QQueryOperations> sunriseProperty() {
+  QueryBuilder<PrayerTimesModel, int, QQueryOperations>
+      sunriseMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'sunrise');
+      return query.addPropertyName(r'sunriseMinutes');
     });
   }
 }

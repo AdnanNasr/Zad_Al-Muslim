@@ -20,7 +20,6 @@ import 'package:noor_quran/features/pray_time/presentation/providers/user_addres
 import '../providers/pray_times_provider.dart';
 import '../../data/models/prayer_times_model.dart';
 
-
 class PrayTimePage extends ConsumerStatefulWidget {
   const PrayTimePage({super.key});
 
@@ -43,7 +42,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     // Trigger initial location and network check
     Future.microtask(() => _checkAndFetchLocation());
   }
-
 
   @override
   void dispose() {
@@ -108,7 +106,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     const topContentColor = Colors.white;
@@ -137,7 +134,10 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     });
 
     // monitor GPS status
-    ref.listen<AsyncValue<ServiceStatus>>(serviceStatusProvider, (previous, next) {
+    ref.listen<AsyncValue<ServiceStatus>>(serviceStatusProvider, (
+      previous,
+      next,
+    ) {
       if (next.value == ServiceStatus.enabled) {
         Future.microtask(() => _checkAndFetchLocation());
       }
@@ -150,7 +150,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         Future.microtask(() => _checkAndFetchLocation());
       }
     });
-
 
     final userAddress = ref.watch(userAddressProvider);
 
@@ -298,7 +297,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                                       return _buildPrayerRow(
                                         context,
                                         name,
-                                        DateFormat.jm().format(time.toLocal()),
+                                        DateFormat.jm(
+                                          "ar",
+                                        ).format(time.toLocal()),
                                         prayerIcons[name] ?? Icons.circle,
                                         isCurrent: isCurrent,
                                       );
@@ -413,7 +414,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     }
   }
 
-
   // دالة مساعدة لتحديد الصلاة الحالية
   bool _checkIfCurrent(String name, Prayer current) {
     if (name == "الفجر" && current == Prayer.fajr) return true;
@@ -489,8 +489,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       );
     }
 
-
-
     // 5. إذا وصلت للمرحلة التي تم فيها منح الصلاحيات بالفعل فإن الخطأ
     // المحتمل هنا هو فقط أن الموفر لم يحصل على الموقع بعد (مثلما يحدث عندما
     // يعود الإنترنت بعد تعطيله). في هذه الحالة لا ينبغي إظهار شاشة خطأ
@@ -544,8 +542,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               SizedBox(height: 24.h),
               Text(
                 messageType == LocationMessage.locationDisabled
-                  ? "خدمة الموقع معطلة"
-                  : messageType == LocationMessage.locationNotAllowed || messageType == LocationMessage.locationNotAllowedEver
+                    ? "خدمة الموقع معطلة"
+                    : messageType == LocationMessage.locationNotAllowed ||
+                          messageType == LocationMessage.locationNotAllowedEver
                     ? "أذونات الموقع مطلوبة"
                     : "عذراً، حدث خطأ",
                 textAlign: TextAlign.center,
@@ -566,7 +565,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 child: Column(
                   children: [
                     Text(
-                      status.values.isNotEmpty ? status.values.first : "خطأ غير معروف",
+                      status.values.isNotEmpty
+                          ? status.values.first
+                          : "خطأ غير معروف",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16.sp,
@@ -597,7 +598,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       ),
     );
   }
-
 
   // ويدجت مخصص لحالة انقطاع الإنترنت
   Widget _buildNoInternetWidget() {
@@ -651,7 +651,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     );
   }
 
-
   // دالة لتحديد الأيقونة بناءً على نوع رسالة الموقع
   IconData _getErrorIcon(LocationMessage message) {
     switch (message) {
@@ -664,7 +663,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         return Icons.error_outline_rounded;
     }
   }
-
 
   // فصل أزرار الأكشن لتبسيط الكود الأساسي
   Widget _buildActionButtons(
@@ -700,7 +698,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             ),
           );
   }
-
 
   Widget _buildNextPrayerCard(
     BuildContext context,
@@ -780,23 +777,23 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   /// helpers that work with [PrayerTimesModel]
   Prayer _nextPrayerFromModel(PrayerTimesModel model) {
     final now = DateTime.now();
-    if (now.isBefore(model.fajr)) return Prayer.fajr;
-    if (now.isBefore(model.sunrise)) return Prayer.sunrise;
-    if (now.isBefore(model.dhuhr)) return Prayer.dhuhr;
-    if (now.isBefore(model.asr)) return Prayer.asr;
-    if (now.isBefore(model.maghrib)) return Prayer.maghrib;
-    if (now.isBefore(model.isha)) return Prayer.isha;
+    if (now.isBefore(model.fajr.toLocal())) return Prayer.fajr;
+    if (now.isBefore(model.sunrise.toLocal())) return Prayer.sunrise;
+    if (now.isBefore(model.dhuhr.toLocal())) return Prayer.dhuhr;
+    if (now.isBefore(model.asr.toLocal())) return Prayer.asr;
+    if (now.isBefore(model.maghrib.toLocal())) return Prayer.maghrib;
+    if (now.isBefore(model.isha.toLocal())) return Prayer.isha;
     return Prayer.fajr; // غدا
   }
 
   Prayer _currentPrayerFromModel(PrayerTimesModel model) {
     final now = DateTime.now();
-    if (now.isBefore(model.fajr)) return Prayer.fajr;
-    if (now.isBefore(model.sunrise)) return Prayer.sunrise;
-    if (now.isBefore(model.dhuhr)) return Prayer.dhuhr;
-    if (now.isBefore(model.asr)) return Prayer.asr;
-    if (now.isBefore(model.maghrib)) return Prayer.maghrib;
-    if (now.isBefore(model.isha)) return Prayer.isha;
+    if (now.isBefore(model.fajr.toLocal())) return Prayer.fajr;
+    if (now.isBefore(model.sunrise.toLocal())) return Prayer.sunrise;
+    if (now.isBefore(model.dhuhr.toLocal())) return Prayer.dhuhr;
+    if (now.isBefore(model.asr.toLocal())) return Prayer.asr;
+    if (now.isBefore(model.maghrib.toLocal())) return Prayer.maghrib;
+    if (now.isBefore(model.isha.toLocal())) return Prayer.isha;
     return Prayer.isha;
   }
 

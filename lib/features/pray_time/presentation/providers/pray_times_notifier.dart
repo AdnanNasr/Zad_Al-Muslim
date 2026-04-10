@@ -12,6 +12,8 @@ import 'package:isar/isar.dart';
 
 import 'package:noor_quran/core/di/injection_container.dart';
 import 'package:noor_quran/core/utils/location/location_locator.dart';
+import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
+import 'package:timezone/timezone.dart' as tz_core;
 
 part 'pray_times_notifier.g.dart';
 
@@ -46,6 +48,7 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
 
   Isar? get _db => IsarDb.database;
 
+
   /// يحاول إرجاع مواقيت الصلاة لليوم من قاعدة البيانات.
   /// إذا لم تكن موجودة، يحسبها باستخدام مكتبة `adhan`، يحفظها ثم يعيدها.
   Future<PrayerTimesModel?> loadToday({required Position position}) async {
@@ -68,10 +71,17 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
       position.latitude,
       position.longitude,
     );
+    
+    // استنتاج الـ TimeZone الدقيق بناءً على الإحداثيات للحصول على utcOffset
+    final tzName = tzmap.latLngToTimezoneString(position.latitude, position.longitude);
+    final location = tz_core.getLocation(tzName);
+    final tzDate = tz_core.TZDateTime.from(now, location);
+    
     final adhanTimes = PrayerTimes(
       coordinates,
       DateComponents.from(now),
       settings,
+      utcOffset: tzDate.timeZoneOffset,
     );
 
     final newModel = _convertToDbModel(adhanTimes, now);
@@ -93,15 +103,17 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
 
 
   /// تحويل كائن المكتبة الخارجية إلى موديل قاعدة البيانات المحلي
+  /// نحفظ الأوقات كدقائق من منتصف الليل المحلي لتجنّب أي تحويل UTC أو Isar timezone
   PrayerTimesModel _convertToDbModel(PrayerTimes adhanTimes, DateTime date) {
+    // adhan يُرجع أوقات local مباشرةً بعد استدعاء .toLocal() داخلياً
     return PrayerTimesModel()
       ..date = DateTime(date.year, date.month, date.day)
-      ..fajr = adhanTimes.fajr
-      ..sunrise = adhanTimes.sunrise
-      ..dhuhr = adhanTimes.dhuhr
-      ..asr = adhanTimes.asr
-      ..maghrib = adhanTimes.maghrib
-      ..isha = adhanTimes.isha;
+      ..fajrMinutes = adhanTimes.fajr.hour * 60 + adhanTimes.fajr.minute
+      ..sunriseMinutes = adhanTimes.sunrise.hour * 60 + adhanTimes.sunrise.minute
+      ..dhuhrMinutes = adhanTimes.dhuhr.hour * 60 + adhanTimes.dhuhr.minute
+      ..asrMinutes = adhanTimes.asr.hour * 60 + adhanTimes.asr.minute
+      ..maghribMinutes = adhanTimes.maghrib.hour * 60 + adhanTimes.maghrib.minute
+      ..ishaMinutes = adhanTimes.isha.hour * 60 + adhanTimes.isha.minute;
   }
 
   /// حساب وحفظ مواقيت الشهر بالكامل في قاعدة البيانات
@@ -123,13 +135,19 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
       final List<PrayerTimesModel> monthlyList = [];
 
       final daysInMonth = DateTime(targetYear, targetMonth + 1, 0).day;
+      
+      final tzName = tzmap.latLngToTimezoneString(latitude, longitude);
+      final location = tz_core.getLocation(tzName);
 
       for (int day = 1; day <= daysInMonth; day++) {
         final date = DateTime(targetYear, targetMonth, day);
+        final tzDate = tz_core.TZDateTime.from(date, location);
+        
         final adhanTimes = PrayerTimes(
           coordinates,
           DateComponents.from(date),
           settings,
+          utcOffset: tzDate.timeZoneOffset,
         );
         monthlyList.add(_convertToDbModel(adhanTimes, date));
       }
@@ -153,14 +171,20 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
       final coordinates = Coordinates(latitude, longitude);
       final settings = await getAutomaticParams(latitude, longitude);
 
+      final tzName = tzmap.latLngToTimezoneString(latitude, longitude);
+      final location = tz_core.getLocation(tzName);
+
       for (int month = 1; month <= 12; month++) {
         final daysInMonth = DateTime(year, month + 1, 0).day;
         for (int day = 1; day <= daysInMonth; day++) {
           final date = DateTime(year, month, day);
+          final tzDate = tz_core.TZDateTime.from(date, location);
+          
           final adhanTimes = PrayerTimes(
             coordinates,
             DateComponents.from(date),
             settings,
+            utcOffset: tzDate.timeZoneOffset,
           );
           yearlyList.add(_convertToDbModel(adhanTimes, date));
         }
