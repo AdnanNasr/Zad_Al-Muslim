@@ -35,6 +35,8 @@ void main() async {
     androidNotificationChannelName: 'نور القرآن - تشغيل الصوت',
     androidNotificationOngoing: true,
     androidStopForegroundOnPause: true,
+    androidResumeOnClick: true,
+
     notificationColor: const Color(0xFF1E8449),
   );
 
@@ -44,11 +46,6 @@ void main() async {
   await NotificationService.init();
 
   final container = ProviderContainer();
-
-  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // تحميل الإعدادات التي تؤثر على شكل التطبيق فوراً
   await container.read(themeProvider.notifier).loadTheme();

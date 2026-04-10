@@ -49,6 +49,9 @@ import '../../features/adkar/domain/repositories/adkar_repo.dart';
 import '../../features/adkar/domain/usecases/get_all_adkar.dart';
 import '../../features/adkar/domain/usecases/get_adkar_by_category.dart';
 import '../../core/database/isar_db.dart';
+import '../../features/qebla/data/repositories/qibla_repository_impl.dart';
+import '../../features/qebla/domain/repositories/qibla_repository.dart';
+import '../../features/qebla/domain/usecases/get_qibla_direction.dart';
 
 final sl = GetIt.instance;
 
@@ -192,4 +195,8 @@ Future<void> init() async {
   sl.registerLazySingleton<AdkarRepo>(() => AdkarImpl());
   sl.registerLazySingleton<GetAllAdkar>(() => GetAllAdkar(sl()));
   sl.registerLazySingleton<GetAdkarByCategory>(() => GetAdkarByCategory(sl()));
+
+  // Feature - Qibla
+  sl.registerLazySingleton<QiblaRepository>(() => QiblaRepositoryImpl());
+  sl.registerLazySingleton<GetQiblaDirection>(() => GetQiblaDirection(sl()));
 }

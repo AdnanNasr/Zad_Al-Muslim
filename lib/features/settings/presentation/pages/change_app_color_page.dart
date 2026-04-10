@@ -17,10 +17,10 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
   Map<String, FlexScheme> get colorSchemes => {
     AppLocalizations.of(context)!.brandBlue: FlexScheme.brandBlue,
     AppLocalizations.of(context)!.blueWhale: FlexScheme.blueWhale,
-    AppLocalizations.of(context)!.sakura: FlexScheme.sakura,
+    AppLocalizations.of(context)!.sakura: FlexScheme.shadRose,
     AppLocalizations.of(context)!.gold: FlexScheme.gold,
     AppLocalizations.of(context)!.vesuviusBurn: FlexScheme.vesuviusBurn,
-    AppLocalizations.of(context)!.barossa: FlexScheme.barossa,
+    AppLocalizations.of(context)!.barossa: FlexScheme.shadRed,
     AppLocalizations.of(context)!.shark: FlexScheme.shark,
     AppLocalizations.of(context)!.money: FlexScheme.money,
   };
@@ -86,10 +86,10 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
               shrinkWrap: true,
               padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // عنصرين في كل صف
+                crossAxisCount: 2,
                 crossAxisSpacing: 12.w,
                 mainAxisSpacing: 12.h,
-                mainAxisExtent: 100.h, // ارتفاع العنصر
+                mainAxisExtent: 100.h,
               ),
               itemCount: colorSchemes.length,
               itemBuilder: (context, index) {

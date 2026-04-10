@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
@@ -19,19 +20,31 @@ class QuranMoratalPage extends ConsumerWidget {
         center: false,
         profile: false,
       ),
-      body: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-        itemCount: QariNames.allQaris.length,
+      body: AnimationLimiter(
+        child: ListView.separated(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+          itemCount: QariNames.allQaris.length,
 
-        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-        itemBuilder: (context, index) {
-          final Map<String, String> qariData = QariNames.allQaris[index];
-          return qariListTile(
-            qariData: qariData,
-            context: context,
-            themeMode: themeMode,
-          );
-        },
+          separatorBuilder: (context, index) => SizedBox(height: 12.h),
+          itemBuilder: (context, index) {
+            final Map<String, String> qariData = QariNames.allQaris[index];
+            return AnimationConfiguration.staggeredList(
+              duration: Duration(milliseconds: 700),
+              position: index,
+              child: SlideAnimation(
+                curve: Curves.linear,
+                verticalOffset: 50,
+                child: FadeInAnimation(
+                  child: qariListTile(
+                    qariData: qariData,
+                    context: context,
+                    themeMode: themeMode,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

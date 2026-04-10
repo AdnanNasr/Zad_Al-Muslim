@@ -255,13 +255,13 @@ class _SurahCard extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'surahname',
             package: 'qcf_quran',
-            fontSize: 35.sp,
-            color: primaryColor,
+            fontSize: 40.sp,
+            color: context.color.onSurface,
           ),
         ),
         subtitle: Text(
           englishName,
-          style: TextStyle(fontSize: 13.sp, color: Colors.grey),
+          style: TextStyle(fontSize: 13.sp, color: primaryColor),
         ),
         trailing: const Icon(
           Icons.arrow_forward_ios,

@@ -14,6 +14,7 @@ import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
+import 'package:noor_quran/features/quran/presentation/providers/player_state_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/surah_by_page_number_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
@@ -278,7 +279,10 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                           headerTextColor: Colors.white,
                           headerBackgroundColor: Colors.white,
                           pageBackgroundColor: pageBackgroundColor,
-                          verseNumberHeight: 2,
+                          verseNumberHeight:
+                              _onPageChanged == 1 || _onPageChanged == 2
+                              ? 2.2
+                              : 2,
                           verseHeight: 2,
                           customHeaderBuilder: (surahNumber) {
                             return customQuranPageHeader(
@@ -892,9 +896,9 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   ? const AssetImage("assets/images/gold_bg_banner.jpg")
                   : themeColor == FlexScheme.vesuviusBurn
                   ? const AssetImage("assets/images/orange_bg_banner.jpg")
-                  : themeColor == FlexScheme.sakura
+                  : themeColor == FlexScheme.shadRed
                   ? const AssetImage("assets/images/rose_bg_banner.jpg")
-                  : themeColor == FlexScheme.barossa
+                  : themeColor == FlexScheme.shadRose
                   ? const AssetImage("assets/images/rose_bg_banner.jpg")
                   : themeColor == FlexScheme.shark
                   ? const AssetImage("assets/images/grey_bg_banner.jpg")

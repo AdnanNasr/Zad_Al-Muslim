@@ -1,13 +1,17 @@
+import 'dart:ui';
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/ayah_timing_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MINI PLAYER (shown at the bottom of the screen while audio is playing)
@@ -213,15 +217,6 @@ class _MoratalFullPlayerSheetState
     final player = ref.read(audioPlayerProvider);
     _loopMode = player.loopMode;
     _speed = player.speed;
-
-    // Auto-advance to next surah on natural completion (no loop)
-    player.playerStateStream.listen((state) {
-      if (!mounted) return;
-      if (state.processingState == ProcessingState.completed &&
-          _loopMode == LoopMode.off) {
-        _playNextSurah();
-      }
-    });
   }
 
   // ── Surah navigation ──────────────────────────────────────────────────────
@@ -229,22 +224,19 @@ class _MoratalFullPlayerSheetState
   void _playNextSurah() {
     final current = ref.read(currentMoratalSurahProvider);
     if (current == null || current.surahNumber >= 114) return;
-    _loadSurah(current.surahNumber + 1, current);
+    final newSurah = current.copyWith(
+      surahNumber: current.surahNumber + 1,
+      surahName: getSurahNameArabic(current.surahNumber + 1),
+    );
+    ref.read(playMoratalSurahActionProvider)(newSurah);
   }
 
   void _playPrevSurah() {
     final current = ref.read(currentMoratalSurahProvider);
     if (current == null || current.surahNumber <= 1) return;
-    _loadSurah(current.surahNumber - 1, current);
-  }
-
-  void _loadSurah(int number, CurrentMoratalSurah base) {
-    final newSurah = CurrentMoratalSurah(
-      surahNumber: number,
-      surahName: _arabicName(number),
-      qariName: base.qariName,
-      serverUrl: base.serverUrl,
-      qariId: base.qariId,
+    final newSurah = current.copyWith(
+      surahNumber: current.surahNumber - 1,
+      surahName: getSurahNameArabic(current.surahNumber - 1),
     );
     ref.read(playMoratalSurahActionProvider)(newSurah);
   }
@@ -409,39 +401,135 @@ class _MoratalFullPlayerSheetState
 
   /// Fallback when no timing data is available
   Widget _ayahPlaceholder(BuildContext context, {required bool isLoading}) {
-    return Center(
-      child: isLoading
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(
-                  color: context.color.primary,
-                  strokeWidth: 2,
-                ),
-                SizedBox(height: 12.h),
-                Text(
-                  'جاري تحميل الآيات...',
-                  style: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 13.sp,
-                    color: context.color.onSurface.withValues(alpha: .5),
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        // image: DecorationImage(
+        //   image: AssetImage("assets/images/night_clouds.jpg"),
+        //   fit: BoxFit.cover,
+        //   colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+        // ),
+      ),
+      child: Center(
+        child: isLoading
+            ? Skeletonizer(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+                      // Simulated Verse Text Box
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20.r),
+                        decoration: BoxDecoration(
+                          // color: Colors.white.withValues(alpha: .1),
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 280.w,
+                              height: 18.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: .2),
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                            ),
+                            SizedBox(height: 12.h),
+                            Container(
+                              width: 220.w,
+                              height: 18.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: .2),
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                            ),
+                            SizedBox(height: 12.h),
+                            Container(
+                              width: 140.w,
+                              height: 18.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: .2),
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      SizedBox(height: 12.h),
+                      // Simulated Ayah Number Badge
+                      Container(
+                        width: 90.w,
+                        height: 28.h,
+                        margin: EdgeInsets.only(bottom: 16.h),
+                        decoration: BoxDecoration(
+                          color: Colors.white24,
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            )
-          : Container(
-              width: 210.w,
-              height: 210.w,
-              decoration: BoxDecoration(
-                color: context.color.primary.withValues(alpha: .07),
-                borderRadius: BorderRadius.circular(26.r),
+              )
+            : Padding(
+                padding: EdgeInsets.all(24.r),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Stack(
+                      children: [
+                        BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                          child: Container(),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: context.color.onSurface.withValues(
+                                alpha: 0.2,
+                              ), // حدود زجاجية خفيفة
+                              width: 1.5,
+                            ),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                context.color.onSurface.withValues(
+                                  alpha: 0.1,
+                                ), // لون شفاف من الأعلى
+                                context.color.onSurface.withValues(
+                                  alpha: 0.05,
+                                ), // لون أكثر شفافية من الأسفل
+                              ],
+                            ),
+                          ),
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: context.color.onSurface.withValues(
+                                  alpha: .07,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(16.r),
+                                child: Icon(Icons.play_arrow, size: 50.sp),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              child: Icon(
-                Icons.my_library_music_rounded,
-                size: 84.sp,
-                color: context.color.primary.withValues(alpha: .45),
-              ),
-            ),
+      ),
     );
   }
 

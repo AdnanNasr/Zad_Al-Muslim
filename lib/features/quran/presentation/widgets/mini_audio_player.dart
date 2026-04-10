@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran/presentation/pages/full_audio_player_page.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:noor_quran/features/quran/presentation/providers/player_state_provider.dart';
 
 class MiniAudioPlayer extends ConsumerWidget {
   const MiniAudioPlayer({super.key});
@@ -12,12 +13,20 @@ class MiniAudioPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentAyah = ref.watch(currentPlayingAyahProvider);
+    final currentMoratal = ref.watch(currentMoratalSurahProvider);
     final audioPlayer = ref.watch(audioPlayerProvider);
 
-    // إذا لم يكن هنالك تلاوة تعمل أو محددة، أخفِ المشغل
-    if (currentAyah == null) {
+    // التحقق من وجود أي شيء قيد التشغيل
+    if (currentAyah == null && currentMoratal == null) {
       return const SizedBox.shrink();
     }
+
+    final String title = currentAyah != null
+        ? "سورة ${currentAyah.surahName}"
+        : "سورة ${currentMoratal!.surahName}";
+    final String subtitle = currentAyah != null
+        ? "الآية ${currentAyah.ayahNumber} - ${ref.watch(selectedQariProvider).name}"
+        : currentMoratal!.qariName;
 
     return GestureDetector(
       onTap: () {
@@ -103,7 +112,7 @@ class MiniAudioPlayer extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "سورة ${currentAyah.surahName}",
+                            title,
                             style: TextStyle(
                               fontFamily: "Cairo",
                               fontSize: 14.sp,
@@ -112,7 +121,7 @@ class MiniAudioPlayer extends ConsumerWidget {
                             ),
                           ),
                           Text(
-                            "الآية ${currentAyah.ayahNumber} - ${ref.watch(selectedQariProvider).name}",
+                            subtitle,
                             style: TextStyle(
                               fontFamily: "Cairo",
                               fontSize: 11.sp,
@@ -183,6 +192,8 @@ class MiniAudioPlayer extends ConsumerWidget {
                       onPressed: () async {
                         await audioPlayer.stop();
                         ref.read(currentPlayingAyahProvider.notifier).state =
+                            null;
+                        ref.read(currentMoratalSurahProvider.notifier).state =
                             null;
                       },
                     ),

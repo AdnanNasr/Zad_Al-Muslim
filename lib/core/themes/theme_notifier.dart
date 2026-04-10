@@ -20,7 +20,7 @@ class ThemeNotifier extends StateNotifier<FlexScheme> {
   Future<void> loadScheme() async {
     final perfs = await SharedPreferences.getInstance();
     final themeColorValue = perfs.getString("scheme_color");
-    if (themeColorValue != null){
+    if (themeColorValue != null) {
       state = FlexScheme.values.byName(themeColorValue);
     } else {
       AppLogger.logger.e("حدثت مشكلة اثناء تحميل الثيم الخاص بالمستخدم");
@@ -28,12 +28,14 @@ class ThemeNotifier extends StateNotifier<FlexScheme> {
   }
 }
 
-final userThemeProvider = StateNotifierProvider<ThemeNotifier, FlexScheme>((ref) {
+final userThemeProvider = StateNotifierProvider<ThemeNotifier, FlexScheme>((
+  ref,
+) {
   return ThemeNotifier();
 });
 
 final lightThemeProvider = Provider<ThemeData>((ref) {
-  final currentScheme =  ref.watch(userThemeProvider); // ref.watch(userThemeProvider);
+  final currentScheme = ref.watch(userThemeProvider);
   return FlexThemeData.light(
     scheme: currentScheme,
 

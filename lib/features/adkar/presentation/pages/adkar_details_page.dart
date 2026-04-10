@@ -7,7 +7,7 @@ import 'package:noor_quran/features/adkar/domain/entities/adkar_entity.dart';
 class AdkarDetailsPage extends StatelessWidget {
   final AdkarEntity adkarEntity;
 
-  const AdkarDetailsPage({Key? key, required this.adkarEntity}) : super(key: key);
+  const AdkarDetailsPage({super.key, required this.adkarEntity});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,6 @@ class AdkarDetailsPage extends StatelessWidget {
         title: adkarEntity.category,
         center: true,
         profile: false,
-        icon: Icons.arrow_back,
       ),
       body: ListView.separated(
         padding: EdgeInsets.all(16.w),
@@ -25,9 +24,13 @@ class AdkarDetailsPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return DhikrCard(
             text: adkarEntity.text[index],
-            footnote: index < adkarEntity.footnote.length ? adkarEntity.footnote[index] : '',
+            footnote: index < adkarEntity.footnote.length
+                ? adkarEntity.footnote[index]
+                : '',
             index: index + 1,
-            initialCount: index < adkarEntity.counts.length ? adkarEntity.counts[index] : 1,
+            initialCount: index < adkarEntity.counts.length
+                ? adkarEntity.counts[index]
+                : 1,
           );
         },
       ),
@@ -42,12 +45,12 @@ class DhikrCard extends StatefulWidget {
   final int initialCount;
 
   const DhikrCard({
-    Key? key,
+    super.key,
     required this.text,
     required this.footnote,
     required this.index,
     required this.initialCount,
-  }) : super(key: key);
+  });
 
   @override
   State<DhikrCard> createState() => _DhikrCardState();
@@ -85,7 +88,9 @@ class _DhikrCardState extends State<DhikrCard> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.r),
-            side: BorderSide(color: context.color.primary.withValues(alpha: .1)),
+            side: BorderSide(
+              color: context.color.primary.withValues(alpha: .1),
+            ),
           ),
           child: InkWell(
             onTap: _decrement,
@@ -99,30 +104,96 @@ class _DhikrCardState extends State<DhikrCard> {
                     widget.text,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: 'Quran', 
-                      fontSize: 22.sp,
-                      height: 1.8,
+                      fontFamily: 'Naskh',
+                      fontSize: 24.sp,
+                      height: 1.6,
                       color: context.color.onSurface,
                     ),
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 10.h),
+                  Text(
+                    'انقر على البطاقة للتسبيح',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 12.sp,
+                      color: context.color.primary.withValues(alpha: .4),
+                    ),
+                  ),
+                  SizedBox(height: 15.h),
                   Divider(color: context.color.primary.withValues(alpha: .05)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       if (widget.footnote.isNotEmpty)
-                        IconButton(
-                          icon: Icon(Icons.info_outline, color: context.color.primary),
-                          onPressed: () => _showFootnoteDialog(context, widget.footnote),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 35.w,
+                              height: 35.w,
+                              decoration: BoxDecoration(
+                                color: context.color.primary.withValues(
+                                  alpha: .1,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  widget.index.toString(),
+                                  style: TextStyle(
+                                    color: context.color.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              'الرقم',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: context.color.onSurface.withValues(
+                                  alpha: .4,
+                                ),
+                                fontFamily: 'Cairo',
+                              ),
+                            ),
+                          ],
                         )
                       else
                         const SizedBox.shrink(),
-                      
+
                       _buildCounter(context),
-                      
-                      IconButton(
-                        icon: Icon(Icons.refresh, color: context.color.primary.withValues(alpha: .5), size: 20.sp),
-                        onPressed: _reset,
+
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: Icon(
+                              Icons.refresh_rounded,
+                              color: context.color.primary.withValues(
+                                alpha: .6,
+                              ),
+                              size: 24.sp,
+                            ),
+                            onPressed: _reset,
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            'إعادة',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: context.color.onSurface.withValues(
+                                alpha: .4,
+                              ),
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -132,25 +203,15 @@ class _DhikrCardState extends State<DhikrCard> {
           ),
         ),
         Positioned(
-          top: 8.h,
-          right: 8.w,
-          child: Container(
-            width: 32.w,
-            height: 32.w,
-            decoration: BoxDecoration(
-              color: context.color.primary.withValues(alpha: .1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                widget.index.toString(),
-                style: TextStyle(
-                  color: context.color.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
-                  fontFamily: 'Cairo',
-                ),
-              ),
+          top: 1.h,
+          right: 1.w,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 8.h, left: 8.w),
+            child: IconButton(
+              onPressed: () {
+                _showFootnoteDialog(context, widget.footnote);
+              },
+              icon: Icon(Icons.info_outline_rounded),
             ),
           ),
         ),
@@ -159,76 +220,113 @@ class _DhikrCardState extends State<DhikrCard> {
   }
 
   Widget _buildCounter(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: context.color.primary,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: context.color.primary.withValues(alpha: .2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+    bool isFinished = _remainingCount == 0;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            color: isFinished ? Colors.green : context.color.primary,
+            borderRadius: BorderRadius.circular(25.r),
           ),
-        ],
-      ),
-      child: Text(
-        'التكرار: $_remainingCount',
-        style: TextStyle(
-          color: context.color.onPrimary,
-          fontWeight: FontWeight.bold,
-          fontSize: 14.sp,
-          fontFamily: 'Cairo',
+          child: Text(
+            isFinished ? 'تم الأكمال' : 'المتبقي: $_remainingCount',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 15.sp,
+              fontFamily: 'Cairo',
+            ),
+          ),
         ),
-      ),
+        SizedBox(height: 4.h),
+        Text(
+          isFinished ? 'انتهيت' : 'عدد التكرار',
+          style: TextStyle(
+            fontSize: 10.sp,
+            color: context.color.onSurface.withValues(alpha: .4),
+            fontFamily: 'Cairo',
+          ),
+        ),
+      ],
     );
   }
 
   void _showFootnoteDialog(BuildContext context, String footnote) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      isDismissible: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: context.color.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
-          ),
-          padding: EdgeInsets.all(24.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: context.color.primary.withValues(alpha: .2),
-                  borderRadius: BorderRadius.circular(2.r),
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.pop(context),
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.4,
+            maxChildSize: 0.75,
+            builder: (context, scrollController) {
+              return GestureDetector(
+                onTap: () {},
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.color.surface,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(30.r),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 12.h),
+                      Container(
+                        width: 50.w,
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          color: context.color.onSurface.withValues(alpha: .1),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                      ),
+                      SizedBox(height: 15.h),
+                      Text(
+                        'تخريج الحديث / ملاحظة',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.sp,
+                          color: context.color.primary,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Divider(
+                        color: context.color.primary.withValues(alpha: .05),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          padding: EdgeInsets.all(24.w),
+                          children: [
+                            SelectableText(
+                              footnote,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                                fontSize: 16.sp,
+                                height: 1.7,
+                                color: context.color.onSurface.withValues(
+                                  alpha: .8,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.h),
-              Text(
-                'تخريج الحديث / ملاحظة',
-                style: TextStyle(
-                  fontFamily: 'Cairo', 
-                  fontWeight: FontWeight.bold, 
-                  fontSize: 18.sp,
-                  color: context.color.primary,
-                ),
-              ),
-              SizedBox(height: 16.h),
-              SelectableText(
-                footnote,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Cairo', 
-                  fontSize: 15.sp, 
-                  height: 1.6,
-                  color: context.color.onSurface,
-                ),
-              ),
-              SizedBox(height: 24.h),
-            ],
+              );
+            },
           ),
         );
       },
