@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
 import 'package:noor_quran/core/di/injection_container.dart';
+import 'package:noor_quran/features/quran/presentation/providers/schedule_quran_reading_notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -10,6 +11,8 @@ class QuranSettings {
   final QariModel selectedQari;
   final int readingBackgroundColorIndex;
   final bool autoScrollWithAudio;
+  final bool isDailyReminderEnabled;
+  final String? dailyReminderTime;
 
   QuranSettings({
     required this.keepScreenAwake,
@@ -17,6 +20,8 @@ class QuranSettings {
     required this.selectedQari,
     required this.readingBackgroundColorIndex,
     required this.autoScrollWithAudio,
+    required this.isDailyReminderEnabled,
+    this.dailyReminderTime,
   });
 
   QuranSettings copyWith({
@@ -25,6 +30,8 @@ class QuranSettings {
     QariModel? selectedQari,
     int? readingBackgroundColorIndex,
     bool? autoScrollWithAudio,
+    bool? isDailyReminderEnabled,
+    String? dailyReminderTime,
   }) {
     return QuranSettings(
       keepScreenAwake: keepScreenAwake ?? this.keepScreenAwake,
@@ -32,6 +39,8 @@ class QuranSettings {
       selectedQari: selectedQari ?? this.selectedQari,
       readingBackgroundColorIndex: readingBackgroundColorIndex ?? this.readingBackgroundColorIndex,
       autoScrollWithAudio: autoScrollWithAudio ?? this.autoScrollWithAudio,
+      isDailyReminderEnabled: isDailyReminderEnabled ?? this.isDailyReminderEnabled,
+      dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
     );
   }
 }
@@ -44,6 +53,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
   static const String _selectedQariIdKey = 'selected_qari_id_key';
   static const String _readingBackgroundColorIndexKey = 'reading_background_color_index_key';
   static const String _autoScrollWithAudioKey = 'auto_scroll_with_audio_key';
+  static const String _isDailyReminderEnabledKey = 'is_daily_reminder_enabled_key';
+  static const String _dailyReminderTimeKey = 'daily_reminder_time_key';
 
   QuranSettingsNotifier(this._prefs) : super(QuranSettings(
     keepScreenAwake: false, 
@@ -51,6 +62,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     selectedQari: QariNamesAyahByAyah.masharyAlafassy,
     readingBackgroundColorIndex: 0,
     autoScrollWithAudio: true,
+    isDailyReminderEnabled: false,
+    dailyReminderTime: null,
   )) {
     _init();
   }
@@ -61,6 +74,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     final qariId = _prefs.getString(_selectedQariIdKey);
     final bgColorIndex = _prefs.getInt(_readingBackgroundColorIndexKey) ?? 0;
     final autoScroll = _prefs.getBool(_autoScrollWithAudioKey) ?? true;
+    final isDailyReminderEnabled = _prefs.getBool(_isDailyReminderEnabledKey) ?? false;
+    final dailyReminderTime = _prefs.getString(_dailyReminderTimeKey);
     
     QariModel selectedQari = QariNamesAyahByAyah.masharyAlafassy;
     if (qariId != null) {
@@ -77,11 +92,21 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
       selectedQari: selectedQari,
       readingBackgroundColorIndex: bgColorIndex,
       autoScrollWithAudio: autoScroll,
+      isDailyReminderEnabled: isDailyReminderEnabled,
+      dailyReminderTime: dailyReminderTime,
     );
     
     // تفعيل إضاءة الشاشة إذا كانت الميزة مفعلة مسبقاً
     if (keepAwake) {
       WakelockPlus.enable();
+    }
+    
+    // تفعيل مهام التذكير المجدولة إذا كانت مفعلة
+    if (isDailyReminderEnabled) {
+      ScheduleQuranReadingNotification.updateSchedule(
+        isEnabled: true,
+        timeString: dailyReminderTime,
+      );
     }
   }
 
@@ -116,6 +141,33 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     final newValue = !state.autoScrollWithAudio;
     await _prefs.setBool(_autoScrollWithAudioKey, newValue);
     state = state.copyWith(autoScrollWithAudio: newValue);
+  }
+
+  Future<void> toggleDailyReminder() async {
+    final newValue = !state.isDailyReminderEnabled;
+    await _prefs.setBool(_isDailyReminderEnabledKey, newValue);
+    state = state.copyWith(isDailyReminderEnabled: newValue);
+    
+    await ScheduleQuranReadingNotification.updateSchedule(
+      isEnabled: newValue,
+      timeString: state.dailyReminderTime,
+    );
+  }
+
+  Future<void> setDailyReminderTime(String? time) async {
+    if (time != null) {
+      await _prefs.setString(_dailyReminderTimeKey, time);
+    } else {
+      await _prefs.remove(_dailyReminderTimeKey);
+    }
+    state = state.copyWith(dailyReminderTime: time);
+    
+    if (state.isDailyReminderEnabled) {
+      await ScheduleQuranReadingNotification.updateSchedule(
+        isEnabled: true,
+        timeString: time,
+      );
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/providers/user_position_provider.dart';
@@ -18,25 +19,24 @@ class QeblaPage extends ConsumerStatefulWidget {
   ConsumerState<QeblaPage> createState() => _QeblaPageState();
 }
 
-class _QeblaPageState extends ConsumerState<QeblaPage>
-    with SingleTickerProviderStateMixin {
-  // القيمة الحالية للزاوية — نُحوّلها إلى AnimationController لاحقاً
-  double _currentAngle = 0.0;
-  late final AnimationController _animController;
+class _QeblaPageState extends ConsumerState<QeblaPage> {
+  bool _isAligned = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-  }
+  void _checkAlignment(double heading, double qiblaAngle) {
+    double diff = (heading - qiblaAngle).abs();
+    if (diff > 180) {
+      diff = 360 - diff;
+    }
 
-  @override
-  void dispose() {
-    _animController.dispose();
-    super.dispose();
+    // يعتبر متطابقاً إذا كان الفرق أقل من أو يساوي درجتين
+    final isNowAligned = diff <= 2.0;
+
+    if (isNowAligned && !_isAligned) {
+      HapticFeedback.heavyImpact(); // اهتزاز عند المطابقة
+      if (mounted) setState(() => _isAligned = true);
+    } else if (!isNowAligned && _isAligned) {
+      if (mounted) setState(() => _isAligned = false);
+    }
   }
 
   /// يُطلق طلب الإذن ثم يُحدّث الموضع في المزود
@@ -48,7 +48,10 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(failure.message, style: const TextStyle(fontFamily: 'Cairo')),
+            content: Text(
+              failure.message,
+              style: const TextStyle(fontFamily: 'Cairo'),
+            ),
             backgroundColor: Colors.red.shade700,
           ),
         );
@@ -65,6 +68,14 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
     final compassSupport = ref.watch(compassSupportProvider);
     final position = ref.watch(userPositionProvider);
 
+    // متابعة البوصلة لمعرفة التوافق مع القبلة لأجل الاهتزاز
+    ref.listen<AsyncValue<double?>>(compassStreamProvider, (previous, next) {
+      final h = next.value;
+      if (h != null && qiblaEntity != null) {
+        _checkAlignment(h, qiblaEntity.qiblaAngle);
+      }
+    });
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'اتجاه القبلة',
@@ -80,7 +91,11 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
             if (position == null) return _buildNoLocationState(context);
             if (qiblaEntity == null) return _buildNoLocationState(context);
 
-            return _buildCompassBody(context, qiblaEntity.qiblaAngle, qiblaEntity.distanceKm);
+            return _buildCompassBody(
+              context,
+              qiblaEntity.qiblaAngle,
+              qiblaEntity.distanceKm,
+            );
           },
         ),
       ),
@@ -104,30 +119,21 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
         const Spacer(),
 
         // -- البوصلة --
-        StreamBuilder<double?>(
-          stream: ref.watch(compassStreamProvider),
-          builder: (context, snapshot) {
-            final heading = snapshot.data;
+        // -- البوصلة --
+        Consumer(
+          builder: (context, ref, _) {
+            final compassAsync = ref.watch(compassStreamProvider);
+            final heading = compassAsync.value;
 
             if (heading == null) {
               return _buildCompassPlaceholder(context);
             }
 
-            // زاوية السهم = القبلة (من الشمال) - اتجاه الجهاز الحالي
-            final targetAngle = (qiblaAngle - heading) * math.pi / 180.0;
-
-            return TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: _currentAngle, end: targetAngle),
-              duration: const Duration(milliseconds: 350),
-              curve: Curves.easeOut,
-              onEnd: () => _currentAngle = targetAngle,
-              builder: (context, animatedAngle, _) {
-                return _CompassWidget(
-                  needleAngleRad: animatedAngle,
-                  qiblaAngle: qiblaAngle,
-                  heading: heading,
-                );
-              },
+            return _CompassWidget(
+              needleAngleRad: qiblaAngle * (math.pi / 180.0),
+              qiblaAngle: qiblaAngle,
+              heading: heading,
+              isAligned: _isAligned,
             );
           },
         ),
@@ -167,6 +173,7 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
                 fontSize: 12.sp,
                 color: Colors.amber.shade700,
               ),
+              // textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -178,7 +185,11 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
   // صف المعلومات الإضافية
   // ──────────────────────────────────────────────────────────
 
-  Widget _buildInfoRow(BuildContext context, double qiblaAngle, double distanceKm) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    double qiblaAngle,
+    double distanceKm,
+  ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Row(
@@ -347,7 +358,10 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
               icon: const Icon(Icons.my_location_rounded),
               label: const Text(
                 'تحديد موقعي',
-                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               style: FilledButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 14.h),
@@ -371,16 +385,20 @@ class _CompassWidget extends StatelessWidget {
   final double needleAngleRad;
   final double qiblaAngle;
   final double heading;
+  final bool isAligned; // To highlight compass when aligned
 
   const _CompassWidget({
     required this.needleAngleRad,
     required this.qiblaAngle,
     required this.heading,
+    required this.isAligned,
   });
 
   @override
   Widget build(BuildContext context) {
-    final qiblaColor = const Color(0xFF4CAF50); // أخضر القبلة
+    final qiblaColor = isAligned
+        ? Colors.amber
+        : const Color(0xFF4CAF50); // يتغير اللون عند المطابقة
     final ringColor = Theme.of(context).colorScheme.onSurface;
     final labelColor = Theme.of(context).colorScheme.onSurface;
 
@@ -393,22 +411,27 @@ class _CompassWidget extends StatelessWidget {
             fontFamily: 'Cairo',
             fontSize: 13.sp,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: .6),
           ),
         ),
 
         SizedBox(height: 16.h),
 
         // -- البوصلة --
-        SizedBox(
-          width: 260.w,
-          height: 260.w,
-          child: CustomPaint(
-            painter: QiblaCompassPainter(
-              needleAngleRad: needleAngleRad,
-              qiblaColor: qiblaColor,
-              ringColor: ringColor,
-              labelColor: labelColor,
+        Transform.rotate(
+          angle: -heading * (math.pi / 180.0),
+          child: SizedBox(
+            width: 260.w,
+            height: 260.w,
+            child: CustomPaint(
+              painter: QiblaCompassPainter(
+                needleAngleRad: needleAngleRad,
+                qiblaColor: qiblaColor,
+                ringColor: ringColor,
+                labelColor: labelColor,
+              ),
             ),
           ),
         ),

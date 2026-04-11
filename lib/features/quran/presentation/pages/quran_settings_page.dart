@@ -303,6 +303,44 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     trallingIcon: Icons.download,
                   ),
                   SettingCards(
+                    icon: Icons.notifications_active_rounded,
+                    text: "تنبيهات ورد القراءة اليومي",
+                    subText: settings.isDailyReminderEnabled
+                        ? (settings.dailyReminderTime != null
+                              ? "الوقت: ${settings.dailyReminderTime}"
+                              : "الوقت: بعد الفجر")
+                        : "اضغط هنا لتحديد وقت التذكير",
+                    toggle: true,
+                    switchValue: settings.isDailyReminderEnabled,
+                    onChanged: (_) {
+                      ref
+                          .read(quranSettingsProvider.notifier)
+                          .toggleDailyReminder();
+                    },
+                    onTap: settings.isDailyReminderEnabled
+                        ? () async {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                              helpText:
+                                  'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
+                            );
+                            if (time != null) {
+                              final formattedTime =
+                                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                              ref
+                                  .read(quranSettingsProvider.notifier)
+                                  .setDailyReminderTime(formattedTime);
+                            } else {
+                              // إذا اختار إلغاء، يرجع للخيار الافتراضي بعد الفجر
+                              ref
+                                  .read(quranSettingsProvider.notifier)
+                                  .setDailyReminderTime(null);
+                            }
+                          }
+                        : null,
+                  ),
+                  SettingCards(
                     icon: Icons.cleaning_services_rounded,
                     text: "تنظيف المساحة",
                     widget: _isClearingCache
@@ -317,11 +355,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                         : () => _clearAudioCache(context),
 
                     trallingIcon: Icons.delete,
-                  ),
-                  SettingCards(
-                    icon: Icons.notifications_active_rounded,
-                    text: "تنبيهات ورد القراءة اليومي",
-                    toggle: true,
                   ),
                   SettingCards(
                     icon: Icons.group,

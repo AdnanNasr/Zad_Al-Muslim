@@ -28,6 +28,8 @@ import 'package:noor_quran/features/settings/presentation/pages/settings_page.da
 import 'package:noor_quran/features/tafsser/presentation/pages/tafseer_page.dart';
 import 'package:noor_quran/core/common/widgets/custom_navigation_bar.dart';
 
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
@@ -38,8 +40,7 @@ void main() async {
     androidNotificationOngoing: true,
     androidStopForegroundOnPause: true,
     androidResumeOnClick: true,
-
-    notificationColor: const Color(0xFF1E8449),
+    // notificationColor: const Color(0xFF1E8449),
   );
 
   // Initialize Dependency Injection
@@ -97,6 +98,7 @@ class MyApp extends ConsumerWidget {
 
       // البداية دائماً من السبلش
       initialRoute: "/splash_screen",
+      navigatorKey: appNavigatorKey,
 
       routes: {
         "/splash_screen": (_) =>

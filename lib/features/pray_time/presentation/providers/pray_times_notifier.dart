@@ -4,6 +4,8 @@ import 'package:noor_quran/core/database/isar_db.dart';
 
 import 'package:noor_quran/features/pray_time/presentation/providers/schedule_prayer_time_notification.dart';
 import 'package:noor_quran/features/pray_time/data/models/prayer_times_model.dart';
+import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
+import 'package:noor_quran/features/quran/presentation/providers/schedule_quran_reading_notification.dart';
 import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:adhan/adhan.dart';
@@ -227,6 +229,17 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
         );
       }
     }
+
+    // إعادة جدولة تنبيه القرآن إذا كان يعتمد على وقت الفجر ليتزامن مع أحدث وقت
+    try {
+      final quranSettings = ref.read(quranSettingsProvider);
+      if (quranSettings.isDailyReminderEnabled && quranSettings.dailyReminderTime == null) {
+        await ScheduleQuranReadingNotification.updateSchedule(
+          isEnabled: true,
+          timeString: null,
+        );
+      }
+    } catch (_) {}
 
     AppLogger.logger.i("✅ تم جدولة إشعارات اليوم بنجاح");
   }

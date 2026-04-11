@@ -25,22 +25,22 @@ final qiblaEntityProvider = Provider<QiblaEntity?>((ref) {
 /// يراعي:
 ///   - headingForCameraMode (الشمال الحقيقي إذا توفّر)
 ///   - heading الاحتياطي (الشمال المغناطيسي)
-final compassStreamProvider = Provider<Stream<double?>>((ref) {
+final compassStreamProvider = StreamProvider<double?>((ref) {
   return (FlutterCompass.events ?? const Stream.empty()).map((event) {
-    // نفضّل headingForCameraMode لأنه يعوّض الميل المغناطيسي على الأجهزة الداعمة
-    return event.headingForCameraMode ?? event.heading;
-  }).asBroadcastStream();
+    // Some devices return 0.0 for headingForCameraMode incorrectly.
+    final double? cameraHeading = event.headingForCameraMode;
+    if (cameraHeading != null && cameraHeading != 0.0) {
+      return cameraHeading;
+    }
+    return event.heading;
+  });
 });
 
 /// -- 3. التحقق من دعم البوصلة --
 /// يُرجع null أثناء التحقق، true إذا توفر الحساس، false إذا لم يتوفر
 final compassSupportProvider = FutureProvider<bool>((ref) async {
-  // نستمع للحدث الأول فقط للتحقق من وجود البوصلة
-  try {
-    final event = await FlutterCompass.events?.first
-        .timeout(const Duration(seconds: 3));
-    return event != null;
-  } catch (_) {
-    return false;
-  }
+  // للتحقق من دعم البوصلة نكتفي بالتأكد من أن الاستريم ليس فارغا
+  // استخدام .first يغلق الاشتراك في بعض الأجهزة ويسبب توقف البوصلة
+  await Future.delayed(const Duration(milliseconds: 50));
+  return FlutterCompass.events != null;
 });
