@@ -11,6 +11,7 @@ import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
 import 'package:noor_quran/features/quran/presentation/providers/all_juzz_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/surahs_meta_provider.dart';
 import 'package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart';
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import "package:qcf_quran/qcf_quran.dart";
 
 class SelectSurahPage extends ConsumerStatefulWidget {
@@ -21,6 +22,15 @@ class SelectSurahPage extends ConsumerStatefulWidget {
 }
 
 class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
+  final ScrollController _surahsScrollController = ScrollController();
+  final ScrollController _juzzScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _surahsScrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsMetaProvider);
@@ -97,22 +107,34 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         ),
       ),
       (surahs) => AnimationLimiter(
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-          itemCount: surahs.length,
-          separatorBuilder: (context, index) => SizedBox(height: 12.h),
-          itemBuilder: (context, index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 700),
-              child: SlideAnimation(
-                verticalOffset: 50,
-                child: FadeInAnimation(
-                  child: _buildSurahItem(context, surahs[index]),
-                ),
-              ),
-            );
-          },
+        child: Padding(
+          padding: EdgeInsets.only(left: 4.w, top: 20.h, bottom: 20.h),
+          child: Scrollbar(
+            controller: _surahsScrollController,
+            thumbVisibility: true,
+            trackVisibility: true,
+            interactive: true,
+            thickness: 5,
+            radius: Radius.circular(24.r),
+            child: ListView.separated(
+              controller: _surahsScrollController,
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              itemCount: surahs.length,
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                return AnimationConfiguration.staggeredList(
+                  position: index,
+                  duration: const Duration(milliseconds: 700),
+                  child: SlideAnimation(
+                    verticalOffset: 50,
+                    child: FadeInAnimation(
+                      child: _buildSurahItem(context, surahs[index]),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -135,8 +157,8 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         style: TextStyle(
           fontFamily: 'surahname',
           package: 'qcf_quran',
-          fontSize: 38.sp,
-          color: context.color.onSurface.withValues(alpha: .8),
+          fontSize: 45.sp,
+          color: context.color.primary,
         ),
       ),
       subtitle: Column(
@@ -196,35 +218,49 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           },
           (surahsMeta) {
             return AnimationLimiter(
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-                itemCount: data.length,
-                separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                itemBuilder: (context, index) {
-                  final pageNumber = data[index].versesEntity.verses.keys.first;
-                  final verseNumber =
-                      data[index].versesEntity.verses.values.first.first;
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 700),
-                    child: SlideAnimation(
-                      verticalOffset: 50,
-                      child: FadeInAnimation(
-                        child: _buildJuzItem(
-                          context,
-                          data[index].id,
-                          getSurahNameArabic(pageNumber),
-                          getPageNumber(pageNumber, verseNumber),
-                          getVerse(
-                            pageNumber,
-                            verseNumber,
-                            verseEndSymbol: false,
+              child: Padding(
+                padding: EdgeInsets.only(left: 8.w, top: 20.h),
+                child: Scrollbar(
+                  controller: _juzzScrollController,
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  interactive: true,
+                  thickness: 5,
+                  radius: Radius.circular(24.r),
+                  child: ListView.separated(
+                    controller: _juzzScrollController,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    itemCount: data.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final pageNumber =
+                          data[index].versesEntity.verses.keys.first;
+                      final verseNumber =
+                          data[index].versesEntity.verses.values.first.first;
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 700),
+                        child: SlideAnimation(
+                          verticalOffset: 50,
+                          child: FadeInAnimation(
+                            child: _buildJuzItem(
+                              context,
+                              data[index].id,
+                              SurahNames.getFormattedName(pageNumber),
+                              getPageNumber(pageNumber, verseNumber),
+                              getVerse(
+                                pageNumber,
+                                verseNumber,
+                                verseEndSymbol: false,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ),
               ),
             );
           },

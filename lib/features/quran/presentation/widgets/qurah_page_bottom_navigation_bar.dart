@@ -158,7 +158,7 @@ class _QurahPageBottomNavigationBarState
                       : context.color.onPrimary,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
-                  fontFamily: "Cairo", // تأكد من وجود الخط في مشروعك
+                  fontFamily: "Cairo",
                 ),
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,7 +78,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
     ref.read(currentPlayingAyahProvider.notifier).state = CurrentPlayingAyah(
       surahNumber: surah,
       ayahNumber: ayah,
-      surahName: getSurahNameArabic(surah),
+      surahName: SurahNames.getFormattedName(surah),
     );
 
     // جلب الرابط والتحديث
@@ -100,7 +101,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
               Uri.parse(url),
               tag: MediaItem(
                 id: 'ayah_${surah}_$ayah',
-                title: 'سورة ${getSurahNameArabic(surah)}',
+                title: 'سورة ${SurahNames.getFormattedName(surah)}',
                 artist: 'الآية $ayah',
                 // artUri: Uri.parse(
                 //   'asset:///assets/icons/moon.png',
@@ -418,3 +419,4 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
     );
   }
 }
+

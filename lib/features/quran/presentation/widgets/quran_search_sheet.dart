@@ -1,3 +1,4 @@
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -41,16 +42,16 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
     if (_quranNormalizedCacheV2.isNotEmpty) return;
 
     final List<Map<String, dynamic>> tempIndex = [];
-    for (int s = 1; s <= 114; s++) {
-      int vCount = qcf.getVerseCount(s);
-      for (int v = 1; v <= vCount; v++) {
-        String rawVerse = qcf.getVerse(s, v, verseEndSymbol: false);
+    for (int surah = 1; surah <= 114; surah++) {
+      int vCount = qcf.getVerseCount(surah);
+      for (int verse = 1; verse <= vCount; verse++) {
+        String rawVerse = qcf.getVerse(surah, verse, verseEndSymbol: false);
         String normal = _robustNormalize(rawVerse);
         tempIndex.add({
-          'surahNumber': s,
-          'ayahNumber': v,
-          'surah': qcf.getSurahNameArabic(s),
-          'ayah': v.toString(),
+          'surahNumber': surah,
+          'ayahNumber': verse,
+          'surah': SurahNames.getFormattedName(surah),
+          'ayah': verse.toString(),
           'text': rawVerse,
           'normalized': normal,
         });
@@ -357,15 +358,8 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: context.color.primary.withValues(alpha: .05),
+            color: context.color.primary.withValues(alpha: .3),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .02),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,10 +403,10 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
               style: TextStyle(
-                fontFamily: 'Quran', // Assuming this exists or falls back
+                fontFamily: 'Quran',
                 fontSize: 19.sp,
                 height: 1.8,
-                color: Colors.grey[800],
+                color: context.color.onSurface,
               ),
             ),
           ],

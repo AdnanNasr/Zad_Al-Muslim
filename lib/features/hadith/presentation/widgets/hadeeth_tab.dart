@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/filter_container.dart';
@@ -65,26 +66,41 @@ class _HadithTabState extends ConsumerState<HadithTab> {
           // Smart Tags
           ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 40.h),
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: smartTags.length,
-              separatorBuilder: (context, index) => SizedBox(width: 8.w),
-              itemBuilder: (context, index) {
-                final tag = smartTags[index];
-                final isSelected = notifier.currentBookNumber == tag.id;
-                return ChoiceChip(
-                  label: Text(
-                    tag.arabicName,
-                    style: TextStyle(fontFamily: "Cairo", fontSize: 13.sp),
-                  ),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    ref
-                        .read(hadithProvider.notifier)
-                        .setBook(selected ? tag.id : null);
-                  },
-                );
-              },
+            child: AnimationLimiter(
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: smartTags.length,
+                separatorBuilder: (context, index) => SizedBox(width: 8.w),
+                itemBuilder: (context, index) {
+                  final tag = smartTags[index];
+                  final isSelected = notifier.currentBookNumber == tag.id;
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: Duration(milliseconds: 700),
+                    child: SlideAnimation(
+                      horizontalOffset: 40,
+                      curve: Curves.ease,
+                      child: FadeInAnimation(
+                        child: ChoiceChip(
+                          label: Text(
+                            tag.arabicName,
+                            style: TextStyle(
+                              fontFamily: "Cairo",
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            ref
+                                .read(hadithProvider.notifier)
+                                .setBook(selected ? tag.id : null);
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           SizedBox(height: 12.h),
@@ -117,41 +133,62 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                   );
                 }
 
-                return ListView.builder(
+                return Scrollbar(
                   controller: _scrollController,
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                  itemCount: hadiths.length + (notifier.hasMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == hadiths.length) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
-                    }
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  interactive: true,
+                  radius: Radius.circular(24),
 
-                    final hadith = hadiths[index];
-                    return HadithCard(
-                      hadith: hadith,
-                      index: index,
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isDismissible: true,
-                          enableDrag: true,
-                          showDragHandle: true,
-                          useSafeArea: true,
-                          isScrollControlled: true,
-                          builder: (context) =>
-                              HadithModalBottom(hadith: hadith),
+                  child: AnimationLimiter(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      itemCount: hadiths.length + (notifier.hasMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == hadiths.length) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
+                        final hadith = hadiths[index];
+                        return AnimationConfiguration.staggeredList(
+                          duration: Duration(milliseconds: 700),
+                          position: index,
+                          child: SlideAnimation(
+                            verticalOffset: 40,
+                            child: FadeInAnimation(
+                              child: HadithCard(
+                                hadith: hadith,
+                                index: index,
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isDismissible: true,
+                                    enableDrag: true,
+                                    showDragHandle: true,
+                                    useSafeArea: true,
+                                    isScrollControlled: true,
+                                    builder: (context) =>
+                                        HadithModalBottom(hadith: hadith),
+                                  );
+                                },
+                                onToggleFavorite: () async {
+                                  await ref
+                                      .read(hadithProvider.notifier)
+                                      .toggleIsFeatured(hadith);
+                                },
+                              ),
+                            ),
+                          ),
                         );
                       },
-                      onToggleFavorite: () async {
-                        await ref
-                            .read(hadithProvider.notifier)
-                            .toggleIsFeatured(hadith);
-                      },
-                    );
-                  },
+                    ),
+                  ),
                 );
               },
             ),

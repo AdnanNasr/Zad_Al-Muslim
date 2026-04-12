@@ -1,3 +1,4 @@
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'dart:ui';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -225,7 +226,7 @@ class _MoratalFullPlayerSheetState
     if (current == null || current.surahNumber >= 114) return;
     final newSurah = current.copyWith(
       surahNumber: current.surahNumber + 1,
-      surahName: getSurahNameArabic(current.surahNumber + 1),
+      surahName: SurahNames.getFormattedName(current.surahNumber + 1),
     );
     ref.read(playMoratalSurahActionProvider)(newSurah);
   }
@@ -235,14 +236,14 @@ class _MoratalFullPlayerSheetState
     if (current == null || current.surahNumber <= 1) return;
     final newSurah = current.copyWith(
       surahNumber: current.surahNumber - 1,
-      surahName: getSurahNameArabic(current.surahNumber - 1),
+      surahName: SurahNames.getFormattedName(current.surahNumber - 1),
     );
     ref.read(playMoratalSurahActionProvider)(newSurah);
   }
 
   // String _arabicName(int number) {
   //   try {
-  //     return getSurahNameArabic(number);
+  //     return SurahNames.getFormattedName(number);
   //   } catch (_) {
   //     return 'السورة $number';
   //   }
@@ -899,3 +900,4 @@ class _MoratalFullPlayerSheetState
     );
   }
 }
+

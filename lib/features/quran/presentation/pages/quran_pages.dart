@@ -22,6 +22,7 @@ import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.
 import 'package:noor_quran/features/quran/presentation/widgets/mini_audio_player.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'package:flutter/services.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
@@ -130,7 +131,9 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     List<dynamic> pageData = getPageData(_onPageChanged);
     surahsInPage.clear();
     for (int i = 0; i < pageData.length; i++) {
-      final surahName = getSurahNameArabic(pageData[i]["surah"] as int);
+      final surahName = SurahNames.getFormattedName(
+        pageData[i]["surah"] as int,
+      );
       surahsInPage.add(surahName);
     }
     // الاستماع لتغيير الآية الحالية للقيام بالتمرير التلقائي
@@ -274,7 +277,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         )
                       : QcfThemeData(
                           verseTextColor: Color(0xFFE0E0E0),
-                          verseNumberColor: Colors.grey, // amber
+                          verseNumberColor: context.color.primary, // amber
                           basmalaColor: context.color.primary,
                           headerTextColor: Colors.white,
                           headerBackgroundColor: Colors.white,
@@ -392,7 +395,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                             .addMark(
                                               Mark()
                                                 ..surahName =
-                                                    getSurahNameArabic(
+                                                    SurahNames.getFormattedName(
                                                       globalSurahNumber,
                                                     )
                                                 ..pageNumber = _onPageChanged,
@@ -663,7 +666,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         .state = CurrentPlayingAyah(
                       surahNumber: _surahNumber,
                       ayahNumber: _verseNumber,
-                      surahName: getSurahNameArabic(_surahNumber),
+                      surahName: SurahNames.getFormattedName(_surahNumber),
                     );
 
                     await player.setAudioSource(
@@ -671,7 +674,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         Uri.parse(url),
                         tag: MediaItem(
                           id: 'ayah_${_surahNumber}s_$_verseNumber',
-                          title: 'سورة ${getSurahNameArabic(_surahNumber)}',
+                          title:
+                              'سورة ${SurahNames.getFormattedName(_surahNumber)}',
                           artist: 'الآية $_verseNumber',
                           // artUri: Uri.parse(
                           //   'asset:///assets/icons/moon.png',
@@ -716,7 +720,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   if (!isMarked) {
                     await notifier.addMark(
                       Mark()
-                        ..surahName = getSurahNameArabic(_surahNumber)
+                        ..surahName = SurahNames.getFormattedName(_surahNumber)
                         ..pageNumber = _onPageChanged
                         ..surahNumber = _surahNumber
                         ..ayahNumber = _verseNumber,
@@ -956,7 +960,7 @@ class AppAndBottomBar extends StatelessWidget {
       left: 0,
       right: 0,
       child: QuranPageAppBar(
-        surahName: getSurahNameArabic(globalSurahNumber),
+        surahName: SurahNames.getFormattedName(globalSurahNumber),
         juzzNumber: getJuzNumber(globalSurahNumber, globalStartOfSurah),
         placeOfRevelation: getPlaceOfRevelation(globalSurahNumber),
         verseCount: getVerseCount(globalSurahNumber),

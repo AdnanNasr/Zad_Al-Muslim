@@ -19,6 +19,14 @@ class SelectQariSurahPage extends ConsumerStatefulWidget {
 }
 
 class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsMetaProvider);
@@ -39,27 +47,40 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
               ),
             ),
             (surahs) => AnimationLimiter(
-              child: ListView.separated(
-                padding: EdgeInsets.only(
-                  left: 16.w,
-                  right: 16.w,
-                  top: 20.h,
-                  bottom: 100.h, // padding for mini player
-                ),
-                itemCount: surahs.length,
-                separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                itemBuilder: (context, index) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 700),
-                    child: SlideAnimation(
-                      verticalOffset: 50,
-                      child: FadeInAnimation(
-                        child: _buildSurahItem(context, surahs[index]),
-                      ),
+              child: Padding(
+                padding: EdgeInsets.only(left: 4, top: 20.h),
+                child: Scrollbar(
+                  controller: _scrollController,
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  interactive: true,
+                  thickness: 5,
+                  radius: Radius.circular(24),
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    padding: EdgeInsets.only(
+                      left: 16.w,
+                      right: 16.w,
+
+                      bottom: 100.h, // padding for mini player
                     ),
-                  );
-                },
+                    itemCount: surahs.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 700),
+                        child: SlideAnimation(
+                          verticalOffset: 50,
+                          child: FadeInAnimation(
+                            child: _buildSurahItem(context, surahs[index]),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ),

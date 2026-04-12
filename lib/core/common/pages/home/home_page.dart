@@ -18,6 +18,7 @@ import 'package:noor_quran/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:noor_quran/core/common/widgets/home/reading_progress_card.dart';
 import 'package:noor_quran/core/common/widgets/home/daily_verse_card.dart';
 import 'package:noor_quran/core/common/providers/daily_content_provider.dart';
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -91,7 +92,13 @@ class BodyContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final children = [
       const PrayTimesContainer(),
-      const NextPrayerCard(),
+      AnimationConfiguration.synchronized(
+        duration: Duration(milliseconds: 700),
+        child: SlideAnimation(
+          horizontalOffset: 40,
+          child: const NextPrayerCard(),
+        ),
+      ),
       Material(
         surfaceTintColor: colorScheme.primary,
         shadowColor: themeMode == ThemeMode.light
@@ -221,18 +228,7 @@ class BodyContent extends ConsumerWidget {
       SizedBox(height: 20.h),
     ];
 
-    return AnimationLimiter(
-      child: Column(
-        children: AnimationConfiguration.toStaggeredList(
-          duration: const Duration(milliseconds: 375),
-          childAnimationBuilder: (widget) => SlideAnimation(
-            verticalOffset: 50.0,
-            child: FadeInAnimation(child: widget),
-          ),
-          children: children,
-        ),
-      ),
-    );
+    return Column(children: children);
   }
 
   // دالة مساعدة لتنظيم كود الـ Last Reading
@@ -326,7 +322,7 @@ class BodyContent extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "سُورَةَ ${lastReadingPostion.surahName}",
+                                "سورة ${SurahNames.getFormattedName(lastReadingPostion.surahNumber ?? 1)}",
                                 style: TextStyle(
                                   fontSize: 22.sp,
                                   fontFamily: "Amiri",

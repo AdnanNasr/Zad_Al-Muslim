@@ -1,3 +1,4 @@
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -103,7 +104,7 @@ void _playNextPreparedAyah(
   ref.read(currentPlayingAyahProvider.notifier).state = CurrentPlayingAyah(
     surahNumber: nextSurah,
     ayahNumber: nextAyah,
-    surahName: getSurahNameArabic(nextSurah),
+    surahName: SurahNames.getFormattedName(nextSurah),
   );
   final selectedQari = ref.read(selectedQariProvider);
   final urlEither = ref.read(
@@ -118,7 +119,7 @@ void _playNextPreparedAyah(
           Uri.parse(url),
           tag: MediaItem(
             id: 'ayah_${nextSurah}_$nextAyah',
-            title: 'سورة ${getSurahNameArabic(nextSurah)}',
+            title: 'سورة ${SurahNames.getFormattedName(nextSurah)}',
             artist: 'الآية $nextAyah',
             // artUri: Uri.parse('asset:///assets/icons/moon.png'), // TODO: add app icon
           ),
@@ -141,7 +142,7 @@ void _playNextMoratalSurah(
 ) {
   final nextSurah = current.copyWith(
     surahNumber: nextSurahNumber,
-    surahName: getSurahNameArabic(nextSurahNumber),
+    surahName: SurahNames.getFormattedName(nextSurahNumber),
   );
 
   // استدعاء الأكشن لتشغيل السورة التالية
@@ -225,3 +226,4 @@ final audioPositionStreamProvider = Provider<Stream<PositionData>>((ref) {
         PositionData(position, bufferedPosition, duration ?? Duration.zero),
   ).asBroadcastStream();
 });
+

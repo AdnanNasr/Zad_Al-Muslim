@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 
@@ -70,15 +71,20 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
           ),
           // prefixIcon: Icon(Icons.search_rounded, color: context.color.primary),
           prefixIcon: _controller.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.clear_rounded, color: context.color.primary),
-                  onPressed: () {
-                    _controller.clear();
-                    onSearchChanged("");
-                    setState(() {});
-                  },
+              ? AnimationConfiguration.synchronized(
+                  duration: Duration(milliseconds: 700),
+                  child: FadeInAnimation(
+                    child: IconButton(
+                      onPressed: () {
+                        _controller.clear();
+                        onSearchChanged("");
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.clear_outlined),
+                    ),
+                  ),
                 )
-              : Icon(Icons.search_rounded, color: context.color.primary),
+              : Icon(Icons.search_outlined),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r)),
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16.w,

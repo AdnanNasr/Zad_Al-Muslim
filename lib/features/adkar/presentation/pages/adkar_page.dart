@@ -19,10 +19,12 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
   String _searchQuery = '';
   bool _isVirtueExpanded = false;
 
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _textEditingController.dispose();
     super.dispose();
   }
@@ -117,39 +119,53 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
               ),
               Expanded(
                 child: AnimationLimiter(
-                  child: ListView.builder(
-                    itemCount:
-                        filteredList.length +
-                        (_searchQuery.isEmpty && virtueEntity.text.isNotEmpty
-                            ? 1
-                            : 0),
-                    itemBuilder: (context, index) {
-                      if (_searchQuery.isEmpty &&
-                          virtueEntity.text.isNotEmpty &&
-                          index == 0) {
-                        return _buildVirtueSection(context, virtueEntity);
-                      }
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 3),
+                    child: Scrollbar(
+                      controller: _scrollController,
+                      thumbVisibility: true,
+                      trackVisibility: true,
+                      interactive: true,
+                      thickness: 5,
+                      radius: Radius.circular(24),
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount:
+                            filteredList.length +
+                            (_searchQuery.isEmpty &&
+                                    virtueEntity.text.isNotEmpty
+                                ? 1
+                                : 0),
+                        itemBuilder: (context, index) {
+                          if (_searchQuery.isEmpty &&
+                              virtueEntity.text.isNotEmpty &&
+                              index == 0) {
+                            return _buildVirtueSection(context, virtueEntity);
+                          }
 
-                      final actualIndex =
-                          _searchQuery.isEmpty && virtueEntity.text.isNotEmpty
-                          ? index - 1
-                          : index;
+                          final actualIndex =
+                              _searchQuery.isEmpty &&
+                                  virtueEntity.text.isNotEmpty
+                              ? index - 1
+                              : index;
 
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: Duration(milliseconds: 700),
-                        child: SlideAnimation(
-                          verticalOffset: 50,
-                          child: FadeInAnimation(
-                            child: _buildCategoryCard(
-                              context,
-                              filteredList[actualIndex],
-                              actualIndex,
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: Duration(milliseconds: 700),
+                            child: SlideAnimation(
+                              verticalOffset: 50,
+                              child: FadeInAnimation(
+                                child: _buildCategoryCard(
+                                  context,
+                                  filteredList[actualIndex],
+                                  actualIndex,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),

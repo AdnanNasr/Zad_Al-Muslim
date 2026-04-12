@@ -1,3 +1,4 @@
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import "package:dartz/dartz.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -196,7 +197,7 @@ class _JuzList extends StatelessWidget {
               index: currentJuz.id,
               partLabel: 'الجزء ${currentJuz.id}',
               partDescription:
-                  'سورة ${getSurahNameArabic(surahNumber)} - صفحة ${getPageNumber(surahNumber, verseNumber)}',
+                  'سورة ${SurahNames.getFormattedName(surahNumber)} - صفحة ${getPageNumber(surahNumber, verseNumber)}',
               partVerse: getVerse(
                 surahNumber,
                 verseNumber,
@@ -398,3 +399,4 @@ class _SurahIndexCircle extends StatelessWidget {
     );
   }
 }
+

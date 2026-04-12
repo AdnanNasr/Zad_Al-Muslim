@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/favorites_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
@@ -21,32 +22,44 @@ class FeaturedHadithsTab extends ConsumerWidget {
           return const Center(child: Text("لا توجد أحاديث مفضلة حالياً"));
         }
 
-        return ListView.builder(
-          padding: EdgeInsets.symmetric(vertical: 8.h),
-          itemCount: featuredHadiths.length,
-          itemBuilder: (context, index) {
-            final hadith = featuredHadiths[index];
-            return HadithCard(
-              hadith: hadith,
-              index: index,
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isDismissible: true,
-                  enableDrag: true,
-                  showDragHandle: true,
-                  useSafeArea: true,
-                  isScrollControlled: true,
-                  builder: (context) => HadithModalBottom(hadith: hadith),
-                );
-              },
-              onToggleFavorite: () async {
-                await ref
-                    .read(hadithProvider.notifier)
-                    .toggleIsFeatured(hadith);
-              },
-            );
-          },
+        return AnimationLimiter(
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 8.h),
+            itemCount: featuredHadiths.length,
+            itemBuilder: (context, index) {
+              final hadith = featuredHadiths[index];
+              return AnimationConfiguration.staggeredList(
+                duration: Duration(milliseconds: 700),
+                position: index,
+                child: SlideAnimation(
+                  verticalOffset: 40,
+                  child: FadeInAnimation(
+                    child: HadithCard(
+                      hadith: hadith,
+                      index: index,
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isDismissible: true,
+                          enableDrag: true,
+                          showDragHandle: true,
+                          useSafeArea: true,
+                          isScrollControlled: true,
+                          builder: (context) =>
+                              HadithModalBottom(hadith: hadith),
+                        );
+                      },
+                      onToggleFavorite: () async {
+                        await ref
+                            .read(hadithProvider.notifier)
+                            .toggleIsFeatured(hadith);
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         );
       },
     );

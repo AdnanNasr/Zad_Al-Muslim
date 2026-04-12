@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/common/providers/daily_content_provider.dart';
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 
 class DailyVerseCard extends ConsumerWidget {
   const DailyVerseCard({super.key});
@@ -21,7 +22,8 @@ class DailyVerseCard extends ConsumerWidget {
 
   Widget _buildCard(BuildContext context, Map<String, dynamic> verse) {
     final text = (verse['aya_text_emlaey'] ?? '') as String;
-    final surahName = (verse['sura_name_ar'] ?? '') as String;
+    final int suraNo = verse['sura_no'] ?? 1;
+    final surahName = SurahNames.getFormattedName(suraNo);
     final ayaNo = verse['aya_no'] ?? 0;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
