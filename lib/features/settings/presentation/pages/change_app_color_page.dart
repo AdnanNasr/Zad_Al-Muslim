@@ -17,10 +17,10 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
   Map<String, FlexScheme> get colorSchemes => {
     AppLocalizations.of(context)!.brandBlue: FlexScheme.brandBlue,
     AppLocalizations.of(context)!.blueWhale: FlexScheme.blueWhale,
-    AppLocalizations.of(context)!.sakura: FlexScheme.shadRose,
+    AppLocalizations.of(context)!.sakura: FlexScheme.sakura,
     AppLocalizations.of(context)!.gold: FlexScheme.gold,
     AppLocalizations.of(context)!.vesuviusBurn: FlexScheme.vesuviusBurn,
-    AppLocalizations.of(context)!.barossa: FlexScheme.shadRed,
+    AppLocalizations.of(context)!.barossa: FlexScheme.purpleBrown,
     AppLocalizations.of(context)!.shark: FlexScheme.shark,
     AppLocalizations.of(context)!.money: FlexScheme.money,
   };

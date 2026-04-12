@@ -24,90 +24,168 @@ class PrayTimesContainer extends ConsumerWidget {
         final maghrib = model?.maghrib;
         final esha = model?.isha;
 
-        return Container(
-          height: context.witdthScreen <= 360 ? 280.h : 250.h,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            image: const DecorationImage(
-              image: AssetImage("assets/images/pray_times_cover.jpg"),
-              fit: BoxFit.cover,
-              opacity: .8,
-              colorFilter: ColorFilter.mode(Colors.black45, BlendMode.colorBurn),
-            ),
-          ),
-          padding: EdgeInsets.all(context.witdthScreen * 0.01),
-          child: Padding(
-            padding: EdgeInsets.only(top: 50.h),
-            child: Column(
-              children: [
-                Text(
-                  "نور البيان",
-                  style: TextStyle(
-                    fontSize: 35.sp,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Tajawal",
-                    color: Colors.white,
-                  ),
+        return ClipPath(
+          clipper: _CurvedBottomClipper(),
+          child: Container(
+            height: context.witdthScreen <= 360 ? 300.h : 270.h,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              image: const DecorationImage(
+                image: AssetImage("assets/images/pray_times_cover.jpg"),
+                fit: BoxFit.cover,
+                opacity: .8,
+                colorFilter: ColorFilter.mode(
+                  Colors.black38,
+                  BlendMode.colorBurn,
                 ),
-                SizedBox(height: 20.h),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.5),
+                    Colors.black.withValues(alpha: 0.2),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              padding: EdgeInsets.all(context.witdthScreen * 0.01),
+              child: Padding(
+                padding: EdgeInsets.only(top: 50.h),
+                child: Column(
                   children: [
+                    // --- الترحيب الذكي ---
                     Text(
-                      AppLocalizations.of(context)!.pray_times,
+                      _getGreeting(),
                       style: TextStyle(
-                        fontSize: context.witdthScreen * 0.06,
-                        color: Colors.white,
+                        fontSize: 28.sp,
                         fontWeight: FontWeight.bold,
+                        fontFamily: "Tajawal",
+                        color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: context.heightScreen * 0.01),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    SizedBox(height: 4.h),
+                    // --- التاريخ ---
+                    Text(
+                      _getFormattedDate(),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontFamily: "Cairo",
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _PrayTimeItem(
-                          title: AppLocalizations.of(context)!.fajer,
-                          time: fajr != null ? format(fajr) : "--:--",
+                        Text(
+                          AppLocalizations.of(context)!.pray_times,
+                          style: TextStyle(
+                            fontSize: context.witdthScreen * 0.05,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        _PrayTimeItem(
-                          title: AppLocalizations.of(context)!.duhur,
-                          time: dhuhr != null ? format(dhuhr) : "--:--",
-                        ),
-                        _PrayTimeItem(
-                          title: AppLocalizations.of(context)!.asr,
-                          time: asr != null ? format(asr) : "--:--",
-                        ),
-                        _PrayTimeItem(
-                          title: AppLocalizations.of(context)!.magrib,
-                          time: maghrib != null ? format(maghrib) : "--:--",
-                        ),
-                        _PrayTimeItem(
-                          title: AppLocalizations.of(context)!.esha,
-                          time: esha != null ? format(esha) : "--:--",
+                        SizedBox(height: context.heightScreen * 0.01),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _PrayTimeItem(
+                              title: AppLocalizations.of(context)!.fajer,
+                              time: fajr != null ? format(fajr) : "--:--",
+                            ),
+                            _PrayTimeItem(
+                              title: AppLocalizations.of(context)!.duhur,
+                              time: dhuhr != null ? format(dhuhr) : "--:--",
+                            ),
+                            _PrayTimeItem(
+                              title: AppLocalizations.of(context)!.asr,
+                              time: asr != null ? format(asr) : "--:--",
+                            ),
+                            _PrayTimeItem(
+                              title: AppLocalizations.of(context)!.magrib,
+                              time: maghrib != null ? format(maghrib) : "--:--",
+                            ),
+                            _PrayTimeItem(
+                              title: AppLocalizations.of(context)!.esha,
+                              time: esha != null ? format(esha) : "--:--",
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );
       },
-      loading: () => Container(
-        height: context.witdthScreen <= 360 ? 280.h : 250.h,
-        alignment: Alignment.center,
-        child: const CircularProgressIndicator(color: Colors.white),
+      loading: () => ClipPath(
+        clipper: _CurvedBottomClipper(),
+        child: Container(
+          height: context.witdthScreen <= 360 ? 300.h : 270.h,
+          alignment: Alignment.center,
+          color: Theme.of(context).colorScheme.primary,
+          child: const CircularProgressIndicator(color: Colors.white),
+        ),
       ),
-      error: (err, _) => Container(
-        height: context.witdthScreen <= 360 ? 280.h : 250.h,
-        alignment: Alignment.center,
-        child: Text(
-          AppLocalizations.of(context)!.pray_times,
-          style: const TextStyle(color: Colors.white),
+      error: (err, _) => ClipPath(
+        clipper: _CurvedBottomClipper(),
+        child: Container(
+          height: context.witdthScreen <= 360 ? 300.h : 270.h,
+          alignment: Alignment.center,
+          color: Theme.of(context).colorScheme.primary,
+          child: Text(
+            AppLocalizations.of(context)!.pray_times,
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );
+  }
+
+  /// ترحيب يتغير حسب الوقت
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return "صباح الخير ☀️";
+    if (hour < 12) return "مساء النور ✨";
+    return "مساء الخير 🌙";
+  }
+
+  /// تنسيق التاريخ الميلادي
+  String _getFormattedDate() {
+    final now = DateTime.now();
+    // يوم الأسبوع بالعربي
+    final dayNames = [
+      'الإثنين',
+      'الثلاثاء',
+      'الأربعاء',
+      'الخميس',
+      'الجمعة',
+      'السبت',
+      'الأحد',
+    ];
+    final months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+    final dayName = dayNames[now.weekday - 1];
+    final month = months[now.month - 1];
+    return "$dayName، ${now.day} $month ${now.year}";
   }
 }
 
@@ -122,11 +200,11 @@ class _PrayTimeItem extends ConsumerWidget {
     final textStyleTitle = TextStyle(
       color: Colors.white,
       fontWeight: FontWeight.bold,
-      fontSize: context.heightScreen * 0.028,
+      fontSize: context.heightScreen * 0.026,
     );
 
     final textStyleTime = TextStyle(
-      color: Colors.white,
+      color: Colors.white.withValues(alpha: 0.9),
       fontSize: context.heightScreen * 0.016,
     );
 
@@ -139,4 +217,25 @@ class _PrayTimeItem extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// مقص لعمل حافة منحنية في الأسفل
+class _CurvedBottomClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height - 30);
+    path.quadraticBezierTo(
+      size.width / 2,
+      size.height + 10,
+      size.width,
+      size.height - 30,
+    );
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
