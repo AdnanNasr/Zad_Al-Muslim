@@ -210,7 +210,9 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                       decoration: BoxDecoration(
                         color: selectedColor,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                        border: Border.all(
+                          color: Colors.grey.withValues(alpha: 0.3),
+                        ),
                       ),
                     ),
                     onTap: () {

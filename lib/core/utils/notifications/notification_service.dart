@@ -55,11 +55,11 @@ class NotificationService {
   }
 
   static Future<void> _handleQuranReminder() async {
-    // ننتظر حتى تكتمل واجهة المستخدم والملاح (Navigator)
+    // ننتظر حتى تكتمل واجهة المستخدم  (Navigator)
     while (appNavigatorKey.currentState == null) {
       await Future.delayed(const Duration(milliseconds: 200));
     }
-    
+
     // ننتظر قليلاً إضافياً لضمان تخطي شاشة البداية (Splash)
     await Future.delayed(const Duration(milliseconds: 2500));
 
@@ -71,16 +71,14 @@ class NotificationService {
         final marks = await db.marks.where().findAll();
         if (marks.isNotEmpty) {
           // نأخذ آخر علامة تم حفظها
-          targetPage = marks.last.pageNumber ?? 1;
+          targetPage = marks.last.pageNumber;
         }
       }
     } catch (_) {}
 
     // الانتقال لصفحة القرآن
     appNavigatorKey.currentState?.push(
-      MaterialPageRoute(
-        builder: (_) => QuranPages(pageNumber: targetPage),
-      ),
+      MaterialPageRoute(builder: (_) => QuranPages(pageNumber: targetPage)),
     );
   }
 }

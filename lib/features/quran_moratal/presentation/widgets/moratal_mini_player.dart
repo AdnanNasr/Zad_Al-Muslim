@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
 import 'package:noor_quran/features/quran_moratal/presentation/providers/ayah_timing_provider.dart';
