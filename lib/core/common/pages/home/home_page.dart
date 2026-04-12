@@ -44,6 +44,8 @@ class _HomePageState extends ConsumerState<HomePage>
     _animationController.forward();
   }
 
+  bool showCopiedMessage = false;
+
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -368,7 +370,7 @@ class BodyContent extends ConsumerWidget {
   }
 }
 
-class TodayDuaa extends ConsumerWidget {
+class TodayDuaa extends ConsumerStatefulWidget {
   const TodayDuaa({
     super.key,
     required this.colorScheme,
@@ -378,16 +380,23 @@ class TodayDuaa extends ConsumerWidget {
   final ThemeMode themeMode;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TodayDuaa> createState() => _TodayDuaaState();
+}
+
+class _TodayDuaaState extends ConsumerState<TodayDuaa> {
+  bool _showCopiedMessage = false;
+
+  @override
+  Widget build(BuildContext context) {
     final duaaAsync = ref.watch(dailyDuaaProvider);
 
     return Material(
-      surfaceTintColor: colorScheme.primary,
-      shadowColor: themeMode == ThemeMode.light
-          ? colorScheme.surface
-          : colorScheme.primary,
+      surfaceTintColor: widget.colorScheme.primary,
+      shadowColor: widget.themeMode == ThemeMode.light
+          ? widget.colorScheme.surface
+          : widget.colorScheme.primary,
       elevation: 2,
-      color: colorScheme.surface,
+      color: widget.colorScheme.surface,
       borderRadius: BorderRadius.circular(20.r),
       child: Column(
         children: [
@@ -396,7 +405,7 @@ class TodayDuaa extends ConsumerWidget {
               Expanded(
                 child: Divider(
                   thickness: 2.sp,
-                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  color: widget.colorScheme.primary.withValues(alpha: 0.1),
                 ),
               ),
               Padding(
@@ -406,7 +415,7 @@ class TodayDuaa extends ConsumerWidget {
                   children: [
                     Icon(
                       Icons.volunteer_activism_rounded,
-                      color: colorScheme.primary,
+                      color: widget.colorScheme.primary,
                       size: 22.sp,
                     ),
                     SizedBox(width: 8.w),
@@ -416,7 +425,7 @@ class TodayDuaa extends ConsumerWidget {
                         fontSize: 18.sp,
                         fontFamily: "Cairo",
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.primary,
+                        color: widget.colorScheme.primary,
                       ),
                     ),
                   ],
@@ -425,7 +434,7 @@ class TodayDuaa extends ConsumerWidget {
               Expanded(
                 child: Divider(
                   thickness: 2.sp,
-                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  color: widget.colorScheme.primary.withValues(alpha: 0.1),
                 ),
               ),
             ],
@@ -441,34 +450,62 @@ class TodayDuaa extends ConsumerWidget {
                       fontSize: 20.sp,
                       fontFamily: "Tajawal",
                       height: 1.6,
-                      color: colorScheme.onSurface,
+                      color: widget.colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
                     children: [
+                      Positioned(
+                        left: 70.w,
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 200),
+                          opacity: _showCopiedMessage ? 1.0 : 0.0,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.w,
+                              vertical: 4.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: context.color.primary,
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Text(
+                              "تم النسخ",
+                              style: TextStyle(
+                                color: context.color.onPrimary,
+                                fontSize: 12.sp,
+                                fontFamily: "Cairo",
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
                       _buildActionButton(
                         icon: Icons.copy_rounded,
                         label: "نسخ",
-                        color: colorScheme.primary,
+                        color: widget.colorScheme.primary,
                         onTap: () {
                           Clipboard.setData(
                             ClipboardData(
                               text: "$duaaText\n\nمن تطبيق نور البيان",
                             ),
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text("تم نسخ الدعاء"),
-                              duration: const Duration(seconds: 1),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                            ),
+                          _showCopiedMessage = true;
+                          setState(() {});
+                          Future.delayed(
+                            const Duration(seconds: 1, milliseconds: 500),
+                            () {
+                              if (mounted) {
+                                setState(() => _showCopiedMessage = false);
+                              }
+                            },
                           );
                         },
                       ),

@@ -16,6 +16,7 @@ import 'package:noor_quran/core/utils/location/providers/service_status_provider
 
 import 'package:geolocator/geolocator.dart';
 import 'package:noor_quran/features/pray_time/presentation/providers/user_address_provider.dart';
+import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
 
 import '../providers/pray_times_provider.dart';
 import '../../data/models/prayer_times_model.dart';
@@ -109,6 +110,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   @override
   Widget build(BuildContext context) {
     const topContentColor = Colors.white;
+    final use24format = ref.watch(appSettingsProvider).use24HourFormat;
 
     // تعريف أيقونات الصلوات
     final Map<String, IconData> prayerIcons = {
@@ -182,9 +184,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: context.color.onPrimary,
+                        icon: Tooltip(
+                          richMessage: TextSpan(text: "رجوع"),
+                          child: Icon(
+                            Icons.arrow_back,
+                            color: context.color.onPrimary,
+                          ),
                         ),
                       ),
                     ),
@@ -297,9 +302,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                                       return _buildPrayerRow(
                                         context,
                                         name,
-                                        DateFormat.jm(
-                                          "ar",
-                                        ).format(time.toLocal()),
+                                        use24format
+                                            ? DateFormat.Hm().format(
+                                                time.toLocal(),
+                                              )
+                                            : DateFormat.jm(
+                                                "ar",
+                                              ).format(time.toLocal()),
                                         prayerIcons[name] ?? Icons.circle,
                                         isCurrent: isCurrent,
                                       );

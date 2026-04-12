@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
+import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
 
 class PrayTimesContainer extends ConsumerWidget {
   const PrayTimesContainer({super.key});
@@ -12,8 +13,11 @@ class PrayTimesContainer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncModel = ref.watch(todayPrayerTimesProvider);
+    final use24h = ref.watch(appSettingsProvider).use24HourFormat;
 
-    String format(DateTime dt) => DateFormat.Hm().format(dt.toLocal());
+    String formatDate(DateTime dt) => (use24h
+        ? DateFormat.Hm().format(dt.toLocal())
+        : DateFormat.jm("ar").format(dt.toLocal()));
 
     return asyncModel.when(
       data: (model) {
@@ -95,23 +99,25 @@ class PrayTimesContainer extends ConsumerWidget {
                           children: [
                             _PrayTimeItem(
                               title: AppLocalizations.of(context)!.fajer,
-                              time: fajr != null ? format(fajr) : "--:--",
+                              time: fajr != null ? formatDate(fajr) : "--:--",
                             ),
                             _PrayTimeItem(
                               title: AppLocalizations.of(context)!.duhur,
-                              time: dhuhr != null ? format(dhuhr) : "--:--",
+                              time: dhuhr != null ? formatDate(dhuhr) : "--:--",
                             ),
                             _PrayTimeItem(
                               title: AppLocalizations.of(context)!.asr,
-                              time: asr != null ? format(asr) : "--:--",
+                              time: asr != null ? formatDate(asr) : "--:--",
                             ),
                             _PrayTimeItem(
                               title: AppLocalizations.of(context)!.magrib,
-                              time: maghrib != null ? format(maghrib) : "--:--",
+                              time: maghrib != null
+                                  ? formatDate(maghrib)
+                                  : "--:--",
                             ),
                             _PrayTimeItem(
                               title: AppLocalizations.of(context)!.esha,
-                              time: esha != null ? format(esha) : "--:--",
+                              time: esha != null ? formatDate(esha) : "--:--",
                             ),
                           ],
                         ),
@@ -152,7 +158,7 @@ class PrayTimesContainer extends ConsumerWidget {
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return "صباح الخير ☀️";
-    if (hour < 12) return "مساء النور ✨";
+    if (hour < 18) return "مساء النور ✨";
     return "مساء الخير 🌙";
   }
 

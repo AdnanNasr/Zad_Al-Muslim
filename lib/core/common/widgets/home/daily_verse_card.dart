@@ -6,11 +6,18 @@ import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/common/providers/daily_content_provider.dart';
 import 'package:noor_quran/core/common/constants/surah_names.dart';
 
-class DailyVerseCard extends ConsumerWidget {
+class DailyVerseCard extends ConsumerStatefulWidget {
   const DailyVerseCard({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DailyVerseCard> createState() => _DailyVerseCardState();
+}
+
+class _DailyVerseCardState extends ConsumerState<DailyVerseCard> {
+  bool _showCopiedMessage = false;
+
+  @override
+  Widget build(BuildContext context) {
     final verseAsync = ref.watch(dailyVerseProvider);
 
     return verseAsync.when(
@@ -110,46 +117,83 @@ class DailyVerseCard extends ConsumerWidget {
             SizedBox(height: 12.h),
 
             // زر النسخ
-            InkWell(
-              onTap: () {
-                final shareText =
-                    "﴿ $text ﴾\n\n- سورة $surahName، الآية $ayaNo";
-                Clipboard.setData(ClipboardData(text: shareText));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text("تم نسخ الآية"),
-                    duration: const Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(12.r),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.copy_rounded,
-                      size: 18.sp,
-                      color: context.color.primary.withValues(alpha: 0.6),
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      "نسخ الآية",
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontFamily: "Cairo",
-                        color: context.color.primary.withValues(alpha: 0.6),
+            Stack(
+              alignment: Alignment.centerRight,
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  left: 85.w,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: _showCopiedMessage ? 1.0 : 0.0,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.color.primary,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        "تم النسخ",
+                        style: TextStyle(
+                          color: context.color.onPrimary,
+                          fontSize: 12.sp,
+                          fontFamily: "Cairo",
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                InkWell(
+                  onTap: () {
+                    final shareText =
+                        "﴿ $text ﴾\n\n- سورة $surahName، الآية $ayaNo";
+                    Clipboard.setData(ClipboardData(text: shareText));
+                    _showCopiedMessage = true;
+                    setState(() {});
+                    if (_showCopiedMessage) {
+                      Future.delayed(
+                        const Duration(seconds: 1, milliseconds: 500),
+                        () {
+                          if (mounted) {
+                            setState(() => _showCopiedMessage = false);
+                          }
+                        },
+                      );
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.copy_rounded,
+                          size: 18.sp,
+                          color: context.color.primary.withValues(alpha: 0.6),
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          "نسخ الآية",
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            fontFamily: "Cairo",
+                            color: context.color.primary.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

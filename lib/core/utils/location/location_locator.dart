@@ -8,14 +8,20 @@ import 'package:adhan/adhan.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:noor_quran/core/utils/network/network_info.dart';
 
-
 abstract class LocationLocator {
   Future<Either<Failure, Position>> determinePosition();
   Future<void> saveLocationCoords(double lat, double long);
   Future<Position?> getLocationCoords();
-  Future<void> saveAddress({required String country, required String locality, required String countryCode});
+  Future<void> saveAddress({
+    required String country,
+    required String locality,
+    required String countryCode,
+  });
   Future<Map<String, String?>> getAddress();
-  Future<CalculationParameters> getCalculationParameters(double lat, double lng);
+  Future<CalculationParameters> getCalculationParameters(
+    double lat,
+    double lng,
+  );
 }
 
 class LocationLocatorImpl implements LocationLocator {
@@ -71,12 +77,12 @@ class LocationLocatorImpl implements LocationLocator {
       return Right(position);
     } catch (e) {
       AppLogger.logger.e("فشل جلب الموقع: ${e.toString()}");
-      
+
       final cachedPos = await getLocationCoords();
       if (cachedPos != null) {
         return Right(cachedPos);
       }
-      
+
       return Left(
         LocationFailure("حدث خطأ أثناء تحديد الموقع، تأكد من الـ GPS"),
       );
@@ -112,7 +118,11 @@ class LocationLocatorImpl implements LocationLocator {
   }
 
   @override
-  Future<void> saveAddress({required String country, required String locality, required String countryCode}) async {
+  Future<void> saveAddress({
+    required String country,
+    required String locality,
+    required String countryCode,
+  }) async {
     await sharedPreferences.setString(SharedPrefKeys.country, country);
     await sharedPreferences.setString(SharedPrefKeys.locality, locality);
     await sharedPreferences.setString(SharedPrefKeys.countryCode, countryCode);
@@ -128,85 +138,164 @@ class LocationLocatorImpl implements LocationLocator {
   }
 
   @override
-  Future<CalculationParameters> getCalculationParameters(double lat, double lng) async {
+  Future<CalculationParameters> getCalculationParameters(
+    double lat,
+    double lng,
+  ) async {
     try {
-      // 1. محاولة الحصول على كود الدولة من الكاش أولاً
-      final cached = await getAddress();
-      String countryCode = cached['countryCode'] ?? '';
+      // 0. فحص الإعدادات اليدوية أولاً
+      final int manualMethodIndex =
+          sharedPreferences.getInt('calculation_method_key') ?? 0;
+      final int manualMadhabIndex = sharedPreferences.getInt('madhab_key') ?? 0;
 
-      // 2. إذا لم يوجد كود دولة في الكاش، ووجد إنترنت، نحاول جلبه
-      if (countryCode.isEmpty) {
-        try {
-          final internetConnected = await NetworkInfo().hasValidConnection();
-          if (internetConnected) {
-            final placemarks = await placemarkFromCoordinates(lat, lng);
-            if (placemarks.isNotEmpty) {
-              final placemark = placemarks.first;
-              countryCode = placemark.isoCountryCode ?? '';
-              
-              // حفظ للتشغيلات القادمة
-              await saveAddress(
-                country: placemark.country ?? '',
-                locality: placemark.locality ?? '',
-                countryCode: countryCode,
-              );
+      CalculationParameters params;
+
+      if (manualMethodIndex != 0) {
+        // إذا اختار المستخدم طريقة يدوية
+        switch (manualMethodIndex) {
+          case 1:
+            params = CalculationMethod.muslim_world_league.getParameters();
+            break;
+          case 2:
+            params = CalculationMethod.umm_al_qura.getParameters();
+            break;
+          case 3:
+            params = CalculationMethod.egyptian.getParameters();
+            break;
+          case 4:
+            params = CalculationMethod.karachi.getParameters();
+            break;
+          case 5:
+            params = CalculationMethod.turkey.getParameters();
+            break;
+          case 6:
+            params = CalculationMethod.dubai.getParameters();
+            break;
+          case 7:
+            params = CalculationMethod.moon_sighting_committee.getParameters();
+            break; // corrected name
+          case 8:
+            params = CalculationMethod.north_america.getParameters();
+            break;
+          case 9:
+            params = CalculationMethod.kuwait.getParameters();
+            break;
+          case 10:
+            params = CalculationMethod.qatar.getParameters();
+            break;
+          case 11:
+            params = CalculationMethod.singapore.getParameters();
+            break;
+          case 12:
+            params = CalculationMethod.tehran.getParameters();
+            break;
+          default:
+            params = CalculationMethod.muslim_world_league.getParameters();
+        }
+      } else {
+        // المنطق التلقائي (بناءً على الدولة)
+        final cached = await getAddress();
+        String countryCode = cached['countryCode'] ?? '';
+
+        if (countryCode.isEmpty) {
+          try {
+            final internetConnected = await NetworkInfo().hasValidConnection();
+            if (internetConnected) {
+              final placemarks = await placemarkFromCoordinates(lat, lng);
+              if (placemarks.isNotEmpty) {
+                final placemark = placemarks.first;
+                countryCode = placemark.isoCountryCode ?? '';
+                await saveAddress(
+                  country: placemark.country ?? '',
+                  locality: placemark.locality ?? '',
+                  countryCode: countryCode,
+                );
+              }
             }
+          } catch (e) {
+            AppLogger.logger.e("فشل الحصول على العنوان من الإحداثيات: $e");
           }
-        } catch (e) {
-          AppLogger.logger.e("فشل الحصول على العنوان من الإحداثيات: $e");
+        }
+
+        switch (countryCode.toUpperCase()) {
+          case 'SA':
+            params = CalculationMethod.umm_al_qura.getParameters();
+            break;
+          case 'EG':
+          case 'SD':
+          case 'LY':
+          case 'SY':
+          case 'JO':
+          case 'PS':
+          case 'LB':
+            params = CalculationMethod.egyptian.getParameters();
+            break;
+          case 'AE':
+          case 'BH':
+          case 'OM':
+            params = CalculationMethod.dubai.getParameters();
+            break;
+          case 'KW':
+            params = CalculationMethod.kuwait.getParameters();
+            break;
+          case 'QA':
+            params = CalculationMethod.qatar.getParameters();
+            break;
+          case 'TR':
+            params = CalculationMethod.turkey.getParameters();
+            break;
+          case 'PK':
+          case 'AF':
+          case 'IN':
+          case 'BD':
+            params = CalculationMethod.karachi.getParameters();
+            params.madhab = Madhab.hanafi;
+            break;
+          case 'US':
+          case 'CA':
+          case 'MX':
+            params = CalculationMethod.north_america.getParameters();
+            break;
+          case 'SG':
+          case 'MY':
+          case 'ID':
+            params = CalculationMethod.singapore.getParameters();
+            break;
+          case 'IR':
+          case 'IQ':
+            params = CalculationMethod.tehran.getParameters();
+            break;
+          case 'RU':
+          case 'UA':
+            params = CalculationMethod.moon_sighting_committee
+                .getParameters(); // corrected
+            break;
+          case 'MA':
+          case 'DZ':
+          case 'TN':
+            params = CalculationParameters(fajrAngle: 19.0, ishaAngle: 17.0);
+            break;
+          default:
+            params = CalculationMethod.muslim_world_league.getParameters();
         }
       }
 
-      switch (countryCode.toUpperCase()) {
-        case 'SA': return CalculationMethod.umm_al_qura.getParameters();
-        case 'EG': 
-        case 'SD':
-        case 'LY':
-        case 'SY':
-        case 'JO':
-        case 'PS':
-        case 'LB':
-          return CalculationMethod.egyptian.getParameters();
-        case 'AE':
-        case 'BH':
-        case 'OM':
-          return CalculationMethod.dubai.getParameters();
-        case 'KW': return CalculationMethod.kuwait.getParameters();
-        case 'QA': return CalculationMethod.qatar.getParameters();
-        case 'TR': return CalculationMethod.turkey.getParameters();
-        case 'PK':
-        case 'AF':
-        case 'IN':
-        case 'BD':
-          final params = CalculationMethod.karachi.getParameters();
-          params.madhab = Madhab.hanafi;
-          return params;
-        case 'US':
-        case 'CA':
-        case 'MX':
-          return CalculationMethod.north_america.getParameters();
-        case 'SG':
-        case 'MY':
-        case 'ID':
-          return CalculationMethod.singapore.getParameters();
-        case 'IR':
-        case 'IQ':
-          return CalculationMethod.tehran.getParameters();
-        case 'RU':
-        case 'UA':
-          return CalculationMethod.moon_sighting_committee.getParameters();
-        case 'MA':
-        case 'DZ':
-        case 'TN':
-          return CalculationParameters(fajrAngle: 19.0, ishaAngle: 17.0);
-        default:
-          return CalculationMethod.muslim_world_league.getParameters();
+      // تطبيق المذهب اليدوي إذا تم اختياره (إذا كان 1 يعني حنفي، وإذا كان 0 نتركه حسب الطريقة أو الافتراضي شافعي)
+      if (manualMadhabIndex == 1) {
+        params.madhab = Madhab.hanafi;
+      } else if (manualMadhabIndex == 0 && manualMethodIndex != 0) {
+        // إذا كان المذهب تلقائي والطريقة يدوية، نجعله شافعي كافتراضي (إلا لو كانت طريقة كراتشي يدوية ف dhan يتعامل معها)
+        // لكن لضمان الوضوح:
+        if (manualMethodIndex != 4) {
+          // 4 is Karachi
+          params.madhab = Madhab.shafi;
+        }
       }
+
+      return params;
     } catch (e) {
       AppLogger.logger.e("خطأ في تحديد بارامترات الحساب: $e");
       return CalculationMethod.muslim_world_league.getParameters();
     }
   }
 }
-
-

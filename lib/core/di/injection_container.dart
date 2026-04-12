@@ -89,7 +89,7 @@ Future<void> init() async {
 
   // Notification Service
   sl.registerLazySingleton<IPrayerNotificationService>(
-    () => PrayerNotificationServiceImpl(),
+    () => PrayerNotificationServiceImpl(sl()),
   );
 
   // Get Adress

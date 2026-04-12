@@ -518,7 +518,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontFamily: "Cairo",
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                   color: context.color.primary,
                 ),
               ),

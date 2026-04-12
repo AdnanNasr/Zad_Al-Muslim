@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/adkar/domain/entities/adkar_entity.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
+import 'package:flutter/services.dart';
 
-class AdkarDetailsPage extends StatelessWidget {
+class AdkarDetailsPage extends ConsumerWidget {
   final AdkarEntity adkarEntity;
 
   const AdkarDetailsPage({super.key, required this.adkarEntity});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: CustomAppBar(
         title: adkarEntity.category,
@@ -38,7 +41,7 @@ class AdkarDetailsPage extends StatelessWidget {
   }
 }
 
-class DhikrCard extends StatefulWidget {
+class DhikrCard extends ConsumerStatefulWidget {
   final String text;
   final String footnote;
   final int index;
@@ -53,10 +56,10 @@ class DhikrCard extends StatefulWidget {
   });
 
   @override
-  State<DhikrCard> createState() => _DhikrCardState();
+  ConsumerState<DhikrCard> createState() => _DhikrCardState();
 }
 
-class _DhikrCardState extends State<DhikrCard> {
+class _DhikrCardState extends ConsumerState<DhikrCard> {
   late int _remainingCount;
 
   @override
@@ -67,7 +70,9 @@ class _DhikrCardState extends State<DhikrCard> {
 
   void _decrement() {
     if (_remainingCount > 0) {
-      // Feedback: Haptic feedback or sound could be added here
+      if (ref.read(appSettingsProvider).hapticFeedbackEnabled) {
+        HapticFeedback.lightImpact();
+      }
       setState(() {
         _remainingCount--;
       });
@@ -105,7 +110,7 @@ class _DhikrCardState extends State<DhikrCard> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Naskh',
-                      fontSize: 24.sp,
+                      fontSize: ref.watch(appSettingsProvider).adkarFontSize.sp,
                       height: 1.6,
                       color: context.color.onSurface,
                     ),
