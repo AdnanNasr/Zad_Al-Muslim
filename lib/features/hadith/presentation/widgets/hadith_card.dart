@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/highlighted_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -156,75 +155,6 @@ class HadithCard extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSmallChip(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14.sp, color: color),
-          SizedBox(width: 4.w),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontFamily: "Cairo",
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGradeBadge(BuildContext context, HadithGrade grade) {
-    Color gradeColor;
-    String gradeText;
-
-    switch (grade) {
-      case HadithGrade.sahih:
-        gradeColor = Colors.green;
-        gradeText = "صحيح";
-        break;
-      case HadithGrade.hasan:
-        gradeColor = Colors.orange;
-        gradeText = "حسن";
-        break;
-      case HadithGrade.daif:
-        gradeColor = Colors.red;
-        gradeText = "ضعيف";
-        break;
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: gradeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: gradeColor.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        gradeText,
-        style: TextStyle(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.bold,
-          color: gradeColor,
-          fontFamily: "Cairo",
-        ),
-      ),
     );
   }
 }

@@ -166,7 +166,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
             height: 260.w, // صورة مربعة
             width: 260.w,
             decoration: BoxDecoration(
-              // TODO: change surah to qary
+              // TODO: change the cover for audio player
               color: context.color.primary.withValues(alpha: .05),
               borderRadius: BorderRadius.circular(30.r),
             ),

@@ -2,12 +2,12 @@
 enum AppLocale { ar, en, de }
 
 // Hadith Grade
-enum HadithGrade { sahih, hasan, daif }
+// enum HadithGrade { sahih, hasan, daif }
 
 // Netork info
 enum NetworkInfoState { connected, loading, notConnected }
 
-// Location States 
+// Location States
 enum LocationMessage {
   locationAllowed,
   locationDisabled,

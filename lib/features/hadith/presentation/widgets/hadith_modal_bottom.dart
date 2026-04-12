@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
 import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -123,44 +122,6 @@ class HadithModalBottom extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildGradeBadge(HadithGrade grade) {
-    Color gradeColor = Colors.grey;
-    String gradeText = "غير معروف";
-
-    switch (grade) {
-      case HadithGrade.sahih:
-        gradeColor = Colors.green;
-        gradeText = "صحيح";
-        break;
-      case HadithGrade.hasan:
-        gradeColor = Colors.orange;
-        gradeText = "حسن";
-        break;
-      case HadithGrade.daif:
-        gradeColor = Colors.red;
-        gradeText = "ضعيف";
-        break;
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: gradeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: gradeColor.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        gradeText,
-        style: TextStyle(
-          color: gradeColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 14.sp,
-          fontFamily: "Cairo",
-        ),
       ),
     );
   }

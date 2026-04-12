@@ -240,13 +240,13 @@ class _MoratalFullPlayerSheetState
     ref.read(playMoratalSurahActionProvider)(newSurah);
   }
 
-  String _arabicName(int number) {
-    try {
-      return getSurahNameArabic(number);
-    } catch (_) {
-      return 'السورة $number';
-    }
-  }
+  // String _arabicName(int number) {
+  //   try {
+  //     return getSurahNameArabic(number);
+  //   } catch (_) {
+  //     return 'السورة $number';
+  //   }
+  // }
 
   // ── Loop ──────────────────────────────────────────────────────────────────
 

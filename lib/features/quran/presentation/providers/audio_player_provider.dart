@@ -191,6 +191,7 @@ final playMoratalSurahActionProvider = Provider((ref) {
             audioPlayer.play();
           }
         } on PlayerInterruptedException {
+          // nothing will happen
         } on PlatformException catch (e) {
           final msg = e.message?.toLowerCase() ?? '';
           if (!msg.contains('abort') && !msg.contains('10000000')) {
