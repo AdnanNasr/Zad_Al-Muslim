@@ -1,3 +1,4 @@
+import "package:dartz/dartz.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
@@ -5,7 +6,7 @@ import "package:noor_quran/core/extensions/sizes_ext.dart";
 import "package:noor_quran/core/common/providers/theme_provider.dart";
 
 class SettingCards extends ConsumerWidget {
-  final IconData icon;
+  final Either<Widget, IconData> icon;
   final String text;
   final String? subText;
   final void Function()? onTap;
@@ -83,32 +84,20 @@ class SettingCards extends ConsumerWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(3.0),
-                  child: hero != null
-                      ? hero! == false
-                            ? Icon(
-                                icon,
-                                size: context.witdthScreen * 0.08,
-                                color:
-                                    forgroundColor ??
-                                    Theme.of(context).colorScheme.primary,
-                              )
-                            : Hero(
-                                tag: heroId!,
-                                child: Icon(
-                                  icon,
-                                  size: context.witdthScreen * 0.08,
-                                  color:
-                                      forgroundColor ??
-                                      Theme.of(context).colorScheme.primary,
-                                ),
-                              )
-                      : Icon(
-                          icon,
-                          size: context.witdthScreen * 0.08,
-                          color:
-                              forgroundColor ??
-                              Theme.of(context).colorScheme.primary,
-                        ),
+                  child: icon.fold(
+                    (widget) {
+                      return widget;
+                    },
+                    (iconData) {
+                      return Icon(
+                        iconData,
+                        size: context.witdthScreen * 0.08,
+                        color:
+                            forgroundColor ??
+                            Theme.of(context).colorScheme.primary,
+                      );
+                    },
+                  ),
                 ),
               ),
               const SizedBox(width: 10),

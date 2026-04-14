@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
@@ -22,22 +23,22 @@ class AppInfo extends StatelessWidget {
           spacing: 10.h,
           children: [
             SettingCards(
-              icon: Icons.lock,
+              icon: Right(Icons.lock),
               text: AppLocalizations.of(context)!.privacy_policy,
               onTap: () => debugPrint("Temp"),
             ),
             SettingCards(
-              icon: Icons.description,
+              icon: Right(Icons.description),
               text: AppLocalizations.of(context)!.terms_of_use,
               onTap: () => debugPrint("Temp"),
             ),
             SettingCards(
-              icon: Icons.verified_user_outlined,
+              icon: Right(Icons.verified_user_outlined),
               text: AppLocalizations.of(context)!.app_certificates,
               onTap: () => debugPrint("Temp"),
             ),
             SettingCards(
-              icon: Icons.info,
+              icon: Right(Icons.info),
               text: AppLocalizations.of(context)!.version,
               widget: Text(
                 "1.0.0",

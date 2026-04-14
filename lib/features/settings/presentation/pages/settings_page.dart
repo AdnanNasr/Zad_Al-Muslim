@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +11,7 @@ import 'package:noor_quran/features/settings/presentation/pages/change_app_color
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/common/widgets/settings_card.dart';
 import 'package:noor_quran/core/common/widgets/settings_container.dart';
+import 'package:noor_quran/features/settings/presentation/widgets/adahn_dialog.dart';
 import 'package:noor_quran/features/settings/presentation/widgets/language_dialog.dart';
 import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:noor_quran/features/settings/presentation/widgets/font_size_dialog.dart';
@@ -180,7 +182,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: AppLocalizations.of(context)!.app_settings,
                 settingsCards: [
                   SettingCards(
-                    icon: Icons.language,
+                    icon: Right(Icons.language),
                     text: AppLocalizations.of(context)!.app_language,
                     onTap: () {
                       showDialog(
@@ -190,7 +192,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.dark_mode,
+                    icon: Right(Icons.dark_mode),
                     text: AppLocalizations.of(context)!.dark_mode,
                     toggle: true,
                     switchValue: themeMode == ThemeMode.dark,
@@ -201,7 +203,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.color_lens,
+                    icon: Right(Icons.color_lens),
                     text: AppLocalizations.of(context)!.app_color,
                     onTap: () => showModalBottomSheet(
                       isDismissible: true,
@@ -210,7 +212,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   ),
                   SettingCards(
-                    icon: Icons.format_size,
+                    icon: Right(Icons.format_size),
                     text: "حجم خط الأذكار",
                     onTap: () {
                       showDialog(
@@ -229,7 +231,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: "إعدادات مواقيت الصلاة",
                 settingsCards: [
                   SettingCards(
-                    icon: Icons.calculate_rounded,
+                    icon: Right(Icons.calculate_rounded),
                     text: "طريقة حساب المواقيت",
                     subText: _getCalculationMethodName(
                       appSettings.calculationMethodIndex,
@@ -243,21 +245,43 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.mosque_rounded,
+                    icon: Left(
+                      Hero(
+                        tag: "mosque",
+                        child: Icon(
+                          Icons.mosque_rounded,
+                          size: context.witdthScreen * 0.08,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
                     text: "المذهب (صلاة العصر)",
                     subText: appSettings.madhabIndex == 0
                         ? "تلقائي (شافعي، مالكي، حنبلي)"
                         : "حنفي",
                     onTap: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => const MadhabDialog(),
+                      await Navigator.of(context).push(
+                        PageRouteBuilder(
+                          opaque: false,
+                          barrierDismissible: true,
+                          barrierColor: Colors.black45,
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const MadhabDialog(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                        ),
                       );
                       ref.invalidate(todayPrayerTimesProvider);
                     },
                   ),
                   SettingCards(
-                    icon: Icons.access_time_filled_outlined,
+                    icon: Right(Icons.access_time_filled_outlined),
                     text: "تنسيق الوقت (24 ساعة)",
                     toggle: true,
                     switchValue: appSettings.use24HourFormat,
@@ -275,7 +299,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: "الإشعارات والتنبيهات",
                 settingsCards: [
                   SettingCards(
-                    icon: Icons.notifications_active_rounded,
+                    icon: Right(Icons.notifications_active_rounded),
                     text: "إشعارات الصلاة",
                     toggle: true,
                     switchValue: appSettings.prayerNotificationsEnabled,
@@ -285,15 +309,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.multitrack_audio_sharp,
+                    icon: Right(Icons.multitrack_audio_sharp),
                     text: "صوت الأذان",
                     subText: "الافتراضي",
                     onTap: () {
-                      // TODO: Show Athan Sound Selection
+                      showDialog(
+                        context: context,
+                        builder: (context) => AdahnDialog(),
+                      );
                     },
                   ),
                   SettingCards(
-                    icon: Icons.wb_sunny_rounded,
+                    icon: Right(Icons.wb_sunny_rounded),
                     text: "تنبيه أذكار الصباح",
                     toggle: true,
                     switchValue: appSettings.morningAdkarReminder,
@@ -303,7 +330,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.nightlight_round,
+                    icon: Right(Icons.nightlight_round),
                     text: "تنبيه أذكار المساء",
                     toggle: true,
                     switchValue: appSettings.eveningAdkarReminder,
@@ -322,7 +349,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: "إعدادات عامة",
                 settingsCards: [
                   SettingCards(
-                    icon: Icons.vibration,
+                    icon: Right(Icons.vibration),
                     text: "اهتزاز التسبيح (Haptic)",
                     toggle: true,
                     switchValue: appSettings.hapticFeedbackEnabled,
@@ -331,7 +358,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.restart_alt_rounded,
+                    icon: Right(Icons.restart_alt_rounded),
                     text: "إعادة ضبط جميع الإعدادات",
                     forgroundColor: Colors.red,
                     onTap: () {
@@ -375,7 +402,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Icons.cleaning_services_rounded,
+                    icon: Right(Icons.cleaning_services_rounded),
                     text: "تنظيف المساحة",
                     widget: _isClearingCache
                         ? const SizedBox(
@@ -391,12 +418,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     trallingIcon: Icons.delete,
                   ),
                   SettingCards(
-                    icon: Icons.app_settings_alt,
+                    icon: Right(Icons.app_settings_alt),
                     text: AppLocalizations.of(context)!.app_information,
                     onTap: () => Navigator.of(context).pushNamed("/app_info"),
                   ),
                   SettingCards(
-                    icon: Icons.group,
+                    icon: Right(Icons.group),
                     text: "نشر التطبيق (صدقة جارية)",
                     onTap: () {
                       SharePlus.instance.share(

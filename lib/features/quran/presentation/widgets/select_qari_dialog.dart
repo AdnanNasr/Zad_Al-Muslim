@@ -68,7 +68,9 @@ class SelectQariDialog extends ConsumerWidget {
 
                   return InkWell(
                     onTap: () {
-                      ref.read(quranSettingsProvider.notifier).setSelectedQari(qari);
+                      ref
+                          .read(quranSettingsProvider.notifier)
+                          .setSelectedQari(qari);
                       Navigator.of(context).pop();
                     },
                     borderRadius: BorderRadius.circular(12.r),
@@ -155,6 +157,7 @@ class SelectQariDialog extends ConsumerWidget {
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
                   color: context.color.onSurface.withValues(alpha: .6),
                 ),
               ),

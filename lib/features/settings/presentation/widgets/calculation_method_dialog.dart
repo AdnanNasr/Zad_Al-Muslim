@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
 
 class CalculationMethodDialog extends ConsumerWidget {
@@ -26,36 +27,109 @@ class CalculationMethodDialog extends ConsumerWidget {
       "معهد الجيوفيزياء (جامعة طهران)",
     ];
 
-    return SimpleDialog(
-      title: const Text(
-        "طريقة حساب المواقيت",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontFamily: "Cairo", fontWeight: FontWeight.bold),
-      ),
-      children: List.generate(methods.length, (index) {
-        final bool isSelected = currentMethod == index;
-        return ListTile(
-          title: Text(
-            methods[index],
-            style: TextStyle(
-              fontFamily: "Cairo",
-              fontSize: 14.sp,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              color: isSelected ? Theme.of(context).colorScheme.primary : null,
+    return Dialog(
+      // backgroundColor: context.color.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 10.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Hero(
+                  tag: "timer",
+                  child: Icon(
+                    Icons.timer,
+                    color: context.color.primary,
+                    size: 25.sp,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  "طريقة حساب المواقيت",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontFamily: "Cairo",
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-          trailing: isSelected
-              ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
-              : null,
-          onTap: () {
-            ref.read(appSettingsProvider.notifier).setCalculationMethod(index);
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("تم تحديث طريقة الحساب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.")),
-            );
-          },
-        );
-      }),
+            Divider(color: context.color.onSurface.withValues(alpha: .1)),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: calculate_names(
+                    methods,
+                    currentMethod,
+                    context,
+                    ref,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Divider(color: context.color.onSurface.withValues(alpha: .1)),
+            TextButton(
+              style: ButtonStyle(splashFactory: NoSplash.splashFactory),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "إلغاء",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Cairo",
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  List<Widget> calculate_names(
+    List<String> methods,
+    int currentMethod,
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return List.generate(methods.length, (index) {
+      final bool isSelected = currentMethod == index;
+      return ListTile(
+        title: Text(
+          methods[index],
+          style: TextStyle(
+            fontFamily: "Cairo",
+            fontSize: 14.sp,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Theme.of(context).colorScheme.primary : null,
+          ),
+        ),
+        trailing: isSelected
+            ? Icon(
+                Icons.check_circle,
+                color: Theme.of(context).colorScheme.primary,
+              )
+            : null,
+        onTap: () {
+          ref.read(appSettingsProvider.notifier).setCalculationMethod(index);
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "تم تحديث طريقة الحساب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 }
