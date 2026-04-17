@@ -382,6 +382,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ),
                             ),
                             TextButton(
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStatePropertyAll<Color>(
+                                  Colors.red,
+                                ),
+                              ),
                               onPressed: () async {
                                 await appSettingsNotifier.resetSettings();
                                 if (context.mounted) {
@@ -391,7 +396,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               child: const Text(
                                 "إعادة ضبط",
                                 style: TextStyle(
-                                  color: Colors.red,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                   fontFamily: "Cairo",
                                 ),
                               ),
