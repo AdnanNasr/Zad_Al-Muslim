@@ -37,9 +37,11 @@ class QuranSettings {
       keepScreenAwake: keepScreenAwake ?? this.keepScreenAwake,
       ayahDelaySeconds: ayahDelaySeconds ?? this.ayahDelaySeconds,
       selectedQari: selectedQari ?? this.selectedQari,
-      readingBackgroundColorIndex: readingBackgroundColorIndex ?? this.readingBackgroundColorIndex,
+      readingBackgroundColorIndex:
+          readingBackgroundColorIndex ?? this.readingBackgroundColorIndex,
       autoScrollWithAudio: autoScrollWithAudio ?? this.autoScrollWithAudio,
-      isDailyReminderEnabled: isDailyReminderEnabled ?? this.isDailyReminderEnabled,
+      isDailyReminderEnabled:
+          isDailyReminderEnabled ?? this.isDailyReminderEnabled,
       dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
     );
   }
@@ -47,47 +49,55 @@ class QuranSettings {
 
 class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
   final SharedPreferences _prefs;
-  
+
   static const String _keepScreenAwakeKey = 'keep_screen_awake_key';
   static const String _ayahDelayKey = 'ayah_delay_key';
   static const String _selectedQariIdKey = 'selected_qari_id_key';
-  static const String _readingBackgroundColorIndexKey = 'reading_background_color_index_key';
+  static const String _readingBackgroundColorIndexKey =
+      'reading_background_color_index_key';
   static const String _autoScrollWithAudioKey = 'auto_scroll_with_audio_key';
-  static const String _isDailyReminderEnabledKey = 'is_daily_reminder_enabled_key';
+  static const String _isDailyReminderEnabledKey =
+      'is_daily_reminder_enabled_key';
   static const String _dailyReminderTimeKey = 'daily_reminder_time_key';
 
-  QuranSettingsNotifier(this._prefs) : super(QuranSettings(
-    keepScreenAwake: false, 
-    ayahDelaySeconds: 0, 
-    selectedQari: QariNamesAyahByAyah.masharyAlafassy,
-    readingBackgroundColorIndex: 0,
-    autoScrollWithAudio: true,
-    isDailyReminderEnabled: false,
-    dailyReminderTime: null,
-  )) {
+  QuranSettingsNotifier(this._prefs)
+    : super(
+        QuranSettings(
+          keepScreenAwake: false,
+          ayahDelaySeconds: 0,
+          selectedQari: QariNamesAyahByAyah.masharyAlafassy,
+          readingBackgroundColorIndex: 0,
+          autoScrollWithAudio: true,
+          isDailyReminderEnabled: false,
+          dailyReminderTime: null,
+        ),
+      ) {
     _init();
   }
 
   void _init() {
-    final keepAwake = _prefs.getBool(_keepScreenAwakeKey) ?? false;
+    final keepAwake = _prefs.getBool(_keepScreenAwakeKey) ?? true;
     final ayahDelay = _prefs.getInt(_ayahDelayKey) ?? 0;
     final qariId = _prefs.getString(_selectedQariIdKey);
     final bgColorIndex = _prefs.getInt(_readingBackgroundColorIndexKey) ?? 0;
     final autoScroll = _prefs.getBool(_autoScrollWithAudioKey) ?? true;
-    final isDailyReminderEnabled = _prefs.getBool(_isDailyReminderEnabledKey) ?? false;
+    final isDailyReminderEnabled =
+        _prefs.getBool(_isDailyReminderEnabledKey) ?? false;
     final dailyReminderTime = _prefs.getString(_dailyReminderTimeKey);
-    
+
     QariModel selectedQari = QariNamesAyahByAyah.masharyAlafassy;
     if (qariId != null) {
       try {
-        selectedQari = QariNamesAyahByAyah.allQaris.firstWhere((q) => q.id == qariId);
+        selectedQari = QariNamesAyahByAyah.allQaris.firstWhere(
+          (q) => q.id == qariId,
+        );
       } catch (e) {
         // إذا لم نجد القارئ (ربما تم تغييره أو حذفه)، نستخدم الافتراضي
       }
     }
-    
+
     state = QuranSettings(
-      keepScreenAwake: keepAwake, 
+      keepScreenAwake: keepAwake,
       ayahDelaySeconds: ayahDelay,
       selectedQari: selectedQari,
       readingBackgroundColorIndex: bgColorIndex,
@@ -95,12 +105,12 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
       isDailyReminderEnabled: isDailyReminderEnabled,
       dailyReminderTime: dailyReminderTime,
     );
-    
+
     // تفعيل إضاءة الشاشة إذا كانت الميزة مفعلة مسبقاً
     if (keepAwake) {
       WakelockPlus.enable();
     }
-    
+
     // تفعيل مهام التذكير المجدولة إذا كانت مفعلة
     if (isDailyReminderEnabled) {
       ScheduleQuranReadingNotification.updateSchedule(
@@ -114,7 +124,7 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     final newValue = !state.keepScreenAwake;
     await _prefs.setBool(_keepScreenAwakeKey, newValue);
     state = state.copyWith(keepScreenAwake: newValue);
-    
+
     if (newValue) {
       WakelockPlus.enable();
     } else {
@@ -147,7 +157,7 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     final newValue = !state.isDailyReminderEnabled;
     await _prefs.setBool(_isDailyReminderEnabledKey, newValue);
     state = state.copyWith(isDailyReminderEnabled: newValue);
-    
+
     await ScheduleQuranReadingNotification.updateSchedule(
       isEnabled: newValue,
       timeString: state.dailyReminderTime,
@@ -161,7 +171,7 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
       await _prefs.remove(_dailyReminderTimeKey);
     }
     state = state.copyWith(dailyReminderTime: time);
-    
+
     if (state.isDailyReminderEnabled) {
       await ScheduleQuranReadingNotification.updateSchedule(
         isEnabled: true,
@@ -171,7 +181,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
   }
 }
 
-final quranSettingsProvider = StateNotifierProvider<QuranSettingsNotifier, QuranSettings>((ref) {
-  final prefs = sl<SharedPreferences>();
-  return QuranSettingsNotifier(prefs);
-});
+final quranSettingsProvider =
+    StateNotifierProvider<QuranSettingsNotifier, QuranSettings>((ref) {
+      final prefs = sl<SharedPreferences>();
+      return QuranSettingsNotifier(prefs);
+    });

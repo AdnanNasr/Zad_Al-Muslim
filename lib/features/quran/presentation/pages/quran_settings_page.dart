@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,8 +13,6 @@ import 'package:noor_quran/features/quran/presentation/widgets/ayah_delay_dialog
 import 'package:noor_quran/features/quran/presentation/widgets/reading_colors_dialog.dart';
 import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 class QuranSettingsPage extends ConsumerStatefulWidget {
   const QuranSettingsPage({super.key});
@@ -105,12 +102,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                           .read(quranSettingsProvider.notifier)
                           .toggleKeepScreenAwake();
                     },
-                  ),
-                  SettingCards(
-                    icon: Right(Icons.ads_click_rounded),
-                    text: "التقليب باستخدام أزرار الصوت",
-                    onChanged: (vlaue) {},
-                    toggle: true,
                   ),
                 ],
               ),
