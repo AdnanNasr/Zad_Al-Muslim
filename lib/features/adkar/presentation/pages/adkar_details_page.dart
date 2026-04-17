@@ -87,191 +87,163 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-            side: BorderSide(
-              color: context.color.primary.withValues(alpha: .1),
-            ),
-          ),
-          child: InkWell(
-            onTap: _decrement,
-            borderRadius: BorderRadius.circular(20.r),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 16.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+    bool isFinished = _remainingCount == 0;
+
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+        side: BorderSide(
+          color: isFinished
+              ? Colors.green.withValues(alpha: 0.3)
+              : context.color.primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      color: isFinished
+          ? context.color.primary.withValues(alpha: 0.02)
+          : context.color.surface,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _showDetailsDialog(context),
+        child: Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.text,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Naskh',
-                      fontSize: ref.watch(appSettingsProvider).adkarFontSize.sp,
-                      height: 1.6,
-                      color: context.color.onSurface,
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 6.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.color.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(15.r),
+                    ),
+                    child: Text(
+                      'ذكر رقم ${widget.index}',
+                      style: TextStyle(
+                        color: context.color.primary,
+                        fontFamily: 'Cairo',
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10.h),
-                  Text(
-                    'انقر على البطاقة للتسبيح',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 12.sp,
-                      color: context.color.primary.withValues(alpha: .4),
+                  if (widget.footnote.isNotEmpty)
+                    Container(
+                      padding: EdgeInsets.all(6.w),
+                      decoration: BoxDecoration(
+                        color: context.color.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.info_outline_rounded,
+                        color: context.color.primary,
+                        size: 18.sp,
+                      ),
                     ),
+                ],
+              ),
+              SizedBox(height: 20.h),
+
+              // Dhikr Text
+              Text(
+                widget.text,
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontFamily: 'Naskh',
+                  fontSize: ref.watch(appSettingsProvider).adkarFontSize.sp,
+                  height: 1.6,
+                  color: context.color.onSurface,
+                ),
+              ),
+
+              SizedBox(height: 24.h),
+
+              // Footer
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Reset button
+                  IconButton(
+                    onPressed: _reset,
+                    icon: Icon(
+                      Icons.refresh_rounded,
+                      color: context.color.onSurface.withValues(alpha: 0.3),
+                    ),
+                    tooltip: 'إعادة',
                   ),
-                  SizedBox(height: 15.h),
-                  Divider(color: context.color.primary.withValues(alpha: .05)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (widget.footnote.isNotEmpty)
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 35.w,
-                              height: 35.w,
-                              decoration: BoxDecoration(
-                                color: context.color.primary.withValues(
-                                  alpha: .1,
-                                ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  widget.index.toString(),
-                                  style: TextStyle(
-                                    color: context.color.primary,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Cairo',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              'الرقم',
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: context.color.onSurface.withValues(
-                                  alpha: .4,
-                                ),
-                                fontFamily: 'Cairo',
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        const SizedBox.shrink(),
 
-                      _buildCounter(context),
-
-                      Column(
+                  // Tasbeeh Button
+                  GestureDetector(
+                    onTap: _decrement,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32.w,
+                        vertical: 12.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isFinished
+                            ? Colors.green.shade800
+                            : context.color.primary,
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            icon: Icon(
-                              Icons.refresh_rounded,
-                              color: context.color.primary.withValues(
-                                alpha: .6,
-                              ),
-                              size: 24.sp,
-                            ),
-                            onPressed: _reset,
+                          Icon(
+                            isFinished
+                                ? Icons.check_circle_rounded
+                                : Icons.touch_app_rounded,
+                            color: Colors.white,
+                            size: 20.sp,
                           ),
-                          SizedBox(height: 4.h),
+                          SizedBox(width: 8.w),
                           Text(
-                            'إعادة',
+                            isFinished ? 'اكتمل' : '$_remainingCount',
                             style: TextStyle(
-                              fontSize: 10.sp,
-                              color: context.color.onSurface.withValues(
-                                alpha: .4,
-                              ),
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
                               fontFamily: 'Cairo',
                             ),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
+
+                  SizedBox(width: 48.w), // Balance for centering
                 ],
               ),
-            ),
+            ],
           ),
         ),
-        Positioned(
-          top: 1.h,
-          right: 1.w,
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 8.h, left: 8.w),
-            child: IconButton(
-              onPressed: () {
-                _showFootnoteDialog(context, widget.footnote);
-              },
-              icon: Icon(Icons.info_outline_rounded),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildCounter(BuildContext context) {
-    bool isFinished = _remainingCount == 0;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            color: isFinished ? Colors.green : context.color.primary,
-            borderRadius: BorderRadius.circular(25.r),
-          ),
-          child: Text(
-            isFinished ? 'تم الأكمال' : 'المتبقي: $_remainingCount',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 15.sp,
-              fontFamily: 'Cairo',
-            ),
-          ),
-        ),
-        SizedBox(height: 4.h),
-        Text(
-          isFinished ? 'انتهيت' : 'عدد التكرار',
-          style: TextStyle(
-            fontSize: 10.sp,
-            color: context.color.onSurface.withValues(alpha: .4),
-            fontFamily: 'Cairo',
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showFootnoteDialog(BuildContext context, String footnote) {
+  void _showDetailsDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.pop(context),
+          onTap: () => Navigator.of(context).pop(),
           child: DraggableScrollableSheet(
-            initialChildSize: 0.5,
+            initialChildSize: 0.6,
             minChildSize: 0.4,
-            maxChildSize: 0.75,
+            maxChildSize: 0.9,
             builder: (context, scrollController) {
               return GestureDetector(
                 onTap: () {},
@@ -289,13 +261,13 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                         width: 50.w,
                         height: 5.h,
                         decoration: BoxDecoration(
-                          color: context.color.onSurface.withValues(alpha: .1),
+                          color: context.color.onSurface.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                       ),
-                      SizedBox(height: 15.h),
+                      SizedBox(height: 16.h),
                       Text(
-                        'تخريج الحديث / ملاحظة',
+                        'تفاصيل الذكر',
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.bold,
@@ -305,7 +277,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                       ),
                       SizedBox(height: 10.h),
                       Divider(
-                        color: context.color.primary.withValues(alpha: .05),
+                        color: context.color.primary.withValues(alpha: 0.05),
                       ),
                       Expanded(
                         child: ListView(
@@ -313,17 +285,75 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                           padding: EdgeInsets.all(24.w),
                           children: [
                             SelectableText(
-                              footnote,
-                              textAlign: TextAlign.right,
+                              widget.text,
+                              textAlign: TextAlign.justify,
                               style: TextStyle(
-                                fontFamily: 'Cairo',
-                                fontSize: 16.sp,
-                                height: 1.7,
-                                color: context.color.onSurface.withValues(
-                                  alpha: .8,
-                                ),
+                                fontFamily: 'Naskh',
+                                fontSize:
+                                    ref
+                                        .watch(appSettingsProvider)
+                                        .adkarFontSize
+                                        .sp +
+                                    2.sp,
+                                height: 1.8,
+                                color: context.color.onSurface,
                               ),
                             ),
+                            if (widget.footnote.isNotEmpty) ...[
+                              SizedBox(height: 32.h),
+                              Container(
+                                padding: EdgeInsets.all(16.w),
+                                decoration: BoxDecoration(
+                                  color: context.color.primary.withValues(
+                                    alpha: 0.05,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  border: Border.all(
+                                    color: context.color.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline_rounded,
+                                          color: context.color.primary,
+                                          size: 20.sp,
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Text(
+                                          'تخريج الحديث / ملاحظة',
+                                          style: TextStyle(
+                                            fontFamily: 'Cairo',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.sp,
+                                            color: context.color.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 12.h),
+                                    SelectableText(
+                                      widget.footnote,
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                        fontFamily: 'Cairo',
+                                        fontSize: 14.sp,
+                                        height: 1.6,
+                                        color: context.color.onSurface
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            SizedBox(height: 24.h),
                           ],
                         ),
                       ),

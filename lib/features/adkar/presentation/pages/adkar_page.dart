@@ -190,8 +190,8 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
         color: context.color.surface,
         borderRadius: BorderRadius.circular(15.r),
         border: Border.all(
-          color: context.color.primary.withValues(alpha: .15),
-          width: 1,
+          color: context.color.primary.withValues(alpha: .3),
+          width: 1.5,
         ),
       ),
       child: ClipRRect(
@@ -270,7 +270,10 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
       decoration: BoxDecoration(
         color: context.color.primary.withValues(alpha: .03),
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: context.color.primary.withValues(alpha: .05)),
+        border: Border.all(
+          color: context.color.primary.withValues(alpha: .3),
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
