@@ -18,17 +18,18 @@ class _TermsOfUsePageState extends State<TermsOfUsePage> {
   @override
   void initState() {
     super.initState();
-    webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onWebResourceError: (WebResourceError error) {
-            AppLogger.logger.e("فشل تحميل الصفحة: ${error.description}");
-            AppLogger.logger.e("نوع الخطأ: ${error.errorType}");
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(currentUrl));
+    webViewController =
+        WebViewController() // TODO: handle errors when click on email links
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onWebResourceError: (WebResourceError error) {
+                AppLogger.logger.e("فشل تحميل الصفحة: ${error.description}");
+                AppLogger.logger.e("نوع الخطأ: ${error.errorType}");
+              },
+            ),
+          )
+          ..loadRequest(Uri.parse(currentUrl));
   }
 
   @override

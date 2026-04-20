@@ -19,7 +19,7 @@ class _PrivcyPolicyPageState extends State<PrivcyPolicyPage> {
   void initState() {
     super.initState();
     webViewController =
-        WebViewController() // handle errors when click on email links
+        WebViewController() // TODO: handle errors when click on email links
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setNavigationDelegate(
             NavigationDelegate(
