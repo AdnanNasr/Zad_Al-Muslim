@@ -4,6 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/common/widgets/settings_card.dart';
+import 'package:noor_quran/features/settings/presentation/pages/custom_license_page.dart';
+import 'package:noor_quran/features/settings/presentation/pages/privcy_policy_page.dart';
+import 'package:noor_quran/features/settings/presentation/pages/terms_of_use_page.dart';
 
 class AppInfo extends StatelessWidget {
   const AppInfo({super.key});
@@ -11,7 +14,6 @@ class AppInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // TODO: implement page
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.app_information,
         center: false,
@@ -25,20 +27,26 @@ class AppInfo extends StatelessWidget {
             SettingCards(
               icon: Right(Icons.lock),
               text: AppLocalizations.of(context)!.privacy_policy,
-              onTap: () => debugPrint("Temp"),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => PrivcyPolicyPage()),
+              ),
             ),
             SettingCards(
               icon: Right(Icons.description),
               text: AppLocalizations.of(context)!.terms_of_use,
-              onTap: () => debugPrint("Temp"),
+              onTap: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (context) => TermsOfUsePage())),
             ),
             SettingCards(
               icon: Right(Icons.verified_user_outlined),
               text: AppLocalizations.of(context)!.app_certificates,
-              onTap: () => debugPrint("Temp"),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => CustomLicensePage()),
+              ),
             ),
             SettingCards(
-              icon: Right(Icons.info),
+              icon: Right(Icons.numbers),
               text: AppLocalizations.of(context)!.version,
               widget: Text(
                 "1.0.0",

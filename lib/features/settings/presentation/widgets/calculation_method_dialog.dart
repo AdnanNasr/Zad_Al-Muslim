@@ -64,12 +64,7 @@ class CalculationMethodDialog extends ConsumerWidget {
               ),
               child: SingleChildScrollView(
                 child: Column(
-                  children: calculate_names(
-                    methods,
-                    currentMethod,
-                    context,
-                    ref,
-                  ),
+                  children: calculatNames(methods, currentMethod, context, ref),
                 ),
               ),
             ),
@@ -94,7 +89,7 @@ class CalculationMethodDialog extends ConsumerWidget {
     );
   }
 
-  List<Widget> calculate_names(
+  List<Widget> calculatNames(
     List<String> methods,
     int currentMethod,
     BuildContext context,
