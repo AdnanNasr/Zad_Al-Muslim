@@ -21,7 +21,7 @@ class Env {
 
   // this url host privcy policy link for the app
   static const String privcyPolicyUrl =
-      "https://adnannasr.github.io/polices/terms-of-use.html";
+      "https://adnannasr.github.io/polices/privacy-policy.html";
 
   // this url host terms of use link for the app
   static const String termsOfuseUrl =

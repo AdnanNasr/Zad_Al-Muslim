@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
+import 'package:noor_quran/core/constants/env.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:noor_quran/core/utils/log/app_logger.dart';
 
-class PrivcyPolicyPage extends StatelessWidget {
+class PrivcyPolicyPage extends StatefulWidget {
   const PrivcyPolicyPage({super.key});
+
+  @override
+  State<PrivcyPolicyPage> createState() => _PrivcyPolicyPageState();
+}
+
+class _PrivcyPolicyPageState extends State<PrivcyPolicyPage> {
+  late final WebViewController webViewController;
+  final String currentUrl = Env.privcyPolicyUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    webViewController =
+        WebViewController() // handle errors when click on email links
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onWebResourceError: (WebResourceError error) {
+                AppLogger.logger.e("فشل تحميل الصفحة: ${error.description}");
+                AppLogger.logger.e("نوع الخطأ: ${error.errorType}");
+              },
+            ),
+          )
+          ..loadRequest(Uri.parse(currentUrl));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,81 +40,7 @@ class PrivcyPolicyPage extends StatelessWidget {
         center: false,
         profile: false,
       ),
-      body: Markdown(
-        styleSheet: MarkdownStyleSheet(
-          h1: TextStyle(fontFamily: "Cairo"),
-          h3: TextStyle(fontFamily: "Cairo"),
-        ),
-        data: """# سياسة الخصوصية (Privacy Policy)
-
-تنطبق سياسة الخصوصية هذه على تطبيق **زاد المسلم** (المشار إليه هنا بـ "التطبيق") المخصص للأجهزة المحمولة، والذي أنشأه **عدنان نصر** (المشار إليه هنا بـ "مزود الخدمة") كخدمة مجانية. يتم تقديم هذه الخدمة للاستخدام "كما هي".
-
----
-
-### 1. جمع المعلومات واستخدامها
-يقوم التطبيق بجمع المعلومات عند تحميله واستخدامه. قد تشمل هذه المعلومات ما يلي:
-* **عنوان بروتوكول الإنترنت** الخاص بجهازك (مثل عنوان IP).
-* **الصفحات** التي تزورها داخل التطبيق، وقت وتاريخ الزيارة، والوقت المستغرق في تلك الصفحات.
-* **إجمالي الوقت** الذي تقضيه على التطبيق.
-* **نوع نظام التشغيل** الذي تستخدمه على جهازك المحمول.
-
-### 2. خدمات الموقع الجغرافي (Location Services)
-يجمع التطبيق موقع جهازك لمساعدة مزود الخدمة في تحديد موقعك الجغرافي التقريبي واستخدامه بالطرق التالية:
-* **تخصيص المحتوى:** تقديم ميزات مثل أوقات الصلاة الدقيقة بناءً على موقعك الحالي.
-* **اتجاه القبلة:** توفير بوصلة اتجاه القبلة بدقة.
-* **التحليلات والتحسينات:** تساعد البيانات المجمعة والمجهولة في تحليل سلوك المستخدم وتحسين أداء التطبيق.
-* **خدمات الطرف الثالث:** قد يتم إرسال بيانات موقع مجهولة لخدمات خارجية لتحسين جودة العروض والخدمات.
-
-> **ملاحظة هامة:** لا يستخدم التطبيق تقنيات الذكاء الاصطناعي (AI) لمعالجة بياناتك أو تقديم الميزات.
-
----
-
-### 3. الوصول إلى بيانات الطرف الثالث
-يتم نقل البيانات المجمعة والمجهولة الهوية فقط وبشكل دوري إلى خدمات خارجية. قد يفصح مزود الخدمة عن المعلومات في الحالات التالية:
-* حسبما يقتضي القانون (الامتثال للإجراءات القانونية).
-* لحماية الحقوق والسلامة، والتحقيق في الاحتيال.
-* مع مقدمي الخدمات الموثوقين الذين يعملون نيابة عن مزود الخدمة والملتزمين بقواعد الخصوصية هذه.
-
----
-
-### 4. حقوق إلغاء الاشتراك (Opt-Out)
-يمكنك إيقاف جميع عمليات جمع المعلومات بواسطة التطبيق بسهولة عن طريق **إلغاء تثبيته (Uninstall)** باستخدام الإجراءات القياسية المتوفرة في جهازك المحمول أو عبر متجر التطبيقات.
-
----
-
-### 5. سياسة الاحتفاظ بالبيانات
-سيحتفظ مزود الخدمة بالبيانات المقدمة من المستخدم طوال فترة استخدامك للتطبيق. إذا كنت ترغب في حذف بياناتك، يرجى التواصل عبر البريد الإلكتروني: [adnzed00@gmail.com](mailto:adnzed00@gmail.com).
-
----
-
-### 6. حماية الأطفال
-* لا يجمع التطبيق بيانات من الأطفال دون سن 13 عاماً عن علم.
-* يحث مزود الخدمة الآباء على مراقبة استخدام أطفالهم للإنترنت.
-* إذا اكتشفت أن طفلاً قدم معلومات شخصية، يرجى التواصل معنا فوراً لاتخاذ الإجراءات اللازمة.
-* يجب أن يكون عمر المستخدم 16 عاماً على الأقل للموافقة على معالجة بياناته في بعض الدول.
-
----
-
-### 7. الأمن (Security)
-يهتم مزود الخدمة بالحفاظ على سرية معلوماتك، ويوفر ضمانات مادية وإلكترونية وإجرائية لحماية المعلومات التي يتم معالجتها والحفاظ عليها.
-
----
-
-### 8. التغييرات (Changes)
-قد يتم تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم إخطارك بأي تغييرات من خلال تحديث هذه الصفحة. يُنصح بمراجعة هذه السياسة بانتظام، حيث يُعتبر الاستمرار في استخدام التطبيق موافقة على التغييرات.
-
----
-
-### 9. الموافقة (Your Consent)
-باستخدام التطبيق، فإنك توافق على معالجة معلوماتك كما هو موضح في سياسة الخصوصية هذه حالياً وحسبما يتم تعديلها مستقبلاً.
-
----
-
-### 10. اتصل بنا
-إذا كان لديك أي أسئلة بخصوص الخصوصية أثناء استخدام التطبيق، يرجى التواصل معنا عبر:
-* **البريد الإلكتروني:** adnzed00@gmail.com
-* **تاريخ النفاذ:** 2026-04-19""",
-      ),
+      body: WebViewWidget(controller: webViewController),
     );
   }
 }
