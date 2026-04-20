@@ -18,4 +18,12 @@ class Env {
 
   // this endpoint for quran moratal (full surah; quran moratal page)
   static const String baseQuranVoiceUrl = "https://server8.mp3quran.net";
+
+  // this url host privcy policy link for the app
+  static const String privcyPolicyUrl =
+      "https://adnannasr.github.io/polices/terms-of-use.html";
+
+  // this url host terms of use link for the app
+  static const String termsOfuseUrl =
+      "https://adnannasr.github.io/polices/terms-of-use.html";
 }
