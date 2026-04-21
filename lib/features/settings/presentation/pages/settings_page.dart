@@ -53,7 +53,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
             child: const Text(
               "تأكيد ومسح",
               style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
@@ -413,7 +413,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.cleaning_services_rounded),
+                    icon: Right(Icons.delete),
                     text: "تنظيف المساحة",
                     widget: _isClearingCache
                         ? const SizedBox(
@@ -426,7 +426,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ? null
                         : () => _clearAudioCache(context),
 
-                    trallingIcon: Icons.delete,
+                    // trallingIcon: Icons.delete,
+                    forgroundColor: Colors.orange,
                   ),
                   SettingCards(
                     icon: Right(Icons.app_settings_alt),

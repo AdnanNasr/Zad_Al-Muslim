@@ -67,12 +67,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     _countdownTimer?.cancel();
     _animationController.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    // إعادة تعيين التاريخ للتحقق من اليوم الحالي عند الخروج لضمان عدم تأثر الويدجتات الأخرى
-    // ref.read(selectedDateProvider.notifier).state = DateTime(
-    //   DateTime.now().year,
-    //   DateTime.now().month,
-    //   DateTime.now().day,
-    // );
     super.dispose();
   }
 
