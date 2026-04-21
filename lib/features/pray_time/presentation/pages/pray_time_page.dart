@@ -318,7 +318,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                     enabled: true,
                     effect: ShimmerEffect(
                       baseColor: context.color.primary.withValues(alpha: 0.2),
-                      highlightColor: context.color.primary.withValues(alpha: 0.1),
+                      highlightColor: context.color.primary.withValues(
+                        alpha: 0.1,
+                      ),
                     ),
                     child: Text(
                       "جاري تحميل الموقع...",
@@ -513,7 +515,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
+                      horizontal: 8.w,
                       vertical: 4.h,
                     ),
                     physics: const BouncingScrollPhysics(),
@@ -646,9 +648,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                           margin: EdgeInsets.symmetric(vertical: 6.h),
                           height: 70.h,
                           decoration: BoxDecoration(
-                            color: primaryColor.withValues(
-                              alpha: 0.04,
-                            ),
+                            color: primaryColor.withValues(alpha: 0.04),
                             borderRadius: BorderRadius.circular(16.r),
                           ),
                         );
