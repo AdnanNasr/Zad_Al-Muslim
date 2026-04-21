@@ -11,7 +11,6 @@ import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/common/widgets/home/home_button.dart';
-import 'package:noor_quran/features/pray_time/presentation/widgets/pray_times_container.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/common/widgets/home/next_prayer_card.dart';
 import 'package:noor_quran/core/common/widgets/home/quick_adkar_strip.dart';
@@ -93,7 +92,7 @@ class BodyContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final children = [
-      const PrayTimesContainer(),
+      headerWidget(context),
       AnimationConfiguration.synchronized(
         duration: Duration(milliseconds: 700),
         child: SlideAnimation(
@@ -117,20 +116,31 @@ class BodyContent extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   SizedBox(width: 6.w),
-                  Text(
-                    AppLocalizations.of(context)!.main_categories,
-                    style: TextStyle(
-                      height: 1.h,
-                      fontSize: context.witdthScreen * 0.058.sp,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Cairo",
-                      color: colorScheme.onSurface,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 14.w),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.widgets_rounded,
+                          color: context.color.primary,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          AppLocalizations.of(context)!.main_categories,
+                          style: TextStyle(
+                            height: 1.h,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Cairo",
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 10),
 
                   Expanded(
-                    // أضفت Expanded هنا ليعمل الـ Divider بشكل صحيح
                     child: Padding(
                       padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
                       child: Divider(color: colorScheme.primary, thickness: 2),
@@ -233,6 +243,145 @@ class BodyContent extends ConsumerWidget {
     return Column(children: children);
   }
 
+  Widget headerWidget(BuildContext context) {
+    final primaryColor = context.color.primary;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            primaryColor,
+            primaryColor.withValues(alpha: 0.85),
+            HSLColor.fromColor(primaryColor)
+                .withLightness(
+                  (HSLColor.fromColor(primaryColor).lightness - 0.1).clamp(
+                    0.0,
+                    1.0,
+                  ),
+                )
+                .toColor(),
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(28.r),
+          bottomRight: Radius.circular(28.r),
+        ),
+      ),
+      child: Stack(
+        children: [
+          // --- عناصر زخرفية ---
+          Positioned(
+            top: -30.r,
+            right: -30.r,
+            child: Container(
+              width: 120.r,
+              height: 120.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.06),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -20.r,
+            left: -20.r,
+            child: Container(
+              width: 80.r,
+              height: 80.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.04),
+              ),
+            ),
+          ),
+          // --- المحتوى ---
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 12.h,
+                bottom: 20.h,
+                right: 20.w,
+                left: 20.w,
+              ),
+              child: Row(
+                children: [
+                  // --- الأيقونة ---
+                  Container(
+                    padding: EdgeInsets.all(12.r),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Icon(
+                      _getGreetingIcon(),
+                      color: Colors.white,
+                      size: 26.sp,
+                    ),
+                  ),
+                  SizedBox(width: 14.w),
+                  // --- النصوص ---
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _getGreeting(),
+                          style: TextStyle(
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Tajawal",
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          _getFormattedDate(),
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            fontFamily: "Cairo",
+                            color: Colors.white.withValues(alpha: 0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // --- زر الإعدادات ---
+                  Material(
+                    color: Colors.white.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12.r),
+                      onTap: () =>
+                          Navigator.of(context).pushNamed(Routes.settingsPage),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.r),
+                        child: Icon(
+                          Icons.settings_rounded,
+                          color: Colors.white.withValues(alpha: 0.9),
+                          size: 22.sp,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // دالة مساعدة لتنظيم كود الـ Last Reading
   Widget _buildLastReadingWidget(
     BuildContext context,
@@ -250,13 +399,22 @@ class BodyContent extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          Text(
-            AppLocalizations.of(context)!.last_reading_surah,
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontFamily: "Cairo",
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            child: Row(
+              children: [
+                Icon(Icons.bookmark_added, color: context.color.primary),
+                SizedBox(width: 8.w),
+                Text(
+                  AppLocalizations.of(context)!.last_reading_surah,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontFamily: "Cairo",
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: 12.h),
@@ -367,6 +525,52 @@ class BodyContent extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return "صباح الخير ☀️";
+    if (hour < 18) return "مساء النور ✨";
+    return "مساء الخير 🌙";
+  }
+
+  IconData _getGreetingIcon() {
+    final hour = DateTime.now().hour;
+    if (hour < 6) return Icons.bedtime_rounded;
+    if (hour < 12) return Icons.wb_sunny_rounded;
+    if (hour < 18) return Icons.wb_twilight_rounded;
+    return Icons.nightlight_round;
+  }
+
+  String _getFormattedDate() {
+    final now = DateTime.now();
+    // يوم الأسبوع بالعربي
+    final dayNames = [
+      'الإثنين',
+      'الثلاثاء',
+      'الأربعاء',
+      'الخميس',
+      'الجمعة',
+      'السبت',
+      'الأحد',
+    ];
+    final months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+    final dayName = dayNames[now.weekday - 1];
+    final month = months[now.month - 1];
+    return "$dayName، ${now.day} $month ${now.year}";
   }
 }
 

@@ -128,13 +128,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         }
       }
 
-      final mbSize = (totalDeletedSize / (1024 * 1024)).toStringAsFixed(2);
+      final kbSize = (totalDeletedSize / 1024).toStringAsFixed(2);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              "تم تنظيف $mbSize ميغابايت بنجاح!",
+              "تم تنظيف $kbSize كيلوبايت بنجاح!",
               style: const TextStyle(fontFamily: 'Cairo'),
             ),
             backgroundColor: Colors.green,
