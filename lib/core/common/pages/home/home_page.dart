@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';

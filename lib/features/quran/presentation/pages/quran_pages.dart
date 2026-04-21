@@ -6,12 +6,14 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
+import 'package:noor_quran/core/di/injection_container.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
+import 'package:noor_quran/features/quran/domain/usecases/get_surah_number_by_page_number.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
 import 'package:noor_quran/features/quran/presentation/providers/player_state_provider.dart';
@@ -389,6 +391,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                   );
                                   return IconButton(
                                     onPressed: () async {
+                                      final int? surahNumber = sl<GetSurahNumberByPageNumber>().call(_onPageChanged)["surah"];
                                       if (!isMarked) {
                                         await ref
                                             .read(marksProvder.notifier)
@@ -398,7 +401,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                                     SurahNames.getFormattedName(
                                                       globalSurahNumber,
                                                     )
-                                                ..pageNumber = _onPageChanged,
+                                                ..pageNumber = _onPageChanged
+                                                ..surahNumber =  surahNumber
                                             );
 
                                         if (!context.mounted) return;
