@@ -67,6 +67,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     _countdownTimer?.cancel();
     _animationController.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    // إعادة تعيين التاريخ للتحقق من اليوم الحالي عند الخروج لضمان عدم تأثر الويدجتات الأخرى
+    // ref.read(selectedDateProvider.notifier).state = DateTime(
+    //   DateTime.now().year,
+    //   DateTime.now().month,
+    //   DateTime.now().day,
+    // );
     super.dispose();
   }
 
@@ -115,6 +121,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         },
       );
 
+      ref.invalidate(selectedDatePrayerTimesProvider);
       ref.invalidate(todayPrayerTimesProvider);
     }
   }
@@ -124,7 +131,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final use24format = ref.watch(appSettingsProvider).use24HourFormat;
     final locationStatusMessage = ref.watch(locationStatusProvider);
     final networkState = ref.watch(networkInfoProvider);
-    final prayerTimesAsync = ref.watch(todayPrayerTimesProvider);
+    final prayerTimesAsync = ref.watch(selectedDatePrayerTimesProvider);
     final selectedDate = ref.watch(selectedDateProvider);
     final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
     final adjustments =
@@ -185,7 +192,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             color: context.color.primary,
             backgroundColor: Colors.white,
             onRefresh: () async {
-              ref.invalidate(todayPrayerTimesProvider);
+              ref.invalidate(selectedDatePrayerTimesProvider);
               await ref.read(userAddressProvider.notifier).refresh();
             },
             child: SingleChildScrollView(
@@ -198,7 +205,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                     // --- شريط علوي ---
                     Container(
                       decoration: BoxDecoration(),
-                      child: _buildTopBar(context, userAddress, isCurrentDay),
+                      child: _buildTopBar(
+                        context,
+                        userAddress,
+                        isCurrentDay,
+                        selectedDate,
+                      ),
                     ),
 
                     // --- محتوى الصفحة ---
@@ -262,6 +274,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     BuildContext context,
     AsyncValue userAddress,
     bool isCurrentDay,
+    DateTime selectedDate,
   ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -273,7 +286,10 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             borderRadius: BorderRadius.circular(12.r),
             child: InkWell(
               borderRadius: BorderRadius.circular(12.r),
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () {
+                selectedDate = DateTime.now();
+                Navigator.of(context).pop();
+              },
               child: Padding(
                 padding: EdgeInsets.all(8.r),
                 child: Icon(
@@ -1344,6 +1360,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                               .read(prayerAdjustmentsProvider.notifier)
                               .updateOffset(prayerName, tempOffset);
                           // إعادة تحميل الأوقات مع الـ offset الجديد
+                          ref.invalidate(selectedDatePrayerTimesProvider);
                           ref.invalidate(todayPrayerTimesProvider);
                         },
                         style: ElevatedButton.styleFrom(
@@ -1412,6 +1429,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             onPressed: () {
               Navigator.pop(ctx);
               ref.read(prayerAdjustmentsProvider.notifier).resetAllOffsets();
+              ref.invalidate(selectedDatePrayerTimesProvider);
               ref.invalidate(todayPrayerTimesProvider);
             },
             style: ElevatedButton.styleFrom(
@@ -1655,6 +1673,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     if (networkState == NetworkInfoState.connected && userPos == null) {
       final status = ref.read(locationStatusProvider);
       if (status.isEmpty) {
+        ref.invalidate(selectedDatePrayerTimesProvider);
+        ref.invalidate(todayPrayerTimesProvider);
         await ref.read(locationStatusProvider.notifier).refreshStatus();
       }
 

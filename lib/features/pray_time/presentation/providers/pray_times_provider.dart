@@ -13,10 +13,34 @@ final selectedDateProvider = StateProvider<DateTime>((ref) {
   return DateTime(now.year, now.month, now.day);
 });
 
-/// موفر يعيد موديل مواقيت الصلاة للتاريخ المحدد مع تطبيق تعديلات المستخدم.
-/// يعتمد على [selectedDateProvider] لمعرفة التاريخ المطلوب.
-/// يعتمد على [prayerAdjustmentsProvider] لتطبيق الإزاحات.
+/// موفر يعيد موديل مواقيت الصلاة لليوم الحالي حصراً (للاستخدام في الويدجتات الدائمة مثل Home).
 final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>((ref) async {
+  ref.keepAlive();
+
+  final pos = ref.watch(userPositionProvider);
+  if (pos == null) return null;
+
+  final now = DateTime.now();
+  final todayDate = DateTime(now.year, now.month, now.day);
+  
+  final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
+  final adjustments = adjustmentsAsync.valueOrNull;
+
+  final getPrayerTimes = sl<GetPrayerTimesUseCase>();
+  final result = await getPrayerTimes(
+    pos,
+    date: todayDate,
+    adjustments: adjustments,
+  );
+
+  return result.fold(
+    (failure) => null,
+    (entity) => entity,
+  );
+});
+
+/// موفر يعيد موديل مواقيت الصلاة للتاريخ المحدد (للاستخدام في صفحة أوقات الصلاة).
+final selectedDatePrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>((ref) async {
   ref.keepAlive();
 
   final pos = ref.watch(userPositionProvider);
@@ -24,7 +48,6 @@ final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>(
 
   final selectedDate = ref.watch(selectedDateProvider);
   
-  // الانتظار حتى يتم تحميل التعديلات
   final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
   final adjustments = adjustmentsAsync.valueOrNull;
 

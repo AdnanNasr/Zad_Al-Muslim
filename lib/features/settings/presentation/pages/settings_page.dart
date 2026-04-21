@@ -242,6 +242,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         builder: (context) => const CalculationMethodDialog(),
                       );
                       ref.invalidate(todayPrayerTimesProvider);
+                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
                   ),
                   SettingCards(
@@ -278,6 +279,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                       );
                       ref.invalidate(todayPrayerTimesProvider);
+                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
                   ),
                   SettingCards(
@@ -306,6 +308,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onChanged: (value) async {
                       await appSettingsNotifier.togglePrayerNotifications();
                       ref.invalidate(todayPrayerTimesProvider);
+                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
                   ),
                   SettingCards(
@@ -327,6 +330,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onChanged: (value) async {
                       await appSettingsNotifier.toggleMorningAdkarReminder();
                       ref.invalidate(todayPrayerTimesProvider);
+                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
                   ),
                   SettingCards(
@@ -337,6 +341,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onChanged: (value) async {
                       await appSettingsNotifier.toggleEveningAdkarReminder();
                       ref.invalidate(todayPrayerTimesProvider);
+                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
                   ),
                 ],
