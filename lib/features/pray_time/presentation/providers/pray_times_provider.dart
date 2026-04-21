@@ -2,30 +2,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noor_quran/core/common/providers/user_position_provider.dart';
 import 'package:noor_quran/core/di/injection_container.dart';
 import 'package:noor_quran/features/pray_time/domain/usecases/get_prayer_times_usecase.dart';
+import 'package:noor_quran/features/pray_time/presentation/providers/prayer_adjustments_provider.dart';
 
-import '../../data/models/prayer_times_model.dart';
+import '../../domain/entities/prayer_times_entity.dart';
 
-/// يحتوي على موقع المستخدم الذي جلبناه عند بدأ التطبيق.
-/// سنستخدم [StateProvider] لكي نتمكن من تحديث الموقع لاحقاً
-/// (مثلاً من شاشة السبلش بعد تحديد الموقع).
+/// موفر اليوم المحدد حالياً للعرض. الافتراضي هو اليوم الحالي.
+/// يمكن التنقل داخل نطاق ± 30 يوم من اليوم الحالي.
+final selectedDateProvider = StateProvider<DateTime>((ref) {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day);
+});
 
-/// موفر يعيد موديل مواقيت الصلاة لليوم؛ يعتمد على [GetPrayerTimesUseCase]
-/// ويقوم بالقراءة من القاعدة أو الحساب التلقائي إذا لم يكن مخزناً.
-final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesModel?>((
-  ref,
-) async {
+/// موفر يعيد موديل مواقيت الصلاة للتاريخ المحدد مع تطبيق تعديلات المستخدم.
+/// يعتمد على [selectedDateProvider] لمعرفة التاريخ المطلوب.
+/// يعتمد على [prayerAdjustmentsProvider] لتطبيق الإزاحات.
+final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>((ref) async {
   ref.keepAlive();
 
   final pos = ref.watch(userPositionProvider);
-  if (pos == null) {
-    return null;
-  }
+  if (pos == null) return null;
+
+  final selectedDate = ref.watch(selectedDateProvider);
+  
+  // الانتظار حتى يتم تحميل التعديلات
+  final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
+  final adjustments = adjustmentsAsync.valueOrNull;
 
   final getPrayerTimes = sl<GetPrayerTimesUseCase>();
-  final result = await getPrayerTimes(pos);
+  final result = await getPrayerTimes(
+    pos,
+    date: selectedDate,
+    adjustments: adjustments,
+  );
 
   return result.fold(
     (failure) => null,
-    (entity) => PrayerTimesModel.fromEntity(entity),
+    (entity) => entity,
   );
 });
+
+/// مساعد لتحديد إذا كان التاريخ المحدد هو اليوم الحالي
+bool isToday(DateTime date) {
+  final now = DateTime.now();
+  return date.year == now.year && date.month == now.month && date.day == now.day;
+}
+
+/// مساعد للتحقق من الحد الأقصى للتنقل (± 30 يوم)
+bool canGoForward(DateTime date) {
+  final maxDate = DateTime.now().add(const Duration(days: 30));
+  return date.isBefore(DateTime(maxDate.year, maxDate.month, maxDate.day));
+}
+
+bool canGoBack(DateTime date) {
+  final minDate = DateTime.now().subtract(const Duration(days: 30));
+  return date.isAfter(DateTime(minDate.year, minDate.month, minDate.day));
+}

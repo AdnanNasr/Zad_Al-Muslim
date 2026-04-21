@@ -6,6 +6,7 @@ import 'package:noor_quran/features/hadith/data/models/hadith_model.dart';
 import 'package:noor_quran/features/tafsser/data/models/tafsser_surah.dart';
 import 'package:noor_quran/features/tafsser/data/models/ayah.dart';
 import 'package:noor_quran/features/pray_time/data/models/prayer_times_model.dart';
+import 'package:noor_quran/features/pray_time/data/models/prayer_adjustments_model.dart';
 
 import 'package:noor_quran/core/utils/log/app_logger.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,6 +26,7 @@ class IsarDb {
       TafsserSurahSchema,
       AyahTafsserSchema,
       PrayerTimesModelSchema,
+      PrayerAdjustmentsModelSchema,
       AdkarModelSchema,
     ], directory: dir.path);
     AppLogger.logger.i("✅ تم تهيئة قاعدة البيانات بنجاح");

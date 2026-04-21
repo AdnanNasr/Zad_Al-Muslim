@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/pray_time/data/models/prayer_times_model.dart';
+import 'package:noor_quran/features/pray_time/domain/entities/prayer_times_entity.dart';
 import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_provider.dart';
 
 class NextPrayerCard extends ConsumerStatefulWidget {
@@ -45,7 +45,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     );
   }
 
-  Widget _buildCard(BuildContext context, PrayerTimesModel model) {
+  Widget _buildCard(BuildContext context, PrayerTimesEntity model) {
     final nextInfo = _getNextPrayer(model);
     final name = nextInfo['name'] as String;
     final icon = nextInfo['icon'] as IconData;
@@ -125,7 +125,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     );
   }
 
-  Map<String, dynamic> _getNextPrayer(PrayerTimesModel model) {
+  Map<String, dynamic> _getNextPrayer(PrayerTimesEntity model) {
     final now = DateTime.now();
 
     final prayers = [

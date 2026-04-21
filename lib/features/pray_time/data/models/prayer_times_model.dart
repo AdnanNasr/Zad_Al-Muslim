@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import '../../domain/entities/prayer_times_entity.dart';
+import 'prayer_adjustments_model.dart';
 
 part 'prayer_times_model.g.dart';
 
@@ -51,6 +52,20 @@ class PrayerTimesModel {
       asr: _minutesToLocal(date, asrMinutes),
       maghrib: _minutesToLocal(date, maghribMinutes),
       isha: _minutesToLocal(date, ishaMinutes),
+    );
+  }
+
+  /// تحويل الأوقات مع تطبيق إزاحات الدقائق للمستخدم (± 60 دقيقة)
+  PrayerTimesEntity toEntityWithOffsets(PrayerAdjustmentsModel? adjustments) {
+    if (adjustments == null) return toEntity();
+    return PrayerTimesEntity(
+      date: date,
+      fajr: _minutesToLocal(date, fajrMinutes).add(Duration(minutes: adjustments.fajrOffset)),
+      sunrise: _minutesToLocal(date, sunriseMinutes).add(Duration(minutes: adjustments.sunriseOffset)),
+      dhuhr: _minutesToLocal(date, dhuhrMinutes).add(Duration(minutes: adjustments.dhuhrOffset)),
+      asr: _minutesToLocal(date, asrMinutes).add(Duration(minutes: adjustments.asrOffset)),
+      maghrib: _minutesToLocal(date, maghribMinutes).add(Duration(minutes: adjustments.maghribOffset)),
+      isha: _minutesToLocal(date, ishaMinutes).add(Duration(minutes: adjustments.ishaOffset)),
     );
   }
 
