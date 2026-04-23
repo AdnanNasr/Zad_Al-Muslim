@@ -40,7 +40,7 @@ class QuickAdkarStrip extends ConsumerWidget {
                     ),
                     SizedBox(width: 6.w),
                     Text(
-                      "أذكار سريعة",
+                      "اختصارات الأذكار",
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontFamily: "Cairo",

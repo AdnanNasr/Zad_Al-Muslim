@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:noor_quran/core/common/pages/notifications_page.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
@@ -33,7 +34,6 @@ final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
-
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'نور القرآن - تشغيل الصوت',
@@ -118,6 +118,7 @@ class MyApp extends ConsumerWidget {
         "/pray_time_page": (_) => PrayTimePage(),
         "/qebla_page": (_) => const QeblaPage(),
         "/adkar_page": (_) => const AdkarPage(),
+        "/notifications_page": (_) => NotificationsPage(),
       },
     );
   }

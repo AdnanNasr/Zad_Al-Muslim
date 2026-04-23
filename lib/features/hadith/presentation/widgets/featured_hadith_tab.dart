@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/providers/favorites_provider.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
@@ -19,7 +20,15 @@ class FeaturedHadithsTab extends ConsumerWidget {
       error: (error, stack) => Center(child: Text("حدث خطأ: $error")),
       data: (featuredHadiths) {
         if (featuredHadiths.isEmpty) {
-          return const Center(child: Text("لا توجد أحاديث مفضلة حالياً"));
+          return Center(
+            child: Text(
+              "لا توجد أحاديث مفضلة حالياً",
+              style: TextStyle(
+                fontSize: 20,
+                color: context.color.outline.withValues(alpha: .9),
+              ),
+            ),
+          );
         }
 
         return AnimationLimiter(

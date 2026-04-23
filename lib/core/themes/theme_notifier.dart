@@ -59,7 +59,8 @@ final darkThemeProvider = Provider<ThemeData>((ref) {
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
-      blendOnColors: true,
+      blendOnColors: false,
+      // blendOnLevel: 15,
       useM2StyleDividerInM3: true,
       inputDecoratorIsFilled: true,
       inputDecoratorBorderType: FlexInputBorderType.outline,

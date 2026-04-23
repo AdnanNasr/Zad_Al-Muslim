@@ -353,15 +353,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               SettingsContainer(
                 title: "إعدادات عامة",
                 settingsCards: [
-                  SettingCards(
-                    icon: Right(Icons.vibration),
-                    text: "اهتزاز التسبيح (Haptic)",
-                    toggle: true,
-                    switchValue: appSettings.hapticFeedbackEnabled,
-                    onChanged: (value) async {
-                      await appSettingsNotifier.toggleHapticFeedback();
-                    },
-                  ),
+                  // SettingCards(
+                  //   icon: Right(Icons.vibration),
+                  //   text: "اهتزاز التسبيح (Haptic)",
+                  //   toggle: true,
+                  //   switchValue: appSettings.hapticFeedbackEnabled,
+                  //   onChanged: (value) async {
+                  //     await appSettingsNotifier.toggleHapticFeedback();
+                  //   },
+                  // ),
                   SettingCards(
                     icon: Right(Icons.restart_alt_rounded),
                     text: "إعادة ضبط جميع الإعدادات",
@@ -446,7 +446,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ],
               ),
               // مساحة إضافية في الأسفل
-              SizedBox(height: 40.h),
+              // SizedBox(height: 40.h),
             ],
           ),
         ),

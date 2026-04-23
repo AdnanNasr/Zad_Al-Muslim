@@ -360,12 +360,13 @@ class BodyContent extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12.r),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12.r),
-                      onTap: () =>
-                          Navigator.of(context).pushNamed(Routes.settingsPage),
+                      onTap: () => Navigator.of(
+                        context,
+                      ).pushNamed(Routes.notificationsPage),
                       child: Padding(
                         padding: EdgeInsets.all(10.r),
                         child: Icon(
-                          Icons.settings_rounded,
+                          Icons.notifications,
                           color: Colors.white.withValues(alpha: 0.9),
                           size: 22.sp,
                         ),
