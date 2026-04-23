@@ -93,7 +93,7 @@ class MyApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
-      darkTheme: darkTheme,
+      darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF2E2E2E))),
       themeMode: themeMode,
 
       // البداية دائماً من السبلش

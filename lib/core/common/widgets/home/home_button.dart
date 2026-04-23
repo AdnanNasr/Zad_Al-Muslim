@@ -51,14 +51,6 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: widget.color.withValues(alpha: isDark ? 0.25 : 0.35),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-              spreadRadius: 0,
-            ),
-          ],
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.15),
             width: 1.5,

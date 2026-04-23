@@ -22,7 +22,7 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     AppLocalizations.of(context)!.vesuviusBurn: FlexScheme.vesuviusBurn,
     AppLocalizations.of(context)!.barossa: FlexScheme.purpleBrown,
     AppLocalizations.of(context)!.shark: FlexScheme.shark,
-    AppLocalizations.of(context)!.money: FlexScheme.money,
+    AppLocalizations.of(context)!.money: FlexScheme.mallardGreen,
   };
 
   @override

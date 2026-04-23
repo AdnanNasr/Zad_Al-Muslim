@@ -104,7 +104,7 @@ class BodyContent extends ConsumerWidget {
         shadowColor: themeMode == ThemeMode.light
             ? colorScheme.surface
             : colorScheme.primary,
-        elevation: 2,
+        elevation: 0,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
         color: colorScheme.surface,
         child: Column(
@@ -436,15 +436,6 @@ class BodyContent extends ConsumerWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: colorScheme.primary.withValues(
-                    alpha: isDark ? 0.2 : 0.3,
-                  ),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -599,7 +590,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
       shadowColor: widget.themeMode == ThemeMode.light
           ? widget.colorScheme.surface
           : widget.colorScheme.primary,
-      elevation: 2,
+      elevation: 0,
       color: widget.colorScheme.surface,
       borderRadius: BorderRadius.circular(20.r),
       child: Column(
