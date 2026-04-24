@@ -31,8 +31,6 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
     // we don't strictly need theme since we are customizing entirely, but we keep it
     final theme = Theme.of(context);
     final themeMode = ref.watch(themeProvider);
-    final isDark =
-        themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
 
     return InkWell(
       onTap: widget.onTap,
@@ -44,22 +42,20 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
           borderRadius: BorderRadius.circular(24.r),
           // color: context.color.primary.withValues(alpha: .85),
           gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            context.color.primary,
-            context.color.primary.withValues(alpha: 0.85),
-            HSLColor.fromColor(context.color.primary)
-                .withLightness(
-                  (HSLColor.fromColor(context.color.primary).saturation - 0.2).clamp(
-                    0.0,
-                    1.0,
-                  ),
-                )
-                .toColor(),
-          ],
-          stops: [themeMode == ThemeMode.light ? 1.0 : 0.0, 0.0, 0.0],
-        ),
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              context.color.primary,
+              context.color.primary.withValues(alpha: 0.85),
+              HSLColor.fromColor(context.color.primary)
+                  .withLightness(
+                    (HSLColor.fromColor(context.color.primary).saturation - 0.2)
+                        .clamp(0.0, 1.0),
+                  )
+                  .toColor(),
+            ],
+            stops: [themeMode == ThemeMode.light ? 1.0 : 0.0, 0.0, 0.0],
+          ),
           border: Border.all(
             color: context.color.onSurface.withValues(alpha: 0.15),
             width: 1.5,

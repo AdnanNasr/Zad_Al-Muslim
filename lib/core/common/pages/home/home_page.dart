@@ -14,7 +14,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:noor_quran/core/common/widgets/home/next_prayer_card.dart';
 import 'package:noor_quran/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:noor_quran/core/common/widgets/home/reading_progress_card.dart';
-import 'package:noor_quran/core/common/widgets/home/daily_verse_card.dart';
 import 'package:noor_quran/core/common/providers/daily_content_provider.dart';
 import 'package:noor_quran/core/common/constants/surah_names.dart';
 

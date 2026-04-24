@@ -26,7 +26,6 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
     final juzzDataAsync = ref.watch(allJuzzProvider);
 
     final Color primary = context.color.primary;
-    final Color bgGrey = context.color.primaryContainer.withValues(alpha: .1);
 
     return Scaffold(
       backgroundColor: context.color.primary.withValues(alpha: .08),

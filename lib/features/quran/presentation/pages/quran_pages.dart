@@ -391,7 +391,10 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                   );
                                   return IconButton(
                                     onPressed: () async {
-                                      final int? surahNumber = sl<GetSurahNumberByPageNumber>().call(_onPageChanged)["surah"];
+                                      final int? surahNumber =
+                                          sl<GetSurahNumberByPageNumber>().call(
+                                            _onPageChanged,
+                                          )["surah"];
                                       if (!isMarked) {
                                         await ref
                                             .read(marksProvder.notifier)
@@ -402,7 +405,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                                       globalSurahNumber,
                                                     )
                                                 ..pageNumber = _onPageChanged
-                                                ..surahNumber =  surahNumber
+                                                ..surahNumber = surahNumber,
                                             );
 
                                         if (!context.mounted) return;

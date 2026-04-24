@@ -1,0 +1,39 @@
+{
+  "sizes": {
+    "Pixel 9 Pro XL Phone": {
+      "height": 997.33,
+      "width": 448.0,
+      "issue": false
+    },
+    "Pixel 9 Phone": {
+      "height": 923.42,
+      "width": 411.42,
+      "issue": false
+    },
+    "Pixel 8 Phone": {
+      "height": 914.28,
+      "width": 411.42,
+      "issue": false
+    },
+    "Pixel 6 Phone": {
+      "height": 914.28,
+      "width": 411.42,
+      "issue": false
+    },
+    "Pixel 4 Phone": {
+      "height": 829.09,
+      "width": 392.72,
+      "issue": false
+    },
+    "Medium Phone": {
+      "height": 914.3,
+      "width": 411.42,
+      "issue": false
+    },
+    "Small Phone": {
+      "height": 640.0,
+      "width": 360.0,
+      "issue": true
+    }
+  }
+}
