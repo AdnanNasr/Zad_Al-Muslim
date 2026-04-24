@@ -71,6 +71,9 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 title: "تخصيص القراءة والشكل",
                 settingsCards: [
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(9),
+                    ),
                     icon: Right(Icons.palette_rounded),
                     text: "لون خلفية القراءة",
                     widget: Container(
@@ -112,6 +115,9 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 title: "الاستماع والتحفيظ",
                 settingsCards: [
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(9),
+                    ),
                     hero: true,
                     heroId: "qari_icon",
                     icon: Right(Icons.spatial_audio_off),
@@ -160,6 +166,9 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 title: "الإعدادات العامة",
                 settingsCards: [
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(9),
+                    ),
                     icon: Right(Icons.library_books_rounded),
                     text: "تحميل التفاسير",
                     onTap: () {

@@ -84,7 +84,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           child: Text(
                             'السابق',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: context.color.primary,
                               fontSize: 15.sp,
                               fontWeight: FontWeight.bold,
                               fontFamily: "Cairo",
@@ -95,7 +95,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   _Indicator(index: _index),
                   _index < 2
                       ? Material(
-                          color: Theme.of(context).primaryColor,
+                          color: context.color.primary,
                           shape: const CircleBorder(),
                           elevation: 4,
                           child: InkWell(
@@ -145,8 +145,8 @@ class _Indicator extends StatelessWidget {
           height: 8.h,
           decoration: BoxDecoration(
             color: isActive
-                ? Theme.of(context).primaryColor
-                : Theme.of(context).primaryColor.withValues(alpha: .2),
+                ? context.color.primary
+                : context.color.primary.withValues(alpha: .2),
             borderRadius: BorderRadius.circular(10),
           ),
         );

@@ -182,6 +182,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: AppLocalizations.of(context)!.app_settings,
                 settingsCards: [
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(9),
+                    ),
                     icon: Right(Icons.language),
                     text: AppLocalizations.of(context)!.app_language,
                     onTap: () {
@@ -205,13 +208,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: Right(Icons.color_lens),
                     text: AppLocalizations.of(context)!.app_color,
-                    onTap: () => showModalBottomSheet(
-                      isDismissible: true,
-                      context: context,
-                      builder: (context) => const ChangeAppColorPage(),
+                    widget: Text(
+                      "قريباً...",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Cairo",
+                      ),
                     ),
+                    // onTap: () => showModalBottomSheet(
+                    //   isDismissible: true,
+                    //   context: context,
+                    //   builder: (context) => const ChangeAppColorPage(),
+                    // ),
                   ),
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)),
                     icon: Right(Icons.format_size),
                     text: "حجم خط الأذكار",
                     onTap: () {
@@ -231,6 +243,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: "إعدادات مواقيت الصلاة",
                 settingsCards: [
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(9)),
                     icon: Right(Icons.calculate_rounded),
                     text: "طريقة حساب المواقيت",
                     subText: _getCalculationMethodName(
@@ -283,6 +296,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)),
                     icon: Right(Icons.access_time_filled_outlined),
                     text: "تنسيق الوقت (24 ساعة)",
                     toggle: true,
@@ -363,6 +377,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   //   },
                   // ),
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(9)),
                     icon: Right(Icons.restart_alt_rounded),
                     text: "إعادة ضبط جميع الإعدادات",
                     forgroundColor: Colors.red,
@@ -435,6 +450,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onTap: () => Navigator.of(context).pushNamed("/app_info"),
                   ),
                   SettingCards(
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)),
                     icon: Right(Icons.group),
                     text: "نشر التطبيق (صدقة جارية)",
                     onTap: () {

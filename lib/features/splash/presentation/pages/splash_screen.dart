@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:isar/isar.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/utils/location/providers/location_status_provider.dart';
 import 'package:noor_quran/core/common/providers/user_position_provider.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
@@ -169,11 +170,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 child: LinearProgressIndicator(
                   value: _progress,
                   minHeight: 10.h,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).primaryColor.withValues(alpha: 0.1),
+                  backgroundColor: context.color.primary.withValues(alpha: 0.1),
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).primaryColor,
+                    context.color.primary,
                   ),
                 ),
               ),
@@ -188,7 +187,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   key: ValueKey(_loadingText),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: context.color.primary,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w500,
                     fontFamily: "Cairo",

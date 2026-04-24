@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/splash/presentation/pages/onboarding/onboarding_init.dart';
 
 class ThirdPageOnboarding extends StatelessWidget {
@@ -33,7 +34,7 @@ class ThirdPageOnboarding extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: context.color.primary,
                     fontFamily: "Cairo",
                   ),
                 ),
@@ -54,7 +55,7 @@ class ThirdPageOnboarding extends StatelessWidget {
                   height: 56.h,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: context.color.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.r),

@@ -55,71 +55,74 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     final minutes = remaining.inMinutes.remainder(60);
     final seconds = remaining.inSeconds.remainder(60);
 
-    return InkWell(
-      onTap: () => Navigator.of(context).pushNamed(Routes.prayTimePage),
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          color: context.color.primary.withValues(alpha: 0.08),
-          border: Border.all(
-            color: context.color.primary.withValues(alpha: 0.2),
+    return Padding(
+      padding:  EdgeInsets.symmetric(vertical: 14.h, horizontal: 8.w),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16.r),
+        onTap: () => Navigator.of(context).pushNamed(Routes.prayTimePage),
+        child: Ink(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: context.color.primary.withValues(alpha: 0.08),
+            border: Border.all(
+              color: context.color.primary.withValues(alpha: 0.2),
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10.r),
-              decoration: BoxDecoration(
-                color: context.color.primary.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10.r),
+                decoration: BoxDecoration(
+                  color: context.color.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: context.color.primary, size: 22.sp),
               ),
-              child: Icon(icon, color: context.color.primary, size: 22.sp),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "الصلاة القادمة",
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Cairo",
-                      color: context.color.onSurface.withValues(alpha: 0.6),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "الصلاة القادمة",
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Cairo",
+                        color: context.color.onSurface.withValues(alpha: 0.6),
+                      ),
                     ),
-                  ),
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontFamily: "Cairo",
-                      fontWeight: FontWeight.bold,
-                      color: context.color.primary,
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontFamily: "Cairo",
+                        fontWeight: FontWeight.bold,
+                        color: context.color.primary,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-              decoration: BoxDecoration(
-                color: context.color.primary,
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Text(
-                "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: context.color.onPrimary,
-                  letterSpacing: 1.2,
+                  ],
                 ),
               ),
-            ),
-          ],
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: context.color.primary,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Text(
+                  "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: context.color.onPrimary,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

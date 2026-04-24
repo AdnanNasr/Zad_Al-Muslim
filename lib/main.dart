@@ -1,8 +1,10 @@
+// import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/common/pages/notifications_page.dart';
+// import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
@@ -82,8 +84,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lightTheme = ref.watch(lightThemeProvider);
-    final darkTheme = ref.watch(darkThemeProvider);
+    // final lightTheme = ref.watch(lightThemeProvider);
+    // final darkTheme = ref.watch(darkThemeProvider);
     final themeMode = ref.watch(themeProvider);
     final language = ref.watch(languageProvider);
 
@@ -92,8 +94,18 @@ class MyApp extends ConsumerWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF2E2E2E))),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFF2E2E2E),
+          brightness: Brightness.light,
+        ),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFF2E2E2E),
+          brightness: Brightness.dark,
+        ),
+      ),
       themeMode: themeMode,
 
       // البداية دائماً من السبلش

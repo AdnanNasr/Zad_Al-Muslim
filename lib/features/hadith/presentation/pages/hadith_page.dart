@@ -53,13 +53,13 @@ class _HadithPageState extends ConsumerState<HadithPage> {
                 indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.r),
                   color: context.color.onPrimary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.color.primary.withValues(alpha: .3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     color: context.color.primary.withValues(alpha: .3),
+                  //     blurRadius: 8,
+                  //     offset: const Offset(0, 4),
+                  //   ),
+                  // ],
                 ),
                 labelColor: context.color.primary,
                 unselectedLabelColor: context.color.onPrimary,

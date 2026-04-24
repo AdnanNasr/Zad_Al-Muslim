@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
 import 'package:noor_quran/features/hadith/presentation/widgets/highlighted_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,21 +36,16 @@ class HadithCard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: cardBackground,
         borderRadius: BorderRadius.circular(24.r),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.06),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
         border: Border.all(
           color: colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.08),
           width: 1,
         ),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24.r),
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
+          borderRadius: BorderRadius.circular(24.r),
+          splashColor: context.color.primary.withValues(alpha: .1),
           onTap: onTap,
           child: Padding(
             padding: EdgeInsets.all(16.r),

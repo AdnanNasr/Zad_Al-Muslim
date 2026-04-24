@@ -10,7 +10,7 @@ import "package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart
 import "package:noor_quran/features/quran/presentation/pages/quran_pages.dart";
 import "package:noor_quran/features/quran/presentation/providers/all_juzz_provider.dart";
 import "package:noor_quran/features/quran/presentation/providers/surahs_meta_provider.dart";
-import "package:qcf_quran/qcf_quran.dart"; // تأكد من استيراد المكتبة
+import "package:qcf_quran/qcf_quran.dart";
 
 class IndexSurahMenu extends ConsumerStatefulWidget {
   const IndexSurahMenu({super.key});
@@ -22,7 +22,6 @@ class IndexSurahMenu extends ConsumerStatefulWidget {
 class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
   @override
   Widget build(BuildContext context) {
-    // مراقبة البيانات من الـ Providers
     final surahsMetaAsync = ref.watch(surahsMetaProvider);
     final juzzDataAsync = ref.watch(allJuzzProvider);
 
@@ -30,7 +29,7 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
     final Color bgGrey = context.color.primaryContainer.withValues(alpha: .1);
 
     return Scaffold(
-      backgroundColor: bgGrey,
+      backgroundColor: context.color.primary.withValues(alpha: .08),
       body: SafeArea(
         child: DefaultTabController(
           length: 2,
@@ -145,19 +144,25 @@ class _SurahList extends StatelessWidget {
       itemCount: surahList.length,
       itemBuilder: (context, index) {
         final surah = surahList[index];
-        return _SurahCard(
-          index: surah.surahNumber,
-          surahName: 'surah${surah.surahNumber.toString().padLeft(3, '0')}',
-          englishName: surah.englishName,
-          primaryColor: primaryColor,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => QuranPages(pageNumber: surah.pageNumber),
-              ),
-            );
-          },
+        return Column(
+          children: [
+            _SurahCard(
+              index: surah.surahNumber,
+              surahName: 'surah${surah.surahNumber.toString().padLeft(3, '0')}',
+              englishName: surah.englishName,
+              primaryColor: primaryColor,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        QuranPages(pageNumber: surah.pageNumber),
+                  ),
+                );
+              },
+            ),
+            if (index < surahList.length) SizedBox(height: 12.h),
+          ],
         );
       },
     );
@@ -241,15 +246,12 @@ class _SurahCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+    return Ink(
       decoration: BoxDecoration(
         color: context.color.surface,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withValues(alpha: .1)),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
         leading: _SurahIndexCircle(index: index, primaryColor: primaryColor),
         title: Text(
           surahName,
@@ -270,6 +272,10 @@ class _SurahCard extends StatelessWidget {
           color: Colors.grey,
         ),
         onTap: onTap,
+        shape: RoundedRectangleBorder(
+          side: BorderSide.none,
+          borderRadius: BorderRadiusGeometry.circular(15.r),
+        ),
       ),
     );
   }
@@ -312,8 +318,7 @@ class _JuzCard extends StatelessWidget {
             ),
           ),
         ),
-        Container(
-          margin: EdgeInsets.only(bottom: 15.h),
+        Ink(
           decoration: BoxDecoration(
             color: context.color.surface,
             borderRadius: BorderRadius.circular(15.r),
@@ -338,7 +343,6 @@ class _JuzCard extends StatelessWidget {
                   fontSize: 20.sp,
                   height: 1.5.h,
                   color: context.color.onSurface,
-                  // fontWeight: FontWeight.bold,
                 ),
                 maxLines: 1,
               ),
@@ -358,6 +362,11 @@ class _JuzCard extends StatelessWidget {
               color: Colors.grey[400],
             ),
             onTap: onTap,
+            shape: RoundedRectangleBorder(
+              side: BorderSide.none,
+              borderRadius: BorderRadiusGeometry.circular(15.r),
+            ),
+            splashColor: context.color.surface.withValues(alpha: .3),
           ),
         ),
       ],
@@ -399,4 +408,3 @@ class _SurahIndexCircle extends StatelessWidget {
     );
   }
 }
-

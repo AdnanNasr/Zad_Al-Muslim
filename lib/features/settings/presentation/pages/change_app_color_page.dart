@@ -22,7 +22,7 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     AppLocalizations.of(context)!.vesuviusBurn: FlexScheme.vesuviusBurn,
     AppLocalizations.of(context)!.barossa: FlexScheme.purpleBrown,
     AppLocalizations.of(context)!.shark: FlexScheme.shark,
-    AppLocalizations.of(context)!.money: FlexScheme.mallardGreen,
+    AppLocalizations.of(context)!.money: FlexScheme.money,
   };
 
   @override
@@ -119,14 +119,14 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: isSelected
-                ? Theme.of(context).primaryColor
+                ? context.color.primary
                 : Colors.transparent,
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? Theme.of(context).primaryColor.withValues(alpha: .1)
+                  ? context.color.primary.withValues(alpha: .1)
                   : Colors.black.withValues(alpha: .05),
               blurRadius: 10,
               offset: const Offset(0, 4),
@@ -157,7 +157,7 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
                   Icon(
                     Icons.check_circle,
                     size: 18.sp,
-                    color: Theme.of(context).primaryColor,
+                    color: context.color.primary,
                   ),
               ],
             ),

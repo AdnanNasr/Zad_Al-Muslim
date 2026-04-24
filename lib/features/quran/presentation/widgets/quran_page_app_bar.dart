@@ -82,6 +82,7 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
               children: [
                 // زر العودة بتنسيق متناسق
                 _buildSquareAction(
+                  message: "الصفحة الرئيسية",
                   icon: Icons.arrow_back_ios_new_rounded,
                   onTap: () => Navigator.of(
                     context,
@@ -149,19 +150,23 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
     required IconData icon,
     required VoidCallback onTap,
     required ThemeMode themeMode,
+    required String message
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
-        child: Container(
-          padding: EdgeInsets.all(10.dg),
-          decoration: BoxDecoration(
-            color: context.color.onPrimary.withValues(alpha: .15),
-            borderRadius: BorderRadius.circular(12.r),
+    return Tooltip(
+      message: message,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12.r),
+          child: Container(
+            padding: EdgeInsets.all(10.dg),
+            decoration: BoxDecoration(
+              color: context.color.onPrimary.withValues(alpha: .15),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Icon(icon, color: context.color.onPrimary, size: 20.sp),
           ),
-          child: Icon(icon, color: context.color.onPrimary, size: 20.sp),
         ),
       ),
     );

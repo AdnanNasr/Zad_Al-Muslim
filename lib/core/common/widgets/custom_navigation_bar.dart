@@ -2,6 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/core/l10n/app_localizations.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
@@ -67,7 +68,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
             height: kBottomNavigationBarHeight + 7.h,
           ),
           child: NavigationBar(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: context.color.primary.withValues(alpha: .85).darken(5),
             selectedIndex: _currentIndex,
             onDestinationSelected: (index) {
               setState(() => _currentIndex = index);

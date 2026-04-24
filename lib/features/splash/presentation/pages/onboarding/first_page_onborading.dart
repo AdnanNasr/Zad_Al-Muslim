@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/extensions/color_ext.dart';
 
 class FirstPageOnboarding extends StatelessWidget {
   const FirstPageOnboarding({super.key});
@@ -32,7 +33,7 @@ class FirstPageOnboarding extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: context.color.primary,
                     fontFamily: 'Cairo',
                   ),
                 ),

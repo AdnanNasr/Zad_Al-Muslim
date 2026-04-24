@@ -55,7 +55,8 @@ class _DailyVerseCardState extends ConsumerState<DailyVerseCard> {
             end: Alignment.bottomLeft,
           ),
           border: Border.all(
-            color: context.color.primary.withValues(alpha: 0.12),
+            color: context.color.primary.withValues(alpha: 0.3),
+            width: 1.5
           ),
         ),
         child: Column(

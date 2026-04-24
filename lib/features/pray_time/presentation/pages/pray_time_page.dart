@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adhan/adhan.dart';
+import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:noor_quran/core/common/providers/user_position_provider.dart';
 import 'package:noor_quran/core/constants/enums/my_enums.dart';
@@ -156,6 +157,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final userAddress = ref.watch(userAddressProvider);
     final isCurrentDay = isToday(selectedDate);
 
+    final themeMode = ref.watch(themeProvider);
+
     return Container(
       decoration: BoxDecoration(
         // TODO: make desstion
@@ -171,12 +174,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             context.color.primary.withValues(alpha: 0.85),
             HSLColor.fromColor(context.color.primary)
                 .withLightness(
-                  (HSLColor.fromColor(context.color.primary).lightness - 0.12)
+                  (HSLColor.fromColor(context.color.primary).lightness -
+                          (themeMode == ThemeMode.light ? 0.02 : 0.35))
                       .clamp(0.0, 1.0),
                 )
                 .toColor(),
           ],
-          stops: const [0.0, 0.5, 1.0],
+          stops: const [0.0, 0.0, 0.0],
         ),
       ),
       child: Scaffold(
@@ -275,21 +279,24 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       child: Row(
         children: [
           // زر الرجوع
-          Material(
-            color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12.r),
-            child: InkWell(
+          Tooltip(
+            message: "الصفحة الرئيسية",
+            child: Material(
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12.r),
-              onTap: () {
-                selectedDate = DateTime.now();
-                Navigator.of(context).pop();
-              },
-              child: Padding(
-                padding: EdgeInsets.all(8.r),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                  size: 20.sp,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12.r),
+                onTap: () {
+                  selectedDate = DateTime.now();
+                  Navigator.of(context).pop();
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(8.r),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white,
+                    size: 20.sp,
+                  ),
                 ),
               ),
             ),
@@ -719,6 +726,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         children: [
           // زر السابق
           _buildNavButton(
+            message: "السابق",
             icon: Icons.chevron_left_rounded,
             enabled: canBack,
             onTap: () {
@@ -759,6 +767,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           ),
           // زر القادم
           _buildNavButton(
+            message: "القادم",
             icon: Icons.chevron_right_rounded,
             enabled: canForward,
             onTap: () {
@@ -779,22 +788,26 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required IconData icon,
     required bool enabled,
     required VoidCallback onTap,
+    required String message,
   }) {
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.all(8.r),
-        decoration: BoxDecoration(
-          color: enabled
-              ? Colors.white.withValues(alpha: 0.2)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(14.r),
-        ),
-        child: Icon(
-          icon,
-          color: enabled ? Colors.white : Colors.white30,
-          size: 22.sp,
+    return Tooltip(
+      message: message,
+      child: GestureDetector(
+        onTap: enabled ? onTap : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.all(8.r),
+          decoration: BoxDecoration(
+            color: enabled
+                ? Colors.white.withValues(alpha: 0.2)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(14.r),
+          ),
+          child: Icon(
+            icon,
+            color: enabled ? Colors.white : Colors.white30,
+            size: 22.sp,
+          ),
         ),
       ),
     );
