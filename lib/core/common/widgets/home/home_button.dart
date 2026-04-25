@@ -133,7 +133,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontFamily: "Cairo",
-                              fontSize: 15.sp,
+                              fontSize: 12.sp,
                               height: 1.2,
                             ),
                             maxLines: 1,

@@ -31,7 +31,7 @@ class FirstPageOnboarding extends StatelessWidget {
                   'القرآن الكريم',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 24.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: context.color.primary,
                     fontFamily: 'Cairo',
@@ -42,15 +42,15 @@ class FirstPageOnboarding extends StatelessWidget {
                   'استكشف آيات القرآن الكريم بسهولة ويسر، مع إمكانية البحث والتنقل بين السور والآيات بطريقة منظمة لتسهيل قراءتك اليومية.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 18.sp,
+                    fontSize: 16.sp,
                     color: Colors.black54,
                     fontFamily: "Cairo",
-                    height: 1.6,
+                    height: 1.6.h,
                   ),
                 ),
                 const Spacer(),
                 // ترك مساحة فارغة توازي حجم الزر في الصفحة الأخيرة لثبات التصميم
-                SizedBox(height: 56.h + 40.h),
+                // SizedBox(height: 56.h + 40.h),
               ],
             ),
           ),

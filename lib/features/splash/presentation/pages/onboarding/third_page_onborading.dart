@@ -32,7 +32,7 @@ class ThirdPageOnboarding extends StatelessWidget {
                   'أوقات الصلاة والقبلة',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 24.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: context.color.primary,
                     fontFamily: "Cairo",
@@ -43,7 +43,7 @@ class ThirdPageOnboarding extends StatelessWidget {
                   'تابع أوقات الصلاة بدقة، وحدد اتجاه القبلة بسهولة، مع إمكانية حفظ الأذكار والأحاديث المفضلة للوصول السريع في أي وقت.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 18.sp,
+                    fontSize: 16.sp,
                     color: Colors.black54,
                     fontFamily: "Cairo",
                     height: 1.6,
@@ -80,7 +80,7 @@ class ThirdPageOnboarding extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 40.h),
+                // SizedBox(height: 40.h),
               ],
             ),
           ),

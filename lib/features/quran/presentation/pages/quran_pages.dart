@@ -266,6 +266,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                               ? 2.2
                               : 2,
                           verseHeight: 2,
+
                           verseNumberColor: context.color.primary,
                           basmalaColor: context.color.primary,
                           customHeaderBuilder: (surahNumber) {
@@ -301,7 +302,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   sp:
                       context
                           .small // 0.915.sp for small & medium sizes without designSize
-                      ? 1.sp
+                      ? 0.77.sp
                       : context.medium
                       ? 1.sp
                       : 1.sp, // large size: 1.145
@@ -366,7 +367,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                             surahsInPage.join(" "),
                             style: TextStyle(
                               fontFamily: "Cairo",
-                              fontSize: 15.sp,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.bold,
                               color: context.color.primary,
                             ),
@@ -378,7 +379,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                 "الجزء ${getJuzNumber(globalSurahNumber, globalStartOfSurah)}",
                                 style: TextStyle(
                                   fontFamily: "Cairo",
-                                  fontSize: 15.sp,
+                                  fontSize: 12.sp,
                                   fontWeight: FontWeight.bold,
                                   color: context.color.primary,
                                 ),
@@ -503,7 +504,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                         color: isMarked
                                             ? context.color.primary
                                             : context.color.primary,
-                                        size: 26.sp,
+                                        size: 24.sp,
                                       ),
                                     ),
                                   );
@@ -935,7 +936,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       // ignore: unrelated_type_equality_checks
                       ? getScreenType(context) == ScreenType(context).large
                             ? effectiveTheme.headerFontSizeLarge + 10.sp
-                            : effectiveTheme.headerFontSizeSmall + 10.sp
+                            : effectiveTheme.headerFontSizeSmall
                       : MediaQuery.of(context).size.width * 0.05,
                   color: themeMode == ThemeMode.light
                       ? context.color.onSurface

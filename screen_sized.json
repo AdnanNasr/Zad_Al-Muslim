@@ -25,6 +25,21 @@
       "width": 392.72,
       "issue": false
     },
+    "Galaxy A71 Phone": {
+      "height": 800.0,
+      "width": 360.0,
+      "issue": true
+    },
+    "Samsung S21 G5 Phone": {
+      "height": 780.0,
+      "width": 360.0,
+      "issue": false
+    },
+    "Samsung Galaxy A13 Phone": {
+      "height": 866.17,
+      "width": 384.0,
+      "issue": false
+    },
     "Medium Phone": {
       "height": 914.3,
       "width": 411.42,
