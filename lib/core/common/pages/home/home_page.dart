@@ -697,7 +697,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
                       Text(
                         "« $duaaText »",
                         style: TextStyle(
-                          fontSize: 20.sp,
+                          fontSize: 19.sp,
                           fontFamily: "Tajawal",
                           height: 1.6,
                           color: widget.colorScheme.onSurface,
@@ -761,7 +761,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8.h),
+                      // SizedBox(height: 8.h),
                     ],
                   ),
                   loading: () => const CircularProgressIndicator(),
@@ -794,8 +794,9 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 16.sp,
                 fontFamily: "Cairo",
+                fontWeight: FontWeight.bold,
                 color: color.withValues(alpha: 0.7),
               ),
             ),

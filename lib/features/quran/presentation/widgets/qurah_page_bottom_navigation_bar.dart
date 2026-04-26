@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/marks_modal_bottom_sheet.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/quran_search_sheet.dart';
@@ -156,7 +157,7 @@ class _QurahPageBottomNavigationBarState
                   color: themeMode == ThemeMode.light
                       ? context.color.onPrimary
                       : context.color.onPrimary,
-                  fontSize: 12.sp,
+                  fontSize: context.tiny ? 10.2.sp : 12.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo",
                 ),

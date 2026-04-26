@@ -153,38 +153,41 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
       }
     });
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // القائمة الجانبية تكون ثابتة في جهة اليمين في الخلف
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: Container(
-              width: context.mediaQueryWidth / 1.35,
-              color: context.color.primaryFixedDim.withValues(
-                alpha: .08,
-              ), // لون خلفية القائمة
-              child: IndexSurahMenu(),
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // القائمة الجانبية تكون ثابتة في جهة اليمين في الخلف
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                width: context.mediaQueryWidth / 1.35,
+                color: context.color.primaryFixedDim.withValues(
+                  alpha: .08,
+                ), // لون خلفية القائمة
+                child: IndexSurahMenu(),
+              ),
             ),
-          ),
 
-          AnimatedContainer(
-            duration: Duration(milliseconds: 400),
-            transform: Matrix4.translationValues(
-              isMenuOpen ? -context.mediaQueryWidth / 1.35 : 0,
-              0,
-              0,
+            AnimatedContainer(
+              duration: Duration(milliseconds: 400),
+              transform: Matrix4.translationValues(
+                isMenuOpen ? -context.mediaQueryWidth / 1.35 : 0,
+                0,
+                0,
+              ),
+              child: _quranPages(
+                context,
+                themeMode,
+                themeColor,
+                currentSelectedQariProvider,
+              ),
             ),
-            child: _quranPages(
-              context,
-              themeMode,
-              themeColor,
-              currentSelectedQariProvider,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -299,14 +302,16 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                             );
                           },
                         ),
-                  sp:
-                      context
-                          .small // 0.915.sp for small & medium sizes without designSize
-                      ? 0.77.sp
+                  sp: context.tiny
+                      ? 1.sp
+                      : context.small
+                      ? 1.sp
                       : context.medium
                       ? 1.sp
-                      : 1.sp, // large size: 1.145
-                  h: 1.05, // large
+                      : 1.sp,
+                  h: context.tiny
+                  ? 0.87
+                  : 1.05,
                   initialPageNumber:
                       widget.pageNumber != null && widget.pageNumber! > 0
                       ? widget.pageNumber!
@@ -367,7 +372,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                             surahsInPage.join(" "),
                             style: TextStyle(
                               fontFamily: "Cairo",
-                              fontSize: 12.sp,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
                               color: context.color.primary,
                             ),
@@ -379,7 +384,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                 "الجزء ${getJuzNumber(globalSurahNumber, globalStartOfSurah)}",
                                 style: TextStyle(
                                   fontFamily: "Cairo",
-                                  fontSize: 12.sp,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
                                   color: context.color.primary,
                                 ),

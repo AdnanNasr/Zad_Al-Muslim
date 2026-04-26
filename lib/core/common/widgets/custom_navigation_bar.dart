@@ -58,7 +58,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
 
             labelTextStyle: WidgetStateProperty.all(
               TextStyle(
-                fontSize: context.mediaQueryWidth * 0.035,
+                fontSize: 13.sp,
                 fontFamily: "Cairo",
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.onPrimary,
@@ -68,7 +68,9 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
             height: kBottomNavigationBarHeight + 7.h,
           ),
           child: NavigationBar(
-            backgroundColor: context.color.primary.withValues(alpha: .85).darken(5),
+            backgroundColor: context.color.primary
+                .withValues(alpha: .85)
+                .darken(5),
             selectedIndex: _currentIndex,
             onDestinationSelected: (index) {
               setState(() => _currentIndex = index);
@@ -100,10 +102,11 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     required Color inactiveColor,
   }) {
     return NavigationDestination(
-      icon: Icon(icon, color: inactiveColor),
+      icon: Icon(icon, color: inactiveColor, size: 23.sp),
       selectedIcon: Icon(
         activeIcon,
         color: Theme.of(context).colorScheme.onPrimary,
+        size: 25.sp,
       ),
       label: label,
     );
