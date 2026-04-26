@@ -180,19 +180,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: AppLocalizations.of(context)!.app_settings,
                 settingsCards: [
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    icon: Right(Icons.language),
-                    text: AppLocalizations.of(context)!.app_language,
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const LanguageDialog(),
-                      );
-                    },
-                  ),
-                  SettingCards(
                     icon: Right(Icons.dark_mode),
                     text: AppLocalizations.of(context)!.dark_mode,
                     toggle: true,
@@ -202,6 +189,27 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           .read(themeProvider.notifier)
                           .toggleTheme(themeMode);
                     },
+                  ),
+                  SettingCards(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(9),
+                    ),
+                    icon: Right(Icons.language),
+                    text: AppLocalizations.of(context)!.app_language,
+                    widget: Text(
+                      "قريباً...",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Cairo",
+                      ),
+                    ),
+                    // onTap: () {
+                    //   showDialog(
+                    //     context: context,
+                    //     builder: (context) => const LanguageDialog(),
+                    //   );
+                    // },
                   ),
                   SettingCards(
                     icon: Right(Icons.color_lens),
