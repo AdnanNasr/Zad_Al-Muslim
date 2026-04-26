@@ -47,20 +47,24 @@ class ReadingColorsDialog extends ConsumerWidget {
           ]
         : [
             ReadingColorModel(
-              name: 'فاتح أساسي',
-              color: const Color(0xFFF5E6D3),
-            ), // لون سيبيا الاساسي القديم
+              name: 'فاتح أساسي (سيبيا)',
+              // تم تعميق لون السيبيا قليلاً ليكون دافئاً وواضحاً كخيار ليلي مريح
+              color: const Color(0xFFEBDABF),
+            ),
             ReadingColorModel(
               name: 'أبيض ناصع',
+              // يبقى كما هو لأنه المرجع الأساسي للسطوع
               color: const Color(0xFFFFFFFF),
             ),
             ReadingColorModel(
               name: 'رمادي مريح',
-              color: const Color(0xFFF5F5F5),
+              // تم تقليل السطوع قليلاً ليميزه المستخدم فوراً عن الأبيض
+              color: const Color(0xFFE0E0E0),
             ),
             ReadingColorModel(
               name: 'كريمي فاتح',
-              color: const Color(0xFFFAF6EE),
+              // جعلناه يميل أكثر للصفرة الهادئة ليميزه المستخدم عن الرمادي والسيبيا
+              color: const Color(0xFFFFF9E3),
             ),
           ];
 
