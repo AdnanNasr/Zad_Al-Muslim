@@ -179,11 +179,13 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 0,
                 0,
               ),
-              child: _quranPages(
-                context,
-                themeMode,
-                themeColor,
-                currentSelectedQariProvider,
+              child: InteractiveViewer(
+                child: _quranPages(
+                  context,
+                  themeMode,
+                  themeColor,
+                  currentSelectedQariProvider,
+                ),
               ),
             ),
           ],
