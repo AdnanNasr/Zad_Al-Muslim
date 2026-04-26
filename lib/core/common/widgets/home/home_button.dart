@@ -139,7 +139,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: 2.h),
+                          SizedBox(height: 4.h),
                           Text(
                             widget.description,
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -147,6 +147,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                               fontFamily: "Cairo",
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
+                              height: 1,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

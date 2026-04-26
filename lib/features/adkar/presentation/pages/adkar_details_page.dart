@@ -155,7 +155,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
               // Dhikr Text
               Text(
                 widget.text,
-                textAlign: TextAlign.justify,
+                textAlign: TextAlign.right,
                 style: TextStyle(
                   fontFamily: 'Naskh',
                   fontSize: ref.watch(appSettingsProvider).adkarFontSize.sp,
@@ -286,7 +286,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                           children: [
                             SelectableText(
                               widget.text,
-                              textAlign: TextAlign.justify,
+                              textAlign: TextAlign.right,
                               style: TextStyle(
                                 fontFamily: 'Naskh',
                                 fontSize:
