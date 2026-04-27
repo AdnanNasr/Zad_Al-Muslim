@@ -28,6 +28,7 @@ import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QuranVerticalPage extends ConsumerStatefulWidget {
@@ -47,8 +48,8 @@ class QuranVerticalPage extends ConsumerStatefulWidget {
 }
 
 class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
-  late final ScrollController _scrollController;
-  final List<GlobalKey> _surahKeys = List.generate(114, (_) => GlobalKey());
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   late double _fontSize;
   double _baseFontSize = 22.0;
@@ -95,8 +96,7 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    _scrollController.addListener(_onScroll);
+    itemPositionsListener.itemPositions.addListener(_onScroll);
 
     // تحديد السورة الابتدائية من رقم الصفحة
     final page = widget.pageNumber ?? 1;
@@ -106,14 +106,17 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fontSize = ref.read(quranSettingsProvider).quranVerticalFontSize;
       setState(() {});
-      _scrollToSurah(initialSurah);
+      
+      // تأخير بسيط للتأكد من بناء الصفحة قبل التمرير
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _scrollToSurah(initialSurah);
+      });
     });
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    itemPositionsListener.itemPositions.removeListener(_onScroll);
     _indicatorTimer?.cancel();
     super.dispose();
   }
@@ -122,7 +125,11 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   int _surahFromPage(int page) {
     for (int s = 1; s <= 114; s++) {
       final p = getPageNumber(s, 1);
-      if (p >= page) return s > 1 ? s - 1 : 1;
+      if (p > page) {
+        return s > 1 ? s - 1 : 1;
+      } else if (p == page) {
+        return s;
+      }
     }
     return 114;
   }
@@ -130,23 +137,29 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   void _scrollToSurah(int surahNumber) {
     final index = surahNumber - 1;
     if (index < 0 || index >= 114) return;
-    final ctx = _surahKeys[index].currentContext;
-    if (ctx != null) {
-      Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 400));
+    if (itemScrollController.isAttached) {
+      itemScrollController.jumpTo(index: index);
     }
   }
 
   void _onScroll() {
-    // تحديث السورة الظاهرة بناءً على الـ widget المرئي الأول
-    for (int i = 0; i < 114; i++) {
-      final ctx = _surahKeys[i].currentContext;
-      if (ctx == null) continue;
-      final box = ctx.findRenderObject() as RenderBox?;
-      if (box == null) continue;
-      final pos = box.localToGlobal(Offset.zero);
-      if (pos.dy <= MediaQuery.of(context).size.height * 0.3) {
-        if (_currentVisibleSurah != i + 1) {
-          setState(() => _currentVisibleSurah = i + 1);
+    final positions = itemPositionsListener.itemPositions.value;
+    if (positions.isNotEmpty) {
+      // Find the first item whose trailing edge is visible, or which is the topmost visible
+      int? firstVisible;
+      double minTop = double.infinity;
+      for (var pos in positions) {
+        if (pos.itemTrailingEdge > 0 && pos.itemLeadingEdge < minTop) {
+           minTop = pos.itemLeadingEdge;
+           firstVisible = pos.index;
+        }
+      }
+      if (firstVisible != null) {
+        final surah = firstVisible + 1;
+        if (_currentVisibleSurah != surah) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _currentVisibleSurah = surah);
+          });
         }
       }
     }
@@ -272,30 +285,30 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
                   child: Stack(
                     children: [
                       // ─── المحتوى الرئيسي ───────────────────────────────
-              ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.only(
-                  top: 70.h,
-                  bottom: 120.h,
-                ),
-                itemCount: 114,
-                itemBuilder: (context, index) {
-                  final surahNumber = index + 1;
-                  return _SurahSection(
-                    key: _surahKeys[index],
-                    surahNumber: surahNumber,
-                    fontSize: _fontSize,
-                    bgColor: bgColor,
-                    isDark: isDark,
-                    themeColor: themeColor,
-                    themeMode: themeMode,
-                    currentAyah: currentAyah,
-                    highlightSurah: _highlightAyah ? _selectedSurah : null,
-                    highlightVerse: _highlightAyah ? _selectedVerse : null,
-                    onLongPress: _showAyahMenu,
-                  );
-                },
-              ),
+                      ScrollablePositionedList.builder(
+                        itemScrollController: itemScrollController,
+                        itemPositionsListener: itemPositionsListener,
+                        padding: EdgeInsets.only(
+                          top: 70.h,
+                          bottom: 120.h,
+                        ),
+                        itemCount: 114,
+                        itemBuilder: (context, index) {
+                          final surahNumber = index + 1;
+                          return _SurahSection(
+                            surahNumber: surahNumber,
+                            fontSize: _fontSize,
+                            bgColor: bgColor,
+                            isDark: isDark,
+                            themeColor: themeColor,
+                            themeMode: themeMode,
+                            currentAyah: currentAyah,
+                            highlightSurah: _highlightAyah ? _selectedSurah : null,
+                            highlightVerse: _highlightAyah ? _selectedVerse : null,
+                            onLongPress: _showAyahMenu,
+                          );
+                        },
+                      ),
 
               // ─── شريط العنوان العلوي ───────────────────────────
               AnimatedPositioned(
