@@ -30,6 +30,7 @@ import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_
 import 'package:noor_quran/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
 import 'package:share_plus/share_plus.dart';
+import 'package:noor_quran/features/quran/presentation/pages/quran_vertical.dart';
 
 class QuranPages extends ConsumerStatefulWidget {
   final int? pageNumber;
@@ -126,6 +127,16 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(quranSettingsProvider);
+    // التوجيه للصفحة العمودية إذا كان وضع العرض القابل للتكبير مفعلاً
+    if (settings.quranViewType == QuranViewType.zoomable) {
+      return QuranVerticalPage(
+        pageNumber: widget.pageNumber,
+        highlightSurah: widget.highlightSurah,
+        highlightVerse: widget.highlightVerse,
+      );
+    }
+
     final themeMode = ref.read(themeProvider);
     final themeColor = ref.read(userThemeProvider);
     final currentSelectedQariProvider = ref.watch(selectedQariProvider);
@@ -274,7 +285,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                             verseNumberColor: context.color.primary,
                             basmalaColor: context.color.primary,
                             customHeaderBuilder: (surahNumber) {
-                              return customQuranPageHeader(
+                              return buildQuranPageHeader(
                                 context,
                                 surahNumber,
                                 themeColor,
@@ -295,7 +306,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                 : 2,
                             verseHeight: 2,
                             customHeaderBuilder: (surahNumber) {
-                              return customQuranPageHeader(
+                              return buildQuranPageHeader(
                                 context,
                                 surahNumber,
                                 themeColor,
@@ -885,75 +896,77 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     );
   }
 
-  InkWell customQuranPageHeader(
-    BuildContext context,
-    int surahNumber,
-    FlexScheme themeColor,
-    ThemeMode themeMode,
-  ) {
-    bool isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
-    final effectiveTheme = QcfThemeData();
-    return InkWell(
-      borderRadius: BorderRadius.circular(effectiveTheme.headerBorderRadius),
-      child: Container(
-        decoration: BoxDecoration(color: effectiveTheme.headerBackgroundColor),
-        width: double.infinity,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Image(
-              image: themeColor == FlexScheme.money
-                  ? const AssetImage("assets/images/green_bg_banner.jpg")
-                  : themeColor == FlexScheme.brandBlue
-                  ? const AssetImage("assets/images/blue_bg_banner.jpg")
-                  : themeColor == FlexScheme.blueWhale
-                  ? const AssetImage("assets/images/blue_bg_banner.jpg")
-                  : themeColor == FlexScheme.gold
-                  ? const AssetImage("assets/images/gold_bg_banner.jpg")
-                  : themeColor == FlexScheme.vesuviusBurn
-                  ? const AssetImage("assets/images/orange_bg_banner.jpg")
-                  : themeColor == FlexScheme.shadRed
-                  ? const AssetImage("assets/images/rose_bg_banner.jpg")
-                  : themeColor == FlexScheme.shadRose
-                  ? const AssetImage("assets/images/rose_bg_banner.jpg")
-                  : themeColor == FlexScheme.shark
-                  ? const AssetImage("assets/images/grey_bg_banner.jpg")
-                  : const AssetImage(
-                      "assets/mainframe.png",
-                      package: 'qcf_quran',
-                    ),
-              width: isPortrait
-                  // ignore: unrelated_type_equality_checks
-                  ? getScreenType(context) == ScreenType(context).large
-                        ? effectiveTheme.headerWidthLarge
-                        : context.mediaQueryWidth / 1
-                  : MediaQuery.of(context).size.width * 0.8,
-            ),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                text: "surah${surahNumber.toString().padLeft(3, '0')}",
-                style: TextStyle(
-                  fontFamily: SurahFontHelper.fontFamily,
-                  package: 'qcf_quran',
-                  fontSize: isPortrait
-                      // ignore: unrelated_type_equality_checks
-                      ? getScreenType(context) == ScreenType(context).large
-                            ? effectiveTheme.headerFontSizeLarge + 10.sp
-                            : effectiveTheme.headerFontSizeSmall
-                      : MediaQuery.of(context).size.width * 0.05,
-                  color: themeMode == ThemeMode.light
-                      ? context.color.onSurface
-                      : context.color.surface,
-                ),
+}
+
+/// دالة مشتركة لبناء رأس السورة (مُستخدَمة في QuranPages وQuranVerticalPage)
+InkWell buildQuranPageHeader(
+  BuildContext context,
+  int surahNumber,
+  FlexScheme themeColor,
+  ThemeMode themeMode,
+) {
+  bool isPortrait =
+      MediaQuery.of(context).orientation == Orientation.portrait;
+  final effectiveTheme = QcfThemeData();
+  return InkWell(
+    borderRadius: BorderRadius.circular(effectiveTheme.headerBorderRadius),
+    child: Container(
+      decoration: BoxDecoration(color: effectiveTheme.headerBackgroundColor),
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image(
+            image: themeColor == FlexScheme.money
+                ? const AssetImage("assets/images/green_bg_banner.jpg")
+                : themeColor == FlexScheme.brandBlue
+                ? const AssetImage("assets/images/blue_bg_banner.jpg")
+                : themeColor == FlexScheme.blueWhale
+                ? const AssetImage("assets/images/blue_bg_banner.jpg")
+                : themeColor == FlexScheme.gold
+                ? const AssetImage("assets/images/gold_bg_banner.jpg")
+                : themeColor == FlexScheme.vesuviusBurn
+                ? const AssetImage("assets/images/orange_bg_banner.jpg")
+                : themeColor == FlexScheme.shadRed
+                ? const AssetImage("assets/images/rose_bg_banner.jpg")
+                : themeColor == FlexScheme.shadRose
+                ? const AssetImage("assets/images/rose_bg_banner.jpg")
+                : themeColor == FlexScheme.shark
+                ? const AssetImage("assets/images/grey_bg_banner.jpg")
+                : const AssetImage(
+                    "assets/mainframe.png",
+                    package: 'qcf_quran',
+                  ),
+            width: isPortrait
+                // ignore: unrelated_type_equality_checks
+                ? getScreenType(context) == ScreenType(context).large
+                      ? effectiveTheme.headerWidthLarge
+                      : context.mediaQueryWidth / 1
+                : MediaQuery.of(context).size.width * 0.8,
+          ),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: "surah${surahNumber.toString().padLeft(3, '0')}",
+              style: TextStyle(
+                fontFamily: SurahFontHelper.fontFamily,
+                package: 'qcf_quran',
+                fontSize: isPortrait
+                    // ignore: unrelated_type_equality_checks
+                    ? getScreenType(context) == ScreenType(context).large
+                          ? effectiveTheme.headerFontSizeLarge + 10.sp
+                          : 35.sp
+                    : MediaQuery.of(context).size.width * 0.05,
+                color: themeMode == ThemeMode.light
+                    ? context.color.onSurface
+                    : context.color.surface,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
 class AppAndBottomBar extends StatelessWidget {

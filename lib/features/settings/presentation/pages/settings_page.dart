@@ -10,7 +10,6 @@ import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
 import 'package:noor_quran/core/common/widgets/settings_card.dart';
 import 'package:noor_quran/core/common/widgets/settings_container.dart';
 import 'package:noor_quran/features/settings/presentation/widgets/adahn_dialog.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/language_dialog.dart';
 import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:noor_quran/features/settings/presentation/widgets/font_size_dialog.dart';
 import 'package:noor_quran/features/settings/presentation/widgets/calculation_method_dialog.dart';

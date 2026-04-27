@@ -98,17 +98,21 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "سورة ${widget.surahName}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17.sp,
-                          color: context.color.onPrimary,
-                          fontFamily: "Cairo",
-                          letterSpacing: 0.5,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Text(
+                            "سورة ${widget.surahName}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17.sp,
+                              color: context.color.onPrimary,
+                              fontFamily: "Cairo",
+                              letterSpacing: 0.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                       SizedBox(height: 8.h),
                       Row(
@@ -150,7 +154,7 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
     required IconData icon,
     required VoidCallback onTap,
     required ThemeMode themeMode,
-    required String message
+    required String message,
   }) {
     return Tooltip(
       message: message,

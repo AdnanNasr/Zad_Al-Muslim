@@ -52,7 +52,7 @@ class AyahDelayDialog extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             SizedBox(height: 8.h),
             Divider(color: context.color.onSurface.withValues(alpha: .1)),
             SizedBox(height: 4.h),
@@ -72,14 +72,22 @@ class AyahDelayDialog extends ConsumerWidget {
 
                   return InkWell(
                     onTap: () {
-                      ref.read(quranSettingsProvider.notifier).setAyahDelay(option['value']);
+                      ref
+                          .read(quranSettingsProvider.notifier)
+                          .setAyahDelay(option['value']);
                       Navigator.of(context).pop();
                     },
                     borderRadius: BorderRadius.circular(12.r),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 4.h,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? context.color.primary.withValues(alpha: .12)
@@ -87,7 +95,9 @@ class AyahDelayDialog extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(12.r),
                         border: isSelected
                             ? Border.all(
-                                color: context.color.primary.withValues(alpha: .4),
+                                color: context.color.primary.withValues(
+                                  alpha: .4,
+                                ),
                                 width: 1.5,
                               )
                             : null,
@@ -106,7 +116,9 @@ class AyahDelayDialog extends ConsumerWidget {
                                 : Icon(
                                     Icons.radio_button_unchecked_rounded,
                                     key: const ValueKey('unselected'),
-                                    color: context.color.onSurface.withValues(alpha: .3),
+                                    color: context.color.onSurface.withValues(
+                                      alpha: .3,
+                                    ),
                                     size: 22.sp,
                                   ),
                           ),
@@ -117,7 +129,9 @@ class AyahDelayDialog extends ConsumerWidget {
                               style: TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 15.sp,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 color: isSelected
                                     ? context.color.primary
                                     : context.color.onSurface,
@@ -131,7 +145,7 @@ class AyahDelayDialog extends ConsumerWidget {
                 },
               ),
             ),
-            
+
             SizedBox(height: 8.h),
             Divider(color: context.color.onSurface.withValues(alpha: .1)),
 

@@ -8,6 +8,7 @@ import 'package:noor_quran/core/common/widgets/settings_container.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/sizes_ext.dart';
 import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:noor_quran/features/quran/presentation/widgets/quran_view_type_dialog.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/select_qari_dialog.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/ayah_delay_dialog.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/reading_colors_dialog.dart';
@@ -93,6 +94,13 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                         backgroundColor: Colors.transparent,
                         builder: (context) => const ReadingColorsDialog(),
                       );
+                    },
+                  ),
+                  SettingCards(
+                    icon: Right(Icons.swipe_vertical_rounded),
+                    text: "شكل صفحات القرآن الكريم",
+                    onTap: () {
+                      showDialog(context: context, builder: (context) => QuranViewTypeDialog(),);
                     },
                   ),
                   SettingCards(

@@ -5,6 +5,8 @@ import 'package:noor_quran/features/quran/presentation/providers/schedule_quran_
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+enum QuranViewType { fixed, zoomable }
+
 class QuranSettings {
   final bool keepScreenAwake;
   final int ayahDelaySeconds;
@@ -13,6 +15,8 @@ class QuranSettings {
   final bool autoScrollWithAudio;
   final bool isDailyReminderEnabled;
   final String? dailyReminderTime;
+  final QuranViewType quranViewType;
+  final double quranVerticalFontSize;
 
   QuranSettings({
     required this.keepScreenAwake,
@@ -22,6 +26,8 @@ class QuranSettings {
     required this.autoScrollWithAudio,
     required this.isDailyReminderEnabled,
     this.dailyReminderTime,
+    this.quranViewType = QuranViewType.fixed,
+    this.quranVerticalFontSize = 22.0,
   });
 
   QuranSettings copyWith({
@@ -32,6 +38,8 @@ class QuranSettings {
     bool? autoScrollWithAudio,
     bool? isDailyReminderEnabled,
     String? dailyReminderTime,
+    QuranViewType? quranViewType,
+    double? quranVerticalFontSize,
   }) {
     return QuranSettings(
       keepScreenAwake: keepScreenAwake ?? this.keepScreenAwake,
@@ -43,6 +51,9 @@ class QuranSettings {
       isDailyReminderEnabled:
           isDailyReminderEnabled ?? this.isDailyReminderEnabled,
       dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
+      quranViewType: quranViewType ?? this.quranViewType,
+      quranVerticalFontSize:
+          quranVerticalFontSize ?? this.quranVerticalFontSize,
     );
   }
 }
@@ -59,6 +70,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
   static const String _isDailyReminderEnabledKey =
       'is_daily_reminder_enabled_key';
   static const String _dailyReminderTimeKey = 'daily_reminder_time_key';
+  static const String _quranViewTypeKey = 'quran_view_type_key';
+  static const String _quranVerticalFontSizeKey = 'quran_vertical_font_size_key';
 
   QuranSettingsNotifier(this._prefs)
     : super(
@@ -70,6 +83,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
           autoScrollWithAudio: true,
           isDailyReminderEnabled: false,
           dailyReminderTime: null,
+          quranViewType: QuranViewType.fixed,
+          quranVerticalFontSize: 22.0,
         ),
       ) {
     _init();
@@ -84,6 +99,10 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
     final isDailyReminderEnabled =
         _prefs.getBool(_isDailyReminderEnabledKey) ?? false;
     final dailyReminderTime = _prefs.getString(_dailyReminderTimeKey);
+    final viewTypeIndex = _prefs.getInt(_quranViewTypeKey) ?? 0;
+    final quranViewType = QuranViewType.values[viewTypeIndex];
+    final quranVerticalFontSize =
+        _prefs.getDouble(_quranVerticalFontSizeKey) ?? 22.0;
 
     QariModel selectedQari = QariNamesAyahByAyah.masharyAlafassy;
     if (qariId != null) {
@@ -104,6 +123,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
       autoScrollWithAudio: autoScroll,
       isDailyReminderEnabled: isDailyReminderEnabled,
       dailyReminderTime: dailyReminderTime,
+      quranViewType: quranViewType,
+      quranVerticalFontSize: quranVerticalFontSize,
     );
 
     // تفعيل إضاءة الشاشة إذا كانت الميزة مفعلة مسبقاً
@@ -178,6 +199,17 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
         timeString: time,
       );
     }
+  }
+
+  Future<void> setQuranViewType(QuranViewType type) async {
+    await _prefs.setInt(_quranViewTypeKey, type.index);
+    state = state.copyWith(quranViewType: type);
+  }
+
+  Future<void> setQuranVerticalFontSize(double size) async {
+    final clamped = size.clamp(14.0, 40.0);
+    await _prefs.setDouble(_quranVerticalFontSizeKey, clamped);
+    state = state.copyWith(quranVerticalFontSize: clamped);
   }
 }
 
