@@ -4,13 +4,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
 
-class QuranViewTypeDialog extends ConsumerWidget {
+class QuranViewTypeDialog extends ConsumerStatefulWidget {
   const QuranViewTypeDialog({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuranViewTypeDialog> createState() =>
+      _QuranViewTypeDialogState();
+}
+
+class _QuranViewTypeDialogState extends ConsumerState<QuranViewTypeDialog> {
+  double? _localFontSize;
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(quranSettingsProvider);
     final selectedType = settings.quranViewType;
+    final currentFontSize = _localFontSize ?? settings.quranVerticalFontSize;
 
     final List<Map<String, dynamic>> viewOptions = [
       {
@@ -74,10 +83,14 @@ class QuranViewTypeDialog extends ConsumerWidget {
 
                 return InkWell(
                   onTap: () {
-                    ref
-                        .read(quranSettingsProvider.notifier)
-                        .setQuranViewType(option['value']);
+                    final optionValue = option['value'];
+                    final notifier = ref.read(quranSettingsProvider.notifier);
                     Navigator.of(context).pop();
+                    // تأخير بسيط للسماح للحركة بالانتهاء قبل تغيير الحالة الثقيلة
+                    Future.delayed(const Duration(milliseconds: 250), () {
+                      notifier.setQuranViewType(optionValue);
+                    });
+                    // notifier.setQuranViewType(optionValue);
                   },
                   borderRadius: BorderRadius.circular(12.r),
                   child: AnimatedContainer(
@@ -208,9 +221,9 @@ class QuranViewTypeDialog extends ConsumerWidget {
                         color: context.color.onSurface,
                       ),
                     ),
-                    const Spacer(),
+                    SizedBox(width: 8.w),
                     Text(
-                      settings.quranVerticalFontSize.toInt().toString(),
+                      currentFontSize.toInt().toString(),
                       style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 14.sp,
@@ -239,7 +252,7 @@ class QuranViewTypeDialog extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Quran',
-                      fontSize: settings.quranVerticalFontSize,
+                      fontSize: currentFontSize,
                       color: context.color.onSurface,
                       height: 1.5,
                     ),
@@ -250,7 +263,9 @@ class QuranViewTypeDialog extends ConsumerWidget {
               SliderTheme(
                 data: SliderThemeData(
                   activeTrackColor: context.color.primary,
-                  inactiveTrackColor: context.color.primary.withValues(alpha: .2),
+                  inactiveTrackColor: context.color.primary.withValues(
+                    alpha: .2,
+                  ),
                   thumbColor: context.color.primary,
                   overlayColor: context.color.primary.withValues(alpha: .1),
                   trackHeight: 4.h,
@@ -261,12 +276,17 @@ class QuranViewTypeDialog extends ConsumerWidget {
                   ),
                 ),
                 child: Slider(
-                  value: settings.quranVerticalFontSize,
+                  value: currentFontSize,
                   min: 14.0,
                   max: 40.0,
                   divisions: 26,
-                  label: settings.quranVerticalFontSize.toInt().toString(),
+                  label: currentFontSize.toInt().toString(),
                   onChanged: (value) {
+                    setState(() {
+                      _localFontSize = value;
+                    });
+                  },
+                  onChangeEnd: (value) {
                     ref
                         .read(quranSettingsProvider.notifier)
                         .setQuranVerticalFontSize(value);
