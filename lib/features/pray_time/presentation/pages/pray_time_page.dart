@@ -202,7 +202,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   children: [
                     // --- شريط علوي ---
                     Container(
-                      decoration: BoxDecoration(),
+                      decoration: const BoxDecoration(),
                       child: _buildTopBar(
                         context,
                         userAddress,
@@ -1446,7 +1446,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 borderRadius: BorderRadius.circular(12.r),
               ),
             ),
-            child: Text(
+            child: const Text(
               "إعادة تعيين",
               style: TextStyle(
                 fontFamily: "Cairo",

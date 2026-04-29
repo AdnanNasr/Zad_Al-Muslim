@@ -32,7 +32,7 @@ class HadithModalBottom extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _InfoItem(
+              const _InfoItem(
                 icon: Icons.person,
                 title: "المصدر",
                 value: "صحيح البخاري",

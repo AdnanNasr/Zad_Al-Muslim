@@ -84,8 +84,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final lightTheme = ref.watch(lightThemeProvider);
-    // final darkTheme = ref.watch(darkThemeProvider);
+    // final lightTheme = ref.watch(lightThemeProvider); // for colors in app
+    // final darkTheme = ref.watch(darkThemeProvider); // for colors in app
     final themeMode = ref.watch(themeProvider);
     final language = ref.watch(languageProvider);
 
@@ -96,13 +96,13 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF2E2E2E),
+          seedColor: const Color(0xFF2E2E2E),
           brightness: Brightness.light,
         ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF2E2E2E),
+          seedColor: const Color(0xFF2E2E2E),
           brightness: Brightness.dark,
         ),
       ),
@@ -118,8 +118,8 @@ class MyApp extends ConsumerWidget {
         "/home_page": (_) => const HomePage(),
         "/quran_pages": (_) => const QuranPages(),
         "/quran_moratal": (_) => const QuranMoratalPage(),
-        "/quran_settings_page": (_) => QuranSettingsPage(),
-        "/select_surah_page": (_) => SelectSurahPage(),
+        "/quran_settings_page": (_) => const QuranSettingsPage(),
+        "/select_surah_page": (_) => const SelectSurahPage(),
         "/settings_page": (_) => const SettingsPage(),
         "/change_app_color_page": (_) => const ChangeAppColorPage(),
         "/tafseer_page": (_) => const TafseerPage(),
@@ -127,10 +127,10 @@ class MyApp extends ConsumerWidget {
         "/sunah_page": (_) => const HadithPage(),
         "/onboarding": (_) => const OnboardingPage(),
         "/custom_navigation_bar": (_) => const CustomNavigationBar(),
-        "/pray_time_page": (_) => PrayTimePage(),
+        "/pray_time_page": (_) => const PrayTimePage(),
         "/qebla_page": (_) => const QeblaPage(),
         "/adkar_page": (_) => const AdkarPage(),
-        "/notifications_page": (_) => NotificationsPage(),
+        "/notifications_page": (_) => const NotificationsPage(),
       },
     );
   }

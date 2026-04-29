@@ -12,7 +12,7 @@ class SelectQariDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedQari = ref.watch(selectedQariProvider);
-    final qariList = QariNamesAyahByAyah.allQaris;
+    const qariList = QariNamesAyahByAyah.allQaris;
 
     return Dialog(
       backgroundColor: context.color.surface,

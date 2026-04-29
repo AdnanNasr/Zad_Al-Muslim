@@ -72,10 +72,10 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 title: "تخصيص القراءة والشكل",
                 settingsCards: [
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(9),
                     ),
-                    icon: Right(Icons.palette_rounded),
+                    icon: const Right(Icons.palette_rounded),
                     text: "لون خلفية القراءة",
                     widget: Container(
                       width: 24.w,
@@ -97,14 +97,17 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.swipe_vertical_rounded),
+                    icon: const Right(Icons.swipe_vertical_rounded),
                     text: "شكل صفحات القرآن الكريم",
                     onTap: () {
-                      showDialog(context: context, builder: (context) => QuranViewTypeDialog(),);
+                      showDialog(
+                        context: context,
+                        builder: (context) => const QuranViewTypeDialog(),
+                      );
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.screen_lock_rotation_rounded),
+                    icon: const Right(Icons.screen_lock_rotation_rounded),
                     text: "بقاء الشاشة مضيئة أثناء القراءة",
                     toggle: true,
                     switchValue: settings.keepScreenAwake,
@@ -123,25 +126,25 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 title: "الاستماع والتحفيظ",
                 settingsCards: [
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(9),
                     ),
                     hero: true,
                     heroId: "qari_icon",
-                    icon: Right(Icons.spatial_audio_off),
+                    icon: const Right(Icons.spatial_audio_off),
                     text: "اختيار صوت القارئ",
                     subText: currentSelectedQariProvider.name,
                     onTap: () {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return SelectQariDialog();
+                          return const SelectQariDialog();
                         },
                       );
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.timer_rounded),
+                    icon: const Right(Icons.timer_rounded),
                     text: "الفاصل الزمني بين الآيات",
                     subText: settings.ayahDelaySeconds == 0
                         ? 'بدون توقف'
@@ -154,7 +157,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.auto_awesome_motion_rounded),
+                    icon: const Right(Icons.auto_awesome_motion_rounded),
                     text: "التمرير التلقائي مع صوت القارئ",
                     toggle: true,
                     switchValue: settings.autoScrollWithAudio,
@@ -174,10 +177,10 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 title: "الإعدادات العامة",
                 settingsCards: [
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(9),
                     ),
-                    icon: Right(Icons.library_books_rounded),
+                    icon: const Right(Icons.library_books_rounded),
                     text: "تحميل التفاسير",
                     onTap: () {
                       Navigator.of(context).pushNamed(Routes.tafseerPage);
@@ -185,7 +188,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     trallingIcon: Icons.download,
                   ),
                   SettingCards(
-                    icon: Right(Icons.notifications_active_rounded),
+                    icon: const Right(Icons.notifications_active_rounded),
                     text: "تنبيهات ورد القراءة اليومي",
                     subText: settings.isDailyReminderEnabled
                         ? (settings.dailyReminderTime != null

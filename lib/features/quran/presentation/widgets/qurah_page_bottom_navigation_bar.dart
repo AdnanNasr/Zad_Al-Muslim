@@ -30,11 +30,14 @@ class _QurahPageBottomNavigationBarState
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 600),
     );
 
-    _offsetAnimation = Tween<Offset>(begin: Offset(0, 1.2), end: Offset(0, 0))
-        .animate(
+    _offsetAnimation =
+        Tween<Offset>(
+          begin: const Offset(0, 1.2),
+          end: const Offset(0, 0),
+        ).animate(
           CurvedAnimation(
             parent: _animationController,
             curve: Curves.decelerate,
@@ -86,7 +89,7 @@ class _QurahPageBottomNavigationBarState
               _buildNavItem(context, Icons.search_rounded, "بحث", () {
                 showModalBottomSheet(
                   isScrollControlled: true,
-                  sheetAnimationStyle: AnimationStyle(
+                  sheetAnimationStyle: const AnimationStyle(
                     duration: Duration(milliseconds: 800),
                     curve: Curves.decelerate,
                   ),
@@ -95,7 +98,7 @@ class _QurahPageBottomNavigationBarState
                   ),
                   context: context,
                   builder: (context) {
-                    return QuranSearchSheet();
+                    return const QuranSearchSheet();
                   },
                 );
               }, themeMode),
@@ -105,12 +108,12 @@ class _QurahPageBottomNavigationBarState
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
-                  sheetAnimationStyle: AnimationStyle(
+                  sheetAnimationStyle: const AnimationStyle(
                     duration: Duration(milliseconds: 600),
                     curve: Curves.decelerate,
                   ),
                   builder: (context) {
-                    return MarksModalBottomSheet();
+                    return const MarksModalBottomSheet();
                   },
                 );
               }, themeMode),

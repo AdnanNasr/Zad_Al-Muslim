@@ -35,7 +35,7 @@ class _PrivcyPolicyPageState extends State<PrivcyPolicyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: "سياسة الخصوصية",
         center: false,
         profile: false,

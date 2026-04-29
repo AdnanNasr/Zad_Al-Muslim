@@ -15,7 +15,7 @@ class HadithPage extends ConsumerStatefulWidget {
 }
 
 class _HadithPageState extends ConsumerState<HadithPage> {
-  final List<Widget> screens = [HadithTab(), FeaturedHadithsTab()];
+  final List<Widget> screens = [const HadithTab(), const FeaturedHadithsTab()];
 
   int currentIndex = 0;
 

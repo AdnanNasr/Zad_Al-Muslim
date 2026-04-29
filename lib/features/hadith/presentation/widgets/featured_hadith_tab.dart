@@ -38,7 +38,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
             itemBuilder: (context, index) {
               final hadith = featuredHadiths[index];
               return AnimationConfiguration.staggeredList(
-                duration: Duration(milliseconds: 700),
+                duration: const Duration(milliseconds: 700),
                 position: index,
                 child: SlideAnimation(
                   verticalOffset: 40,

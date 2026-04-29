@@ -34,7 +34,7 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
     final adkarData = ref.watch(allAdkarProvider);
 
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'حصن المسلم',
         center: true,
         profile: false,
@@ -78,7 +78,7 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
                             size: 24.sp,
                           )
                         : AnimationConfiguration.synchronized(
-                            duration: Duration(milliseconds: 800),
+                            duration: const Duration(milliseconds: 800),
                             child: FadeInAnimation(
                               child: GestureDetector(
                                 onTap: () {
@@ -127,7 +127,7 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
                       trackVisibility: true,
                       interactive: true,
                       thickness: 5,
-                      radius: Radius.circular(24),
+                      radius: const Radius.circular(24),
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount:
@@ -151,7 +151,7 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
 
                           return AnimationConfiguration.staggeredList(
                             position: index,
-                            duration: Duration(milliseconds: 700),
+                            duration: const Duration(milliseconds: 700),
                             child: SlideAnimation(
                               verticalOffset: 50,
                               child: FadeInAnimation(

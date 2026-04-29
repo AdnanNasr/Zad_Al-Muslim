@@ -25,28 +25,32 @@ class AppInfo extends StatelessWidget {
           spacing: 10.h,
           children: [
             SettingCards(
-              icon: Right(Icons.lock),
+              icon: const Right(Icons.lock),
               text: AppLocalizations.of(context)!.privacy_policy,
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => PrivcyPolicyPage()),
+                MaterialPageRoute(
+                  builder: (context) => const PrivcyPolicyPage(),
+                ),
               ),
             ),
             SettingCards(
-              icon: Right(Icons.description),
+              icon: const Right(Icons.description),
               text: AppLocalizations.of(context)!.terms_of_use,
-              onTap: () => Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (context) => TermsOfUsePage())),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const TermsOfUsePage()),
+              ),
             ),
             SettingCards(
-              icon: Right(Icons.verified_user_outlined),
+              icon: const Right(Icons.verified_user_outlined),
               text: AppLocalizations.of(context)!.app_certificates,
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => CustomLicensePage()),
+                MaterialPageRoute(
+                  builder: (context) => const CustomLicensePage(),
+                ),
               ),
             ),
             SettingCards(
-              icon: Right(Icons.numbers),
+              icon: const Right(Icons.numbers),
               text: AppLocalizations.of(context)!.version,
               widget: Text(
                 "1.0.0",

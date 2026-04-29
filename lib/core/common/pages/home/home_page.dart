@@ -93,7 +93,7 @@ class BodyContent extends ConsumerWidget {
       headerWidget(context, themeMode),
       SizedBox(height: 8.h),
       // ويدجت الصلاة القادمة
-      ComingPrayWidget(),
+      const ComingPrayWidget(),
 
       // ويدحت الأقسام الرئيسية
       PrimarySectionWidget(colorScheme: colorScheme, themeMode: themeMode),
@@ -349,7 +349,10 @@ class BodyContent extends ConsumerWidget {
                               color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.bookmark, color: Colors.white),
+                            child: const Icon(
+                              Icons.bookmark,
+                              color: Colors.white,
+                            ),
                           ),
                           SizedBox(width: 16.w),
                           Column(
@@ -590,12 +593,9 @@ class ComingPrayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimationConfiguration.synchronized(
+    return const AnimationConfiguration.synchronized(
       duration: Duration(milliseconds: 700),
-      child: SlideAnimation(
-        horizontalOffset: 40,
-        child: const NextPrayerCard(),
-      ),
+      child: SlideAnimation(horizontalOffset: 40, child: NextPrayerCard()),
     );
   }
 }

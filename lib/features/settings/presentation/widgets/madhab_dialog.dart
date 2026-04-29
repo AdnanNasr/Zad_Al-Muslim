@@ -31,7 +31,7 @@ class MadhabDialog extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(width: 8.w),
-                Text(
+                const Text(
                   "المذهب (صلاة العصر)",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -85,12 +85,12 @@ class MadhabDialog extends ConsumerWidget {
                 }),
               ),
             ),
-            Divider(),
+            const Divider(),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text(
+              child: const Text(
                 "إلغاء",
                 style: TextStyle(
                   fontFamily: "Cairo",

@@ -370,8 +370,8 @@ class _MoratalFullPlayerSheetState
         return Container(
           width: double.infinity,
           // margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          decoration: BoxDecoration(
-            image: const DecorationImage(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
               image: AssetImage("assets/images/night_clouds.jpg"),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
@@ -570,7 +570,7 @@ class _MoratalFullPlayerSheetState
                   key: ValueKey('$surahNumber:$ayahNumber'),
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     // Verse text layer
                     Center(
                       child: Container(
@@ -598,7 +598,7 @@ class _MoratalFullPlayerSheetState
                       ),
                     ),
 
-                    Spacer(),
+                    const Spacer(),
                     SizedBox(height: 12.h),
                     // Ayah number badge
                     Container(
@@ -900,4 +900,3 @@ class _MoratalFullPlayerSheetState
     );
   }
 }
-

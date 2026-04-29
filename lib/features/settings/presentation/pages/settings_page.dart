@@ -179,7 +179,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: AppLocalizations.of(context)!.app_settings,
                 settingsCards: [
                   SettingCards(
-                    icon: Right(Icons.dark_mode),
+                    icon: const Right(Icons.dark_mode),
                     text: AppLocalizations.of(context)!.dark_mode,
                     toggle: true,
                     switchValue: themeMode == ThemeMode.dark,
@@ -190,10 +190,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(9),
                     ),
-                    icon: Right(Icons.language),
+                    icon: const Right(Icons.language),
                     text: AppLocalizations.of(context)!.app_language,
                     widget: Text(
                       "قريباً...",
@@ -211,7 +211,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     // },
                   ),
                   SettingCards(
-                    icon: Right(Icons.color_lens),
+                    icon: const Right(Icons.color_lens),
                     text: AppLocalizations.of(context)!.app_color,
                     widget: Text(
                       "قريباً...",
@@ -228,10 +228,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     // ),
                   ),
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(9),
                     ),
-                    icon: Right(Icons.format_size),
+                    icon: const Right(Icons.format_size),
                     text: "حجم خط الأذكار",
                     onTap: () {
                       showDialog(
@@ -250,10 +250,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: "إعدادات مواقيت الصلاة",
                 settingsCards: [
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(9),
                     ),
-                    icon: Right(Icons.calculate_rounded),
+                    icon: const Right(Icons.calculate_rounded),
                     text: "طريقة حساب المواقيت",
                     subText: _getCalculationMethodName(
                       appSettings.calculationMethodIndex,
@@ -305,10 +305,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(9),
                     ),
-                    icon: Right(Icons.access_time_filled_outlined),
+                    icon: const Right(Icons.access_time_filled_outlined),
                     text: "تنسيق الوقت (24 ساعة)",
                     toggle: true,
                     switchValue: appSettings.use24HourFormat,
@@ -326,7 +326,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: "الإشعارات والتنبيهات",
                 settingsCards: [
                   SettingCards(
-                    icon: Right(Icons.notifications_active_rounded),
+                    icon: const Right(Icons.notifications_active_rounded),
                     text: "إشعارات الصلاة",
                     toggle: true,
                     switchValue: appSettings.prayerNotificationsEnabled,
@@ -337,18 +337,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.multitrack_audio_sharp),
+                    icon: const Right(Icons.multitrack_audio_sharp),
                     text: "صوت الأذان",
                     subText: "الافتراضي",
                     onTap: () {
                       showDialog(
                         context: context,
-                        builder: (context) => AdahnDialog(),
+                        builder: (context) => const AdahnDialog(),
                       );
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.wb_sunny_rounded),
+                    icon: const Right(Icons.wb_sunny_rounded),
                     text: "تنبيه أذكار الصباح",
                     toggle: true,
                     switchValue: appSettings.morningAdkarReminder,
@@ -359,7 +359,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.nightlight_round),
+                    icon: const Right(Icons.nightlight_round),
                     text: "تنبيه أذكار المساء",
                     toggle: true,
                     switchValue: appSettings.eveningAdkarReminder,
@@ -388,10 +388,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   //   },
                   // ),
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(9),
                     ),
-                    icon: Right(Icons.restart_alt_rounded),
+                    icon: const Right(Icons.restart_alt_rounded),
                     text: "إعادة ضبط جميع الإعدادات",
                     forgroundColor: Colors.red,
                     onTap: () {
@@ -415,7 +415,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ),
                             ),
                             TextButton(
-                              style: ButtonStyle(
+                              style: const ButtonStyle(
                                 backgroundColor: WidgetStatePropertyAll<Color>(
                                   Colors.red,
                                 ),
@@ -441,7 +441,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    icon: Right(Icons.delete),
+                    icon: const Right(Icons.delete),
                     text: "تنظيف المساحة",
                     widget: _isClearingCache
                         ? const SizedBox(
@@ -458,13 +458,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     forgroundColor: Colors.orange,
                   ),
                   SettingCards(
-                    icon: Right(Icons.app_settings_alt),
+                    icon: const Right(Icons.app_settings_alt),
                     text: AppLocalizations.of(context)!.app_information,
                     onTap: () => Navigator.of(context).pushNamed("/app_info"),
                   ),
                   SettingCards(
                     // borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)), // TODO: Temp
-                    icon: Right(Icons.group),
+                    icon: const Right(Icons.group),
                     text: "نشر التطبيق (صدقة جارية)",
                     onTap: () {
                       SharePlus.instance.share(
@@ -473,10 +473,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     },
                   ),
                   SettingCards(
-                    borderRadius: BorderRadius.vertical(
+                    borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(9),
                     ),
-                    icon: Right(Icons.group),
+                    icon: const Right(Icons.group),
                     text: "حجم الشاشة",
                     onTap: () {
                       final heightSize = context.mediaQueryHeight;

@@ -72,7 +72,7 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
           // prefixIcon: Icon(Icons.search_rounded, color: context.color.primary),
           prefixIcon: _controller.text.isNotEmpty
               ? AnimationConfiguration.synchronized(
-                  duration: Duration(milliseconds: 700),
+                  duration: const Duration(milliseconds: 700),
                   child: FadeInAnimation(
                     child: IconButton(
                       onPressed: () {
@@ -80,11 +80,11 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
                         onSearchChanged("");
                         setState(() {});
                       },
-                      icon: Icon(Icons.clear_outlined),
+                      icon: const Icon(Icons.clear_outlined),
                     ),
                   ),
                 )
-              : Icon(Icons.search_outlined),
+              : const Icon(Icons.search_outlined),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r)),
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16.w,

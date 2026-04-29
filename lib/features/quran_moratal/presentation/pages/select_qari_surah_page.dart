@@ -55,7 +55,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                   trackVisibility: true,
                   interactive: true,
                   thickness: 5,
-                  radius: Radius.circular(24),
+                  radius: const Radius.circular(24),
                   child: ListView.separated(
                     controller: _scrollController,
                     padding: EdgeInsets.only(

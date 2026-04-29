@@ -179,12 +179,12 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 color: context.color.primaryFixedDim.withValues(
                   alpha: .08,
                 ), // لون خلفية القائمة
-                child: IndexSurahMenu(),
+                child: const IndexSurahMenu(),
               ),
             ),
 
             AnimatedContainer(
-              duration: Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 400),
               transform: Matrix4.translationValues(
                 isMenuOpen ? -context.mediaQueryWidth / 1.35 : 0,
                 0,
@@ -294,7 +294,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                             },
                           )
                         : QcfThemeData(
-                            verseTextColor: Color(0xFFE0E0E0),
+                            verseTextColor: const Color(0xFFE0E0E0),
                             verseNumberColor: context.color.primary, // amber
                             basmalaColor: context.color.primary,
                             headerTextColor: Colors.white,
@@ -483,7 +483,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                                   Colors.grey.shade800,
                                               content: Row(
                                                 children: [
-                                                  Icon(
+                                                  const Icon(
                                                     Icons
                                                         .bookmark_remove_rounded,
                                                     color: Colors.white,
@@ -713,7 +713,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text(
                             "تعذر تشغيل الصوت. تحقق من اتصالك بالإنترنت.",
                           ),
@@ -801,7 +801,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                           backgroundColor: Colors.grey.shade800,
                           content: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.bookmark_remove_rounded,
                                 color: Colors.white,
                               ),
@@ -895,7 +895,6 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
       ),
     );
   }
-
 }
 
 /// دالة مشتركة لبناء رأس السورة (مُستخدَمة في QuranPages وQuranVerticalPage)
@@ -905,9 +904,8 @@ InkWell buildQuranPageHeader(
   FlexScheme themeColor,
   ThemeMode themeMode,
 ) {
-  bool isPortrait =
-      MediaQuery.of(context).orientation == Orientation.portrait;
-  final effectiveTheme = QcfThemeData();
+  bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+  const effectiveTheme = QcfThemeData();
   return InkWell(
     borderRadius: BorderRadius.circular(effectiveTheme.headerBorderRadius),
     child: Container(
@@ -967,30 +965,4 @@ InkWell buildQuranPageHeader(
       ),
     ),
   );
-}
-
-class AppAndBottomBar extends StatelessWidget {
-  const AppAndBottomBar({
-    super.key,
-    required this.globalSurahNumber,
-    required this.globalStartOfSurah,
-  });
-
-  final int globalSurahNumber;
-  final int globalStartOfSurah;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: QuranPageAppBar(
-        surahName: SurahNames.getFormattedName(globalSurahNumber),
-        juzzNumber: getJuzNumber(globalSurahNumber, globalStartOfSurah),
-        placeOfRevelation: getPlaceOfRevelation(globalSurahNumber),
-        verseCount: getVerseCount(globalSurahNumber),
-      ),
-    );
-  }
 }

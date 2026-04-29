@@ -187,6 +187,94 @@ class QuranViewTypeDialog extends ConsumerWidget {
               },
             ),
 
+            if (selectedType == QuranViewType.zoomable) ...[
+              SizedBox(height: 16.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.format_size_rounded,
+                      color: context.color.primary,
+                      size: 20.sp,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      'حجم الخط',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: context.color.onSurface,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      settings.quranVerticalFontSize.toInt().toString(),
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                        color: context.color.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 12.h),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
+                decoration: BoxDecoration(
+                  color: context.color.onSurface.withValues(alpha: .04),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                    color: context.color.onSurface.withValues(alpha: .08),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Quran',
+                      fontSize: settings.quranVerticalFontSize,
+                      color: context.color.onSurface,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              SliderTheme(
+                data: SliderThemeData(
+                  activeTrackColor: context.color.primary,
+                  inactiveTrackColor: context.color.primary.withValues(alpha: .2),
+                  thumbColor: context.color.primary,
+                  overlayColor: context.color.primary.withValues(alpha: .1),
+                  trackHeight: 4.h,
+                  valueIndicatorTextStyle: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 12.sp,
+                    color: Colors.white,
+                  ),
+                ),
+                child: Slider(
+                  value: settings.quranVerticalFontSize,
+                  min: 14.0,
+                  max: 40.0,
+                  divisions: 26,
+                  label: settings.quranVerticalFontSize.toInt().toString(),
+                  onChanged: (value) {
+                    ref
+                        .read(quranSettingsProvider.notifier)
+                        .setQuranVerticalFontSize(value);
+                  },
+                ),
+              ),
+            ],
+
             SizedBox(height: 8.h),
             Divider(color: context.color.onSurface.withValues(alpha: .1)),
 
@@ -194,7 +282,7 @@ class QuranViewTypeDialog extends ConsumerWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'إلغاء',
+                'إغلاق',
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 14.sp,

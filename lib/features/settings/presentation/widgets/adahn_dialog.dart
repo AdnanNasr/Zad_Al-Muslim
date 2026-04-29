@@ -38,7 +38,7 @@ class _AdahnDialogState extends State<AdahnDialog> {
                   color: context.color.primary,
                 ),
                 SizedBox(width: 8.w),
-                Text(
+                const Text(
                   "صوت الأذان",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -47,7 +47,7 @@ class _AdahnDialogState extends State<AdahnDialog> {
                   ),
                 ),
                 SizedBox(width: 8.w),
-                Text(
+                const Text(
                   "(قيد العمل)",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -57,7 +57,7 @@ class _AdahnDialogState extends State<AdahnDialog> {
                 ),
               ],
             ),
-            Divider(),
+            const Divider(),
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: context.mediaQueryHeight * 0.5,
@@ -84,12 +84,12 @@ class _AdahnDialogState extends State<AdahnDialog> {
                 ),
               ),
             ),
-            Divider(),
+            const Divider(),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text(
+              child: const Text(
                 "إلغاء",
                 style: TextStyle(
                   fontFamily: "Cairo",

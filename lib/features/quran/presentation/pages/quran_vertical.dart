@@ -11,8 +11,6 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/themes/theme_notifier.dart';
-import 'package:noor_quran/core/constants/routes.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
 import 'package:noor_quran/features/quran/data/models/mark.dart';
 import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart'
@@ -25,6 +23,7 @@ import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_a
 import 'package:noor_quran/features/quran/presentation/widgets/index_surah_menu.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/mini_audio_player.dart';
 import 'package:noor_quran/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
+import 'package:noor_quran/features/quran/presentation/widgets/quran_page_app_bar.dart';
 import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
 import 'package:noor_quran/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
@@ -49,10 +48,12 @@ class QuranVerticalPage extends ConsumerStatefulWidget {
 
 class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
   late double _fontSize;
   double _baseFontSize = 22.0;
+  bool _isScaling = false;
   bool _showFontIndicator = false;
   Timer? _indicatorTimer;
 
@@ -64,6 +65,7 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
 
   // Current visible surah for app bar
   int _currentVisibleSurah = 1;
+  int _onPageChanged = 1;
 
   // App Bar, Bottom Bar and Menu State
   bool isMenuOpen = false;
@@ -87,12 +89,6 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
     });
   }
 
-  void _hideAppBar() {
-    setState(() {
-      _showAppAndBottomBar = false;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -100,13 +96,14 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
 
     // تحديد السورة الابتدائية من رقم الصفحة
     final page = widget.pageNumber ?? 1;
+    _onPageChanged = page;
     final initialSurah = _surahFromPage(page);
     _currentVisibleSurah = initialSurah;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fontSize = ref.read(quranSettingsProvider).quranVerticalFontSize;
       setState(() {});
-      
+
       // تأخير بسيط للتأكد من بناء الصفحة قبل التمرير
       Future.delayed(const Duration(milliseconds: 100), () {
         _scrollToSurah(initialSurah);
@@ -150,15 +147,21 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
       double minTop = double.infinity;
       for (var pos in positions) {
         if (pos.itemTrailingEdge > 0 && pos.itemLeadingEdge < minTop) {
-           minTop = pos.itemLeadingEdge;
-           firstVisible = pos.index;
+          minTop = pos.itemLeadingEdge;
+          firstVisible = pos.index;
         }
       }
       if (firstVisible != null) {
         final surah = firstVisible + 1;
-        if (_currentVisibleSurah != surah) {
+        final page = getPageNumber(surah, 1);
+        if (_currentVisibleSurah != surah || _onPageChanged != page) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) setState(() => _currentVisibleSurah = surah);
+            if (mounted) {
+              setState(() {
+                _currentVisibleSurah = surah;
+                _onPageChanged = page;
+              });
+            }
           });
         }
       }
@@ -166,6 +169,7 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   }
 
   void _onScaleStart(ScaleStartDetails details) {
+    _isScaling = true;
     _baseFontSize = _fontSize;
   }
 
@@ -185,7 +189,10 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   }
 
   void _onScaleEnd(ScaleEndDetails details) {
-    ref.read(quranSettingsProvider.notifier).setQuranVerticalFontSize(_fontSize);
+    _isScaling = false;
+    ref
+        .read(quranSettingsProvider.notifier)
+        .setQuranVerticalFontSize(_fontSize);
   }
 
   void _showAyahMenu(int surah, int verse, Offset position) {
@@ -207,7 +214,9 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(quranSettingsProvider);
-    _fontSize = settings.quranVerticalFontSize;
+    if (!_isScaling) {
+      _fontSize = settings.quranVerticalFontSize;
+    }
 
     final themeMode = ref.watch(themeProvider);
     final themeColor = ref.watch(userThemeProvider);
@@ -229,10 +238,11 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
             const Color(0xFFFAF6EE),
           ];
 
-    final bgColor = colorsList[settings.readingBackgroundColorIndex.clamp(
-      0,
-      colorsList.length - 1,
-    )];
+    final bgColor =
+        colorsList[settings.readingBackgroundColorIndex.clamp(
+          0,
+          colorsList.length - 1,
+        )];
 
     final currentAyah = ref.watch(currentPlayingAyahProvider);
 
@@ -250,9 +260,9 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
               bottom: 0,
               child: Container(
                 width: MediaQuery.of(context).size.width / 1.35,
-                color: Theme.of(context).colorScheme.primaryFixedDim.withValues(
-                  alpha: .08,
-                ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primaryFixedDim.withValues(alpha: .08),
                 child: const IndexSurahMenu(),
               ),
             ),
@@ -288,14 +298,12 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
                       ScrollablePositionedList.builder(
                         itemScrollController: itemScrollController,
                         itemPositionsListener: itemPositionsListener,
-                        padding: EdgeInsets.only(
-                          top: 70.h,
-                          bottom: 120.h,
-                        ),
+                        padding: EdgeInsets.only(top: 70.h, bottom: 120.h),
                         itemCount: 114,
                         itemBuilder: (context, index) {
                           final surahNumber = index + 1;
                           return _SurahSection(
+                            currentVisibleSurah: _currentVisibleSurah,
                             surahNumber: surahNumber,
                             fontSize: _fontSize,
                             bgColor: bgColor,
@@ -303,201 +311,119 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
                             themeColor: themeColor,
                             themeMode: themeMode,
                             currentAyah: currentAyah,
-                            highlightSurah: _highlightAyah ? _selectedSurah : null,
-                            highlightVerse: _highlightAyah ? _selectedVerse : null,
+                            highlightSurah: _highlightAyah
+                                ? _selectedSurah
+                                : null,
+                            highlightVerse: _highlightAyah
+                                ? _selectedVerse
+                                : null,
                             onLongPress: _showAyahMenu,
                           );
                         },
                       ),
 
-              // ─── شريط العنوان العلوي ───────────────────────────
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                top: showBars ? 0 : -150.h,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 8.h,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: context.color.primary,
-                        borderRadius: BorderRadius.circular(16.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: .15),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 8.h,
-                      ),
-                      child: Row(
-                        children: [
-                          InkWell(
-                            onTap: () => Navigator.of(context).popUntil(
-                              ModalRoute.withName(Routes.customNavigationBar),
+                      // ─── شريط العنوان التفاعلي (Toggling AppBar) ─────────
+                      if (showBars)
+                        AppAndBottomBar(
+                          globalSurahNumber: _currentVisibleSurah,
+                          globalStartOfSurah: 1,
+                        ),
+
+                      // ─── مؤشر حجم الخط ────────────────────────────────
+                      AnimatedOpacity(
+                        opacity: _showFontIndicator ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Center(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.w,
+                              vertical: 12.h,
                             ),
-                            borderRadius: BorderRadius.circular(10.r),
-                            child: Container(
-                              padding: EdgeInsets.all(8.r),
-                              decoration: BoxDecoration(
-                                color: context.color.onPrimary.withValues(
-                                  alpha: .15,
-                                ),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: context.color.onPrimary,
-                                size: 18.sp,
-                              ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: .7),
+                              borderRadius: BorderRadius.circular(16.r),
                             ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  'سورة ${SurahNames.getFormattedName(_currentVisibleSurah)}',
-                                  style: TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.color.onPrimary,
-                                  ),
+                                Icon(
+                                  Icons.format_size_rounded,
+                                  color: Colors.white,
+                                  size: 20.sp,
                                 ),
+                                SizedBox(width: 8.w),
                                 Text(
-                                  '${getPlaceOfRevelation(_currentVisibleSurah)} • ${getVerseCount(_currentVisibleSurah)} آية',
+                                  _fontSize.toStringAsFixed(0),
                                   style: TextStyle(
                                     fontFamily: 'Cairo',
-                                    fontSize: 11.sp,
-                                    color: context.color.onPrimary.withValues(
-                                      alpha: .8,
-                                    ),
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          // مؤشر نوع العرض
-                          Icon(
-                            Icons.swipe_vertical_rounded,
-                            color: context.color.onPrimary.withValues(
-                              alpha: .7,
+                        ),
+                      ),
+
+                      // ─── قائمة الآية عند الضغط المطول ─────────────────
+                      if (_highlightAyah)
+                        Positioned(
+                          top: _tapPosition != null
+                              ? (_tapPosition!.dy - 80.h).clamp(
+                                  80.0,
+                                  MediaQuery.of(context).size.height - 150.0,
+                                )
+                              : null,
+                          bottom: _tapPosition == null ? 120.h : null,
+                          left: 20.w,
+                          right: 20.w,
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeOutBack,
+                            builder: (context, value, child) =>
+                                Transform.translate(
+                                  offset: Offset(0, 40 * (1 - value)),
+                                  child: Opacity(
+                                    opacity: value.clamp(0.0, 1.0),
+                                    child: child,
+                                  ),
+                                ),
+                            child: _AyahActionMenu(
+                              surahNumber: _selectedSurah,
+                              verseNumber: _selectedVerse,
+                              themeMode: themeMode,
+                              onDismiss: _hideAyahMenu,
                             ),
-                            size: 20.sp,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // ─── مؤشر حجم الخط ────────────────────────────────
-              AnimatedOpacity(
-                opacity: _showFontIndicator ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 200),
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 12.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: .7),
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.format_size_rounded,
-                          color: Colors.white,
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          _fontSize.toStringAsFixed(0),
-                          style: TextStyle(
-                            fontFamily: 'Cairo',
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
 
-              // ─── قائمة الآية عند الضغط المطول ─────────────────
-              if (_highlightAyah)
-                Positioned(
-                  top: _tapPosition != null
-                      ? (_tapPosition!.dy - 80.h).clamp(
-                          80.0,
-                          MediaQuery.of(context).size.height - 150.0,
-                        )
-                      : null,
-                  bottom: _tapPosition == null ? 120.h : null,
-                  left: 20.w,
-                  right: 20.w,
-                  child: TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutBack,
-                    builder: (context, value, child) => Transform.translate(
-                      offset: Offset(0, 40 * (1 - value)),
-                      child: Opacity(
-                        opacity: value.clamp(0.0, 1.0),
-                        child: child,
+                      // ─── المشغل الصوتي ─────────────────────────────────
+                      Positioned(
+                        bottom: showBars
+                            ? kBottomNavigationBarHeight + 10.h
+                            : 10.h,
+                        left: 0,
+                        right: 0,
+                        child: const MiniAudioPlayer(),
                       ),
-                    ),
-                    child: _AyahActionMenu(
-                      surahNumber: _selectedSurah,
-                      verseNumber: _selectedVerse,
-                      themeMode: themeMode,
-                      onDismiss: _hideAyahMenu,
-                    ),
+
+                      // ─── شريط التنقل السفلي ───────────────────────────
+                      if (showBars)
+                        Positioned(
+                          bottom: kBottomNavigationBarHeight / 2,
+                          left: 0,
+                          right: 0,
+                          child: QurahPageBottomNavigationBar(
+                            onIndexPressed: _toggleMenu,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-
-              // ─── المشغل الصوتي ─────────────────────────────────
-              Positioned(
-                bottom: showBars ? kBottomNavigationBarHeight + 10.h : 10.h,
-                left: 0,
-                right: 0,
-                child: const MiniAudioPlayer(),
               ),
-
-              // ─── شريط التنقل السفلي ───────────────────────────
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                bottom: showBars ? kBottomNavigationBarHeight / 2 : -150.h,
-                left: 0,
-                right: 0,
-                child: QurahPageBottomNavigationBar(
-                  onIndexPressed: _toggleMenu,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
             ),
           ],
         ),
@@ -520,9 +446,9 @@ class _SurahSection extends ConsumerWidget {
   final int? highlightSurah;
   final int? highlightVerse;
   final void Function(int surah, int verse, Offset position) onLongPress;
+  final int currentVisibleSurah;
 
   const _SurahSection({
-    super.key,
     required this.surahNumber,
     required this.fontSize,
     required this.bgColor,
@@ -531,6 +457,7 @@ class _SurahSection extends ConsumerWidget {
     required this.themeMode,
     required this.currentAyah,
     required this.onLongPress,
+    required this.currentVisibleSurah,
     this.highlightSurah,
     this.highlightVerse,
   });
@@ -538,7 +465,9 @@ class _SurahSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final verseCount = getVerseCount(surahNumber);
-    final textColor = isDark ? const Color(0xFFE0E0E0) : const Color(0xFF1A1A1A);
+    final textColor = isDark
+        ? const Color(0xFFE0E0E0)
+        : const Color(0xFF1A1A1A);
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     // بناء الـ TextSpan لكل آيات السورة
@@ -555,23 +484,23 @@ class _SurahSection extends ConsumerWidget {
       final isHighlighted =
           highlightSurah == surahNumber && highlightVerse == v;
 
-      final verseColor = isPlaying || isHighlighted
-          ? primaryColor.withValues(alpha: isPlaying ? 0.85 : 0.6)
-          : textColor;
+      // final verseColor = isPlaying || isHighlighted
+      //     ? primaryColor.withValues(alpha: isPlaying ? 0.85 : 0.6)
+      //     : textColor;
 
       // النص الرئيسي للآية
       spans.add(
         TextSpan(
           text: verseText,
           style: TextStyle(
-            fontFamily: 'Quran',
+            fontFamily: "Quran",
             fontSize: fontSize,
-            color: verseColor,
+            color: textColor,
             height: 2.0,
             backgroundColor: isPlaying
-                ? primaryColor.withValues(alpha: 0.15)
+                ? primaryColor.withValues(alpha: 0.4)
                 : isHighlighted
-                ? primaryColor.withValues(alpha: 0.1)
+                ? primaryColor.withValues(alpha: 0.4)
                 : null,
           ),
           recognizer: LongPressGestureRecognizer()
@@ -636,15 +565,15 @@ class _SurahSection extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h),
             child: Text(
-              'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+              " ﱁ  ﱂﱃﱄ ",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Quran',
-                fontSize: fontSize * 0.95,
+                fontFamily: "QCF_P001",
+                package: "qcf_quran",
+                fontSize: fontSize,
                 color: isDark
                     ? const Color(0xFFE0E0E0)
                     : const Color(0xFF1A1A1A),
-                height: 2.2,
               ),
             ),
           ),
@@ -653,7 +582,7 @@ class _SurahSection extends ConsumerWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: RichText(
-            textAlign: TextAlign.justify,
+            textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,
             text: TextSpan(children: spans),
           ),
@@ -718,12 +647,16 @@ class _AyahActionMenu extends ConsumerWidget {
             icon: Icons.copy_rounded,
             label: 'نسخ',
             onTap: () async {
-              final text = getVerse(surahNumber, verseNumber, verseEndSymbol: false);
+              final text = getVerse(
+                surahNumber,
+                verseNumber,
+                verseEndSymbol: false,
+              );
               await Clipboard.setData(ClipboardData(text: text));
               if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم نسخ الآية')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('تم نسخ الآية')));
               onDismiss();
             },
           ),
@@ -737,35 +670,33 @@ class _AyahActionMenu extends ConsumerWidget {
                   AyahVoiceParameter(surahNumber, verseNumber, qari),
                 ),
               );
-              urlEither.fold(
-                (_) {},
-                (url) async {
-                  try {
-                    final player = ref.read(audioPlayerProvider);
-                    await player.stop();
-                    ref.read(currentPlayingAyahProvider.notifier).state =
-                        CurrentPlayingAyah(
-                          surahNumber: surahNumber,
-                          ayahNumber: verseNumber,
-                          surahName: SurahNames.getFormattedName(surahNumber),
-                        );
-                    await player.setAudioSource(
-                      AudioSource.uri(
-                        Uri.parse(url),
-                        tag: MediaItem(
-                          id: 'ayah_${surahNumber}_$verseNumber',
-                          title:
-                              'سورة ${SurahNames.getFormattedName(surahNumber)}',
-                          artist: 'الآية $verseNumber',
-                        ),
+              urlEither.fold((_) {}, (url) async {
+                try {
+                  final player = ref.read(audioPlayerProvider);
+                  await player.stop();
+                  ref
+                      .read(currentPlayingAyahProvider.notifier)
+                      .state = CurrentPlayingAyah(
+                    surahNumber: surahNumber,
+                    ayahNumber: verseNumber,
+                    surahName: SurahNames.getFormattedName(surahNumber),
+                  );
+                  await player.setAudioSource(
+                    AudioSource.uri(
+                      Uri.parse(url),
+                      tag: MediaItem(
+                        id: 'ayah_${surahNumber}_$verseNumber',
+                        title:
+                            'سورة ${SurahNames.getFormattedName(surahNumber)}',
+                        artist: 'الآية $verseNumber',
                       ),
-                    );
-                    await player.play();
-                  } on PlayerInterruptedException {
-                    // تم الإيقاف من قبل المستخدم
-                  } catch (_) {}
-                },
-              );
+                    ),
+                  );
+                  await player.play();
+                } on PlayerInterruptedException {
+                  // تم الإيقاف من قبل المستخدم
+                } catch (_) {}
+              });
               onDismiss();
             },
           ),
@@ -782,8 +713,7 @@ class _AyahActionMenu extends ConsumerWidget {
                   if (!isMarked) {
                     await notifier.addMark(
                       Mark()
-                        ..surahName =
-                            SurahNames.getFormattedName(surahNumber)
+                        ..surahName = SurahNames.getFormattedName(surahNumber)
                         ..pageNumber = getPageNumber(surahNumber, verseNumber)
                         ..surahNumber = surahNumber
                         ..ayahNumber = verseNumber,
@@ -804,10 +734,12 @@ class _AyahActionMenu extends ConsumerWidget {
               final books = ref.read(tafsserBooksProvider).value;
               String bookId = 'ar.jalalayn';
               if (books != null && books.isNotEmpty) {
-                bookId = books.firstWhere(
-                  (b) => b.isDownloaded,
-                  orElse: () => books.first,
-                ).id;
+                bookId = books
+                    .firstWhere(
+                      (b) => b.isDownloaded,
+                      orElse: () => books.first,
+                    )
+                    .id;
               }
               showTafsserModalBottom(
                 context,
@@ -824,8 +756,11 @@ class _AyahActionMenu extends ConsumerWidget {
             icon: Icons.share_rounded,
             label: 'مشاركة',
             onTap: () async {
-              final text =
-                  getVerse(surahNumber, verseNumber, verseEndSymbol: true);
+              final text = getVerse(
+                surahNumber,
+                verseNumber,
+                verseEndSymbol: true,
+              );
               await SharePlus.instance.share(ShareParams(text: text));
               onDismiss();
             },
@@ -849,7 +784,11 @@ class _AyahActionMenu extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 22.sp, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              icon,
+              size: 22.sp,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             SizedBox(height: 4.h),
             Text(
               label,

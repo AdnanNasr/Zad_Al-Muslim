@@ -76,7 +76,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                   final isSelected = notifier.currentBookNumber == tag.id;
                   return AnimationConfiguration.staggeredList(
                     position: index,
-                    duration: Duration(milliseconds: 700),
+                    duration: const Duration(milliseconds: 700),
                     child: SlideAnimation(
                       horizontalOffset: 40,
                       curve: Curves.ease,
@@ -138,7 +138,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                   thumbVisibility: true,
                   trackVisibility: true,
                   interactive: true,
-                  radius: Radius.circular(24),
+                  radius: const Radius.circular(24),
 
                   child: AnimationLimiter(
                     child: ListView.builder(
@@ -157,7 +157,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
 
                         final hadith = hadiths[index];
                         return AnimationConfiguration.staggeredList(
-                          duration: Duration(milliseconds: 700),
+                          duration: const Duration(milliseconds: 700),
                           position: index,
                           child: SlideAnimation(
                             verticalOffset: 40,

@@ -89,9 +89,9 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
     urlEither.fold(
       (failure) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("فشل الحصول على رابط الآية")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("فشل الحصول على رابط الآية")),
+          );
         }
       },
       (url) async {
@@ -116,7 +116,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
           AppLogger.logger.e("رسالة الخطأ: $e");
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("تعذر التشغيل. لا يوجد اتصال.")),
+            const SnackBar(content: Text("تعذر التشغيل. لا يوجد اتصال.")),
           );
         }
       },
@@ -419,4 +419,3 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
     );
   }
 }
-

@@ -71,11 +71,11 @@ class CalculationMethodDialog extends ConsumerWidget {
             SizedBox(height: 8.h),
             Divider(color: context.color.onSurface.withValues(alpha: .1)),
             TextButton(
-              style: ButtonStyle(splashFactory: NoSplash.splashFactory),
+              style: const ButtonStyle(splashFactory: NoSplash.splashFactory),
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text(
+              child: const Text(
                 "إلغاء",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

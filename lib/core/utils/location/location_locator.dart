@@ -62,9 +62,9 @@ class LocationLocatorImpl implements LocationLocator {
 
     // 3. جلب الموقع الفعلي
     try {
-      final LocationSettings locationSettings = LocationSettings(
+      const LocationSettings locationSettings = LocationSettings(
         accuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 15),
+        timeLimit: Duration(seconds: 15),
       );
 
       Position position = await Geolocator.getCurrentPosition(

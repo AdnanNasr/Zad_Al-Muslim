@@ -15,7 +15,7 @@ class QuranMoratalPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: "القرآن مُرتل",
         center: false,
         profile: false,
@@ -29,7 +29,7 @@ class QuranMoratalPage extends ConsumerWidget {
           itemBuilder: (context, index) {
             final Map<String, String> qariData = QariNames.allQaris[index];
             return AnimationConfiguration.staggeredList(
-              duration: Duration(milliseconds: 700),
+              duration: const Duration(milliseconds: 700),
               position: index,
               child: SlideAnimation(
                 curve: Curves.linear,

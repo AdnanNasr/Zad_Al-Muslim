@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noor_quran/core/common/constants/surah_names.dart';
 import 'package:noor_quran/core/common/providers/theme_provider.dart';
 import 'package:noor_quran/core/constants/routes.dart';
 import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:qcf_quran/qcf_quran.dart';
 
 class QuranPageAppBar extends ConsumerStatefulWidget {
-  final String surahName; // أضفت هذا ليكون الكود تفاعلياً
+  final String surahName;
   final int juzzNumber;
   final String placeOfRevelation;
   final int verseCount;
@@ -98,21 +100,17 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            "سورة ${widget.surahName}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17.sp,
-                              color: context.color.onPrimary,
-                              fontFamily: "Cairo",
-                              letterSpacing: 0.5,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                      Text(
+                        "سورة ${widget.surahName}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17.sp,
+                          color: context.color.onPrimary,
+                          fontFamily: "Cairo",
+                          letterSpacing: 0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 8.h),
                       Row(
@@ -172,6 +170,32 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
             child: Icon(icon, color: context.color.onPrimary, size: 20.sp),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AppAndBottomBar extends StatelessWidget {
+  const AppAndBottomBar({
+    super.key,
+    required this.globalSurahNumber,
+    required this.globalStartOfSurah,
+  });
+
+  final int globalSurahNumber;
+  final int globalStartOfSurah;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: QuranPageAppBar(
+        surahName: SurahNames.getFormattedName(globalSurahNumber),
+        juzzNumber: getJuzNumber(globalSurahNumber, globalStartOfSurah),
+        placeOfRevelation: getPlaceOfRevelation(globalSurahNumber),
+        verseCount: getVerseCount(globalSurahNumber),
       ),
     );
   }
