@@ -1,4 +1,4 @@
-package com.zad_al_muslim.zad_al_muslim
+package com.zad_al_muslim.adnan
 
 import com.ryanheise.audioservice.AudioServiceActivity
 

@@ -1,9 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 
 class HomeButton extends ConsumerStatefulWidget {
   final String text;
@@ -31,126 +29,133 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeMode = ref.watch(themeProvider);
+    final isDark = theme.brightness == Brightness.dark;
 
-    return InkWell(
-      onTap: widget.onTap,
-      borderRadius: BorderRadius.circular(16.r),
-      splashColor: Colors.white.withValues(alpha: 0.2),
-      highlightColor: Colors.white.withValues(alpha: 0.1),
-      child: Ink(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              context.color.primary,
-              context.color.primary.withValues(alpha: 0.85),
-              HSLColor.fromColor(context.color.primary)
-                  .withLightness(
-                    (HSLColor.fromColor(context.color.primary).saturation - 0.2)
-                        .clamp(0.0, 1.0),
-                  )
-                  .toColor(),
-            ],
-            stops: [themeMode == ThemeMode.light ? 1.0 : 0.0, 0.0, 0.0],
+    // تهيئة الألوان بأسلوب Glassmorphism
+    // نستخدم ألواناً شفافة تسمح بمرور الخلفية مع ضبابية
+    final bgColor = isDark
+        ? widget.color.withValues(alpha: 0.15)
+        : widget.color.withValues(alpha: 0.1);
+
+    final contentColor = isDark
+        ? (widget.color is MaterialColor
+              ? (widget.color as MaterialColor).shade200
+              : widget.color)
+        : (widget.color is MaterialColor
+              ? (widget.color as MaterialColor).shade900
+              : widget.color);
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: widget.color.withValues(alpha: isDark ? 0.05 : 0.1),
+            blurRadius: 5,
+            offset: const Offset(0, 1),
           ),
-          border: Border.all(
-            color: context.color.onSurface.withValues(alpha: 0.15),
-            width: 1.5,
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16.r),
-          child: Stack(
-            children: [
-              // --- زخارف عشوائية في الخلفية ---
-              Positioned(
-                right: -15.r,
-                top: -10.r,
-                child: Container(
-                  width: 50.r,
-                  height: 50.r,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.08),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.r),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.onTap,
+              borderRadius: BorderRadius.circular(20.r),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : widget.color.withValues(alpha: 0.2),
+                    width: 1.2,
                   ),
                 ),
-              ),
-              Positioned(
-                left: -25.r,
-                bottom: -25.r,
-                child: Container(
-                  width: 90.r,
-                  height: 90.r,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.05),
-                  ),
-                ),
-              ),
-
-              // --- المحتوى الرئيسي للزر ---
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                child: Stack(
                   children: [
-                    if (widget.iconImage != null || widget.iconData != null)
-                      Container(
-                        padding: EdgeInsets.all(context.witdthScreen * 0.02),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
+                    // --- زخارف إسلامية ناعمة في الخلفية مع تباين محسن ---
+                    Positioned(
+                      bottom: -5.r,
+                      left: -3.r,
+                      child: Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 40.sp,
+                        color: contentColor.withValues(
+                          alpha: isDark ? 0.08 : 0.12,
                         ),
-                        child: widget.iconImage != null
-                            ? Image.asset(
-                                widget.iconImage!,
-                                height: context.witdthScreen <= 360
-                                    ? 24.h
-                                    : 28.h,
-                              )
-                            : Icon(
-                                widget.iconData,
-                                color: context.color.primary,
-                                size: context.witdthScreen * 0.06,
-                              ),
                       ),
-                    SizedBox(width: 6.w),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+
+                    // --- المحتوى الرئيسي للزر ---
+                    Padding(
+                      padding: EdgeInsets.all(12.r),
+                      child: Row(
                         children: [
-                          Text(
-                            widget.text,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Cairo",
-                              fontSize: 14.sp,
-                              height: 1.2,
+                          // أيقونة الزر
+                          if (widget.iconImage != null ||
+                              widget.iconData != null)
+                            Container(
+                              width: 44.r,
+                              height: 44.r,
+                              padding: EdgeInsets.all(8.r),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.05)
+                                    : Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(
+                                  color: contentColor.withValues(alpha: 0.1),
+                                ),
+                              ),
+                              child: widget.iconImage != null
+                                  ? Image.asset(
+                                      widget.iconImage!,
+                                      // color: contentColor,
+                                    )
+                                  : Icon(
+                                      widget.iconData,
+                                      color: contentColor,
+                                      size: 24.sp,
+                                    ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            widget.description,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontFamily: "Cairo",
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              height: 1,
+                          SizedBox(width: 12.w),
+                          // نصوص الزر
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.text,
+                                  style: TextStyle(
+                                    color: contentColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Cairo",
+                                    fontSize: 15.sp,
+                                    height: 1.1,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  widget.description,
+                                  style: TextStyle(
+                                    color: contentColor.withValues(alpha: 0.7),
+                                    fontFamily: "Cairo",
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -158,7 +163,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

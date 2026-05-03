@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.zad_al_muslim.noor_bayan"
+    namespace = "com.zad_al_muslim.adnan"
     // compileSdk = flutter.compileSdkVersion
     // رفع compileSdk إلى 36 لدعم sqflite_android-2.4.x+ الذي يستخدم VERSION_CODES.BAKLAVA
     compileSdk = 36
@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.zad_al_muslim.noor_bayan"
+        applicationId = "com.zad_al_muslim.adnan"
         minSdk = flutter.minSdkVersion // يفضل جعل الحد الأدنى 21 لدعم الإشعارات والـ Desugaring بشكل أفضل
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

@@ -21,7 +21,7 @@ class ReadingProgressCard extends ConsumerWidget {
     // if (lastMark.pageNumber == 0) return const SizedBox.shrink();
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
       child: Container(
         padding: EdgeInsets.all(20.r),
         decoration: BoxDecoration(

@@ -145,4 +145,16 @@ enum HisnAlmuslimCategory {
       orElse: () => HisnAlmuslimCategory.item0,
     );
   }
+
+  static HisnAlmuslimCategory fromArabicName(String arabicName) {
+    return HisnAlmuslimCategory.values.firstWhere(
+      (category) => category.arabicName == arabicName,
+      orElse: () => HisnAlmuslimCategory.item0,
+    );
+  }
+
+  @override
+  String toString() {
+    return arabicName;
+  }
 }

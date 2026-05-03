@@ -69,6 +69,13 @@ class QuickAdkarStrip extends ConsumerWidget {
                       (a) => a.category == category,
                     );
 
+                    final categoryColors = _getColorDependsOnCategory(
+                      category,
+                      context,
+                    );
+                    final bgColor = categoryColors["background"] as Color;
+                    final contentColor = categoryColors["icon"] as Color;
+
                     return Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -91,24 +98,16 @@ class QuickAdkarStrip extends ConsumerWidget {
                             vertical: 8.h,
                           ),
                           decoration: BoxDecoration(
-                            color: context.color.primary.withValues(
-                              alpha: 0.08,
-                            ),
+                            color: bgColor,
                             borderRadius: BorderRadius.circular(25.r),
                             border: Border.all(
-                              color: context.color.primary.withValues(
-                                alpha: 0.15,
-                              ),
+                              color: contentColor.withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                icon,
-                                size: 18.sp,
-                                color: context.color.primary,
-                              ),
+                              Icon(icon, size: 18.sp, color: contentColor),
                               SizedBox(width: 8.w),
                               Text(
                                 // اختصار الاسم إذا كان طويلاً
@@ -117,7 +116,7 @@ class QuickAdkarStrip extends ConsumerWidget {
                                   fontSize: 13.sp,
                                   fontFamily: "Cairo",
                                   fontWeight: FontWeight.w600,
-                                  color: context.color.primary,
+                                  color: contentColor,
                                 ),
                               ),
                             ],
@@ -147,5 +146,36 @@ class QuickAdkarStrip extends ConsumerWidget {
       return name.substring(0, 18);
     }
     return name;
+  }
+
+  Map<String, Color> _getColorDependsOnCategory(
+    String category,
+    BuildContext context,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    Color baseColor;
+    if (category == "أذكار الصباح والمساء") {
+      baseColor = Colors.orange;
+    } else if (category == "أذكار النوم") {
+      baseColor = Colors.indigo;
+    } else if (category == "الأذكار بعد السلام من الصلاة") {
+      baseColor = Colors.teal;
+    } else if (category == "أذكار الاستيقاظ من النوم") {
+      baseColor = Colors.amber;
+    } else if (category == "دعاء الهم والحزن") {
+      baseColor = Colors.red;
+    } else if (category == "الاستغفار والتوبة") {
+      baseColor = Colors.deepPurple;
+    } else {
+      baseColor = context.color.primary;
+    }
+
+    return {
+      "background": baseColor.withValues(alpha: isDark ? 0.2 : 0.08),
+      "icon": isDark
+          ? (baseColor is MaterialColor ? baseColor.shade200 : baseColor)
+          : (baseColor is MaterialColor ? baseColor.shade900 : baseColor),
+    };
   }
 }
