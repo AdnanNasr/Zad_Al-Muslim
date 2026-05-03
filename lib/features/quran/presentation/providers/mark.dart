@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
-import 'package:noor_quran/features/quran/data/models/mark.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/database/isar_db.dart';
+import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 class MarksProvider extends StateNotifier<List<Mark>> {
   MarksProvider() : super([]);

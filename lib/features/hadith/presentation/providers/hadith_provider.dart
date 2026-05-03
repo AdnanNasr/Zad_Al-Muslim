@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
-import 'package:noor_quran/features/hadith/domain/usecases/get_hadiths_usecase.dart';
-import 'package:noor_quran/features/hadith/domain/usecases/update_hadith_usecase.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
+import 'package:zad_al_muslim/features/hadith/domain/entities/hadith_entity.dart';
+import 'package:zad_al_muslim/features/hadith/domain/usecases/get_hadiths_usecase.dart';
+import 'package:zad_al_muslim/features/hadith/domain/usecases/update_hadith_usecase.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
 
 class HadithNotifier extends AsyncNotifier<List<HadithEntity>> {
   HadithFiltersEntity _filters = HadithFiltersEntity();

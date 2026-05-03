@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
-import 'package:noor_quran/core/errors/failures.dart';
-import 'package:noor_quran/features/adkar/data/models/adkar_model.dart';
-import 'package:noor_quran/features/adkar/domain/entities/adkar_entity.dart';
-import 'package:noor_quran/features/adkar/domain/repositories/adkar_repo.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
+import 'package:zad_al_muslim/features/adkar/data/models/adkar_model.dart';
+import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
+import 'package:zad_al_muslim/features/adkar/domain/repositories/adkar_repo.dart';
 
 class AdkarImpl extends AdkarRepo {
   final Isar db = sl<Isar>();
@@ -35,9 +35,14 @@ class AdkarImpl extends AdkarRepo {
   }
 
   @override
-  Future<Either<Failure, AdkarEntity>> getAdkarByCategory(String category) async {
+  Future<Either<Failure, AdkarEntity>> getAdkarByCategory(
+    String category,
+  ) async {
     try {
-      final model = await db.adkarModels.filter().categoryEqualTo(category).findFirst();
+      final model = await db.adkarModels
+          .filter()
+          .categoryEqualTo(category)
+          .findFirst();
       if (model != null) {
         return Right(model.toEntity());
       } else {

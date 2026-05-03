@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/constants/enums/qari_names_moratal.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran_moratal/presentation/pages/select_qari_surah_page.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/constants/enums/qari_names_moratal.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/pages/select_qari_surah_page.dart';
 
 class QuranMoratalPage extends ConsumerWidget {
   const QuranMoratalPage({super.key});

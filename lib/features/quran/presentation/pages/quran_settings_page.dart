@@ -2,18 +2,18 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/common/widgets/settings_card.dart';
-import 'package:noor_quran/core/common/widgets/settings_container.dart';
-import 'package:noor_quran/core/constants/routes.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/quran_view_type_dialog.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/select_qari_dialog.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/ayah_delay_dialog.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/reading_colors_dialog.dart';
-import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
+import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:zad_al_muslim/features/quran/presentation/widgets/quran_view_type_dialog.dart';
+import 'package:zad_al_muslim/features/quran/presentation/widgets/select_qari_dialog.dart';
+import 'package:zad_al_muslim/features/quran/presentation/widgets/ayah_delay_dialog.dart';
+import 'package:zad_al_muslim/features/quran/presentation/widgets/reading_colors_dialog.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 
 class QuranSettingsPage extends ConsumerStatefulWidget {
   const QuranSettingsPage({super.key});
@@ -77,6 +77,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     ),
                     icon: const Right(Icons.palette_rounded),
                     text: "لون خلفية القراءة",
+                    forgroundColor: Colors.teal,
                     widget: Container(
                       width: 24.w,
                       height: 24.w,
@@ -99,6 +100,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.swipe_vertical_rounded),
                     text: "شكل صفحات القرآن الكريم",
+                    forgroundColor: Colors.blue,
                     onTap: () {
                       showDialog(
                         context: context,
@@ -109,6 +111,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.screen_lock_rotation_rounded),
                     text: "بقاء الشاشة مضيئة أثناء القراءة",
+                    forgroundColor: Colors.amber.shade700,
                     toggle: true,
                     switchValue: settings.keepScreenAwake,
                     onChanged: (_) {
@@ -133,6 +136,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     heroId: "qari_icon",
                     icon: const Right(Icons.spatial_audio_off),
                     text: "اختيار صوت القارئ",
+                    forgroundColor: Colors.deepPurple,
                     subText: currentSelectedQariProvider.name,
                     onTap: () {
                       showDialog(
@@ -146,6 +150,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.timer_rounded),
                     text: "الفاصل الزمني بين الآيات",
+                    forgroundColor: Colors.orange,
                     subText: settings.ayahDelaySeconds == 0
                         ? 'بدون توقف'
                         : '${settings.ayahDelaySeconds} ثوانٍ',
@@ -159,6 +164,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.auto_awesome_motion_rounded),
                     text: "التمرير التلقائي مع صوت القارئ",
+                    forgroundColor: Colors.cyan,
                     toggle: true,
                     switchValue: settings.autoScrollWithAudio,
                     onChanged: (_) {
@@ -182,6 +188,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     ),
                     icon: const Right(Icons.library_books_rounded),
                     text: "تحميل التفاسير",
+                    forgroundColor: Colors.green,
                     onTap: () {
                       Navigator.of(context).pushNamed(Routes.tafseerPage);
                     },
@@ -190,6 +197,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.notifications_active_rounded),
                     text: "تنبيهات ورد القراءة اليومي",
+                    forgroundColor: Colors.indigo,
                     subText: settings.isDailyReminderEnabled
                         ? (settings.dailyReminderTime != null
                               ? "الوقت: ${settings.dailyReminderTime}"

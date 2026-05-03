@@ -1,4 +1,4 @@
-import 'package:noor_quran/features/quran/domain/entities/voice_ayah_by_ayah_entity.dart';
+import 'package:zad_al_muslim/features/quran/domain/entities/voice_ayah_by_ayah_entity.dart';
 
 class VoiceAyahByAyahModel extends VoiceAyahByAyahEntity {
   VoiceAyahByAyahModel({required super.url});

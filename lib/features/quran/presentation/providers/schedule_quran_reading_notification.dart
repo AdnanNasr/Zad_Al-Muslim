@@ -2,9 +2,9 @@ import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
-import 'package:noor_quran/features/pray_time/data/models/prayer_times_model.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/database/isar_db.dart';
+import 'package:zad_al_muslim/features/pray_time/data/models/prayer_times_model.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 class ScheduleQuranReadingNotification {
   static const int notificationId = 9999;

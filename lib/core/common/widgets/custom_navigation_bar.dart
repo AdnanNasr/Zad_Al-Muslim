@@ -2,12 +2,12 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/l10n/app_localizations.dart';
-import 'package:noor_quran/core/themes/theme_notifier.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:noor_quran/core/common/pages/home/home_page.dart';
-import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
 
 class CustomNavigationBar extends ConsumerStatefulWidget {
   const CustomNavigationBar({super.key});

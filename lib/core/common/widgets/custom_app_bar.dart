@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;

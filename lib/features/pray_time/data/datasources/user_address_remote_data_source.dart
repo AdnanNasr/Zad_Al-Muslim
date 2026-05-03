@@ -1,5 +1,5 @@
 import 'package:geocoding/geocoding.dart';
-import 'package:noor_quran/features/pray_time/data/models/user_address_model.dart';
+import 'package:zad_al_muslim/features/pray_time/data/models/user_address_model.dart';
 
 abstract class UserAddressRemoteDataSource {
   Future<UserAddressModel> getAddressFromCoords(double lat, double long);

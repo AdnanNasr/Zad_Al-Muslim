@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 
 class FirstPageOnboarding extends StatelessWidget {
   const FirstPageOnboarding({super.key});

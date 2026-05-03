@@ -1,4 +1,4 @@
-import 'package:noor_quran/features/quran_moratal/domain/entities/qari_entity.dart';
+import 'package:zad_al_muslim/features/quran_moratal/domain/entities/qari_entity.dart';
 
 class QariModel extends QariEntity {
   QariModel({

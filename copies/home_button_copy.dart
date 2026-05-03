@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 
 class HomeButton extends ConsumerStatefulWidget {
   final String text;

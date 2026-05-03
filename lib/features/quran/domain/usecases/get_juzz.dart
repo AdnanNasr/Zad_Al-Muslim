@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:noor_quran/core/errors/failures.dart';
-import 'package:noor_quran/features/quran/data/models/juzz_model.dart';
-import 'package:noor_quran/features/quran/domain/repositories/juzz_repository.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
+import 'package:zad_al_muslim/features/quran/data/models/juzz_model.dart';
+import 'package:zad_al_muslim/features/quran/domain/repositories/juzz_repository.dart';
 
 class GetJuzz {
   JuzzRepository juzzRepository;

@@ -1,9 +1,9 @@
-import 'package:noor_quran/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
 import 'package:qcf_quran/qcf_quran.dart' as qcf;
 
 class QuranSearchSheet extends StatefulWidget {

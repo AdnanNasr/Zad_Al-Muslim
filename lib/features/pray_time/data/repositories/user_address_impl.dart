@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:noor_quran/core/errors/failures.dart';
-import 'package:noor_quran/core/utils/network/network_info.dart';
-import 'package:noor_quran/features/pray_time/data/datasources/user_address_local_data_source.dart';
-import 'package:noor_quran/features/pray_time/data/datasources/user_address_remote_data_source.dart';
-import 'package:noor_quran/features/pray_time/domain/entities/user_address_entity.dart';
-import 'package:noor_quran/features/pray_time/domain/repositories/user_address.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
+import 'package:zad_al_muslim/core/utils/network/network_info.dart';
+import 'package:zad_al_muslim/features/pray_time/data/datasources/user_address_local_data_source.dart';
+import 'package:zad_al_muslim/features/pray_time/data/datasources/user_address_remote_data_source.dart';
+import 'package:zad_al_muslim/features/pray_time/domain/entities/user_address_entity.dart';
+import 'package:zad_al_muslim/features/pray_time/domain/repositories/user_address.dart';
 
 class UserAddressImpl implements UserAddressRepository {
   final UserAddressRemoteDataSource _remoteDataSource;

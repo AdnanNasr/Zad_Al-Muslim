@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/common/providers/daily_content_provider.dart';
-import 'package:noor_quran/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/common/providers/daily_content_provider.dart';
+import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 
 class DailyVerseCard extends ConsumerStatefulWidget {
   const DailyVerseCard({super.key});
@@ -56,7 +56,7 @@ class _DailyVerseCardState extends ConsumerState<DailyVerseCard> {
           ),
           border: Border.all(
             color: context.color.primary.withValues(alpha: 0.3),
-            width: 1.5
+            width: 1.5,
           ),
         ),
         child: Column(

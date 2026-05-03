@@ -3,22 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adhan/adhan.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:noor_quran/core/common/providers/user_position_provider.dart';
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
+import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:intl/intl.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/core/utils/location/location_locator.dart';
-import 'package:noor_quran/core/utils/location/providers/location_status_provider.dart';
-import 'package:noor_quran/core/common/providers/network_info_provider.dart';
-import 'package:noor_quran/core/utils/location/providers/service_status_provider.dart';
+import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
+import 'package:zad_al_muslim/core/utils/location/providers/location_status_provider.dart';
+import 'package:zad_al_muslim/core/common/providers/network_info_provider.dart';
+import 'package:zad_al_muslim/core/utils/location/providers/service_status_provider.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:noor_quran/features/pray_time/presentation/providers/user_address_provider.dart';
-import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
-import 'package:noor_quran/features/pray_time/data/models/prayer_adjustments_model.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/providers/user_address_provider.dart';
+import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
+import 'package:zad_al_muslim/features/pray_time/data/models/prayer_adjustments_model.dart';
 
 import '../providers/pray_times_provider.dart';
 import '../providers/prayer_adjustments_provider.dart';
@@ -193,71 +192,79 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               ref.invalidate(selectedDatePrayerTimesProvider);
               await ref.read(userAddressProvider.notifier).refresh();
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: context.mediaQueryHeight,
-                width: context.mediaQueryWidth,
-                child: Column(
-                  children: [
-                    // --- شريط علوي ---
-                    Container(
-                      decoration: const BoxDecoration(),
-                      child: _buildTopBar(
-                        context,
-                        userAddress,
-                        isCurrentDay,
-                        selectedDate,
-                      ),
-                    ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth,
+                    child: Column(
+                      children: [
+                        // --- شريط علوي ---
+                        Container(
+                          decoration: const BoxDecoration(),
+                          child: _buildTopBar(
+                            context,
+                            userAddress,
+                            isCurrentDay,
+                            selectedDate,
+                          ),
+                        ),
 
-                    // --- محتوى الصفحة ---
-                    Expanded(
-                      child: prayerTimesAsync.when(
-                        data: (entity) {
-                          if (entity != null) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted) {
-                                ref
-                                    .read(locationStatusProvider.notifier)
-                                    .clearStatus();
+                        // --- محتوى الصفحة ---
+                        Expanded(
+                          child: prayerTimesAsync.when(
+                            data: (entity) {
+                              if (entity != null) {
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  if (mounted) {
+                                    ref
+                                        .read(locationStatusProvider.notifier)
+                                        .clearStatus();
+                                  }
+                                });
                               }
-                            });
-                          }
 
-                          if (entity == null) {
-                            return _buildErrorState(
-                              error: "تعذر الحصول على مواقيت الصلاة",
+                              if (entity == null) {
+                                return _buildErrorState(
+                                  error: "تعذر الحصول على مواقيت الصلاة",
+                                  context: context,
+                                  status: locationStatusMessage,
+                                  networkState: networkState,
+                                );
+                              }
+
+                              return SlideTransition(
+                                position: _slideAnimation,
+                                child: _buildPrayerContent(
+                                  context,
+                                  entity,
+                                  adjustments,
+                                  use24format,
+                                  isCurrentDay,
+                                ),
+                              );
+                            },
+                            loading: () => _buildLoadingState(
+                              context,
+                              locationStatusMessage,
+                            ),
+                            error: (err, _) => _buildErrorState(
+                              error: err.toString(),
                               context: context,
                               status: locationStatusMessage,
                               networkState: networkState,
-                            );
-                          }
-
-                          return SlideTransition(
-                            position: _slideAnimation,
-                            child: _buildPrayerContent(
-                              context,
-                              entity,
-                              adjustments,
-                              use24format,
-                              isCurrentDay,
                             ),
-                          );
-                        },
-                        loading: () =>
-                            _buildLoadingState(context, locationStatusMessage),
-                        error: (err, _) => _buildErrorState(
-                          error: err.toString(),
-                          context: context,
-                          status: locationStatusMessage,
-                          networkState: networkState,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -911,7 +918,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   prayerName,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                     fontFamily: "Cairo",
                   ),
@@ -929,7 +936,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 "${seconds.toString().padLeft(2, '0')}",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 22.sp,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
                   fontFeatures: const [FontFeature.tabularFigures()],
@@ -983,8 +990,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
         leading: Container(
-          width: 44.w,
-          height: 44.w,
+          width: 33.w,
+          height: 33.w,
           decoration: BoxDecoration(
             color: isCurrent
                 ? primaryColor.withValues(alpha: 0.12)

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
-import 'package:noor_quran/features/tafsser/domain/entities/tafsser_entities.dart';
-import 'package:noor_quran/features/tafsser/domain/usecases/get_tafsser_books_usecase.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/features/tafsser/domain/entities/tafsser_entities.dart';
+import 'package:zad_al_muslim/features/tafsser/domain/usecases/get_tafsser_books_usecase.dart';
 
 final tafsserBooksProvider = FutureProvider<List<TafsserBookEntity>>((
   ref,

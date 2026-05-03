@@ -1,10 +1,10 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
-import 'package:noor_quran/features/quran/data/models/mark.dart';
-import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
-import 'package:noor_quran/main.dart';
+import 'package:zad_al_muslim/core/database/isar_db.dart';
+import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
+import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
+import 'package:zad_al_muslim/main.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
 class NotificationService {

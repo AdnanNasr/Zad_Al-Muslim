@@ -1,16 +1,16 @@
-import 'package:noor_quran/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
-import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
-import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
-import 'package:noor_quran/features/quran/presentation/providers/player_state_provider.dart';
-import 'package:noor_quran/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 
 class FullAudioPlayerPage extends ConsumerStatefulWidget {

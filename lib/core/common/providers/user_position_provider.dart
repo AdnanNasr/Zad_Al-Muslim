@@ -1,8 +1,8 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:geolocator/geolocator.dart";
-import "package:noor_quran/core/constants/shared_pref_keys.dart";
+import "package:zad_al_muslim/core/constants/shared_pref_keys.dart";
 
-import "package:noor_quran/core/di/injection_container.dart";
+import "package:zad_al_muslim/core/di/injection_container.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 final userPositionProvider = StateProvider<Position?>((ref) {
@@ -25,4 +25,4 @@ final userPositionProvider = StateProvider<Position?>((ref) {
     );
   }
   return null;
-});
+});

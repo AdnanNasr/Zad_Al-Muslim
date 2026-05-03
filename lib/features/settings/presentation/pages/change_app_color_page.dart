@@ -2,9 +2,9 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/l10n/app_localizations.dart';
-import 'package:noor_quran/core/themes/theme_notifier.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 
 class ChangeAppColorPage extends ConsumerStatefulWidget {
   const ChangeAppColorPage({super.key});

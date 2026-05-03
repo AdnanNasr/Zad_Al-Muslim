@@ -2,7 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart' show CupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const FlexScheme kDefaultScheme = FlexScheme.money;

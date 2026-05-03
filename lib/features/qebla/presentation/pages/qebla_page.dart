@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/common/providers/user_position_provider.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/utils/location/location_locator.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
-import 'package:noor_quran/features/qebla/presentation/providers/qibla_provider.dart';
-import 'package:noor_quran/features/qebla/presentation/widgets/qibla_compass_painter.dart';
+import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/features/qebla/presentation/providers/qibla_provider.dart';
+import 'package:zad_al_muslim/features/qebla/presentation/widgets/qibla_compass_painter.dart';
 
 class QeblaPage extends ConsumerStatefulWidget {
   const QeblaPage({super.key});

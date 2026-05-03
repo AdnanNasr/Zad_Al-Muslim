@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/features/tafsser/data/models/tafsser_surah.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/features/tafsser/data/models/tafsser_surah.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 class TafsserBookNotifier extends StateNotifier<AsyncValue<EditionModel>> {
   TafsserBookNotifier(this.db)

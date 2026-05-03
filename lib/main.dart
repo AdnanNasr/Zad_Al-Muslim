@@ -3,33 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:noor_quran/core/common/pages/notifications_page.dart';
-// import 'package:noor_quran/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/common/pages/notifications_page.dart';
+// import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:noor_quran/core/l10n/app_localizations.dart';
-import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
-import 'package:noor_quran/features/quran/presentation/pages/quran_settings_page.dart';
-import 'package:noor_quran/features/quran/presentation/pages/select_surah_page.dart';
-import 'package:noor_quran/features/quran_moratal/presentation/pages/quran_moratal_page.dart';
-import 'package:noor_quran/features/splash/presentation/pages/splash_screen.dart';
-import 'package:noor_quran/core/themes/theme_notifier.dart';
-import 'package:noor_quran/core/utils/notifications/notification_service.dart';
-import 'package:noor_quran/features/splash/presentation/pages/onboarding/onboarding_init.dart';
-import 'package:noor_quran/core/common/providers/language_provider.dart';
-import 'package:noor_quran/core/di/injection_container.dart' as di;
-import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:noor_quran/features/adkar/presentation/pages/adkar_page.dart';
-import 'package:noor_quran/features/settings/presentation/pages/app_info.dart';
-import 'package:noor_quran/features/settings/presentation/pages/change_app_color_page.dart';
-import 'package:noor_quran/features/hadith/presentation/pages/hadith_page.dart';
-import 'package:noor_quran/core/common/pages/home/home_page.dart';
-import 'package:noor_quran/features/splash/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:noor_quran/features/pray_time/presentation/pages/pray_time_page.dart';
-import 'package:noor_quran/features/qebla/presentation/pages/qebla_page.dart';
-import 'package:noor_quran/features/settings/presentation/pages/settings_page.dart';
-import 'package:noor_quran/features/tafsser/presentation/pages/tafseer_page.dart';
-import 'package:noor_quran/core/common/widgets/custom_navigation_bar.dart';
+import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
+import 'package:zad_al_muslim/features/quran/presentation/pages/quran_settings_page.dart';
+import 'package:zad_al_muslim/features/quran/presentation/pages/select_surah_page.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/pages/quran_moratal_page.dart';
+import 'package:zad_al_muslim/features/splash/presentation/pages/splash_screen.dart';
+import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_service.dart';
+import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_init.dart';
+import 'package:zad_al_muslim/core/common/providers/language_provider.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart' as di;
+import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_page.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/app_info.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/pages/hadith_page.dart';
+import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
+import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/pages/pray_time_page.dart';
+import 'package:zad_al_muslim/features/qebla/presentation/pages/qebla_page.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/pages/tafseer_page.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_navigation_bar.dart';
 
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -38,7 +38,7 @@ void main() async {
   tz.initializeTimeZones();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'نور القرآن - تشغيل الصوت',
+    androidNotificationChannelName: 'زاد المسلم - تشغيل الصوت',
     androidNotificationOngoing: true,
     androidStopForegroundOnPause: true,
     androidResumeOnClick: true,

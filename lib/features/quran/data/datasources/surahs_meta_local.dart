@@ -1,5 +1,5 @@
-import 'package:noor_quran/core/common/constants/surah_names.dart';
-import 'package:noor_quran/features/quran/data/models/surah_meta_model.dart';
+import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/features/quran/data/models/surah_meta_model.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 
 abstract class SurahsMetaLocal {

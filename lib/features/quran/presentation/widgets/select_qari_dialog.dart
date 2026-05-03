@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
-import 'package:noor_quran/features/quran/presentation/providers/quran_settings_provider.dart';
+import 'package:zad_al_muslim/core/constants/enums/qrai_names_ayah_by_ayah.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
 
 class SelectQariDialog extends ConsumerWidget {
   const SelectQariDialog({super.key});

@@ -1,4 +1,4 @@
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 
 class HadithEntity {
   final int isarId; // Isar autoIncrement id للتعديل المباشر

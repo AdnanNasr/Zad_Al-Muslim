@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageProvider extends StateNotifier<AppLocale> {

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:noor_quran/core/constants/enums/qrai_names_ayah_by_ayah.dart';
-import 'package:noor_quran/core/errors/failures.dart';
+import 'package:zad_al_muslim/core/constants/enums/qrai_names_ayah_by_ayah.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
 
 abstract class VoiceAyahByAyahRepo {
   Either<Failure, String> getAyahVoice(AyahVoiceParameter ayahVoiceParameter);

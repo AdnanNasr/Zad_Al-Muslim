@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 class NetworkInfo {
   // دالة الفحص الرئيسية (بقيت كما هي في التسمية والمنطق)
@@ -31,15 +31,15 @@ class NetworkInfo {
     // المكتبة تقوم داخلياً بعمل فحص لعدة عناوين (Google, Cloudflare)
     // وهذا يغنيك عن تمرير domainName واحد يدوياً
     bool result = await InternetConnection().hasInternetAccess;
-    
+
     AppLogger.logger.d("نتيجة فحص الاتصال الحقيقي: $result");
     return result;
   }
 
   // فحص تفعيل الوايفاي أو البيانات (باستخدام التحديثات الأخيرة لـ connectivity_plus)
   Future<bool> _isWiFiOrPhoneDataActive() async {
-    final List<ConnectivityResult> connectivityResult = 
-        await (Connectivity().checkConnectivity());
+    final List<ConnectivityResult> connectivityResult = await (Connectivity()
+        .checkConnectivity());
 
     // ملاحظة: الإصدارات الجديدة من connectivity_plus تعيد List
     if (connectivityResult.contains(ConnectivityResult.none)) {

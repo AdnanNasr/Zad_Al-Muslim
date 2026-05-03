@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSettings {

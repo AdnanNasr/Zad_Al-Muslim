@@ -1,4 +1,4 @@
-import 'package:noor_quran/features/adkar/domain/entities/adkar_entity.dart';
+import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
 import 'package:isar/isar.dart';
 
 part 'adkar_model.g.dart';
@@ -23,13 +23,17 @@ class AdkarModel {
   });
 
   factory AdkarModel.fromJson(String categoryName, Map<String, dynamic> json) {
-    final List<String> texts = json['text'] != null ? List<String>.from(json['text']) : [];
+    final List<String> texts = json['text'] != null
+        ? List<String>.from(json['text'])
+        : [];
     final List<int> parsedCounts = texts.map((t) => _parseCount(t)).toList();
 
     return AdkarModel.full(
       category: categoryName,
       text: texts,
-      footnote: json['footnote'] != null ? List<String>.from(json['footnote']) : [],
+      footnote: json['footnote'] != null
+          ? List<String>.from(json['footnote'])
+          : [],
       counts: parsedCounts,
     );
   }
@@ -42,7 +46,7 @@ class AdkarModel {
     if (text.contains('ثلاث مرات') || text.contains('ثلاثاً')) return 3;
     if (text.contains('مرتين')) return 2;
     if (text.contains('مرة واحدة') || text.contains('مرةً')) return 1;
-    
+
     // Check for patterns like (3) or (10) if they exist, but mostly it's text.
     final match = RegExp(r'\((\d+)\s+مرات\)').firstMatch(text);
     if (match != null) {
@@ -53,7 +57,12 @@ class AdkarModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {'category': category, 'text': text, 'footnote': footnote, 'counts': counts};
+    return {
+      'category': category,
+      'text': text,
+      'footnote': footnote,
+      'counts': counts,
+    };
   }
 
   factory AdkarModel.fromEntity(AdkarEntity entity) {

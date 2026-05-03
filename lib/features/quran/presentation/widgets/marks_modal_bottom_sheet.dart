@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran/data/models/mark.dart';
-import 'package:noor_quran/features/quran/presentation/pages/quran_pages.dart';
-import 'package:noor_quran/features/quran/presentation/providers/mark.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
+import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
 
 class MarksModalBottomSheet extends ConsumerWidget {
   const MarksModalBottomSheet({super.key});

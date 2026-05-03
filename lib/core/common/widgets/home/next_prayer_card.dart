@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/constants/routes.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/pray_time/domain/entities/prayer_times_entity.dart';
-import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_provider.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/pray_time/domain/entities/prayer_times_entity.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 
 class NextPrayerCard extends ConsumerStatefulWidget {
   const NextPrayerCard({super.key});
@@ -56,7 +56,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     final seconds = remaining.inSeconds.remainder(60);
 
     return Padding(
-      padding:  EdgeInsets.symmetric(vertical: 14.h, horizontal: 8.w),
+      padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 8.w),
       child: InkWell(
         borderRadius: BorderRadius.circular(16.r),
         onTap: () => Navigator.of(context).pushNamed(Routes.prayTimePage),

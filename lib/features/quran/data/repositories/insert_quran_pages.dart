@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:noor_quran/core/database/isar_db.dart';
-import 'package:noor_quran/features/quran/data/models/quran_models.dart';
+import 'package:zad_al_muslim/core/database/isar_db.dart';
+import 'package:zad_al_muslim/features/quran/data/models/quran_models.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 String normalizeArabicText(String text) {
   String normalized = text.replaceAll(

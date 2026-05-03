@@ -1,15 +1,18 @@
 import 'package:adhan/adhan.dart';
 import 'package:isar/isar.dart';
 import '../../../../core/database/isar_db.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
-import 'package:noor_quran/core/utils/location/location_locator.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import '../models/prayer_times_model.dart';
 import '../models/prayer_adjustments_model.dart';
 
 abstract class PrayerTimesLocalDataSource {
   Future<PrayerTimesModel?> getLastPrayerTimes(DateTime date);
   Future<void> cachePrayerTimes(PrayerTimesModel prayerTimes);
-  Future<CalculationParameters> getCalculationParameters(double lat, double lng);
+  Future<CalculationParameters> getCalculationParameters(
+    double lat,
+    double lng,
+  );
   // التعديلات (Adjustments)
   Future<PrayerAdjustmentsModel> getAdjustments();
   Future<void> saveAdjustments(PrayerAdjustmentsModel adjustments);
@@ -35,7 +38,10 @@ class PrayerTimesLocalDataSourceImpl implements PrayerTimesLocalDataSource {
   }
 
   @override
-  Future<CalculationParameters> getCalculationParameters(double lat, double lng) async {
+  Future<CalculationParameters> getCalculationParameters(
+    double lat,
+    double lng,
+  ) async {
     final locationLocator = sl<LocationLocator>();
     return await locationLocator.getCalculationParameters(lat, lng);
   }

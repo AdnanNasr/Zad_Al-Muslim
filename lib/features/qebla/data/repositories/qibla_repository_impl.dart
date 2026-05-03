@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:adhan/adhan.dart';
 import 'package:dartz/dartz.dart';
-import 'package:noor_quran/core/errors/failures.dart';
-import 'package:noor_quran/features/qebla/domain/entities/qibla_entity.dart';
-import 'package:noor_quran/features/qebla/domain/repositories/qibla_repository.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
+import 'package:zad_al_muslim/features/qebla/domain/entities/qibla_entity.dart';
+import 'package:zad_al_muslim/features/qebla/domain/repositories/qibla_repository.dart';
 
 /// تنفيذ مستودع القبلة باستخدام مكتبة adhan الموجودة بالفعل
 class QiblaRepositoryImpl implements QiblaRepository {
@@ -32,9 +32,7 @@ class QiblaRepositoryImpl implements QiblaRepository {
         _kaabaLng,
       );
 
-      return Right(
-        QiblaEntity(qiblaAngle: qiblaAngle, distanceKm: distanceKm),
-      );
+      return Right(QiblaEntity(qiblaAngle: qiblaAngle, distanceKm: distanceKm));
     } catch (e) {
       return Left(LocationFailure('تعذّر حساب اتجاه القبلة: ${e.toString()}'));
     }

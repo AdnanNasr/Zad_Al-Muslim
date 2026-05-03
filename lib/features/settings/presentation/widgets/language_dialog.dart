@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/core/l10n/app_localizations.dart';
-import 'package:noor_quran/core/common/providers/language_provider.dart';
+import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
+import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/common/providers/language_provider.dart';
 
 class LanguageDialog extends ConsumerStatefulWidget {
   final Function(AppLocale langCode)? onLanguageSelected;

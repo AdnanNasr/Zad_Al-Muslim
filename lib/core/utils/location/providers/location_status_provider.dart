@@ -1,12 +1,13 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noor_quran/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 
-import 'package:noor_quran/core/constants/shared_pref_keys.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocationStatusProvider extends StateNotifier<Map<LocationMessage, String>> {
+class LocationStatusProvider
+    extends StateNotifier<Map<LocationMessage, String>> {
   final SharedPreferences _prefs;
 
   // نمرر SharedPreferences عبر الـ Constructor لسهولة الاختبار
@@ -20,7 +21,7 @@ class LocationStatusProvider extends StateNotifier<Map<LocationMessage, String>>
     if (savedStatusStr != null) {
       // استخدام الـ Extension الذي صنعته لتحويل النص إلى Enum
       final status = LocationMessageExtension.fromString(savedStatusStr);
-      
+
       // هنا نقوم بتعيين الرسالة الافتراضية بناءً على الـ Enum
       state = {status: _getMessageForStatus(status)};
     }
@@ -43,30 +44,51 @@ class LocationStatusProvider extends StateNotifier<Map<LocationMessage, String>>
   Future<void> refreshStatus() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      setStatus({LocationMessage.locationDisabled: _getMessageForStatus(LocationMessage.locationDisabled)});
+      setStatus({
+        LocationMessage.locationDisabled: _getMessageForStatus(
+          LocationMessage.locationDisabled,
+        ),
+      });
       return;
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      setStatus({LocationMessage.locationNotAllowed: _getMessageForStatus(LocationMessage.locationNotAllowed)});
+      setStatus({
+        LocationMessage.locationNotAllowed: _getMessageForStatus(
+          LocationMessage.locationNotAllowed,
+        ),
+      });
     } else if (permission == LocationPermission.deniedForever) {
-      setStatus({LocationMessage.locationNotAllowedEver: _getMessageForStatus(LocationMessage.locationNotAllowedEver)});
+      setStatus({
+        LocationMessage.locationNotAllowedEver: _getMessageForStatus(
+          LocationMessage.locationNotAllowedEver,
+        ),
+      });
     } else {
-      setStatus({LocationMessage.locationAllowed: _getMessageForStatus(LocationMessage.locationAllowed)});
+      setStatus({
+        LocationMessage.locationAllowed: _getMessageForStatus(
+          LocationMessage.locationAllowed,
+        ),
+      });
     }
   }
-
 
   // دالة مساعدة لتعريف الرسائل الافتراضية عند الاسترجاع
   String _getMessageForStatus(LocationMessage status) {
     switch (status) {
-      case LocationMessage.locationAllowed: return "تم تحديد الموقع";
-      case LocationMessage.locationDisabled: return "الـ GPS معطل";
-      case LocationMessage.locationNotAllowed: return "الإذن مرفوض";
-      case LocationMessage.locationNotAllowedEver: return "الإذن مرفوض دائماً";
-      case LocationMessage.loading: return "جاري التحميل";
-      case LocationMessage.error: return "افحص اتصالك بالإنترنت";
+      case LocationMessage.locationAllowed:
+        return "تم تحديد الموقع";
+      case LocationMessage.locationDisabled:
+        return "الـ GPS معطل";
+      case LocationMessage.locationNotAllowed:
+        return "الإذن مرفوض";
+      case LocationMessage.locationNotAllowedEver:
+        return "الإذن مرفوض دائماً";
+      case LocationMessage.loading:
+        return "جاري التحميل";
+      case LocationMessage.error:
+        return "افحص اتصالك بالإنترنت";
     }
   }
 }
@@ -74,8 +96,8 @@ class LocationStatusProvider extends StateNotifier<Map<LocationMessage, String>>
 // 3. تحديث تعريف الـ Provider ليمرر SharedPreferences
 final locationStatusProvider =
     StateNotifierProvider<LocationStatusProvider, Map<LocationMessage, String>>(
-  (ref) {
-    final prefs = sl<SharedPreferences>();
-    return LocationStatusProvider(prefs);
-  },
-);
+      (ref) {
+        final prefs = sl<SharedPreferences>();
+        return LocationStatusProvider(prefs);
+      },
+    );

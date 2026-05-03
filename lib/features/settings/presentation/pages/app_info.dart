@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/l10n/app_localizations.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/common/widgets/settings_card.dart';
-import 'package:noor_quran/features/settings/presentation/pages/custom_license_page.dart';
-import 'package:noor_quran/features/settings/presentation/pages/privcy_policy_page.dart';
-import 'package:noor_quran/features/settings/presentation/pages/terms_of_use_page.dart';
+import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/custom_license_page.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/privcy_policy_page.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/terms_of_use_page.dart';
 
 class AppInfo extends StatelessWidget {
   const AppInfo({super.key});

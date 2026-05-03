@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:noor_quran/core/errors/failures.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
-import 'package:noor_quran/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 
 abstract class VoiceAyahByAyahRemoteRepo {
   Either<Failure, String> getAyahVoice(AyahVoiceParameter ayahVoiceParameter);

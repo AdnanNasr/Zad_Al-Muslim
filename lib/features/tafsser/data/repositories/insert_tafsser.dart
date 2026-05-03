@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
-import 'package:noor_quran/features/tafsser/data/models/ayah.dart';
-import 'package:noor_quran/features/tafsser/data/models/tafsser_surah.dart'; // تأكد من وجود موديل AyahModel هنا أو استيراده
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/database/isar_db.dart';
+import 'package:zad_al_muslim/features/tafsser/data/models/ayah.dart';
+import 'package:zad_al_muslim/features/tafsser/data/models/tafsser_surah.dart'; // تأكد من وجود موديل AyahModel هنا أو استيراده
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 Future<void> insertTafsserToIsar({
   required Map<String, dynamic> jsonMap,

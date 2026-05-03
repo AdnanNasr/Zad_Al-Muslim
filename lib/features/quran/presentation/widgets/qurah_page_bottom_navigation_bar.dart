@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:noor_quran/core/constants/routes.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/extensions/screen_util_sizes.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/marks_modal_bottom_sheet.dart';
-import 'package:noor_quran/features/quran/presentation/widgets/quran_search_sheet.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/screen_util_sizes.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
+import 'package:zad_al_muslim/features/quran/presentation/widgets/marks_modal_bottom_sheet.dart';
+import 'package:zad_al_muslim/features/quran/presentation/widgets/quran_search_sheet.dart';
 
 class QurahPageBottomNavigationBar extends ConsumerStatefulWidget {
   final VoidCallback? onIndexPressed;

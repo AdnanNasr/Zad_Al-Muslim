@@ -3,18 +3,18 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/sizes_ext.dart';
-import 'package:noor_quran/core/l10n/app_localizations.dart';
-import 'package:noor_quran/core/common/providers/theme_provider.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/common/widgets/settings_card.dart';
-import 'package:noor_quran/core/common/widgets/settings_container.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/adahn_dialog.dart';
-import 'package:noor_quran/features/settings/presentation/providers/app_settings_provider.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/font_size_dialog.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/calculation_method_dialog.dart';
-import 'package:noor_quran/features/settings/presentation/widgets/madhab_dialog.dart';
-import 'package:noor_quran/features/pray_time/presentation/providers/pray_times_provider.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
+import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
+import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
+import 'package:zad_al_muslim/features/settings/presentation/widgets/adahn_dialog.dart';
+import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
+import 'package:zad_al_muslim/features/settings/presentation/widgets/font_size_dialog.dart';
+import 'package:zad_al_muslim/features/settings/presentation/widgets/calculation_method_dialog.dart';
+import 'package:zad_al_muslim/features/settings/presentation/widgets/madhab_dialog.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -181,6 +181,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.dark_mode),
                     text: AppLocalizations.of(context)!.dark_mode,
+                    forgroundColor: Colors.indigo,
                     toggle: true,
                     switchValue: themeMode == ThemeMode.dark,
                     onChanged: (value) async {
@@ -189,50 +190,51 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           .toggleTheme(themeMode);
                     },
                   ),
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.language),
-                    text: AppLocalizations.of(context)!.app_language,
-                    widget: Text(
-                      "قريباً...",
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: "Cairo",
-                      ),
-                    ),
-                    // onTap: () {
-                    //   showDialog(
-                    //     context: context,
-                    //     builder: (context) => const LanguageDialog(),
-                    //   );
-                    // },
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.color_lens),
-                    text: AppLocalizations.of(context)!.app_color,
-                    widget: Text(
-                      "قريباً...",
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: "Cairo",
-                      ),
-                    ),
-                    // onTap: () => showModalBottomSheet(
-                    //   isDismissible: true,
-                    //   context: context,
-                    //   builder: (context) => const ChangeAppColorPage(),
-                    // ),
-                  ),
+                  // SettingCards(
+                  //   borderRadius: const BorderRadius.vertical(
+                  //     top: Radius.circular(9),
+                  //   ),
+                  //   icon: const Right(Icons.language),
+                  //   text: AppLocalizations.of(context)!.app_language,
+                  //   widget: Text(
+                  //     "قريباً...",
+                  //     style: TextStyle(
+                  //       fontSize: 16.sp,
+                  //       fontWeight: FontWeight.w400,
+                  //       fontFamily: "Cairo",
+                  //     ),
+                  //   ),
+                  // onTap: () {
+                  //   showDialog(
+                  //     context: context,
+                  //     builder: (context) => const LanguageDialog(),
+                  //   );
+                  // },
+                  // ),
+                  // SettingCards(
+                  //   icon: const Right(Icons.color_lens),
+                  //   text: AppLocalizations.of(context)!.app_color,
+                  //   widget: Text(
+                  //     "قريباً...",
+                  //     style: TextStyle(
+                  //       fontSize: 16.sp,
+                  //       fontWeight: FontWeight.w400,
+                  //       fontFamily: "Cairo",
+                  //     ),
+                  //   ),
+                  //   // onTap: () => showModalBottomSheet(
+                  //   //   isDismissible: true,
+                  //   //   context: context,
+                  //   //   builder: (context) => const ChangeAppColorPage(),
+                  //   // ),
+                  // ),
                   SettingCards(
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(9),
                     ),
                     icon: const Right(Icons.format_size),
                     text: "حجم خط الأذكار",
+                    forgroundColor: Colors.blue,
                     onTap: () {
                       showDialog(
                         context: context,
@@ -255,6 +257,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     icon: const Right(Icons.calculate_rounded),
                     text: "طريقة حساب المواقيت",
+                    forgroundColor: Colors.deepOrange,
                     subText: _getCalculationMethodName(
                       appSettings.calculationMethodIndex,
                     ),
@@ -274,11 +277,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         child: Icon(
                           Icons.mosque_rounded,
                           size: context.witdthScreen * 0.08,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Colors.teal,
                         ),
                       ),
                     ),
                     text: "المذهب (صلاة العصر)",
+                    forgroundColor: Colors.teal,
                     subText: appSettings.madhabIndex == 0
                         ? "تلقائي (شافعي، مالكي، حنبلي)"
                         : "حنفي",
@@ -310,6 +314,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     icon: const Right(Icons.access_time_filled_outlined),
                     text: "تنسيق الوقت (24 ساعة)",
+                    forgroundColor: Colors.amber.shade700,
                     toggle: true,
                     switchValue: appSettings.use24HourFormat,
                     onChanged: (value) async {
@@ -328,6 +333,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.notifications_active_rounded),
                     text: "إشعارات الصلاة",
+                    forgroundColor: Colors.cyan,
                     toggle: true,
                     switchValue: appSettings.prayerNotificationsEnabled,
                     onChanged: (value) async {
@@ -339,6 +345,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.multitrack_audio_sharp),
                     text: "صوت الأذان",
+                    forgroundColor: Colors.deepPurple,
                     subText: "الافتراضي",
                     onTap: () {
                       showDialog(
@@ -350,6 +357,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.wb_sunny_rounded),
                     text: "تنبيه أذكار الصباح",
+                    forgroundColor: Colors.orange,
                     toggle: true,
                     switchValue: appSettings.morningAdkarReminder,
                     onChanged: (value) async {
@@ -361,6 +369,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.nightlight_round),
                     text: "تنبيه أذكار المساء",
+                    forgroundColor: Colors.blueAccent,
                     toggle: true,
                     switchValue: appSettings.eveningAdkarReminder,
                     onChanged: (value) async {
@@ -460,12 +469,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.app_settings_alt),
                     text: AppLocalizations.of(context)!.app_information,
+                    forgroundColor: Colors.blueGrey,
                     onTap: () => Navigator.of(context).pushNamed("/app_info"),
                   ),
                   SettingCards(
                     // borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)), // TODO: Temp
-                    icon: const Right(Icons.group),
+                    icon: const Right(Icons.share),
                     text: "نشر التطبيق (صدقة جارية)",
+                    forgroundColor: Colors.green,
                     onTap: () {
                       SharePlus.instance.share(
                         ShareParams(text: "https://noor_bayan.com"),
@@ -476,8 +487,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(9),
                     ),
-                    icon: const Right(Icons.group),
+                    icon: const Right(Icons.aspect_ratio),
                     text: "حجم الشاشة",
+                    forgroundColor: Colors.brown,
                     onTap: () {
                       final heightSize = context.mediaQueryHeight;
                       final witdthSize = context.mediaQueryWidth;

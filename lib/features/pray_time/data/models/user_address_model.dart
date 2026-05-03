@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:noor_quran/features/pray_time/domain/entities/user_address_entity.dart';
+import 'package:zad_al_muslim/features/pray_time/domain/entities/user_address_entity.dart';
 
 part 'user_address_model.g.dart';
 
@@ -21,13 +21,11 @@ class UserAddressModel {
     );
   }
 
-  factory UserAddressModel.fromEntity(UserAddressEntity entity){
+  factory UserAddressModel.fromEntity(UserAddressEntity entity) {
     return UserAddressModel(
       country: entity.country,
       locality: entity.locality,
       countryCode: entity.countryCode,
     );
   }
-
-
 }

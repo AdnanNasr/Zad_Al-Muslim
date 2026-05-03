@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
+import 'package:zad_al_muslim/features/hadith/domain/entities/hadith_entity.dart';
 import 'package:share_plus/share_plus.dart';
 
 class HadithModalBottom extends ConsumerWidget {
@@ -47,7 +47,7 @@ class HadithModalBottom extends ConsumerWidget {
                       Clipboard.setData(
                         ClipboardData(
                           text:
-                              "${hadith.text}\n\nصحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق نور البيان",
+                              "${hadith.text}\n\nصحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق زاد المسلم",
                         ),
                       );
                     },
@@ -59,7 +59,7 @@ class HadithModalBottom extends ConsumerWidget {
                       SharePlus.instance.share(
                         ShareParams(
                           text:
-                              "${hadith.text}\n\n📖 صحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق نور القرآن",
+                              "${hadith.text}\n\n📖 صحيح البخاري | كتاب ${hadith.bookName} - حديث رقم ${hadith.reference.hadith}\n\nمن تطبيق زاد المسلم",
                         ),
                       );
                     },

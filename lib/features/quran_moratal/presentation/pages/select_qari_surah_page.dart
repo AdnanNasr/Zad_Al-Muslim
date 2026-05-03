@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart';
-import 'package:noor_quran/features/quran/presentation/providers/surahs_meta_provider.dart';
-import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
-import 'package:noor_quran/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/quran/domain/entities/surah_meta_entity.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/surahs_meta_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
 
 class SelectQariSurahPage extends ConsumerStatefulWidget {
   final Map<String, String> qariData;

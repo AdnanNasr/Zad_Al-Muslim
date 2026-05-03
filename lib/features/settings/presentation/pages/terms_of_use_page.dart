@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/core/constants/env.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/constants/env.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class TermsOfUsePage extends StatefulWidget {

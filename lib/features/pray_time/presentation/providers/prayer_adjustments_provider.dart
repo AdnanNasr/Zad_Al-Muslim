@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/core/di/injection_container.dart';
-import 'package:noor_quran/features/pray_time/data/models/prayer_adjustments_model.dart';
-import 'package:noor_quran/features/pray_time/domain/repositories/prayer_times_repository.dart';
-import 'package:noor_quran/core/common/providers/user_position_provider.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/features/pray_time/data/models/prayer_adjustments_model.dart';
+import 'package:zad_al_muslim/features/pray_time/domain/repositories/prayer_times_repository.dart';
+import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 
 /// موفر StateNotifier للتحكم في تعديلات دقائق أوقات الصلاة
-class PrayerAdjustmentsNotifier extends StateNotifier<AsyncValue<PrayerAdjustmentsModel>> {
+class PrayerAdjustmentsNotifier
+    extends StateNotifier<AsyncValue<PrayerAdjustmentsModel>> {
   final Ref _ref;
 
   PrayerAdjustmentsNotifier(this._ref) : super(const AsyncValue.loading()) {
@@ -59,6 +60,9 @@ class PrayerAdjustmentsNotifier extends StateNotifier<AsyncValue<PrayerAdjustmen
 }
 
 final prayerAdjustmentsProvider =
-    StateNotifierProvider<PrayerAdjustmentsNotifier, AsyncValue<PrayerAdjustmentsModel>>((ref) {
-  return PrayerAdjustmentsNotifier(ref);
-});
+    StateNotifierProvider<
+      PrayerAdjustmentsNotifier,
+      AsyncValue<PrayerAdjustmentsModel>
+    >((ref) {
+      return PrayerAdjustmentsNotifier(ref);
+    });

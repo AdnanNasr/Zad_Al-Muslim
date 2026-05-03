@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
+import 'package:zad_al_muslim/features/hadith/domain/entities/hadith_entity.dart';
 
 part 'reference_model.g.dart';
 

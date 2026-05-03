@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:isar/isar.dart';
-import 'package:noor_quran/features/tafsser/data/models/ayah.dart';
-import 'package:noor_quran/features/tafsser/data/repositories/insert_tafsser.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/features/tafsser/data/models/ayah.dart';
+import 'package:zad_al_muslim/features/tafsser/data/repositories/insert_tafsser.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:noor_quran/core/database/isar_db.dart';
-import 'package:noor_quran/features/tafsser/data/models/tafsser_surah.dart';
+import 'package:zad_al_muslim/core/database/isar_db.dart';
+import 'package:zad_al_muslim/features/tafsser/data/models/tafsser_surah.dart';
 
 // المفاتيح المستخدمة في التخزين الدائم
 const String _activeDownloadsKey = "active_downloads";

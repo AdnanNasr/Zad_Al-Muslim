@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/features/adkar/domain/entities/adkar_entity.dart';
-import 'package:noor_quran/features/adkar/presentation/providers/adkar_provider.dart';
-import 'package:noor_quran/features/adkar/presentation/pages/adkar_details_page.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
+import 'package:zad_al_muslim/features/adkar/presentation/providers/adkar_provider.dart';
+import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_details_page.dart';
 
 class AdkarPage extends ConsumerStatefulWidget {
   const AdkarPage({super.key});

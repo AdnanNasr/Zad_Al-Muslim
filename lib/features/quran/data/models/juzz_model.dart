@@ -1,5 +1,5 @@
-import 'package:noor_quran/features/quran/data/models/verses_model.dart';
-import 'package:noor_quran/features/quran/domain/entities/juzz_entity.dart';
+import 'package:zad_al_muslim/features/quran/data/models/verses_model.dart';
+import 'package:zad_al_muslim/features/quran/domain/entities/juzz_entity.dart';
 
 class JuzzModel extends JuzzEntity {
   JuzzModel({

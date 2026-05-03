@@ -1,4 +1,4 @@
-import 'package:noor_quran/features/quran/domain/entities/surah_meta_entity.dart';
+import 'package:zad_al_muslim/features/quran/domain/entities/surah_meta_entity.dart';
 
 class SurahMetaModel extends SurahMetaEntity {
   SurahMetaModel({

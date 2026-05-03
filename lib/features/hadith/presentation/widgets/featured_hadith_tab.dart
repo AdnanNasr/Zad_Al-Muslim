@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/hadith/presentation/providers/hadith_provider.dart';
-import 'package:noor_quran/features/hadith/presentation/providers/favorites_provider.dart';
-import 'package:noor_quran/features/hadith/presentation/widgets/hadith_card.dart';
-import 'package:noor_quran/features/hadith/presentation/widgets/hadith_modal_bottom.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/providers/favorites_provider.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadith_card.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadith_modal_bottom.dart';
 
 class FeaturedHadithsTab extends ConsumerWidget {
   const FeaturedHadithsTab({super.key});

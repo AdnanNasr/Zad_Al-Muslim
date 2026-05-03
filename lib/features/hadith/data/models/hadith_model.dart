@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
-import 'package:noor_quran/features/hadith/data/models/reference_model.dart';
-import 'package:noor_quran/features/hadith/domain/entities/hadith_entity.dart';
+import 'package:zad_al_muslim/features/hadith/data/models/reference_model.dart';
+import 'package:zad_al_muslim/features/hadith/domain/entities/hadith_entity.dart';
 
 part 'hadith_model.g.dart';
 
@@ -30,12 +30,12 @@ class Hadith {
 
   factory Hadith.fromEntity(HadithEntity entity) {
     return Hadith.full(
-        hadithnumber: entity.hadithnumber,
-        text: entity.text,
-        textNormalized: entity.textNormalized,
-        reference: ReferenceModel.fromEntity(entity.reference),
-        isFavorite: entity.isFavorite)
-      ..id = entity.isarId == 0 ? Isar.autoIncrement : entity.isarId;
+      hadithnumber: entity.hadithnumber,
+      text: entity.text,
+      textNormalized: entity.textNormalized,
+      reference: ReferenceModel.fromEntity(entity.reference),
+      isFavorite: entity.isFavorite,
+    )..id = entity.isarId == 0 ? Isar.autoIncrement : entity.isarId;
   }
 
   // دالة تحويل المودل إلى Entity لاستخدامه في الـ Domain Layer

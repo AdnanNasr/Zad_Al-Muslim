@@ -1,4 +1,4 @@
-import 'package:noor_quran/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 import 'dart:ui';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/quran/presentation/providers/audio_player_provider.dart';
-import 'package:noor_quran/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
-import 'package:noor_quran/features/quran_moratal/presentation/providers/ayah_timing_provider.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/ayah_timing_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:noor_quran/core/constants/shared_pref_keys.dart';
-import 'package:noor_quran/core/errors/failures.dart';
-import 'package:noor_quran/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
+import 'package:zad_al_muslim/core/errors/failures.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:adhan/adhan.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:noor_quran/core/utils/network/network_info.dart';
+import 'package:zad_al_muslim/core/utils/network/network_info.dart';
 
 abstract class LocationLocator {
   Future<Either<Failure, Position>> determinePosition();

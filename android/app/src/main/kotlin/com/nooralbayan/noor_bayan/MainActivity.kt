@@ -1,4 +1,4 @@
-package com.nooralbayan.noor_bayan
+package com.zad_al_muslim.noor_bayan
 
 import com.ryanheise.audioservice.AudioServiceActivity
 

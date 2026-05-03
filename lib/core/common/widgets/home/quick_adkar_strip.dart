@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/features/adkar/presentation/providers/adkar_provider.dart';
-import 'package:noor_quran/features/adkar/presentation/pages/adkar_details_page.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/features/adkar/presentation/providers/adkar_provider.dart';
+import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_details_page.dart';
 
 class QuickAdkarStrip extends ConsumerWidget {
   const QuickAdkarStrip({super.key});
@@ -91,12 +91,14 @@ class QuickAdkarStrip extends ConsumerWidget {
                             vertical: 8.h,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                context.color.primary.withValues(alpha: 0.08),
+                            color: context.color.primary.withValues(
+                              alpha: 0.08,
+                            ),
                             borderRadius: BorderRadius.circular(25.r),
                             border: Border.all(
-                              color: context.color.primary
-                                  .withValues(alpha: 0.15),
+                              color: context.color.primary.withValues(
+                                alpha: 0.15,
+                              ),
                             ),
                           ),
                           child: Row(

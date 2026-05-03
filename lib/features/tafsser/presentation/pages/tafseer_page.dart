@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:noor_quran/core/constants/env.dart';
-import 'package:noor_quran/core/extensions/color_ext.dart';
-import 'package:noor_quran/core/extensions/theme_ext.dart';
-import 'package:noor_quran/core/utils/network/network_info.dart';
-import 'package:noor_quran/core/common/widgets/custom_app_bar.dart';
-import 'package:noor_quran/features/tafsser/domain/entities/tafsser_entities.dart';
-import 'package:noor_quran/features/tafsser/presentation/providers/tafsser_book_provider.dart';
-import 'package:noor_quran/features/tafsser/presentation/widgets/tafseer_dialog.dart';
-import 'package:noor_quran/features/tafsser/presentation/widgets/tafsser_buttons.dart';
-import 'package:noor_quran/features/tafsser/domain/usecases/tafseer_utils.dart';
+import 'package:zad_al_muslim/core/constants/env.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/theme_ext.dart';
+import 'package:zad_al_muslim/core/utils/network/network_info.dart';
+import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/features/tafsser/domain/entities/tafsser_entities.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/widgets/tafseer_dialog.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/widgets/tafsser_buttons.dart';
+import 'package:zad_al_muslim/features/tafsser/domain/usecases/tafseer_utils.dart';
 
 class TafseerPage extends ConsumerStatefulWidget {
   const TafseerPage({super.key});
