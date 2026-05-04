@@ -98,13 +98,13 @@ class MyApp extends ConsumerWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2E2E2E),
           brightness: Brightness.light,
-        ),
+        ).copyWith(primary: Colors.green),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2E2E2E),
           brightness: Brightness.dark,
-        ),
+        ).copyWith(primary: Colors.green),
       ),
       themeMode: themeMode,
 

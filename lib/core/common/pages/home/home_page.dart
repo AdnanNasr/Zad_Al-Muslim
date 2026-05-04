@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/common/widgets/home/daily_verse_card.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
@@ -96,10 +97,11 @@ class BodyContent extends ConsumerWidget {
       // ويدجت الصلاة القادمة
       const ComingPrayWidget(),
 
-      // ويدحت الأقسام الرئيسية
-      PrimarySectionWidget(colorScheme: colorScheme, themeMode: themeMode),
       // ويدجت أذكار سريعة
       const QuickAdkarStrip(),
+
+      // ويدحت الأقسام الرئيسية
+      PrimarySectionWidget(colorScheme: colorScheme, themeMode: themeMode),
 
       SizedBox(height: 8.h),
       if (lastReadingPostion != null)
@@ -113,7 +115,7 @@ class BodyContent extends ConsumerWidget {
 
       // شريط التقدم الخاص بالقراءة
       const ReadingProgressCard(),
-      // ويدجت آية اليوم
+
       // const DailyVerseCard(),
       SizedBox(height: 8.h),
       // دعاء اليوم
@@ -223,7 +225,7 @@ class BodyContent extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             child: Row(
               children: [
-                Icon(Icons.bookmark_added, color: context.color.primary),
+                const Icon(Icons.bookmark_added, color: Colors.orange),
                 SizedBox(width: 8.w),
                 Text(
                   AppLocalizations.of(context)!.last_reading_surah,
@@ -274,14 +276,12 @@ class BodyContent extends ConsumerWidget {
                           Container(
                             padding: EdgeInsets.all(12.r),
                             decoration: BoxDecoration(
-                              color: context.color.primary.withValues(
-                                alpha: 0.2,
-                              ),
+                              color: Colors.orange.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.bookmark,
-                              color: context.color.primary,
+                              color: Colors.orange,
                             ),
                           ),
                           SizedBox(width: 16.w),
@@ -303,8 +303,9 @@ class BodyContent extends ConsumerWidget {
                                 "${AppLocalizations.of(context)!.page_number} ${lastReadingPostion.pageNumber}",
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  fontFamily: "Cairo",
-                                  color: context.color.primary.withValues(
+                                  // fontFamily: "Cairo",
+                                  fontWeight: FontWeight.w600,
+                                  color: context.color.secondary.withValues(
                                     alpha: 0.9,
                                   ),
                                 ),
@@ -387,6 +388,7 @@ class PrimarySectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color primaryColor = context.color.primary;
     return Material(
       surfaceTintColor: colorScheme.primary,
       shadowColor: themeMode == ThemeMode.light
@@ -407,7 +409,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 14.w),
                   child: Row(
                     children: [
-                      Icon(Icons.widgets_rounded, color: context.color.primary),
+                      const Icon(Icons.widgets_rounded, color: Colors.orange),
                       SizedBox(width: 8.w),
                       Text(
                         AppLocalizations.of(context)!.main_categories,
@@ -449,7 +451,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   text: AppLocalizations.of(context)!.quran_kareem,
                   description: "قراءة وتلاوة",
                   iconImage: "assets/icons/quran.png", // TODO: change icon
-                  color: Colors.blue,
+                  color: primaryColor,
                   onTap: () {
                     Navigator.pushNamed(context, Routes.selectSurahPage);
                   },
@@ -458,7 +460,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   text: "القرآن مُرتل",
                   description: "استماع وتحميل",
                   iconImage: "assets/icons/voice.png", // TODO: change icon
-                  color: Colors.deepOrange,
+                  color: primaryColor,
                   onTap: () {
                     Navigator.pushNamed(context, Routes.quranMoratal);
                   },
@@ -467,7 +469,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   text: AppLocalizations.of(context)!.sunah,
                   description: "أحاديث شريفة",
                   iconImage: "assets/icons/quran2.png", // TODO: change icon
-                  color: Colors.green,
+                  color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.sunnahPage);
                   },
@@ -478,7 +480,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   text: AppLocalizations.of(context)!.pray_times,
                   description: "أوقات الأذان",
                   iconImage: "assets/icons/mosque.png", // TODO: change icon
-                  color: Colors.red,
+                  color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed("/pray_time_page");
                   },
@@ -489,7 +491,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   text: AppLocalizations.of(context)!.qebla_direction,
                   description: "بوصلة دقيقة",
                   iconImage: "assets/icons/kaaba.png", // TODO: change icon
-                  color: Colors.indigo,
+                  color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed("/qebla_page");
                   },
@@ -498,7 +500,7 @@ class PrimarySectionWidget extends StatelessWidget {
                   text: AppLocalizations.of(context)!.adkar_adia,
                   description: "حصن المسلم",
                   iconImage: "assets/icons/prayer.png", // TODO: change icon
-                  color: Colors.pink,
+                  color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed("/adkar_page");
                   },

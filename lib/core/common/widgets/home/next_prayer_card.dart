@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/pray_time/domain/entities/prayer_times_entity.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 
@@ -45,10 +46,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     );
   }
 
-  Widget _buildCard(
-    BuildContext context,
-    PrayerTimesEntity model,
-  ) {
+  Widget _buildCard(BuildContext context, PrayerTimesEntity model) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final nextInfo = _getNextPrayer(model);
@@ -67,7 +65,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     } else if (name == "الظهر" || name == "العصر") {
       baseColor = Colors.orange;
     } else {
-      baseColor = Colors.indigo;
+      baseColor = context.color.primary;
     }
 
     final bgColor = isDark
@@ -99,8 +97,8 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(20.r),
-                onTap:
-                    () => Navigator.of(context).pushNamed(Routes.prayTimePage),
+                onTap: () =>
+                    Navigator.of(context).pushNamed(Routes.prayTimePage),
                 child: Ink(
                   padding: EdgeInsets.symmetric(
                     horizontal: 16.w,
@@ -130,11 +128,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                             color: contentColor.withValues(alpha: 0.1),
                           ),
                         ),
-                        child: Icon(
-                          icon,
-                          size: 24.sp,
-                          color: contentColor,
-                        ),
+                        child: Icon(icon, size: 24.sp, color: contentColor),
                       ),
                       SizedBox(width: 14.w),
                       // تفاصيل الصلاة القادمة
@@ -171,7 +165,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                           vertical: 10.h,
                         ),
                         decoration: BoxDecoration(
-                          color: contentColor.withValues(alpha: 0.1),
+                          color: contentColor.withValues(alpha: .2),
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
                             color: contentColor.withValues(alpha: 0.1),

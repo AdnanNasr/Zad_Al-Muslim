@@ -33,11 +33,7 @@ class QuickAdkarStrip extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 14.w),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.bolt_rounded,
-                      color: context.color.primary,
-                      size: 20.sp,
-                    ),
+                    Icon(Icons.bolt_rounded, color: Colors.orange, size: 20.sp),
                     SizedBox(width: 6.w),
                     Text(
                       "اختصارات الأذكار",

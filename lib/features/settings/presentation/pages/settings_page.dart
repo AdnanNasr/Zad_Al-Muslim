@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
@@ -162,6 +163,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
     final appSettingsNotifier = ref.read(appSettingsProvider.notifier);
+    final primarycolor = context.color.primary;
     return Scaffold(
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.settings,
@@ -181,7 +183,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.dark_mode),
                     text: AppLocalizations.of(context)!.dark_mode,
-                    forgroundColor: Colors.indigo,
+                    forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: themeMode == ThemeMode.dark,
                     onChanged: (value) async {
@@ -234,7 +236,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     icon: const Right(Icons.format_size),
                     text: "حجم خط الأذكار",
-                    forgroundColor: Colors.blue,
+                    forgroundColor: primarycolor,
                     onTap: () {
                       showDialog(
                         context: context,
@@ -257,7 +259,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     icon: const Right(Icons.calculate_rounded),
                     text: "طريقة حساب المواقيت",
-                    forgroundColor: Colors.deepOrange,
+                    forgroundColor: primarycolor,
                     subText: _getCalculationMethodName(
                       appSettings.calculationMethodIndex,
                     ),
@@ -277,12 +279,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         child: Icon(
                           Icons.mosque_rounded,
                           size: context.witdthScreen * 0.08,
-                          color: Colors.teal,
+                          color: primarycolor,
                         ),
                       ),
                     ),
                     text: "المذهب (صلاة العصر)",
-                    forgroundColor: Colors.teal,
+                    forgroundColor: primarycolor,
                     subText: appSettings.madhabIndex == 0
                         ? "تلقائي (شافعي، مالكي، حنبلي)"
                         : "حنفي",
@@ -314,7 +316,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     icon: const Right(Icons.access_time_filled_outlined),
                     text: "تنسيق الوقت (24 ساعة)",
-                    forgroundColor: Colors.amber.shade700,
+                    forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: appSettings.use24HourFormat,
                     onChanged: (value) async {
@@ -333,7 +335,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.notifications_active_rounded),
                     text: "إشعارات الصلاة",
-                    forgroundColor: Colors.cyan,
+                    forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: appSettings.prayerNotificationsEnabled,
                     onChanged: (value) async {
@@ -345,7 +347,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.multitrack_audio_sharp),
                     text: "صوت الأذان",
-                    forgroundColor: Colors.deepPurple,
+                    forgroundColor: primarycolor,
                     subText: "الافتراضي",
                     onTap: () {
                       showDialog(
@@ -357,7 +359,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.wb_sunny_rounded),
                     text: "تنبيه أذكار الصباح",
-                    forgroundColor: Colors.orange,
+                    forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: appSettings.morningAdkarReminder,
                     onChanged: (value) async {
@@ -369,7 +371,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.nightlight_round),
                     text: "تنبيه أذكار المساء",
-                    forgroundColor: Colors.blueAccent,
+                    forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: appSettings.eveningAdkarReminder,
                     onChanged: (value) async {
@@ -464,69 +466,69 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         : () => _clearAudioCache(context),
 
                     // trallingIcon: Icons.delete,
-                    forgroundColor: Colors.orange,
+                    forgroundColor: Colors.amber.shade700,
                   ),
                   SettingCards(
                     icon: const Right(Icons.app_settings_alt),
                     text: AppLocalizations.of(context)!.app_information,
-                    forgroundColor: Colors.blueGrey,
+                    forgroundColor: primarycolor,
                     onTap: () => Navigator.of(context).pushNamed("/app_info"),
                   ),
                   SettingCards(
                     // borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)), // TODO: Temp
                     icon: const Right(Icons.share),
                     text: "نشر التطبيق (صدقة جارية)",
-                    forgroundColor: Colors.green,
+                    forgroundColor: primarycolor,
                     onTap: () {
                       SharePlus.instance.share(
                         ShareParams(text: "https://noor_bayan.com"),
                       );
                     },
                   ),
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.aspect_ratio),
-                    text: "حجم الشاشة",
-                    forgroundColor: Colors.brown,
-                    onTap: () {
-                      final heightSize = context.mediaQueryHeight;
-                      final witdthSize = context.mediaQueryWidth;
+                  // SettingCards(
+                  //   borderRadius: const BorderRadius.vertical(
+                  //     bottom: Radius.circular(9),
+                  //   ),
+                  //   icon: const Right(Icons.aspect_ratio),
+                  //   text: "حجم الشاشة",
+                  //   forgroundColor: primarycolor,
+                  //   onTap: () {
+                  //     final heightSize = context.mediaQueryHeight;
+                  //     final witdthSize = context.mediaQueryWidth;
 
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SimpleDialog(
-                            title: Text(
-                              "حجم الشاشة",
-                              style: TextStyle(fontSize: 20.sp),
-                            ),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "الارتفاع: $heightSize",
-                                      style: TextStyle(fontSize: 18.sp),
-                                    ),
-                                    SizedBox(height: 8.h),
-                                    Text(
-                                      "العرض: $witdthSize",
-                                      style: TextStyle(fontSize: 18.sp),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
+                  //     showDialog(
+                  //       context: context,
+                  //       builder: (context) {
+                  //         return SimpleDialog(
+                  //           title: Text(
+                  //             "حجم الشاشة",
+                  //             style: TextStyle(fontSize: 20.sp),
+                  //           ),
+                  //           children: [
+                  //             Padding(
+                  //               padding: const EdgeInsets.all(16.0),
+                  //               child: Column(
+                  //                 mainAxisAlignment: MainAxisAlignment.start,
+                  //                 crossAxisAlignment: CrossAxisAlignment.start,
+                  //                 children: [
+                  //                   Text(
+                  //                     "الارتفاع: $heightSize",
+                  //                     style: TextStyle(fontSize: 18.sp),
+                  //                   ),
+                  //                   SizedBox(height: 8.h),
+                  //                   Text(
+                  //                     "العرض: $witdthSize",
+                  //                     style: TextStyle(fontSize: 18.sp),
+                  //                   ),
+                  //                 ],
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         );
+                  //       },
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
               // مساحة إضافية في الأسفل

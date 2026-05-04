@@ -38,7 +38,7 @@ class ReadingProgressCard extends ConsumerWidget {
               children: [
                 Icon(
                   Icons.auto_graph_rounded,
-                  color: context.color.primary,
+                  color: Colors.orange,
                   size: 22.sp,
                 ),
                 SizedBox(width: 8.w),
@@ -70,7 +70,7 @@ class ReadingProgressCard extends ConsumerWidget {
                 value: progress / 604,
                 minHeight: 10.h,
                 backgroundColor: context.color.primary.withValues(alpha: 0.1),
-                valueColor: AlwaysStoppedAnimation(context.color.primary),
+                valueColor: const AlwaysStoppedAnimation(Colors.orange),
               ),
             ),
             SizedBox(height: 10.h),

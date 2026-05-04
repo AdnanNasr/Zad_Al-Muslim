@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,8 +81,8 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                   children: [
                     // --- زخارف إسلامية ناعمة في الخلفية مع تباين محسن ---
                     Positioned(
-                      bottom: -5.r,
-                      left: -3.r,
+                      bottom: 12,
+                      left: 5,
                       child: Icon(
                         Icons.auto_awesome_rounded,
                         size: 40.sp,
