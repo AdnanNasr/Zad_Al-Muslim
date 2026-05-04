@@ -58,36 +58,19 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     final minutes = remaining.inMinutes.remainder(60);
     final seconds = remaining.inSeconds.remainder(60);
 
-    // تحديد اللون الأساسي بناءً على وقت الصلاة
-    Color baseColor;
-    if (name == "الفجر" || name == "الشروق") {
-      baseColor = Colors.amber;
-    } else if (name == "الظهر" || name == "العصر") {
-      baseColor = Colors.orange;
-    } else {
-      baseColor = context.color.primary;
-    }
-
-    final bgColor = isDark
-        ? baseColor.withValues(alpha: 0.15)
-        : Colors.white.withValues(alpha: 0.4);
-
-    final contentColor = isDark
-        ? (baseColor is MaterialColor ? baseColor.shade200 : baseColor)
-        : (baseColor is MaterialColor ? baseColor.shade900 : baseColor);
-
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 14.w),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          boxShadow: [
-            BoxShadow(
-              color: baseColor.withValues(alpha: isDark ? 0.05 : 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: baseColor.withValues(alpha: isDark ? 0.05 : 0.1),
+          //     blurRadius: 20,
+          //     offset: const Offset(0, 10),
+          //   ),
+          // ],
+          // TODO: make later
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20.r),
@@ -105,12 +88,12 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                     vertical: 16.h,
                   ),
                   decoration: BoxDecoration(
-                    color: bgColor,
+                    color: context.color.primary.withValues(alpha: .08),
                     borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.1)
-                          : baseColor.withValues(alpha: 0.2),
+                          : context.color.primary.withValues(alpha: 0.2),
                       width: 1.2,
                     ),
                   ),
@@ -125,10 +108,14 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                               : Colors.white.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(14.r),
                           border: Border.all(
-                            color: contentColor.withValues(alpha: 0.1),
+                            color: context.color.primary.withValues(alpha: 0.1),
                           ),
                         ),
-                        child: Icon(icon, size: 24.sp, color: contentColor),
+                        child: Icon(
+                          icon,
+                          size: 24.sp,
+                          color: context.color.primary,
+                        ),
                       ),
                       SizedBox(width: 14.w),
                       // تفاصيل الصلاة القادمة
@@ -142,7 +129,9 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: "Cairo",
-                                color: contentColor.withValues(alpha: 0.6),
+                                color: context.color.primary.withValues(
+                                  alpha: 0.6,
+                                ),
                               ),
                             ),
                             Text(
@@ -151,7 +140,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                                 fontSize: 20.sp,
                                 fontFamily: "Cairo",
                                 fontWeight: FontWeight.bold,
-                                color: contentColor,
+                                color: context.color.primary,
                                 height: 1.2,
                               ),
                             ),
@@ -165,10 +154,10 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                           vertical: 10.h,
                         ),
                         decoration: BoxDecoration(
-                          color: contentColor.withValues(alpha: .2),
+                          color: context.color.primary.withValues(alpha: .2),
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
-                            color: contentColor.withValues(alpha: 0.1),
+                            color: context.color.primary.withValues(alpha: 0.1),
                           ),
                         ),
                         child: Row(
@@ -177,7 +166,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                             Icon(
                               Icons.timer_outlined,
                               size: 14.sp,
-                              color: contentColor,
+                              color: context.color.primary,
                             ),
                             SizedBox(width: 6.w),
                             Text(
@@ -185,7 +174,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
-                                color: contentColor,
+                                color: context.color.primary,
                                 letterSpacing: 1.2,
                               ),
                             ),

@@ -218,6 +218,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     icon: const Right(Icons.color_lens),
                     text: AppLocalizations.of(context)!.app_color,
                     onTap: () => showModalBottomSheet(
+                      isScrollControlled: true,
                       isDismissible: true,
                       context: context,
                       builder: (context) => const ChangeAppColorPage(),

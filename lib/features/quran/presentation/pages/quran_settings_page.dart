@@ -32,7 +32,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
     final isDark =
         themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
 
-    // قائمة الألوان المستخرجة
     final List<Color> currentColorsList = isDark
         ? [
             const Color(0xFF1E1E1E),
@@ -64,10 +63,8 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
-            // استخدام التباعد التلقائي بين الحاويات
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- القسم الأول: تجربة القراءة ---
               SettingsContainer(
                 title: "تخصيص القراءة والشكل",
                 settingsCards: [
@@ -77,7 +74,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     ),
                     icon: const Right(Icons.palette_rounded),
                     text: "لون خلفية القراءة",
-                    forgroundColor: Colors.teal,
                     widget: Container(
                       width: 24.w,
                       height: 24.w,
@@ -100,7 +96,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.swipe_vertical_rounded),
                     text: "شكل صفحات القرآن الكريم",
-                    forgroundColor: Colors.blue,
                     onTap: () {
                       showDialog(
                         context: context,
@@ -111,7 +106,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.screen_lock_rotation_rounded),
                     text: "بقاء الشاشة مضيئة أثناء القراءة",
-                    forgroundColor: Colors.amber.shade700,
                     toggle: true,
                     switchValue: settings.keepScreenAwake,
                     onChanged: (_) {
@@ -123,8 +117,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 ],
               ),
 
-              SizedBox(height: 16.h), // مسافة إضافية بين الحاويات
-              // --- القسم الثاني: الاستماع والتحفيظ ---
+              SizedBox(height: 16.h),
               SettingsContainer(
                 title: "الاستماع والتحفيظ",
                 settingsCards: [
@@ -136,7 +129,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     heroId: "qari_icon",
                     icon: const Right(Icons.spatial_audio_off),
                     text: "اختيار صوت القارئ",
-                    forgroundColor: Colors.deepPurple,
                     subText: currentSelectedQariProvider.name,
                     onTap: () {
                       showDialog(
@@ -150,7 +142,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.timer_rounded),
                     text: "الفاصل الزمني بين الآيات",
-                    forgroundColor: Colors.orange,
                     subText: settings.ayahDelaySeconds == 0
                         ? 'بدون توقف'
                         : '${settings.ayahDelaySeconds} ثوانٍ',
@@ -164,7 +155,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.auto_awesome_motion_rounded),
                     text: "التمرير التلقائي مع صوت القارئ",
-                    forgroundColor: Colors.cyan,
                     toggle: true,
                     switchValue: settings.autoScrollWithAudio,
                     onChanged: (_) {
@@ -178,7 +168,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
 
               SizedBox(height: 16.h),
 
-              // --- القسم الثالث: إدارة البيانات والدعم ---
               SettingsContainer(
                 title: "الإعدادات العامة",
                 settingsCards: [
@@ -188,7 +177,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                     ),
                     icon: const Right(Icons.library_books_rounded),
                     text: "تحميل التفاسير",
-                    forgroundColor: Colors.green,
                     onTap: () {
                       Navigator.of(context).pushNamed(Routes.tafseerPage);
                     },
@@ -197,7 +185,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.notifications_active_rounded),
                     text: "تنبيهات ورد القراءة اليومي",
-                    forgroundColor: Colors.indigo,
                     subText: settings.isDailyReminderEnabled
                         ? (settings.dailyReminderTime != null
                               ? "الوقت: ${settings.dailyReminderTime}"
@@ -225,7 +212,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                                   .read(quranSettingsProvider.notifier)
                                   .setDailyReminderTime(formattedTime);
                             } else {
-                              // إذا اختار إلغاء، يرجع للخيار الافتراضي بعد الفجر
                               ref
                                   .read(quranSettingsProvider.notifier)
                                   .setDailyReminderTime(null);
@@ -236,7 +222,6 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                 ],
               ),
 
-              // إضافة مساحة في الأسفل لضمان عدم اختفاء آخر عنصر خلف أزرار النظام
               SizedBox(height: 30.h),
             ],
           ),

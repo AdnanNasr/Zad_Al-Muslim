@@ -275,12 +275,14 @@ class BodyContent extends ConsumerWidget {
                           Container(
                             padding: EdgeInsets.all(12.r),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withValues(alpha: 0.2),
+                              color: context.color.primary.withValues(
+                                alpha: 0.2,
+                              ),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.bookmark,
-                              color: Colors.orange,
+                              color: context.color.primary,
                             ),
                           ),
                           SizedBox(width: 16.w),

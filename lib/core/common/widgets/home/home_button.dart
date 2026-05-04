@@ -31,10 +31,8 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // تهيئة الألوان بأسلوب Glassmorphism
-    // نستخدم ألواناً شفافة تسمح بمرور الخلفية مع ضبابية
     final bgColor = isDark
-        ? widget.color.withValues(alpha: 0.15)
+        ? widget.color.withValues(alpha: 0.08)
         : widget.color.withValues(alpha: 0.1);
 
     final contentColor = isDark
@@ -49,11 +47,12 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
-          BoxShadow(
-            color: widget.color.withValues(alpha: isDark ? 0.05 : 0.1),
-            blurRadius: 5,
-            offset: const Offset(0, 1),
-          ),
+          if (!isDark)
+            BoxShadow(
+              color: widget.color.withValues(alpha: isDark ? 0.05 : 0.1),
+              blurRadius: 5,
+              offset: const Offset(0, 1),
+            ),
         ],
       ),
       child: ClipRRect(
@@ -78,7 +77,6 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                 ),
                 child: Stack(
                   children: [
-                    // --- زخارف إسلامية ناعمة في الخلفية مع تباين محسن ---
                     Positioned(
                       bottom: 12,
                       left: 5,
@@ -91,12 +89,10 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                       ),
                     ),
 
-                    // --- المحتوى الرئيسي للزر ---
                     Padding(
                       padding: EdgeInsets.all(12.r),
                       child: Row(
                         children: [
-                          // أيقونة الزر
                           if (widget.iconImage != null ||
                               widget.iconData != null)
                             Container(
@@ -113,10 +109,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                                 ),
                               ),
                               child: widget.iconImage != null
-                                  ? Image.asset(
-                                      widget.iconImage!,
-                                      // color: contentColor,
-                                    )
+                                  ? Image.asset(widget.iconImage!)
                                   : Icon(
                                       widget.iconData,
                                       color: contentColor,
@@ -124,7 +117,6 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                                     ),
                             ),
                           SizedBox(width: 12.w),
-                          // نصوص الزر
                           Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

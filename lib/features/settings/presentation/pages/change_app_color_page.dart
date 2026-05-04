@@ -14,16 +14,16 @@ class ChangeAppColorPage extends ConsumerStatefulWidget {
 
 class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
   // قائمة الألوان المقترحة للتطبيق
-  final List<Color> appColors = [
-    Colors.cyan.shade800, // الافتراضي
-    Colors.blue.shade700, // أزرق براند
-    Colors.green.shade700, // أخضر إسلامي
-    Colors.indigo, // ازرق هادئ
-    Colors.red, // أحمر
-    Colors.purple, // بنفسجي
-    Colors.pink, // وردي
-    Colors.orange.shade700, // برتقالي
-  ];
+  final Map<String, Color> appColors = {
+    "الافتراضي": Colors.cyan.shade800, // الافتراضي
+    "ازرق": Colors.blue.shade700, // أزرق براند
+    "أخضر": Colors.green.shade700, // أخضر إسلامي
+    "ازرق هادئ": Colors.indigo, // ازرق هادئ
+    "أحمر": Colors.red, // أحمر
+    "بنفسجي": Colors.purple, // بنفسجي
+    "وردي": Colors.pink, // وردي
+    "برتقالي": Colors.orange.shade700, // برتقالي
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +93,14 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
               ),
               itemCount: appColors.length,
               itemBuilder: (context, index) {
-                final color = appColors[index];
+                final color = appColors.values.toList()[index];
                 final isSelected = currentAppColor == color;
 
-                return _buildColorCard(color, isSelected);
+                return _buildColorCard(
+                  color,
+                  isSelected,
+                  appColors.keys.toList()[index],
+                );
               },
             ),
           ),
@@ -105,7 +109,7 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     );
   }
 
-  Widget _buildColorCard(Color color, bool isSelected) {
+  Widget _buildColorCard(Color color, bool isSelected, String colorName) {
     return GestureDetector(
       onTap: () => ref.read(userThemeProvider.notifier).setScheme(color),
       child: AnimatedContainer(
@@ -131,6 +135,14 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Text(
+              colorName,
+              style: TextStyle(
+                fontSize: 18.sp,
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             Container(
               width: 35.w,
               height: 35.h,

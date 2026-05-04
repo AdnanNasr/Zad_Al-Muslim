@@ -70,7 +70,7 @@ class ReadingProgressCard extends ConsumerWidget {
                 value: progress / 604,
                 minHeight: 10.h,
                 backgroundColor: context.color.primary.withValues(alpha: 0.1),
-                valueColor: const AlwaysStoppedAnimation(Colors.orange),
+                valueColor: AlwaysStoppedAnimation(context.color.primary),
               ),
             ),
             SizedBox(height: 10.h),

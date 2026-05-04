@@ -152,7 +152,7 @@ class QuickAdkarStrip extends ConsumerWidget {
 
     Color baseColor;
     if (category == "أذكار الصباح والمساء") {
-      baseColor = Colors.orange;
+      baseColor = context.color.primary;
     } else if (category == "أذكار النوم") {
       baseColor = Colors.indigo;
     } else if (category == "الأذكار بعد السلام من الصلاة") {
