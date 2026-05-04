@@ -1,8 +1,8 @@
+import 'dart:ui';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
@@ -30,7 +30,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     final appColor = ref.watch(userThemeProvider);
     const blueWhaleColor = FlexScheme.blueWhale;
     final local = AppLocalizations.of(context)!;
-    // ! TODO:
+
     Color getInactiveColor() {
       if (appColor == blueWhaleColor) {
         return !isLight ? themeColor.scrim : themeColor.outline;
@@ -39,55 +39,77 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     }
 
     return Scaffold(
+      extendBody: true,
       body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.bounceIn,
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.fromLTRB(20.w, 0, 20.w, 25.h),
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .1),
-              blurRadius: 10,
+              color: Colors.black.withValues(alpha: .15),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: NavigationBarTheme(
-          data: NavigationBarThemeData(
-            indicatorColor: themeColor.onPrimary.withValues(alpha: .2),
-
-            labelTextStyle: WidgetStateProperty.all(
-              TextStyle(
-                fontSize: 13.sp,
-                fontFamily: "Cairo",
-                fontWeight: FontWeight.bold,
-                color: context.color.onPrimary,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30.r),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: (isLight ? themeColor.primary : themeColor.surface)
+                    .withValues(alpha: isLight ? 0.08 : 0.9),
+                borderRadius: BorderRadius.circular(30.r),
+                border: Border.all(
+                  color: (themeColor.outline).withValues(alpha: 0.2),
+                  width: 1.2,
+                ),
+              ),
+              child: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  indicatorColor: themeColor.primary.withValues(alpha: 0.15),
+                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                    final isSelected = states.contains(WidgetState.selected);
+                    return TextStyle(
+                      fontSize: 12.sp,
+                      fontFamily: "Cairo",
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? themeColor.primary
+                          : getInactiveColor(),
+                    );
+                  }),
+                  labelPadding: EdgeInsets.zero,
+                  height: 65.h,
+                ),
+                child: NavigationBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: (index) {
+                    setState(() => _currentIndex = index);
+                  },
+                  destinations: [
+                    _buildDestination(
+                      icon: Icons.home_outlined,
+                      activeIcon: Icons.home_rounded,
+                      label: local.home,
+                      inactiveColor: getInactiveColor(),
+                    ),
+                    _buildDestination(
+                      icon: Icons.settings_outlined,
+                      activeIcon: Icons.settings_rounded,
+                      label: local.settings,
+                      inactiveColor: getInactiveColor(),
+                    ),
+                  ],
+                ),
               ),
             ),
-            labelPadding: const EdgeInsets.all(0),
-            height: kBottomNavigationBarHeight + 7.h,
-          ),
-          child: NavigationBar(
-            backgroundColor: context.color.primary
-                .withValues(alpha: .85)
-                .darken(5),
-            selectedIndex: _currentIndex,
-            onDestinationSelected: (index) {
-              setState(() => _currentIndex = index);
-            },
-            destinations: [
-              _buildDestination(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: local.home,
-                inactiveColor: getInactiveColor(),
-              ),
-              _buildDestination(
-                icon: Icons.settings_outlined,
-                activeIcon: Icons.settings,
-                label: local.settings,
-                inactiveColor: getInactiveColor(),
-              ),
-            ],
           ),
         ),
       ),
@@ -101,13 +123,19 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     required Color inactiveColor,
   }) {
     return NavigationDestination(
-      icon: Icon(icon, color: inactiveColor, size: 23.sp),
+      icon: Icon(icon, color: inactiveColor, size: 22.sp),
       selectedIcon: Icon(
         activeIcon,
-        color: Theme.of(context).colorScheme.onPrimary,
-        size: 25.sp,
+        color: Theme.of(context).colorScheme.primary,
+        size: 24.sp,
       ),
       label: label,
     );
+  }
+
+  // Helper to get labels for indexing
+  List<String> _buildDestinationList() {
+    final local = AppLocalizations.of(context)!;
+    return [local.home, local.settings];
   }
 }

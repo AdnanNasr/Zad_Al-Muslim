@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/common/widgets/home/daily_verse_card.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
@@ -120,7 +119,7 @@ class BodyContent extends ConsumerWidget {
       SizedBox(height: 8.h),
       // دعاء اليوم
       TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
-      SizedBox(height: 20.h),
+      SizedBox(height: 100.h),
     ];
 
     return Column(children: children);

@@ -485,54 +485,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       );
                     },
                   ),
-                  // SettingCards(
-                  //   borderRadius: const BorderRadius.vertical(
-                  //     bottom: Radius.circular(9),
-                  //   ),
-                  //   icon: const Right(Icons.aspect_ratio),
-                  //   text: "حجم الشاشة",
-                  //   forgroundColor: primarycolor,
-                  //   onTap: () {
-                  //     final heightSize = context.mediaQueryHeight;
-                  //     final witdthSize = context.mediaQueryWidth;
-
-                  //     showDialog(
-                  //       context: context,
-                  //       builder: (context) {
-                  //         return SimpleDialog(
-                  //           title: Text(
-                  //             "حجم الشاشة",
-                  //             style: TextStyle(fontSize: 20.sp),
-                  //           ),
-                  //           children: [
-                  //             Padding(
-                  //               padding: const EdgeInsets.all(16.0),
-                  //               child: Column(
-                  //                 mainAxisAlignment: MainAxisAlignment.start,
-                  //                 crossAxisAlignment: CrossAxisAlignment.start,
-                  //                 children: [
-                  //                   Text(
-                  //                     "الارتفاع: $heightSize",
-                  //                     style: TextStyle(fontSize: 18.sp),
-                  //                   ),
-                  //                   SizedBox(height: 8.h),
-                  //                   Text(
-                  //                     "العرض: $witdthSize",
-                  //                     style: TextStyle(fontSize: 18.sp),
-                  //                   ),
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  // ),
                 ],
               ),
-              // مساحة إضافية في الأسفل
-              // SizedBox(height: 40.h),
+              SizedBox(height: 100.h),
             ],
           ),
         ),
