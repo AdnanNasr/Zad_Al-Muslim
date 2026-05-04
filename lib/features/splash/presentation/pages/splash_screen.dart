@@ -151,8 +151,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               child: Image.asset(
                 // TODO: set app icon when is ready
                 "assets/images/app_logo.png",
-                width: 120.w,
-                height: 120.w,
+                width: 300.w,
+                height: 300.w,
               ),
             ),
           ),
