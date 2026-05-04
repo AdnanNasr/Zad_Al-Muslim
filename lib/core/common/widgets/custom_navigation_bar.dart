@@ -30,7 +30,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     final appColor = ref.watch(userThemeProvider);
     const blueWhaleColor = FlexScheme.blueWhale;
     final local = AppLocalizations.of(context)!;
-    // !TODO:
+    // ! TODO:
     Color getInactiveColor() {
       if (appColor == blueWhaleColor) {
         return !isLight ? themeColor.scrim : themeColor.outline;
