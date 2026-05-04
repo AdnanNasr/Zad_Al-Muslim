@@ -150,7 +150,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               borderRadius: BorderRadius.circular(20.r),
               child: Image.asset(
                 // TODO: set app icon when is ready
-                "assets/icons/moon.png",
+                "assets/images/app_logo.png",
                 width: 120.w,
                 height: 120.w,
               ),

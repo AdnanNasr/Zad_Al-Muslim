@@ -126,13 +126,13 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  image_path: "assets/icons/moon.png"
+  image_path: "assets/icons/app_logo.png"
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/images/icon_splash.png
+  image: assets/images/app_logo.png
   fullscreen: true
 
   android_12:
     color: "#FFFFFF"
-    image: assets/images/icon_splash.png
+    image: assets/images/app_logo.png
