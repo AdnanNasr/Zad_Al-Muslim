@@ -10,6 +10,7 @@ import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
+import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/adahn_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/font_size_dialog.dart';
@@ -206,30 +207,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   //       fontFamily: "Cairo",
                   //     ),
                   //   ),
-                  // onTap: () {
-                  //   showDialog(
-                  //     context: context,
-                  //     builder: (context) => const LanguageDialog(),
-                  //   );
-                  // },
+                  //   onTap: () {
+                  //     showDialog(
+                  //       context: context,
+                  //       builder: (context) => const LanguageDialog(),
+                  //     );
+                  //   },
                   // ),
-                  // SettingCards(
-                  //   icon: const Right(Icons.color_lens),
-                  //   text: AppLocalizations.of(context)!.app_color,
-                  //   widget: Text(
-                  //     "قريباً...",
-                  //     style: TextStyle(
-                  //       fontSize: 16.sp,
-                  //       fontWeight: FontWeight.w400,
-                  //       fontFamily: "Cairo",
-                  //     ),
-                  //   ),
-                  //   // onTap: () => showModalBottomSheet(
-                  //   //   isDismissible: true,
-                  //   //   context: context,
-                  //   //   builder: (context) => const ChangeAppColorPage(),
-                  //   // ),
-                  // ),
+                  SettingCards(
+                    icon: const Right(Icons.color_lens),
+                    text: AppLocalizations.of(context)!.app_color,
+                    onTap: () => showModalBottomSheet(
+                      isDismissible: true,
+                      context: context,
+                      builder: (context) => const ChangeAppColorPage(),
+                    ),
+                  ),
                   SettingCards(
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(9),

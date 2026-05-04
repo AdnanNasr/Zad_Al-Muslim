@@ -84,10 +84,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final lightTheme = ref.watch(lightThemeProvider); // for colors in app
-    // final darkTheme = ref.watch(darkThemeProvider); // for colors in app
     final themeMode = ref.watch(themeProvider);
     final language = ref.watch(languageProvider);
+    final userColor = ref.watch(userThemeProvider);
 
     return MaterialApp(
       locale: Locale(language.name),
@@ -95,16 +94,18 @@ class MyApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2E2E2E),
           brightness: Brightness.light,
-        ).copyWith(primary: Colors.green),
+        ).copyWith(primary: userColor),
       ),
       darkTheme: ThemeData(
+        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2E2E2E),
           brightness: Brightness.dark,
-        ).copyWith(primary: Colors.green),
+        ).copyWith(primary: userColor, onPrimary: Colors.white),
       ),
       themeMode: themeMode,
 

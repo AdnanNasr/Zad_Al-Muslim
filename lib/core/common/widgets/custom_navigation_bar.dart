@@ -1,10 +1,8 @@
 import 'dart:ui';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
-import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
@@ -27,15 +25,9 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     final themeMode = ref.watch(themeProvider);
     final isLight = themeMode == ThemeMode.light;
     final themeColor = Theme.of(context).colorScheme;
-    final appColor = ref.watch(userThemeProvider);
-    const blueWhaleColor = FlexScheme.blueWhale;
     final local = AppLocalizations.of(context)!;
-
     Color getInactiveColor() {
-      if (appColor == blueWhaleColor) {
-        return !isLight ? themeColor.scrim : themeColor.outline;
-      }
-      return themeColor.inversePrimary;
+      return themeColor.primary.withValues(alpha: .8);
     }
 
     return Scaffold(
@@ -59,8 +51,8 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
               decoration: BoxDecoration(
-                color: (isLight ? themeColor.primary : themeColor.surface)
-                    .withValues(alpha: isLight ? 0.08 : 0.9),
+                color: (isLight ? themeColor.surface : themeColor.surface)
+                    .withValues(alpha: isLight ? 0.9 : 0.9),
                 borderRadius: BorderRadius.circular(30.r),
                 border: Border.all(
                   color: (themeColor.outline).withValues(alpha: 0.2),
@@ -131,11 +123,5 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
       ),
       label: label,
     );
-  }
-
-  // Helper to get labels for indexing
-  List<String> _buildDestinationList() {
-    final local = AppLocalizations.of(context)!;
-    return [local.home, local.settings];
   }
 }

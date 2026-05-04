@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,20 +13,21 @@ class ChangeAppColorPage extends ConsumerStatefulWidget {
 }
 
 class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
-  Map<String, FlexScheme> get colorSchemes => {
-    AppLocalizations.of(context)!.brandBlue: FlexScheme.brandBlue,
-    AppLocalizations.of(context)!.blueWhale: FlexScheme.blueWhale,
-    AppLocalizations.of(context)!.sakura: FlexScheme.sakura,
-    AppLocalizations.of(context)!.gold: FlexScheme.gold,
-    AppLocalizations.of(context)!.vesuviusBurn: FlexScheme.vesuviusBurn,
-    AppLocalizations.of(context)!.barossa: FlexScheme.purpleBrown,
-    AppLocalizations.of(context)!.shark: FlexScheme.shark,
-    AppLocalizations.of(context)!.money: FlexScheme.money,
-  };
+  // قائمة الألوان المقترحة للتطبيق
+  final List<Color> appColors = [
+    Colors.cyan.shade800, // الافتراضي
+    Colors.blue.shade700, // أزرق براند
+    Colors.green.shade700, // أخضر إسلامي
+    Colors.indigo, // ازرق هادئ
+    Colors.red, // أحمر
+    Colors.purple, // بنفسجي
+    Colors.pink, // وردي
+    Colors.orange.shade700, // برتقالي
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final currentScheme = ref.watch(userThemeProvider);
+    final currentAppColor = ref.watch(userThemeProvider);
 
     return Container(
       decoration: BoxDecoration(
@@ -89,15 +89,14 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12.w,
                 mainAxisSpacing: 12.h,
-                mainAxisExtent: 100.h,
+                mainAxisExtent: 80.h,
               ),
-              itemCount: colorSchemes.length,
+              itemCount: appColors.length,
               itemBuilder: (context, index) {
-                final colorName = colorSchemes.keys.elementAt(index);
-                final schemeValue = colorSchemes.values.elementAt(index);
-                final isSelected = currentScheme == schemeValue;
+                final color = appColors[index];
+                final isSelected = currentAppColor == color;
 
-                return _buildColorCard(colorName, schemeValue, isSelected);
+                return _buildColorCard(color, isSelected);
               },
             ),
           ),
@@ -106,85 +105,54 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     );
   }
 
-  Widget _buildColorCard(String name, FlexScheme scheme, bool isSelected) {
-    final schemeColors = scheme.data;
-
+  Widget _buildColorCard(Color color, bool isSelected) {
     return GestureDetector(
-      onTap: () => ref.read(userThemeProvider.notifier).setScheme(scheme),
+      onTap: () => ref.read(userThemeProvider.notifier).setScheme(color),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: EdgeInsets.all(8.r),
+        padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: isSelected
-                ? context.color.primary
-                : Colors.transparent,
-            width: 2,
+            color: isSelected ? color : Colors.transparent,
+            width: 2.5,
           ),
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? context.color.primary.withValues(alpha: .1)
+                  ? color.withValues(alpha: .15)
                   : Colors.black.withValues(alpha: .05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.w500,
-                      fontFamily: "Cairo",
-                    ),
-                  ),
+            Container(
+              width: 35.w,
+              height: 35.h,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
                 ),
-                if (isSelected)
-                  Icon(
-                    Icons.check_circle,
-                    size: 18.sp,
-                    color: context.color.primary,
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-              ],
+                ],
+              ),
             ),
-            // لوحة الألوان الصغيرة
-            Row(
-              children: [
-                _buildTinyCircle(schemeColors.light.primary),
-                _buildTinyCircle(schemeColors.light.primaryContainer),
-                _buildTinyCircle(schemeColors.light.secondary),
-                _buildTinyCircle(schemeColors.light.tertiary),
-              ],
-            ),
+            if (isSelected) Icon(Icons.check_circle, size: 22.sp, color: color),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTinyCircle(Color color) {
-    return Container(
-      width: 24.w,
-      height: 24.h,
-      margin: EdgeInsets.only(right: 4.w),
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.black12, width: 0.5),
       ),
     );
   }

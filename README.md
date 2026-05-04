@@ -1,4 +1,4 @@
-# نور البيان - Noor Bayan
+# زاد المسلم - Zad Al-Muslim
 
 <div align="center">
 
@@ -20,7 +20,7 @@
 
 ## 🌍 الوصف العربي
 
-**نور البيان** هو رفيقك المسلم اليومي المتكامل. تم تطويره باستخدام إطار العمل **Flutter** وباتباع منهجية **المعمارية النظيفة (Clean Architecture)** لضمان الأداء العالي، الاستدامة، وسهولة التوسع. يوفر التطبيق تجربة مستخدم فريدة تجمع بين جمال التصميم وعمق المحتوى.
+**زاد المسلم** هو رفيقك المسلم اليومي المتكامل. تم تطويره باستخدام إطار العمل **Flutter** وباتباع منهجية **المعمارية النظيفة (Clean Architecture)** لضمان الأداء العالي، الاستدامة، وسهولة التوسع. يوفر التطبيق تجربة مستخدم فريدة تجمع بين جمال التصميم وعمق المحتوى.
 
 ### ✨ الميزات الرئيسية (من الألف إلى الياء)
 
@@ -106,7 +106,7 @@
 
 ## 🌍 English Description
 
-**Noor Bayan** is an all-in-one Islamic companion app. Developed with **Flutter** using **Clean Architecture** principles, it ensures high performance, maintainability, and scalability. The app offers a unique user experience by blending visual beauty with deep spiritual content.
+**Zad Al-Muslim** is an all-in-one Islamic companion app. Developed with **Flutter** using **Clean Architecture** principles, it ensures high performance, maintainability, and scalability. The app offers a unique user experience by blending visual beauty with deep spiritual content.
 
 ### ✨ Key Features (A to Z)
 

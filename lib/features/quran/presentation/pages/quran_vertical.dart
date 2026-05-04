@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -440,7 +439,7 @@ class _SurahSection extends ConsumerWidget {
   final double fontSize;
   final Color bgColor;
   final bool isDark;
-  final FlexScheme themeColor;
+  final Color themeColor;
   final ThemeMode themeMode;
   final CurrentPlayingAyah? currentAyah;
   final int? highlightSurah;

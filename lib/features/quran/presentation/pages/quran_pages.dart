@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -206,7 +205,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   Scaffold _quranPages(
     BuildContext context,
     ThemeMode themeMode,
-    FlexScheme themeColor,
+    Color themeColor,
     QariModel currentSelectedQariProvider,
   ) {
     final settings = ref.watch(quranSettingsProvider);
@@ -901,7 +900,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
 InkWell buildQuranPageHeader(
   BuildContext context,
   int surahNumber,
-  FlexScheme themeColor,
+  Color themeColor,
   ThemeMode themeMode,
 ) {
   bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
@@ -915,21 +914,17 @@ InkWell buildQuranPageHeader(
         alignment: Alignment.center,
         children: [
           Image(
-            image: themeColor == FlexScheme.money
+            image: themeColor.toARGB32() == 0xFF1E8449 // أخضر إسلامي
                 ? const AssetImage("assets/images/green_bg_banner.jpg")
-                : themeColor == FlexScheme.brandBlue
+                : (themeColor.toARGB32() == 0xFF00538A || themeColor.toARGB32() == 0xFF2C3E50) // أزرق براند أو كحلي
                 ? const AssetImage("assets/images/blue_bg_banner.jpg")
-                : themeColor == FlexScheme.blueWhale
-                ? const AssetImage("assets/images/blue_bg_banner.jpg")
-                : themeColor == FlexScheme.gold
+                : themeColor.toARGB32() == 0xFFD4AC0D // ذهبي
                 ? const AssetImage("assets/images/gold_bg_banner.jpg")
-                : themeColor == FlexScheme.vesuviusBurn
+                : themeColor.toARGB32() == 0xFFD35400 // برتقالي
                 ? const AssetImage("assets/images/orange_bg_banner.jpg")
-                : themeColor == FlexScheme.shadRed
+                : (themeColor.toARGB32() == 0xFFC0392B || themeColor.toARGB32() == 0xFF8E44AD) // أحمر أو بنفسجي
                 ? const AssetImage("assets/images/rose_bg_banner.jpg")
-                : themeColor == FlexScheme.shadRose
-                ? const AssetImage("assets/images/rose_bg_banner.jpg")
-                : themeColor == FlexScheme.shark
+                : themeColor.toARGB32() == 0xFF2E2E2E // رمادي / افتراضي
                 ? const AssetImage("assets/images/grey_bg_banner.jpg")
                 : const AssetImage(
                     "assets/mainframe.png",

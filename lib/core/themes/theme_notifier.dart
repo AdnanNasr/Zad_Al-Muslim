@@ -1,71 +1,35 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:flutter/cupertino.dart' show CupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const FlexScheme kDefaultScheme = FlexScheme.money;
+const Color kDefaultScheme = Color(0xFF2E2E2E);
 
-class ThemeNotifier extends StateNotifier<FlexScheme> {
+class ThemeNotifier extends StateNotifier<Color> {
   ThemeNotifier() : super(kDefaultScheme);
 
-  Future<void> setScheme(FlexScheme newScheme) async {
-    state = newScheme;
+  Future<void> setScheme(Color newColor) async {
+    state = newColor;
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("scheme_color", newScheme.name);
+    await prefs.setInt("app_color", newColor.toARGB32());
   }
 
   Future<void> loadScheme() async {
-    final perfs = await SharedPreferences.getInstance();
-    final themeColorValue = perfs.getString("scheme_color");
+    final prefs = await SharedPreferences.getInstance();
+    final themeColorValue = prefs.getInt("app_color");
     if (themeColorValue != null) {
-      state = FlexScheme.values.byName(themeColorValue);
+      state = Color(themeColorValue);
     } else {
-      AppLogger.logger.e("حدثت مشكلة اثناء تحميل الثيم الخاص بالمستخدم");
+      AppLogger.logger.e("لم يتم العثور على لون محفوظ، سيتم استخدام اللون الافتراضي");
     }
   }
 }
 
-final userThemeProvider = StateNotifierProvider<ThemeNotifier, FlexScheme>((
-  ref,
-) {
+final userThemeProvider = StateNotifierProvider<ThemeNotifier, Color>((ref) {
   return ThemeNotifier();
 });
 
-final lightThemeProvider = Provider<ThemeData>((ref) {
-  final currentScheme = ref.watch(userThemeProvider);
-  return FlexThemeData.light(
-    scheme: currentScheme,
-
-    subThemesData: const FlexSubThemesData(
-      interactionEffects: true,
-
-      useM2StyleDividerInM3: true,
-      inputDecoratorIsFilled: true,
-      inputDecoratorBorderType: FlexInputBorderType.outline,
-    ),
-    visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-  );
-});
-
-final darkThemeProvider = Provider<ThemeData>((ref) {
-  final currentScheme = ref.watch(userThemeProvider);
-  return FlexThemeData.dark(
-    scheme: currentScheme,
-
-    subThemesData: const FlexSubThemesData(
-      interactionEffects: true,
-      tintedDisabledControls: true,
-      blendOnColors: false,
-      // blendOnLevel: 15,
-      useM2StyleDividerInM3: true,
-      inputDecoratorIsFilled: true,
-      inputDecoratorBorderType: FlexInputBorderType.outline,
-    ),
-    visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-  );
+final appColorProvider = Provider<Color>((ref) {
+  return const Color(0xFF2E2E2E);
 });
