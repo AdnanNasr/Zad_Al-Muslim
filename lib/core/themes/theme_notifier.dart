@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const Color kDefaultScheme = Color(0xFF2E2E2E);
+Color kDefaultScheme = Colors.indigo;
 
 class ThemeNotifier extends StateNotifier<Color> {
   ThemeNotifier() : super(kDefaultScheme);
@@ -21,7 +21,9 @@ class ThemeNotifier extends StateNotifier<Color> {
     if (themeColorValue != null) {
       state = Color(themeColorValue);
     } else {
-      AppLogger.logger.e("لم يتم العثور على لون محفوظ، سيتم استخدام اللون الافتراضي");
+      AppLogger.logger.e(
+        "لم يتم العثور على لون محفوظ، سيتم استخدام اللون الافتراضي",
+      );
     }
   }
 }
