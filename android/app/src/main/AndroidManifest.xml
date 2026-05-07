@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 
-    <application android:label="زاد المسلم" android:name="${applicationName}" android:icon="@mipmap/launcher_icon">
+    <application android:label="زاد المسلم" android:name="${applicationName}" android:icon="@mipmap/ic_launcher">
 
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" android:exported="false" />
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" android:exported="true">
