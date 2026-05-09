@@ -96,9 +96,9 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                           if (widget.iconImage != null ||
                               widget.iconData != null)
                             Container(
-                              width: 44.r,
-                              height: 44.r,
-                              padding: EdgeInsets.all(8.r),
+                              width: 45.r,
+                              height: 45.r,
+                              padding: EdgeInsets.all(2.r),
                               decoration: BoxDecoration(
                                 color: isDark
                                     ? Colors.white.withValues(alpha: 0.05)

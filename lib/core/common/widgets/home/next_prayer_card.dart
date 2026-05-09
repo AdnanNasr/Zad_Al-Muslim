@@ -70,7 +70,6 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
           //     offset: const Offset(0, 10),
           //   ),
           // ],
-          // TODO: make later
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20.r),

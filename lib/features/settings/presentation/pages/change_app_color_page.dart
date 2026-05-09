@@ -15,8 +15,13 @@ class ChangeAppColorPage extends ConsumerStatefulWidget {
 class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
   // قائمة الألوان المقترحة للتطبيق
   final Map<String, Color> appColors = {
-    "الافتراضي": Colors.indigo, // ازرق هادئ: اللون الافتراضي
-    "سماوي": Colors.cyan.shade800, // سماوي
+    "الافتراضي": const Color.fromARGB(
+      255,
+      19,
+      116,
+      129,
+    ), // ازرق هادئ: اللون الافتراضي
+    "نيلي": Colors.teal, // ازرق هادئ
     "ازرق": Colors.blue.shade700, // أزرق براند
     "أخضر": Colors.green.shade700, // أخضر إسلامي
     "أحمر": Colors.red, // أحمر

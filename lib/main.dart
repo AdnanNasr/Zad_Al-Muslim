@@ -111,6 +111,7 @@ class MyApp extends ConsumerWidget {
 
       // البداية دائماً من السبلش
       initialRoute: "/splash_screen",
+      // home: const OnboardingPage(),
       navigatorKey: appNavigatorKey,
 
       routes: {
