@@ -914,18 +914,22 @@ InkWell buildQuranPageHeader(
         alignment: Alignment.center,
         children: [
           Image(
-            image: themeColor.toARGB32() == 0xFF1E8449 // أخضر إسلامي
+            image:
+                (themeColor == const Color.fromARGB(255, 19, 116, 129) ||
+                    (themeColor == Colors.green.shade700 ||
+                        themeColor == Colors.teal)) // أخضر إسلامي
                 ? const AssetImage("assets/images/green_bg_banner.jpg")
-                : (themeColor.toARGB32() == 0xFF00538A || themeColor.toARGB32() == 0xFF2C3E50) // أزرق براند أو كحلي
+                : (themeColor == Colors.blue.shade700) // أزرق براند أو كحلي
                 ? const AssetImage("assets/images/blue_bg_banner.jpg")
-                : themeColor.toARGB32() == 0xFFD4AC0D // ذهبي
-                ? const AssetImage("assets/images/gold_bg_banner.jpg")
-                : themeColor.toARGB32() == 0xFFD35400 // برتقالي
+                : themeColor ==
+                      Colors
+                          .orange
+                          .shade700 // برتقالي
                 ? const AssetImage("assets/images/orange_bg_banner.jpg")
-                : (themeColor.toARGB32() == 0xFFC0392B || themeColor.toARGB32() == 0xFF8E44AD) // أحمر أو بنفسجي
+                : (themeColor == Colors.purple ||
+                      themeColor == Colors.pink ||
+                      themeColor == Colors.red) // أحمر أو بنفسجي
                 ? const AssetImage("assets/images/rose_bg_banner.jpg")
-                : themeColor.toARGB32() == 0xFF2E2E2E // رمادي / افتراضي
-                ? const AssetImage("assets/images/grey_bg_banner.jpg")
                 : const AssetImage(
                     "assets/mainframe.png",
                     package: 'qcf_quran',
