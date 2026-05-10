@@ -30,7 +30,9 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
       final dateOnly = DateTime(date.year, date.month, date.day);
 
       // محاولة الجلب من الكاش أولاً
-      PrayerTimesModel? cachedTimes = await localDataSource.getLastPrayerTimes(dateOnly);
+      PrayerTimesModel? cachedTimes = await localDataSource.getLastPrayerTimes(
+        dateOnly,
+      );
 
       if (cachedTimes == null) {
         // حساب الأوقات إذا لم تكن مخزنة
@@ -40,7 +42,12 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
           position.longitude,
         );
 
-        final tzName = tzmap.latLngToTimezoneString(position.latitude, position.longitude);
+        settings.highLatitudeRule = HighLatitudeRule.seventh_of_the_night;
+
+        final tzName = tzmap.latLngToTimezoneString(
+          position.latitude,
+          position.longitude,
+        );
         final location = tz_core.getLocation(tzName);
         final tzDate = tz_core.TZDateTime.from(dateOnly, location);
 
@@ -54,10 +61,12 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
         cachedTimes = PrayerTimesModel()
           ..date = dateOnly
           ..fajrMinutes = adhanTimes.fajr.hour * 60 + adhanTimes.fajr.minute
-          ..sunriseMinutes = adhanTimes.sunrise.hour * 60 + adhanTimes.sunrise.minute
+          ..sunriseMinutes =
+              adhanTimes.sunrise.hour * 60 + adhanTimes.sunrise.minute
           ..dhuhrMinutes = adhanTimes.dhuhr.hour * 60 + adhanTimes.dhuhr.minute
           ..asrMinutes = adhanTimes.asr.hour * 60 + adhanTimes.asr.minute
-          ..maghribMinutes = adhanTimes.maghrib.hour * 60 + adhanTimes.maghrib.minute
+          ..maghribMinutes =
+              adhanTimes.maghrib.hour * 60 + adhanTimes.maghrib.minute
           ..ishaMinutes = adhanTimes.isha.hour * 60 + adhanTimes.isha.minute;
 
         await localDataSource.cachePrayerTimes(cachedTimes);
@@ -67,6 +76,7 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
       final entity = cachedTimes.toEntityWithOffsets(adjustments);
 
       // إعادة جدولة الإشعارات فقط إذا كان اليوم هو اليوم الحالي
+      // TODO: fix logic to avoid hard calucation
       final now = DateTime.now();
       if (dateOnly.year == now.year &&
           dateOnly.month == now.month &&
@@ -96,12 +106,9 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
         adjustments: adjustments,
       );
 
-      todayResult.fold(
-        (failure) => null,
-        (entity) async {
-          await notificationService.scheduleDailyNotifications(entity);
-        },
-      );
+      todayResult.fold((failure) => null, (entity) async {
+        await notificationService.scheduleDailyNotifications(entity);
+      });
 
       return Right(adjustments);
     } catch (e) {

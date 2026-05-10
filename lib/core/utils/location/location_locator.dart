@@ -292,6 +292,8 @@ class LocationLocatorImpl implements LocationLocator {
         }
       }
 
+      params.highLatitudeRule = HighLatitudeRule.twilight_angle;
+
       return params;
     } catch (e) {
       AppLogger.logger.e("خطأ في تحديد بارامترات الحساب: $e");

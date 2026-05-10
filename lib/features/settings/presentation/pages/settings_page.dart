@@ -475,7 +475,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     forgroundColor: primarycolor,
                     onTap: () {
                       SharePlus.instance.share(
-                        ShareParams(text: "https://noor_bayan.com"),
+                        ShareParams(text: "https://zad_al-muslim.com"),
                       );
                     },
                   ),
