@@ -23,7 +23,7 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
 
   Future<void> _checkAndSchedule() async {
     try {
-      final currentTimezone = await FlutterTimezone.getLocalTimezone();
+      final currentTimezone = (await FlutterTimezone.getLocalTimezone()).toString();
       final lastTimezone = sharedPreferences.getString(_lastTimezoneKey);
 
       bool timezoneChanged = lastTimezone != currentTimezone;

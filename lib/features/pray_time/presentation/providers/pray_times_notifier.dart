@@ -1,20 +1,14 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:zad_al_muslim/core/database/isar_db.dart';
-
-import 'package:zad_al_muslim/features/pray_time/presentation/providers/schedule_prayer_time_notification.dart';
-import 'package:zad_al_muslim/features/pray_time/data/models/prayer_times_model.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/schedule_quran_reading_notification.dart';
-import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:adhan/adhan.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:isar/isar.dart';
-
+import 'package:zad_al_muslim/core/database/isar_db.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:timezone/timezone.dart' as tz_core;
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/features/pray_time/data/models/prayer_times_model.dart';
 
 part 'pray_times_notifier.g.dart';
 
@@ -23,41 +17,24 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
   @override
   FutureOr<void> build() async {
     final Isar? db = IsarDb.database;
-    final DateTime now = DateTime.now();
-    final DateTime today = DateTime(now.year, now.month, now.day);
-    // this notifier performs background work, and we may read it before any
-    // listeners are attached (e.g. in main). keep it alive to avoid disposal
-    // while an async method is running; otherwise Riverpod may try to complete
-    // its internal future again and we get ``Bad state: Future already completed``.
+    // final DateTime now = DateTime.now();
+    // final DateTime today = DateTime(now.year, now.month, now.day);
     ref.keepAlive();
     if (db == null) return;
-    final todayTimes = await db.prayerTimesModels
-        .filter()
-        .dateEqualTo(today)
-        .findFirst();
+
     try {
       // Legacy notification scheduling disabled to avoid overlap with new Clean Architecture system
-      /*
-      if (todayTimes != null) {
-        await _scheduleDailyNotifications(todayTimes);
-        AppLogger.logger.i("تم جدولة مواعيد الصلاة للإشعارات بنجاح");
-      }
-      */
     } catch (e) {
       AppLogger.logger.i("حصل خطأ اثناء جدولة صلاوات اليوم\nvرمز الخطأ: $e");
     }
-    // return null;
   }
 
   Isar? get _db => IsarDb.database;
 
-  /// يحاول إرجاع مواقيت الصلاة لليوم من قاعدة البيانات.
-  /// إذا لم تكن موجودة، يحسبها باستخدام مكتبة `adhan`، يحفظها ثم يعيدها.
   Future<PrayerTimesModel?> loadToday({required Position position}) async {
     final now = DateTime.now();
     final dateOnly = DateTime(now.year, now.month, now.day);
 
-    // حاول قراءة السجل من القاعدة
     PrayerTimesModel? existing = await _db?.prayerTimesModels
         .filter()
         .dateEqualTo(dateOnly)
@@ -67,14 +44,12 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
       return existing;
     }
 
-    // إذا لم يوجد، أحسبه باستخدام الموقع الممرر
     final coordinates = Coordinates(position.latitude, position.longitude);
     final settings = await getAutomaticParams(
       position.latitude,
       position.longitude,
     );
 
-    // استنتاج الـ TimeZone الدقيق بناءً على الإحداثيات للحصول على utcOffset
     final tzName = tzmap.latLngToTimezoneString(
       position.latitude,
       position.longitude,
@@ -96,7 +71,6 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
     return newModel;
   }
 
-  /// إعدادات الحساب (مذهب الشافعي كمثال)
   Future<CalculationParameters> getAutomaticParams(
     double lat,
     double lng,
@@ -105,10 +79,7 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
     return await locationLocator.getCalculationParameters(lat, lng);
   }
 
-  /// تحويل كائن المكتبة الخارجية إلى موديل قاعدة البيانات المحلي
-  /// نحفظ الأوقات كدقائق من منتصف الليل المحلي لتجنّب أي تحويل UTC أو Isar timezone
   PrayerTimesModel _convertToDbModel(PrayerTimes adhanTimes, DateTime date) {
-    // adhan يُرجع أوقات local مباشرةً بعد استدعاء .toLocal() داخلياً
     return PrayerTimesModel()
       ..date = DateTime(date.year, date.month, date.day)
       ..fajrMinutes = adhanTimes.fajr.hour * 60 + adhanTimes.fajr.minute
@@ -121,7 +92,6 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
       ..ishaMinutes = adhanTimes.isha.hour * 60 + adhanTimes.isha.minute;
   }
 
-  /// حساب وحفظ مواقيت الشهر بالكامل في قاعدة البيانات
   Future<void> fetchAndSaveMonthlyTimes({
     required double latitude,
     required double longitude,
@@ -163,7 +133,6 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
     });
   }
 
-  /// حساب وحفظ مواقيت السنة كاملة في قاعدة البيانات
   Future<void> fetchAndSaveYearlyTimes({
     required int year,
     required double latitude,
@@ -200,15 +169,4 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
       });
     });
   }
-
-  // داخل PrayTimesNotifier
-
-  // داخل كلاس PrayTimesNotifier
-
-  // Legacy prayer notification logic removed in favor of the new domain-driven implementation
-  /*
-  Future<void> _scheduleDailyNotifications(PrayerTimesModel todayTimes) async {
-    ...
-  }
-  */
 }

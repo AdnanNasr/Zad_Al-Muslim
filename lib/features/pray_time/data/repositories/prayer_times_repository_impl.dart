@@ -101,8 +101,8 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
       await localDataSource.saveAdjustments(adjustments);
 
       // إعادة جدولة إشعارات اليوم بالأوقات المعدلة الجديدة
-      final now = DateTime.now();
-      final todayResult = await getPrayerTimesForDate(
+      /*
+      await getPrayerTimesForDate(
         position,
         DateTime(now.year, now.month, now.day),
         adjustments: adjustments,
@@ -112,6 +112,7 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
       todayResult.fold((failure) => null, (entity) async {
         await notificationService.scheduleDailyNotifications(entity);
       });
+      */
       */
 
       return Right(adjustments);

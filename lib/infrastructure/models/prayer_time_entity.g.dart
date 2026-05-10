@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: experimental_member_use
+
 part of 'prayer_time_entity.dart';
 
 // **************************************************************************
@@ -17,11 +19,7 @@ const PrayerTimeEntitySchema = CollectionSchema(
   name: r'PrayerTimeEntity',
   id: -7966033704213852644,
   properties: {
-    r'date': PropertySchema(
-      id: 0,
-      name: r'date',
-      type: IsarType.dateTime,
-    ),
+    r'date': PropertySchema(id: 0, name: r'date', type: IsarType.dateTime),
     r'deterministicId': PropertySchema(
       id: 1,
       name: r'deterministicId',
@@ -42,7 +40,7 @@ const PrayerTimeEntitySchema = CollectionSchema(
       id: 4,
       name: r'utcTime',
       type: IsarType.dateTime,
-    )
+    ),
   },
   estimateSize: _prayerTimeEntityEstimateSize,
   serialize: _prayerTimeEntitySerialize,
@@ -60,9 +58,9 @@ const PrayerTimeEntitySchema = CollectionSchema(
           name: r'deterministicId',
           type: IndexType.value,
           caseSensitive: false,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -106,8 +104,10 @@ PrayerTimeEntity _prayerTimeEntityDeserialize(
   object.deterministicId = reader.readLong(offsets[1]);
   object.id = id;
   object.localTimezone = reader.readString(offsets[2]);
-  object.prayerName = _PrayerTimeEntityprayerNameValueEnumMap[
-          reader.readByteOrNull(offsets[3])] ??
+  object.prayerName =
+      _PrayerTimeEntityprayerNameValueEnumMap[reader.readByteOrNull(
+        offsets[3],
+      )] ??
       PrayerName.fajr;
   object.utcTime = reader.readDateTime(offsets[4]);
   return object;
@@ -127,9 +127,11 @@ P _prayerTimeEntityDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (_PrayerTimeEntityprayerNameValueEnumMap[
-              reader.readByteOrNull(offset)] ??
-          PrayerName.fajr) as P;
+      return (_PrayerTimeEntityprayerNameValueEnumMap[reader.readByteOrNull(
+                offset,
+              )] ??
+              PrayerName.fajr)
+          as P;
     case 4:
       return (reader.readDateTime(offset)) as P;
     default:
@@ -161,7 +163,10 @@ List<IsarLinkBase<dynamic>> _prayerTimeEntityGetLinks(PrayerTimeEntity object) {
 }
 
 void _prayerTimeEntityAttach(
-    IsarCollection<dynamic> col, Id id, PrayerTimeEntity object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  PrayerTimeEntity object,
+) {
   object.id = id;
 }
 
@@ -183,13 +188,15 @@ extension PrayerTimeEntityByIndex on IsarCollection<PrayerTimeEntity> {
   }
 
   Future<List<PrayerTimeEntity?>> getAllByDeterministicId(
-      List<int> deterministicIdValues) {
+    List<int> deterministicIdValues,
+  ) {
     final values = deterministicIdValues.map((e) => [e]).toList();
     return getAllByIndex(r'deterministicId', values);
   }
 
   List<PrayerTimeEntity?> getAllByDeterministicIdSync(
-      List<int> deterministicIdValues) {
+    List<int> deterministicIdValues,
+  ) {
     final values = deterministicIdValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'deterministicId', values);
   }
@@ -208,8 +215,10 @@ extension PrayerTimeEntityByIndex on IsarCollection<PrayerTimeEntity> {
     return putByIndex(r'deterministicId', object);
   }
 
-  Id putByDeterministicIdSync(PrayerTimeEntity object,
-      {bool saveLinks = true}) {
+  Id putByDeterministicIdSync(
+    PrayerTimeEntity object, {
+    bool saveLinks = true,
+  }) {
     return putByIndexSync(r'deterministicId', object, saveLinks: saveLinks);
   }
 
@@ -217,8 +226,10 @@ extension PrayerTimeEntityByIndex on IsarCollection<PrayerTimeEntity> {
     return putAllByIndex(r'deterministicId', objects);
   }
 
-  List<Id> putAllByDeterministicIdSync(List<PrayerTimeEntity> objects,
-      {bool saveLinks = true}) {
+  List<Id> putAllByDeterministicIdSync(
+    List<PrayerTimeEntity> objects, {
+    bool saveLinks = true,
+  }) {
     return putAllByIndexSync(r'deterministicId', objects, saveLinks: saveLinks);
   }
 }
@@ -232,7 +243,7 @@ extension PrayerTimeEntityQueryWhereSort
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhere>
-      anyDeterministicId() {
+  anyDeterministicId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'deterministicId'),
@@ -244,17 +255,15 @@ extension PrayerTimeEntityQueryWhereSort
 extension PrayerTimeEntityQueryWhere
     on QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QWhereClause> {
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause> idEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+  idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -277,7 +286,7 @@ extension PrayerTimeEntityQueryWhere
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+  idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -286,7 +295,7 @@ extension PrayerTimeEntityQueryWhere
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
+  idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -301,105 +310,117 @@ extension PrayerTimeEntityQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      deterministicIdEqualTo(int deterministicId) {
+  deterministicIdEqualTo(int deterministicId) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'deterministicId',
-        value: [deterministicId],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'deterministicId',
+          value: [deterministicId],
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      deterministicIdNotEqualTo(int deterministicId) {
+  deterministicIdNotEqualTo(int deterministicId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deterministicId',
-              lower: [],
-              upper: [deterministicId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deterministicId',
-              lower: [deterministicId],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'deterministicId',
+                lower: [],
+                upper: [deterministicId],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'deterministicId',
+                lower: [deterministicId],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deterministicId',
-              lower: [deterministicId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deterministicId',
-              lower: [],
-              upper: [deterministicId],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'deterministicId',
+                lower: [deterministicId],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'deterministicId',
+                lower: [],
+                upper: [deterministicId],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      deterministicIdGreaterThan(
-    int deterministicId, {
-    bool include = false,
-  }) {
+  deterministicIdGreaterThan(int deterministicId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'deterministicId',
-        lower: [deterministicId],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'deterministicId',
+          lower: [deterministicId],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      deterministicIdLessThan(
-    int deterministicId, {
-    bool include = false,
-  }) {
+  deterministicIdLessThan(int deterministicId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'deterministicId',
-        lower: [],
-        upper: [deterministicId],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'deterministicId',
+          lower: [],
+          upper: [deterministicId],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterWhereClause>
-      deterministicIdBetween(
+  deterministicIdBetween(
     int lowerDeterministicId,
     int upperDeterministicId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'deterministicId',
-        lower: [lowerDeterministicId],
-        includeLower: includeLower,
-        upper: [upperDeterministicId],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'deterministicId',
+          lower: [lowerDeterministicId],
+          includeLower: includeLower,
+          upper: [upperDeterministicId],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -407,221 +428,221 @@ extension PrayerTimeEntityQueryWhere
 extension PrayerTimeEntityQueryFilter
     on QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QFilterCondition> {
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      dateEqualTo(DateTime value) {
+  dateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'date', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      dateGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dateGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'date',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      dateLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dateLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'date',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      dateBetween(
+  dateBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'date',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'date',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      deterministicIdEqualTo(int value) {
+  deterministicIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'deterministicId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'deterministicId', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      deterministicIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  deterministicIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'deterministicId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'deterministicId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      deterministicIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  deterministicIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'deterministicId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'deterministicId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      deterministicIdBetween(
+  deterministicIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'deterministicId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'deterministicId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      idEqualTo(Id value) {
+  idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      idBetween(
+  idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  localTimezoneEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'localTimezone',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'localTimezone',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'localTimezone',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneLessThan(
+  localTimezoneGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'localTimezone',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'localTimezone',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneBetween(
+  localTimezoneLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'localTimezone',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
+  localTimezoneBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -629,196 +650,196 @@ extension PrayerTimeEntityQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'localTimezone',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'localTimezone',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  localTimezoneStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'localTimezone',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'localTimezone',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  localTimezoneEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'localTimezone',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'localTimezone',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneContains(String value, {bool caseSensitive = true}) {
+  localTimezoneContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'localTimezone',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'localTimezone',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneMatches(String pattern, {bool caseSensitive = true}) {
+  localTimezoneMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'localTimezone',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'localTimezone',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneIsEmpty() {
+  localTimezoneIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'localTimezone',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'localTimezone', value: ''),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      localTimezoneIsNotEmpty() {
+  localTimezoneIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'localTimezone',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'localTimezone', value: ''),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      prayerNameEqualTo(PrayerName value) {
+  prayerNameEqualTo(PrayerName value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'prayerName',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'prayerName', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      prayerNameGreaterThan(
-    PrayerName value, {
-    bool include = false,
-  }) {
+  prayerNameGreaterThan(PrayerName value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'prayerName',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'prayerName',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      prayerNameLessThan(
-    PrayerName value, {
-    bool include = false,
-  }) {
+  prayerNameLessThan(PrayerName value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'prayerName',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'prayerName',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      prayerNameBetween(
+  prayerNameBetween(
     PrayerName lower,
     PrayerName upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'prayerName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'prayerName',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      utcTimeEqualTo(DateTime value) {
+  utcTimeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'utcTime',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'utcTime', value: value),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      utcTimeGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  utcTimeGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'utcTime',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'utcTime',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      utcTimeLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  utcTimeLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'utcTime',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'utcTime',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-      utcTimeBetween(
+  utcTimeBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'utcTime',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'utcTime',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -838,63 +859,63 @@ extension PrayerTimeEntityQuerySortBy
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByDateDesc() {
+  sortByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByDeterministicId() {
+  sortByDeterministicId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deterministicId', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByDeterministicIdDesc() {
+  sortByDeterministicIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deterministicId', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByLocalTimezone() {
+  sortByLocalTimezone() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localTimezone', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByLocalTimezoneDesc() {
+  sortByLocalTimezoneDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localTimezone', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByPrayerName() {
+  sortByPrayerName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'prayerName', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByPrayerNameDesc() {
+  sortByPrayerNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'prayerName', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByUtcTime() {
+  sortByUtcTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'utcTime', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      sortByUtcTimeDesc() {
+  sortByUtcTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'utcTime', Sort.desc);
     });
@@ -910,21 +931,21 @@ extension PrayerTimeEntityQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByDateDesc() {
+  thenByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByDeterministicId() {
+  thenByDeterministicId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deterministicId', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByDeterministicIdDesc() {
+  thenByDeterministicIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deterministicId', Sort.desc);
     });
@@ -937,49 +958,49 @@ extension PrayerTimeEntityQuerySortThenBy
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByLocalTimezone() {
+  thenByLocalTimezone() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localTimezone', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByLocalTimezoneDesc() {
+  thenByLocalTimezoneDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localTimezone', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByPrayerName() {
+  thenByPrayerName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'prayerName', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByPrayerNameDesc() {
+  thenByPrayerNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'prayerName', Sort.desc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByUtcTime() {
+  thenByUtcTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'utcTime', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-      thenByUtcTimeDesc() {
+  thenByUtcTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'utcTime', Sort.desc);
     });
@@ -995,29 +1016,31 @@ extension PrayerTimeEntityQueryWhereDistinct
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QDistinct>
-      distinctByDeterministicId() {
+  distinctByDeterministicId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deterministicId');
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QDistinct>
-      distinctByLocalTimezone({bool caseSensitive = true}) {
+  distinctByLocalTimezone({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'localTimezone',
-          caseSensitive: caseSensitive);
+      return query.addDistinctBy(
+        r'localTimezone',
+        caseSensitive: caseSensitive,
+      );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QDistinct>
-      distinctByPrayerName() {
+  distinctByPrayerName() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'prayerName');
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QDistinct>
-      distinctByUtcTime() {
+  distinctByUtcTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'utcTime');
     });
@@ -1039,21 +1062,21 @@ extension PrayerTimeEntityQueryProperty
   }
 
   QueryBuilder<PrayerTimeEntity, int, QQueryOperations>
-      deterministicIdProperty() {
+  deterministicIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'deterministicId');
     });
   }
 
   QueryBuilder<PrayerTimeEntity, String, QQueryOperations>
-      localTimezoneProperty() {
+  localTimezoneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'localTimezone');
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerName, QQueryOperations>
-      prayerNameProperty() {
+  prayerNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'prayerName');
     });

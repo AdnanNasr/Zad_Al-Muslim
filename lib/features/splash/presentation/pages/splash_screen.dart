@@ -8,7 +8,6 @@ import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart'
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
-import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_notifier.dart';
 import 'package:zad_al_muslim/features/hadith/data/repositories/insert_hadith.dart';
 import 'package:zad_al_muslim/features/quran/data/repositories/insert_quran_pages.dart';
 import 'package:zad_al_muslim/features/tafsser/data/repositories/insert_tafsser.dart';
@@ -97,9 +96,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           ref.read(userPositionProvider.notifier).state = position;
 
           // 2. استخدام النظام الجديد لحساب وجدولة الصلوات لـ 30 يوماً
-          final tz = await FlutterTimezone.getLocalTimezone();
+          final tz = (await FlutterTimezone.getLocalTimezone()).toString();
           final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
-          
+
           await recalculateUseCase(
             domain_loc.Location(
               latitude: position.latitude,
