@@ -53,6 +53,17 @@ import '../../features/qebla/data/repositories/qibla_repository_impl.dart';
 import '../../features/qebla/domain/repositories/qibla_repository.dart';
 import '../../features/qebla/domain/usecases/get_qibla_direction.dart';
 
+// New Clean Architecture Prayer Times Imports
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../../domain/repositories/i_prayer_repository.dart';
+import '../../domain/repositories/i_notification_scheduler.dart';
+import '../../domain/usecases/schedule_notifications_usecase.dart';
+import '../../domain/usecases/recalculate_and_schedule_usecase.dart';
+import '../../infrastructure/repositories/isar_prayer_repository.dart';
+import '../../infrastructure/repositories/notification_scheduler_impl.dart';
+import '../../infrastructure/lifecycle/app_lifecycle_observer.dart';
+import '../../infrastructure/services/permission_service.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -199,4 +210,32 @@ Future<void> init() async {
   // Feature - Qibla
   sl.registerLazySingleton<QiblaRepository>(() => QiblaRepositoryImpl());
   sl.registerLazySingleton<GetQiblaDirection>(() => GetQiblaDirection(sl()));
+
+  // --- New Clean Architecture Prayer Times Registration ---
+  
+  // External
+  sl.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
+
+  // Infrastructure Services
+  sl.registerLazySingleton<PermissionService>(() => PermissionService(sl()));
+  
+  // Repositories
+  sl.registerLazySingleton<INotificationScheduler>(
+    () => NotificationSchedulerImpl(sl()),
+  );
+  sl.registerLazySingleton<IPrayerRepository>(
+    () => IsarPrayerRepository(isar: sl(), sharedPreferences: sl()),
+  );
+
+  // Use Cases
+  sl.registerFactory(() => ScheduleNotificationsUseCase(sl(), sl()));
+  sl.registerFactory(() => RecalculateAndScheduleUseCase(sl(), sl()));
+
+  // Lifecycle
+  sl.registerLazySingleton(
+    () => AppLifecycleObserver(
+      scheduleNotificationsUseCase: sl(),
+      sharedPreferences: sl(),
+    ),
+  );
 }

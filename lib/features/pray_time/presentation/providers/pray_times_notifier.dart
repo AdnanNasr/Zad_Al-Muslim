@@ -36,10 +36,13 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
         .dateEqualTo(today)
         .findFirst();
     try {
+      // Legacy notification scheduling disabled to avoid overlap with new Clean Architecture system
+      /*
       if (todayTimes != null) {
         await _scheduleDailyNotifications(todayTimes);
         AppLogger.logger.i("تم جدولة مواعيد الصلاة للإشعارات بنجاح");
       }
+      */
     } catch (e) {
       AppLogger.logger.i("حصل خطأ اثناء جدولة صلاوات اليوم\nvرمز الخطأ: $e");
     }
@@ -202,46 +205,10 @@ class PrayTimesNotifier extends _$PrayTimesNotifier {
 
   // داخل كلاس PrayTimesNotifier
 
+  // Legacy prayer notification logic removed in favor of the new domain-driven implementation
+  /*
   Future<void> _scheduleDailyNotifications(PrayerTimesModel todayTimes) async {
-    // 1. مسح أي إشعارات قديمة مجدولة لتجنب التكرار أو تداخل الأصوات
-    await FlutterLocalNotificationsPlugin().cancelAll();
-
-    // 2. تجهيز قائمة الصلوات وأوقاتها
-    final Map<String, DateTime?> prayers = {
-      'الفجر': todayTimes.fajr,
-      'الظهر': todayTimes.dhuhr,
-      'العصر': todayTimes.asr,
-      'المغرب': todayTimes.maghrib,
-      'العشاء': todayTimes.isha,
-    };
-
-    // 3. المرور على كل صلاة وجدولتها
-    int idCounter = 0;
-    for (var entry in prayers.entries) {
-      final String name = entry.key;
-      final DateTime? time = entry.value;
-
-      if (time != null) {
-        await SchedulePrayerTimeNotification.schedulePrayerNotification(
-          id: idCounter++,
-          title: name,
-          time: time,
-        );
-      }
-    }
-
-    // إعادة جدولة تنبيه القرآن إذا كان يعتمد على وقت الفجر ليتزامن مع أحدث وقت
-    try {
-      final quranSettings = ref.read(quranSettingsProvider);
-      if (quranSettings.isDailyReminderEnabled &&
-          quranSettings.dailyReminderTime == null) {
-        await ScheduleQuranReadingNotification.updateSchedule(
-          isEnabled: true,
-          timeString: null,
-        );
-      }
-    } catch (_) {}
-
-    AppLogger.logger.i("✅ تم جدولة إشعارات اليوم بنجاح");
+    ...
   }
+  */
 }

@@ -1,155 +1,64 @@
-# خطة تنفيذ: Background Audio Service لتطبيق "نور القرآن"
+# خطة تنفيذ: نظام جدولة أوقات الصلاة (Islamic Prayer Scheduler)
 
 ## الهدف
-
-دمج `just_audio_background` في التطبيق لتمكين التحكم في تشغيل الصوت من شاشة القفل ومركز الإشعارات، مع عرض اسم السورة واسم القارئ وأزرار التحكم (تشغيل/إيقاف، تقديم/تأخير بـ 10 ثوانٍ).
-
-## الوضع الحالي (Current State)
-
-| الملف | الوضع |
-|---|---|
-| `audio_player_provider.dart` | يستخدم `AudioPlayer()` عادياً من `just_audio` |
-| `moratal_player_provider.dart` | يستدعي `audioPlayer.setUrl(url)` بدون `MediaItem` |
-| `main.dart` | لا يوجد `JustAudioBackground.init()` |
-| `AndroidManifest.xml` | لا يوجد `<service>` خاص بـ AudioService |
-| `pubspec.yaml` | `just_audio: ^0.10.5` موجود، لكن `just_audio_background` غير موجود |
+بناء نظام قوي وفعال لإشعارات أوقات الصلاة باستخدام Clean Architecture، Isar، ومكتبة `adhan` و `flutter_local_notifications`. النظام يضمن دقة التوقيت، كفاءة استهلاك البطارية، والتعافي التلقائي بعد إعادة تشغيل الهاتف أو تغيير المنطقة الزمنية.
 
 ---
 
-## الملاحظات التي تستوجب المراجعة
+## ما تم تنفيذه (Completed Steps)
 
-> [!IMPORTANT]
-> **تعارض المشغّلين (Player Conflict):**
-> يوجد حالياً مشغّل صوت **واحد مشترك** (`audioPlayerProvider`) يُستخدم لتشغيل الآيات آية بآية في صفحة القرآن، وأيضاً لتشغيل السور كاملة في "القرآن مُرتل". هذا التصميم جيد ولن يتغير، لكنه يعني أن `just_audio_background` سيحكم على **كلا** الميزتين.
+### STEP 1: طبقة الدومين (Domain Layer)
+- [x] **الكيانات (Entities)**:
+    - `PrayerTime`: يمثل صلاة واحدة مع وقت UTC ومنطقة زمنية محلية.
+    - `Location`: يمثل الإحداثيات الجغرافية.
+- [x] **الواجهات (Interfaces)**:
+    - `IPrayerRepository`: لإدارة البيانات وتتبع حالة الجدولة والموقع الأخير.
+    - `INotificationScheduler`: لإدارة دورة حياة التنبيهات.
+- [x] **حالات الاستخدام (Use Cases)**:
+    - `ScheduleNotificationsUseCase`: يجدول ٧ أيام من التنبيهات مع نافذة ٢٠ ساعة لمنع التكرار.
+    - `RecalculateAndScheduleUseCase`: يحسب ٣٠ يوماً من الصلوات عند تغير الموقع (أكبر من 0.001 درجة).
 
-> [!WARNING]
-> **إضافة الحزمة just_audio_background:**
-> هذا يتطلب تعديل `pubspec.yaml` وتثبيت الحزمة ثم تعديل كود Kotlin في `MainActivity.kt` لإضافة AudioServicePlugin.
+### STEP 2: طبقة البنية التحتية (Infrastructure Layer)
+- [x] **تخزين البيانات (Isar)**:
+    - إنشاء `PrayerTimeEntity` مع دعم التحويل من وإلى Domain.
+    - تشغيل `build_runner` لتوليد ملفات قاعدة البيانات.
+- [x] **تنفيذ المستودع (IsarPrayerRepository)**:
+    - تخزين أوقات الصلاة بصيغة UTC.
+    - استخدام `SharedPreferences` لتخزين حالة الموقع وتاريخ آخر جدولة.
+- [x] **جدولة التنبيهات (NotificationSchedulerImpl)**:
+    - دعم `flutter_local_notifications` (v20+).
+    - استخدام معرفات ثابتة `YYYYMMDDN`.
+    - تفعيل نمط `exactAllowWhileIdle` لدقة التنبيه.
 
-> [!NOTE]
-> **صورة الإشعار (artUri):**
-> سيتم استخدام أيقونة التطبيق `moon.png` كصورة الإشعار. تحتاج `artUri` أن تكون URI قابلة للوصول (asset أو URL)، وسنستخدم `AssetImage` عبر خاصية `extras` أو path مناسب، أو بديلاً نستعمل `Uri.parse('android.resource://...')`.
+### STEP 3: دورة الحياة والتعافي (Lifecycle & Recovery)
+- [x] **مراقب التطبيق (`AppLifecycleObserver`)**:
+    - يراقب حالة الـ `resumed` للتحقق من تغير المنطقة الزمنية (Timezone Change).
+- [x] **مستقبل التشغيل (`PrayerBootReceiver`)**:
+    - كود Kotlin (Android) لإعادة تشغيل محرك Flutter وجدولة التنبيهات فور تشغيل الهاتف.
 
----
+### STEP 4: إدارة التصاريح (Permissions)
+- [x] **خدمة التصاريح (`PermissionService`)**:
+    - طلب `SCHEDULE_EXACT_ALARM` لأندرويد ١٢+.
+    - طلب `POST_NOTIFICATIONS` لأندرويد ١٣+.
+    - طلب تصاريح الإشعارات لنظام iOS.
 
-## التغييرات المقترحة
+### STEP 5: حقن التبعيات (Dependency Injection)
+- [x] **تحديث `injection_container.dart`**:
+    - تسجيل جميع المكونات الجديدة وربطها مع `GetIt`.
 
-### ١. إضافة الحزمة
-
-#### [MODIFY] [pubspec.yaml](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/pubspec.yaml)
-- إضافة `just_audio_background: ^0.0.1-beta.12` تحت `just_audio`
-
----
-
-### ٢. تهيئة الـ Background Service
-
-#### [MODIFY] [main.dart](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/lib/main.dart)
-- إضافة `import 'package:just_audio_background/just_audio_background.dart';`
-- استدعاء `await JustAudioBackground.init(...)` قبل `runApp()` مع الإعدادات:
-  ```dart
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.noorquran.audio',
-    androidNotificationChannelName: 'نور القرآن - تشغيل الصوت',
-    androidNotificationOngoing: true,
-    androidStopForegroundOnPause: true,
-    notificationColor: Color(0xFF1E8449), // لون التطبيق
-  );
-  ```
-
----
-
-### ٣. تحديث مصدر الصوت في Provider المُرتَّل
-
-#### [MODIFY] [moratal_player_provider.dart](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/lib/features/quran_moratal/presentation/providers/moratal_player_provider.dart)
-استبدال `audioPlayer.setUrl(url)` بـ:
-```dart
-await audioPlayer.setAudioSource(
-  AudioSource.uri(
-    Uri.parse(url),
-    tag: MediaItem(
-      id: '${surah.qariId}_${surah.surahNumber}',
-      title: 'سورة ${surah.surahName}',
-      artist: surah.qariName,
-      artUri: Uri.parse('asset:///assets/icons/moon.png'),
-    ),
-  ),
-);
-```
-مع `try-catch` شامل.
+### STEP 6: الربط النهائي (Final Wiring)
+- [x] **في `main.dart`**:
+    - تهيئة الـ Scheduler وتسجيل الـ Lifecycle Observer.
+- [x] **في `splash_screen.dart`**:
+    - طلب التصاريح عند بدء التشغيل.
+    - تنفيذ أول عملية حساب وجدولة (Initial Calculation) لـ ٣٠ يوماً.
+- [x] **تطهير الكود القديم (Cleanup)**:
+    - تعطيل الجدولة القديمة في `PrayTimesNotifier` و `PrayerTimesRepositoryImpl` لمنع التداخل.
 
 ---
 
-### ٤. تحديث مصدر الصوت عند تشغيل الآيات (آية بآية)
-
-#### [MODIFY] [audio_player_provider.dart](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/lib/features/quran/presentation/providers/audio_player_provider.dart)
-- تحديث `player.setUrl(url)` ليصبح `setAudioSource` مع `MediaItem` يحتوي اسم السورة ورقم الآية في الـ `title`.
-
----
-
-### ٥. إضافة أزرار Skip Forward/Backward بـ 10 ثوانٍ
-
-#### [MODIFY] [moratal_mini_player.dart](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/lib/features/quran_moratal/presentation/widgets/moratal_mini_player.dart)
-- في `_MoratalFullPlayerSheet`:
-  - إضافة زرَّي `seekForward(10s)` و `seekBackward(10s)` في صف عناصر التحكم الرئيسية
-  - هذه الأزرار ستظهر تلقائياً في الإشعار لأن `just_audio_background` يتعامل مع ذلك عبر `androidNotificationIcon`
-
----
-
-### ٦. تعديل AndroidManifest.xml
-
-#### [MODIFY] [AndroidManifest.xml](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/android/app/src/main/AndroidManifest.xml)
-إضافة الأذونات والـ services التالية:
-```xml
-<!-- أذونات الصوت في الخلفية -->
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
-<uses-permission android:name="android.permission.WAKE_LOCK"/>
-
-<!-- خدمة just_audio_background -->
-<service
-    android:name="com.ryanheise.audioservice.AudioService"
-    android:foregroundServiceType="mediaPlayback"
-    android:exported="true">
-  <intent-filter>
-    <action android:name="android.media.browse.MediaBrowserService" />
-  </intent-filter>
-</service>
-
-<receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver"
-    android:exported="true">
-  <intent-filter>
-    <action android:name="android.intent.action.MEDIA_BUTTON" />
-  </intent-filter>
-</receiver>
-```
-
----
-
-### ٧. تعديل MainActivity.kt
-
-#### [MODIFY] [MainActivity.kt](file:///c:/Users/adnan/Desktop/MyProjcts/flutter_apps/noor_bayan/noor_bayan/android/app/src/main/kotlin)
-استبدال `FlutterActivity` بـ `FlutterFragmentActivity` حسب متطلبات `just_audio_background`.
-
----
-
-## خطوات التنفيذ بالترتيب
-
-```
-1. [ ] إضافة just_audio_background في pubspec.yaml
-2. [ ] تشغيل flutter pub get
-3. [ ] تعديل main.dart - إضافة JustAudioBackground.init()
-4. [ ] تعديل moratal_player_provider.dart - استخدام AudioSource.uri مع MediaItem
-5. [ ] تعديل audio_player_provider.dart - استخدام setAudioSource مع MediaItem للآيات
-6. [ ] تعديل moratal_mini_player.dart - إضافة أزرار seek +10/-10 ثانية
-7. [ ] تعديل AndroidManifest.xml - إضافة الأذونات والـ service
-8. [ ] تعديل MainActivity.kt - FlutterFragmentActivity
-9. [ ] اختبار وتشغيل
-```
-
-## خطة التحقق (Verification)
-
-- تشغيل سورة من القسم المُرتَّل والتحقق من ظهور الإشعار بـ: اسم السورة، اسم القارئ، شعار التطبيق
-- التحقق من عمل أزرار Play/Pause من الإشعار
-- تأمين الشاشة والتحقق من ظهور مشغّل الصوت في شاشة القفل مع أزرار التحكم
-- الضغط على زر Skip Forward/Backward من الإشعار والتحقق من الانتقال 10 ثوانٍ
-- التحقق من استمرار تشغيل الصوت عند إغلاق التطبيق أو تبديل التطبيقات
+## الفوائد المحققة
+1. **استهلاك أقل للبطارية**: لا توجد عمليات حسابية متكررة كلما فتح المستخدم التطبيق.
+2. **دقة عالية**: استخدام UTC وتوقيت دقيق للنظام.
+3. **ذكاء الموقع**: اكتشاف تغير الموقع والسفر وإعادة الجدولة تلقائياً.
+4. **كود نظيف**: انفصال تام بين منطق الحساب وبين كيفية تخزين البيانات أو عرض الإشعارات.

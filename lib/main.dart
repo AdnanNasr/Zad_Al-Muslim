@@ -17,6 +17,8 @@ import 'package:zad_al_muslim/core/utils/notifications/notification_service.dart
 import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_init.dart';
 import 'package:zad_al_muslim/core/common/providers/language_provider.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart' as di;
+import 'package:zad_al_muslim/infrastructure/repositories/notification_scheduler_impl.dart';
+import 'package:zad_al_muslim/infrastructure/lifecycle/app_lifecycle_observer.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_page.dart';
@@ -49,6 +51,12 @@ void main() async {
   await di.init();
 
   await NotificationService.init();
+
+  // Initialize new Prayer Notification Scheduler
+  await di.sl<NotificationSchedulerImpl>().init();
+
+  // Register Lifecycle Observer for Prayer Notifications
+  WidgetsBinding.instance.addObserver(di.sl<AppLifecycleObserver>());
 
   final container = ProviderContainer();
 

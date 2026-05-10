@@ -76,13 +76,15 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
       final entity = cachedTimes.toEntityWithOffsets(adjustments);
 
       // إعادة جدولة الإشعارات فقط إذا كان اليوم هو اليوم الحالي
-      // TODO: fix logic to avoid hard calucation
+      // Legacy notification logic disabled
+      /*
       final now = DateTime.now();
       if (dateOnly.year == now.year &&
           dateOnly.month == now.month &&
           dateOnly.day == now.day) {
         await notificationService.scheduleDailyNotifications(entity);
       }
+      */
 
       return Right(entity);
     } catch (e) {
@@ -106,9 +108,11 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
         adjustments: adjustments,
       );
 
+      /*
       todayResult.fold((failure) => null, (entity) async {
         await notificationService.scheduleDailyNotifications(entity);
       });
+      */
 
       return Right(adjustments);
     } catch (e) {
