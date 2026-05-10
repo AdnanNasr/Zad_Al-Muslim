@@ -56,6 +56,7 @@ class RecalculateAndScheduleUseCase {
       }
 
       addPrayer(PrayerName.fajr, prayerTimes.fajr);
+      addPrayer(PrayerName.sunrise, prayerTimes.sunrise);
       addPrayer(PrayerName.dhuhr, prayerTimes.dhuhr);
       addPrayer(PrayerName.asr, prayerTimes.asr);
       addPrayer(PrayerName.maghrib, prayerTimes.maghrib);
@@ -75,10 +76,11 @@ class RecalculateAndScheduleUseCase {
   int _getPrayerIndex(PrayerName name) {
     switch (name) {
       case PrayerName.fajr: return 1;
-      case PrayerName.dhuhr: return 2;
-      case PrayerName.asr: return 3;
-      case PrayerName.maghrib: return 4;
-      case PrayerName.isha: return 5;
+      case PrayerName.sunrise: return 2;
+      case PrayerName.dhuhr: return 3;
+      case PrayerName.asr: return 4;
+      case PrayerName.maghrib: return 5;
+      case PrayerName.isha: return 6;
     }
   }
 }

@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:isar/isar.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';
-import 'package:zad_al_muslim/features/pray_time/data/datasources/prayer_times_local_data_source.dart';
 import 'package:zad_al_muslim/features/pray_time/data/datasources/user_address_local_data_source.dart';
 import 'package:zad_al_muslim/features/pray_time/data/datasources/user_address_remote_data_source.dart';
 import 'package:zad_al_muslim/features/pray_time/data/repositories/user_address_impl.dart';
@@ -27,11 +26,6 @@ import 'package:zad_al_muslim/features/quran_moratal/data/datasources/surah_qari
 import 'package:zad_al_muslim/features/quran_moratal/data/repositories/surah_qari_voice_impl.dart';
 import 'package:zad_al_muslim/features/quran_moratal/domain/usecases/get_surah_qari_voice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../features/pray_time/data/repositories/prayer_notification_service_impl.dart';
-import '../../features/pray_time/domain/repositories/prayer_notification_service.dart';
-import '../../features/pray_time/data/repositories/prayer_times_repository_impl.dart';
-import '../../features/pray_time/domain/repositories/prayer_times_repository.dart';
-import '../../features/pray_time/domain/usecases/get_prayer_times_usecase.dart';
 import '../../features/tafsser/data/datasource/tafsser_local_data_source.dart';
 import '../../features/tafsser/data/datasource/tafsser_remote_data_source.dart';
 import '../../features/tafsser/data/repositories/tafsser_repository_impl.dart';
@@ -82,26 +76,7 @@ Future<void> init() async {
 
   // Features - Pray Time
 
-  // Use cases
-  sl.registerLazySingleton(() => GetPrayerTimesUseCase(sl()));
-
-  // Repository
-  sl.registerLazySingleton<PrayerTimesRepository>(
-    () => PrayerTimesRepositoryImpl(
-      localDataSource: sl(),
-      notificationService: sl(),
-    ),
-  );
-
-  // Datasource
-  sl.registerLazySingleton<PrayerTimesLocalDataSource>(
-    () => PrayerTimesLocalDataSourceImpl(),
-  );
-
-  // Notification Service
-  sl.registerLazySingleton<IPrayerNotificationService>(
-    () => PrayerNotificationServiceImpl(sl()),
-  );
+  // Legacy prayer services removed
 
   // Get Adress
 
@@ -212,16 +187,19 @@ Future<void> init() async {
   sl.registerLazySingleton<GetQiblaDirection>(() => GetQiblaDirection(sl()));
 
   // --- New Clean Architecture Prayer Times Registration ---
-  
+
   // External
   sl.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
 
   // Infrastructure Services
   sl.registerLazySingleton<PermissionService>(() => PermissionService(sl()));
-  
+
   // Repositories
-  sl.registerLazySingleton<INotificationScheduler>(
+  sl.registerLazySingleton<NotificationSchedulerImpl>(
     () => NotificationSchedulerImpl(sl()),
+  );
+  sl.registerLazySingleton<INotificationScheduler>(
+    () => sl<NotificationSchedulerImpl>(),
   );
   sl.registerLazySingleton<IPrayerRepository>(
     () => IsarPrayerRepository(isar: sl(), sharedPreferences: sl()),
@@ -232,7 +210,7 @@ Future<void> init() async {
   sl.registerFactory(() => RecalculateAndScheduleUseCase(sl(), sl()));
 
   // Lifecycle
-  sl.registerLazySingleton(
+  sl.registerLazySingleton<AppLifecycleObserver>(
     () => AppLifecycleObserver(
       scheduleNotificationsUseCase: sl(),
       sharedPreferences: sl(),

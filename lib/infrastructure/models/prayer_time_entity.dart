@@ -34,9 +34,9 @@ class PrayerTimeEntity {
     return PrayerTime(
       id: deterministicId,
       prayerName: prayerName,
-      utcTime: utcTime,
+      utcTime: utcTime.toUtc(),
       localTimezone: localTimezone,
-      date: date,
+      date: date.toUtc(),
     );
   }
 }

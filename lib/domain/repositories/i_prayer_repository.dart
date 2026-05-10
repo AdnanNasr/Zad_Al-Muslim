@@ -3,6 +3,7 @@ import '../entities/prayer_time.dart';
 abstract class IPrayerRepository {
   Future<void> savePrayers(List<PrayerTime> prayers);
   Future<List<PrayerTime>> getPrayersForRange(DateTime from, DateTime to);
+  Future<List<PrayerTime>> getPrayersForDay(DateTime date);
   Future<void> deleteAll();
 
   // For optimization: avoid redundant recalculations and scheduling

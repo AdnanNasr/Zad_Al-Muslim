@@ -10,28 +10,28 @@ class NotificationSchedulerImpl implements INotificationScheduler {
   NotificationSchedulerImpl(this._notificationsPlugin);
 
   Future<void> init() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
     );
-    
+
     const settings = InitializationSettings(
-      android: androidSettings, 
+      android: androidSettings,
       iOS: iosSettings,
     );
 
-    await _notificationsPlugin.initialize(
-      settings: settings,
-    );
+    await _notificationsPlugin.initialize(settings: settings);
   }
 
   @override
   Future<void> scheduleAll(List<PrayerTime> prayers) async {
     for (final prayer in prayers) {
       final id = _generateDeterministicId(prayer);
-      
+
       await _notificationsPlugin.zonedSchedule(
         id: id,
         title: _getPrayerTitle(prayer.prayerName),
@@ -44,12 +44,12 @@ class NotificationSchedulerImpl implements INotificationScheduler {
             channelDescription: 'إشعارات أوقات الصلاة',
             importance: Importance.max,
             priority: Priority.high,
-            sound: RawResourceAndroidNotificationSound('adhan'),
+            // sound: RawResourceAndroidNotificationSound('adhan'), // تم تعطيله مؤقتاً لعدم وجود ملف adhan في raw
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
             presentSound: true,
-            sound: 'adhan.aiff',
+            // sound: 'adhan.aiff', // تم تعطيله مؤقتاً لعدم وجود الملف TODO
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -64,7 +64,8 @@ class NotificationSchedulerImpl implements INotificationScheduler {
 
   @override
   Future<int> getScheduledCount() async {
-    final pendingRequests = await _notificationsPlugin.pendingNotificationRequests();
+    final pendingRequests = await _notificationsPlugin
+        .pendingNotificationRequests();
     return pendingRequests.length;
   }
 
@@ -76,21 +77,35 @@ class NotificationSchedulerImpl implements INotificationScheduler {
 
   String _getPrayerTitle(PrayerName name) {
     switch (name) {
-      case PrayerName.fajr: return 'صلاة الفجر';
-      case PrayerName.dhuhr: return 'صلاة الظهر';
-      case PrayerName.asr: return 'صلاة العصر';
-      case PrayerName.maghrib: return 'صلاة المغرب';
-      case PrayerName.isha: return 'صلاة العشاء';
+      case PrayerName.fajr:
+        return 'صلاة الفجر';
+      case PrayerName.sunrise:
+        return 'شروق الشمس';
+      case PrayerName.dhuhr:
+        return 'صلاة الظهر';
+      case PrayerName.asr:
+        return 'صلاة العصر';
+      case PrayerName.maghrib:
+        return 'صلاة المغرب';
+      case PrayerName.isha:
+        return 'صلاة العشاء';
     }
   }
 
   String _getArabicPrayerName(PrayerName name) {
     switch (name) {
-      case PrayerName.fajr: return 'الفجر';
-      case PrayerName.dhuhr: return 'الظهر';
-      case PrayerName.asr: return 'العصر';
-      case PrayerName.maghrib: return 'المغرب';
-      case PrayerName.isha: return 'العشاء';
+      case PrayerName.fajr:
+        return 'الفجر';
+      case PrayerName.sunrise:
+        return 'الشروق';
+      case PrayerName.dhuhr:
+        return 'الظهر';
+      case PrayerName.asr:
+        return 'العصر';
+      case PrayerName.maghrib:
+        return 'المغرب';
+      case PrayerName.isha:
+        return 'العشاء';
     }
   }
 }

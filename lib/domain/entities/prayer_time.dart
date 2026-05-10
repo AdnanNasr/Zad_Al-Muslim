@@ -1,4 +1,4 @@
-enum PrayerName { fajr, dhuhr, asr, maghrib, isha }
+enum PrayerName { fajr, sunrise, dhuhr, asr, maghrib, isha }
 
 class PrayerTime {
   final int id;
@@ -18,10 +18,11 @@ class PrayerTime {
   int get prayerIndex {
     switch (prayerName) {
       case PrayerName.fajr: return 1;
-      case PrayerName.dhuhr: return 2;
-      case PrayerName.asr: return 3;
-      case PrayerName.maghrib: return 4;
-      case PrayerName.isha: return 5;
+      case PrayerName.sunrise: return 2;
+      case PrayerName.dhuhr: return 3;
+      case PrayerName.asr: return 4;
+      case PrayerName.maghrib: return 5;
+      case PrayerName.isha: return 6;
     }
   }
 }

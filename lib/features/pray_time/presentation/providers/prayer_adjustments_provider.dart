@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/pray_time/data/models/prayer_adjustments_model.dart';
-import 'package:zad_al_muslim/features/pray_time/domain/repositories/prayer_times_repository.dart';
+import 'package:zad_al_muslim/domain/usecases/schedule_notifications_usecase.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 
 /// موفر StateNotifier للتحكم في تعديلات دقائق أوقات الصلاة
@@ -34,11 +34,8 @@ class PrayerAdjustmentsNotifier
     state = AsyncValue.data(updated);
 
     // إعادة جدولة الإشعارات مع الـ offsets الجديدة
-    final position = _ref.read(userPositionProvider);
-    if (position != null) {
-      final repo = sl<PrayerTimesRepository>();
-      await repo.saveAdjustments(updated, position);
-    }
+    final scheduleUseCase = sl<ScheduleNotificationsUseCase>();
+    await scheduleUseCase();
   }
 
   /// إعادة تعيين جميع التعديلات إلى الصفر
@@ -53,8 +50,8 @@ class PrayerAdjustmentsNotifier
     // إعادة جدولة الإشعارات بالأوقات الأصلية
     final position = _ref.read(userPositionProvider);
     if (position != null) {
-      final repo = sl<PrayerTimesRepository>();
-      await repo.saveAdjustments(resetModel, position);
+      final scheduleUseCase = sl<ScheduleNotificationsUseCase>();
+      await scheduleUseCase(force: true);
     }
   }
 }

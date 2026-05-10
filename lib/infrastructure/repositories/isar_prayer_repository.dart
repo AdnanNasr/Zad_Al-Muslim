@@ -26,6 +26,19 @@ class IsarPrayerRepository implements IPrayerRepository {
   }
 
   @override
+  Future<List<PrayerTime>> getPrayersForDay(DateTime date) async {
+    final startOfDay = DateTime.utc(date.year, date.month, date.day);
+    final endOfDay = startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
+
+    final entities = await isar.prayerTimeEntitys
+        .filter()
+        .dateBetween(startOfDay, endOfDay)
+        .findAll();
+
+    return entities.map((e) => e.toDomain()).toList();
+  }
+
+  @override
   Future<List<PrayerTime>> getPrayersForRange(DateTime from, DateTime to) async {
     final entities = await isar.prayerTimeEntitys
         .filter()
