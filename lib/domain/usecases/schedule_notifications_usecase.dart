@@ -15,14 +15,15 @@ class ScheduleNotificationsUseCase {
   Future<void> call({bool force = false}) async {
     final now = DateTime.now().toUtc();
     
-    // Optimization: Skip if already scheduled today (unless forced)
+    // Optimization: Skip if already scheduled recently (unless forced)
     if (!force) {
       final lastSchedule = await _prayerRepository.getLastScheduleDate();
-      if (lastSchedule != null &&
-          lastSchedule.year == now.year &&
-          lastSchedule.month == now.month &&
-          lastSchedule.day == now.day) {
-        return;
+      if (lastSchedule != null) {
+        // If last schedule was less than 20 hours ago, skip
+        final difference = now.difference(lastSchedule).inHours;
+        if (difference < 20) {
+          return;
+        }
       }
     }
 
@@ -30,7 +31,6 @@ class ScheduleNotificationsUseCase {
     final prayers = await _prayerRepository.getPrayersForRange(now, to);
     
     final futurePrayers = prayers.where((prayer) {
-      // 2-minute safety buffer as requested
       final bufferTime = now.add(const Duration(minutes: 2));
       return prayer.utcTime.isAfter(bufferTime);
     }).toList();
@@ -38,7 +38,6 @@ class ScheduleNotificationsUseCase {
     await _notificationScheduler.cancelAll();
     await _notificationScheduler.scheduleAll(futurePrayers);
     
-    // Save the date of this successful scheduling
     await _prayerRepository.saveLastScheduleDate(now);
   }
 }
