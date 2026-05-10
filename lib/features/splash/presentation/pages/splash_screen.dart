@@ -149,7 +149,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.r),
               child: Image.asset(
-                // TODO: set app icon when is ready
                 "assets/images/app_logo.png",
                 width: 300.w,
                 height: 300.w,

@@ -160,11 +160,15 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
     return Container(
       decoration: BoxDecoration(
-        // TODO: make desstion
-        // image: DecorationImage(
-        //   image: AssetImage("assets/images/pray_times_cover.jpg"),
-        //   fit: BoxFit.cover,
-        // ),
+        image: DecorationImage(
+          image: const AssetImage("assets/images/pray_times_cover.jpg"),
+          alignment: AlignmentGeometry.centerRight,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: .6),
+            BlendMode.darken,
+          ),
+          fit: BoxFit.cover,
+        ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

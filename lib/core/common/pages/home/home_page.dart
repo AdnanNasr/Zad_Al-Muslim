@@ -451,7 +451,7 @@ class PrimarySectionWidget extends StatelessWidget {
                 HomeButton(
                   text: AppLocalizations.of(context)!.quran_kareem,
                   description: "قراءة وتلاوة",
-                  iconImage: "assets/icons/quran.png", // TODO: change icon
+                  iconImage: "assets/icons/quran.png",
                   color: primaryColor,
                   onTap: () {
                     Navigator.pushNamed(context, Routes.selectSurahPage);
@@ -460,7 +460,7 @@ class PrimarySectionWidget extends StatelessWidget {
                 HomeButton(
                   text: "القرآن مُرتل",
                   description: "استماع وتحميل",
-                  iconImage: "assets/icons/voice.png", // TODO: change icon
+                  iconImage: "assets/icons/voice.png",
                   color: primaryColor,
                   onTap: () {
                     Navigator.pushNamed(context, Routes.quranMoratal);
@@ -469,7 +469,7 @@ class PrimarySectionWidget extends StatelessWidget {
                 HomeButton(
                   text: AppLocalizations.of(context)!.sunah,
                   description: "أحاديث شريفة",
-                  iconImage: "assets/icons/quran2.png", // TODO: change icon
+                  iconImage: "assets/icons/quran2.png",
                   color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.sunnahPage);
@@ -480,7 +480,7 @@ class PrimarySectionWidget extends StatelessWidget {
                 HomeButton(
                   text: AppLocalizations.of(context)!.pray_times,
                   description: "أوقات الأذان",
-                  iconImage: "assets/icons/mosque.png", // TODO: change icon
+                  iconImage: "assets/icons/mosque.png",
                   color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed("/pray_time_page");
@@ -491,7 +491,7 @@ class PrimarySectionWidget extends StatelessWidget {
                 HomeButton(
                   text: AppLocalizations.of(context)!.qebla_direction,
                   description: "بوصلة دقيقة",
-                  iconImage: "assets/icons/kaaba.png", // TODO: change icon
+                  iconImage: "assets/icons/kaaba.png",
                   color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed("/qebla_page");
@@ -500,7 +500,7 @@ class PrimarySectionWidget extends StatelessWidget {
                 HomeButton(
                   text: AppLocalizations.of(context)!.adkar_adia,
                   description: "حصن المسلم",
-                  iconImage: "assets/icons/prayer.png", // TODO: change icon
+                  iconImage: "assets/icons/prayer.png",
                   color: primaryColor,
                   onTap: () {
                     Navigator.of(context).pushNamed("/adkar_page");

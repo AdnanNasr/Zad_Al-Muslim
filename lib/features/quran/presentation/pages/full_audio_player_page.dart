@@ -103,9 +103,9 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
                 id: 'ayah_${surah}_$ayah',
                 title: 'سورة ${SurahNames.getFormattedName(surah)}',
                 artist: 'الآية $ayah',
-                // artUri: Uri.parse(
-                //   'asset:///assets/icons/moon.png',
-                // ), // TODO: change app icon
+                artUri: Uri.parse(
+                  'asset:///assets/images/app_logo.png',
+                ), // TODO: maybe a problem
               ),
             ),
           );
@@ -167,14 +167,13 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
             height: 260.w, // صورة مربعة
             width: 260.w,
             decoration: BoxDecoration(
-              // TODO: change the cover for audio player
               color: context.color.primary.withValues(alpha: .05),
               borderRadius: BorderRadius.circular(30.r),
             ),
-            child: Icon(
-              Icons.my_library_music_rounded,
-              size: 100.sp,
-              color: context.color.primary.withValues(alpha: .6),
+            child: Image.asset(
+              "assets/icons/moon.png",
+              color: context.color.primary.withValues(alpha: .4),
+              fit: BoxFit.fitHeight,
             ),
           ),
 

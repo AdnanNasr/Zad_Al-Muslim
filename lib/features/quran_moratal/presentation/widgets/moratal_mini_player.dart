@@ -1,6 +1,4 @@
 import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
-import 'dart:ui';
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -474,57 +472,15 @@ class _MoratalFullPlayerSheetState
                   ),
                 ),
               )
-            : Padding(
-                padding: EdgeInsets.all(24.r),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Stack(
-                      children: [
-                        BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                          child: Container(),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: context.color.onSurface.withValues(
-                                alpha: 0.2,
-                              ), // حدود زجاجية خفيفة
-                              width: 1.5,
-                            ),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                context.color.onSurface.withValues(
-                                  alpha: 0.1,
-                                ), // لون شفاف من الأعلى
-                                context.color.onSurface.withValues(
-                                  alpha: 0.05,
-                                ), // لون أكثر شفافية من الأسفل
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: context.color.onSurface.withValues(
-                                  alpha: .07,
-                                ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.r),
-                                child: Icon(Icons.play_arrow, size: 50.sp),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+            : Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/night_clouds.jpg"),
+                    fit: BoxFit.fill,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black26,
+                      BlendMode.darken,
                     ),
                   ),
                 ),
