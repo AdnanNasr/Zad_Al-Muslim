@@ -8,13 +8,16 @@ import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart'
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
-import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_notifier.dart';
 import 'package:zad_al_muslim/features/hadith/data/repositories/insert_hadith.dart';
 import 'package:zad_al_muslim/features/quran/data/repositories/insert_quran_pages.dart';
 import 'package:zad_al_muslim/features/tafsser/data/repositories/insert_tafsser.dart';
 import 'package:zad_al_muslim/features/adkar/data/repositories/insert_adkar_to_isar.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/features/hadith/data/models/hadith_model.dart';
+import 'package:zad_al_muslim/infrastructure/services/permission_service.dart';
+import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
+import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
@@ -71,18 +74,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         await insertAdkarToIsar();
       }
 
-      // المرحلة 5: الموقع وأوقات الصلاة (دائماً تعمل)
+      // المرحلة 5: التصاريح والموقع وأوقات الصلاة
       setState(() {
-        _loadingText = "جاري تحديد موقعك لمواقيت الصلاة...";
+        _loadingText = "جاري إعداد مواقيت الصلاة...";
         _progress = 0.85;
       });
 
-      final locationLocator = sl<LocationLocatorImpl>();
+      // 1. طلب تصاريح الإشعارات والتنبيهات الدقيقة
+      await sl<PermissionService>().requestAllPermissions();
 
+      final locationLocator = sl<LocationLocatorImpl>();
       final pos = await locationLocator.determinePosition();
 
-      pos.fold(
-        (failure) {
+      await pos.fold(
+        (failure) async {
           ref.read(locationStatusProvider.notifier).setStatus({
             LocationMessage.error: failure.message,
           });
@@ -90,12 +95,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         (position) async {
           ref.read(userPositionProvider.notifier).state = position;
 
-          await ref
-              .read(prayTimesNotifierProvider.notifier)
-              .fetchAndSaveMonthlyTimes(
-                latitude: position.latitude,
-                longitude: position.longitude,
-              );
+          // 2. استخدام النظام الجديد لحساب وجدولة الصلوات لـ 30 يوماً
+          final tz = (await FlutterTimezone.getLocalTimezone()).toString();
+          final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
+
+          await recalculateUseCase(
+            domain_loc.Location(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              timezone: tz,
+            ),
+          );
         },
       );
 

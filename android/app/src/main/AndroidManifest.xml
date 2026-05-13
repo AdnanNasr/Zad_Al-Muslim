@@ -21,6 +21,14 @@
             </intent-filter>
         </receiver>
 
+        <!-- Custom Boot Receiver for Prayer Times -->
+        <receiver android:name=".PrayerBootReceiver" android:exported="true" android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
         <!-- just_audio_background service -->
         <service android:name="com.ryanheise.audioservice.AudioService" android:foregroundServiceType="mediaPlayback" android:exported="true">
             <intent-filter>

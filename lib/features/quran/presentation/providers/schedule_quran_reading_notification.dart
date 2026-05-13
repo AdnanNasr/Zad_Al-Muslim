@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:isar/isar.dart';
-import 'package:zad_al_muslim/core/database/isar_db.dart';
-import 'package:zad_al_muslim/features/pray_time/data/models/prayer_times_model.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
+import 'package:zad_al_muslim/domain/entities/prayer_time.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 class ScheduleQuranReadingNotification {
@@ -49,19 +49,17 @@ class ScheduleQuranReadingNotification {
       targetMinute = int.tryParse(parts[1]) ?? 0;
     } else {
       // إعداد افتراضي: بعد صلاة الفجر بنصف ساعة
-      final db = IsarDb.database;
+      final repo = sl<IPrayerRepository>();
       final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
       
-      final todayTimes = await db?.prayerTimesModels
-          .filter()
-          .dateEqualTo(today)
-          .findFirst();
+      final todayPrayers = await repo.getPrayersForDay(now);
+      final fajr = todayPrayers.where((p) => p.prayerName == PrayerName.fajr).firstOrNull;
 
-      if (todayTimes != null) {
+      if (fajr != null) {
+        final fajrLocal = fajr.utcTime.toLocal();
         // حساب الفجر والدقائق
-        targetHour = todayTimes.fajrMinutes ~/ 60;
-        targetMinute = todayTimes.fajrMinutes % 60;
+        targetHour = fajrLocal.hour;
+        targetMinute = fajrLocal.minute;
 
         // إضافة 30 دقيقة
         targetMinute += 30;

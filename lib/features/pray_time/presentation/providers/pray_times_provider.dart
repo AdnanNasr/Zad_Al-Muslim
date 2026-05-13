@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
-import 'package:zad_al_muslim/features/pray_time/domain/usecases/get_prayer_times_usecase.dart';
+import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
+import 'package:zad_al_muslim/domain/entities/prayer_time.dart' as domain;
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/prayer_adjustments_provider.dart';
-
 import '../../domain/entities/prayer_times_entity.dart';
 
 /// موفر اليوم المحدد حالياً للعرض. الافتراضي هو اليوم الحالي.
@@ -27,14 +27,12 @@ final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>(
     final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
     final adjustments = adjustmentsAsync.valueOrNull;
 
-    final getPrayerTimes = sl<GetPrayerTimesUseCase>();
-    final result = await getPrayerTimes(
-      pos,
-      date: todayDate,
-      adjustments: adjustments,
-    );
+    final repo = sl<IPrayerRepository>();
+    final prayers = await repo.getPrayersForDay(todayDate);
 
-    return result.fold((failure) => null, (entity) => entity);
+    if (prayers.isEmpty) return null;
+
+    return _mapToUiEntity(prayers, todayDate, adjustments);
   },
 );
 
@@ -51,15 +49,36 @@ final selectedDatePrayerTimesProvider =
       final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
       final adjustments = adjustmentsAsync.valueOrNull;
 
-      final getPrayerTimes = sl<GetPrayerTimesUseCase>();
-      final result = await getPrayerTimes(
-        pos,
-        date: selectedDate,
-        adjustments: adjustments,
-      );
+      final repo = sl<IPrayerRepository>();
+      final prayers = await repo.getPrayersForDay(selectedDate);
 
-      return result.fold((failure) => null, (entity) => entity);
+      if (prayers.isEmpty) return null;
+
+      return _mapToUiEntity(prayers, selectedDate, adjustments);
     });
+
+PrayerTimesEntity _mapToUiEntity(List<domain.PrayerTime> prayers, DateTime date, dynamic adjustments) {
+  final fajr = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.fajr).utcTime.toLocal();
+  final sunrise = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.sunrise).utcTime.toLocal();
+  final dhuhr = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.dhuhr).utcTime.toLocal();
+  final asr = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.asr).utcTime.toLocal();
+  final maghrib = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.maghrib).utcTime.toLocal();
+  final isha = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.isha).utcTime.toLocal();
+  
+  return PrayerTimesEntity(
+    date: date,
+    fajr: _applyAdjustment(fajr, adjustments?.fajrAdjustment ?? 0),
+    sunrise: _applyAdjustment(sunrise, adjustments?.sunriseAdjustment ?? 0),
+    dhuhr: _applyAdjustment(dhuhr, adjustments?.dhuhrAdjustment ?? 0),
+    asr: _applyAdjustment(asr, adjustments?.asrAdjustment ?? 0),
+    maghrib: _applyAdjustment(maghrib, adjustments?.maghribAdjustment ?? 0),
+    isha: _applyAdjustment(isha, adjustments?.ishaAdjustment ?? 0),
+  );
+}
+
+DateTime _applyAdjustment(DateTime time, int minutes) {
+  return time.add(Duration(minutes: minutes));
+}
 
 /// مساعد لتحديد إذا كان التاريخ المحدد هو اليوم الحالي
 bool isToday(DateTime date) {
