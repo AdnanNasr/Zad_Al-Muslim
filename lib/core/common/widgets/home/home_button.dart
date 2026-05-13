@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 
 class HomeButton extends ConsumerStatefulWidget {
   final String text;
@@ -96,8 +97,8 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                           if (widget.iconImage != null ||
                               widget.iconData != null)
                             Container(
-                              width: 45.r,
-                              height: 45.r,
+                              width: 40.r,
+                              height: 40.r,
                               padding: EdgeInsets.all(2.r),
                               decoration: BoxDecoration(
                                 color: isDark
@@ -119,6 +120,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -129,12 +131,9 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                                     fontWeight: FontWeight.bold,
                                     fontFamily: "Cairo",
                                     fontSize: 15.sp,
-                                    height: 1.1,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 4.h),
                                 Text(
                                   widget.description,
                                   style: TextStyle(
@@ -143,8 +142,6 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                                     fontSize: 11.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),

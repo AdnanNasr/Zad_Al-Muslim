@@ -157,7 +157,7 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
       margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: .1),
+        color: Colors.amber.withValues(alpha: .2),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: Colors.amber.withValues(alpha: .4)),
       ),
@@ -167,7 +167,7 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
-              'للحصول على دقة أعلى، ابتعد عن المعادن والأجهزة الكهربائية',
+              "للحصول على أعلى دقة، يرجى الأبتعاد عن الأجهزة الكهربائية والمجالات الكهرومغناطيسية",
               style: TextStyle(
                 fontFamily: 'Cairo',
                 fontSize: 12.sp,

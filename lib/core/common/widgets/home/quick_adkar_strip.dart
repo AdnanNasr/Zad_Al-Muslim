@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/providers/adkar_provider.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_details_page.dart';
 
@@ -49,7 +50,7 @@ class QuickAdkarStrip extends ConsumerWidget {
               ),
               SizedBox(height: 12.h),
               SizedBox(
-                height: 46.h,
+                height: context.mediaQueryHeight * 0.065,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(horizontal: 14.w),

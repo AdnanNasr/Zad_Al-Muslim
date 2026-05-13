@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
@@ -439,74 +441,66 @@ class PrimarySectionWidget extends StatelessWidget {
           SizedBox(height: 24.h),
           Padding(
             padding: EdgeInsets.only(bottom: 10.r, right: 10.r, left: 10.r),
-            child: GridView.count(
+            child: AlignedGridView.count(
               shrinkWrap: true,
-              crossAxisCount: 2,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2, // عدد الأعمدة
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 2.3,
-              children: [
-                HomeButton(
-                  text: AppLocalizations.of(context)!.quran_kareem,
-                  description: "قراءة وتلاوة",
-                  iconImage: "assets/icons/quran.png",
-                  color: primaryColor,
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.selectSurahPage);
-                  },
-                ),
-                HomeButton(
-                  text: "القرآن مُرتل",
-                  description: "استماع وتحميل",
-                  iconImage: "assets/icons/voice.png",
-                  color: primaryColor,
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.quranMoratal);
-                  },
-                ),
-                HomeButton(
-                  text: AppLocalizations.of(context)!.sunah,
-                  description: "أحاديث شريفة",
-                  iconImage: "assets/icons/quran2.png",
-                  color: primaryColor,
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.sunnahPage);
-                  },
-                ),
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 6,
+              itemBuilder: (context, index) {
+                final List<Widget> buttons = [
+                  HomeButton(
+                    text: AppLocalizations.of(context)!.quran_kareem,
+                    description: "قراءة وتلاوة",
+                    iconImage: "assets/icons/quran.png",
+                    color: primaryColor,
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.selectSurahPage),
+                  ),
+                  HomeButton(
+                    text: "القرآن مُرتل",
+                    description: "استماع وتحميل",
+                    iconImage: "assets/icons/voice.png",
+                    color: primaryColor,
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.quranMoratal),
+                  ),
+                  HomeButton(
+                    text: AppLocalizations.of(context)!.sunah,
+                    description: "أحاديث شريفة",
+                    iconImage: "assets/icons/quran2.png",
+                    color: primaryColor,
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(Routes.sunnahPage),
+                  ),
+                  HomeButton(
+                    text: AppLocalizations.of(context)!.pray_times,
+                    description: "أوقات الأذان",
+                    iconImage: "assets/icons/mosque.png",
+                    color: primaryColor,
+                    onTap: () =>
+                        Navigator.of(context).pushNamed("/pray_time_page"),
+                  ),
+                  HomeButton(
+                    text: AppLocalizations.of(context)!.qebla_direction,
+                    description: "بوصلة دقيقة",
+                    iconImage: "assets/icons/kaaba.png",
+                    color: primaryColor,
+                    onTap: () => Navigator.of(context).pushNamed("/qebla_page"),
+                  ),
+                  HomeButton(
+                    text: AppLocalizations.of(context)!.adkar_adia,
+                    description: "حصن المسلم",
+                    iconImage: "assets/icons/prayer.png",
+                    color: primaryColor,
+                    onTap: () => Navigator.of(context).pushNamed("/adkar_page"),
+                  ),
+                ];
 
-                // --- زر مواقيت الصلاة ---
-                HomeButton(
-                  text: AppLocalizations.of(context)!.pray_times,
-                  description: "أوقات الأذان",
-                  iconImage: "assets/icons/mosque.png",
-                  color: primaryColor,
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/pray_time_page");
-                  },
-                ),
-
-                // ----------------------------
-                HomeButton(
-                  text: AppLocalizations.of(context)!.qebla_direction,
-                  description: "بوصلة دقيقة",
-                  iconImage: "assets/icons/kaaba.png",
-                  color: primaryColor,
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/qebla_page");
-                  },
-                ),
-                HomeButton(
-                  text: AppLocalizations.of(context)!.adkar_adia,
-                  description: "حصن المسلم",
-                  iconImage: "assets/icons/prayer.png",
-                  color: primaryColor,
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/adkar_page");
-                  },
-                ),
-              ],
+                return buttons[index];
+              },
             ),
           ),
         ],
@@ -622,7 +616,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
                       clipBehavior: Clip.none,
                       children: [
                         Positioned(
-                          left: 70.w,
+                          left: context.mediaQueryWidth * 0.25,
                           child: AnimatedOpacity(
                             duration: const Duration(milliseconds: 200),
                             opacity: _showCopiedMessage ? 1.0 : 0.0,

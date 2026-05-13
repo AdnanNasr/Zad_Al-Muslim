@@ -127,6 +127,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(quranSettingsProvider);
+    final double nativeWidthSize = context.widthScreen;
+    final double nativeHightSize = context.heightScreen;
     // التوجيه للصفحة العمودية إذا كان وضع العرض القابل للتكبير مفعلاً
     if (settings.quranViewType == QuranViewType.zoomable) {
       return QuranVerticalPage(
@@ -164,7 +166,10 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     });
 
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+      data: MediaQuery.of(context).copyWith(
+        textScaler: TextScaler.noScaling,
+        // size: Size(nativeWidthSize, nativeHightSize),
+      ),
       child: Scaffold(
         body: Stack(
           children: [

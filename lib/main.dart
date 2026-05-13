@@ -89,6 +89,14 @@ class MyApp extends ConsumerWidget {
     final userColor = ref.watch(userThemeProvider);
 
     return MaterialApp(
+      // builder: (context, child) => MediaQuery(
+      //   data: MediaQuery.of(context).copyWith(
+      //     textScaler: MediaQuery.of(
+      //       context,
+      //     ).textScaler.clamp(maxScaleFactor: 1.2, minScaleFactor: 1),
+      //   ),
+      //   child: child!,
+      // ),
       locale: Locale(language.name),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

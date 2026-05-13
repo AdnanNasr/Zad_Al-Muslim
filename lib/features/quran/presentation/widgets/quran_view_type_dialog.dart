@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
 
 class QuranViewTypeDialog extends ConsumerStatefulWidget {
@@ -14,6 +15,8 @@ class QuranViewTypeDialog extends ConsumerStatefulWidget {
 
 class _QuranViewTypeDialogState extends ConsumerState<QuranViewTypeDialog> {
   double? _localFontSize;
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,279 +41,299 @@ class _QuranViewTypeDialogState extends ConsumerState<QuranViewTypeDialog> {
 
     return Dialog(
       backgroundColor: context.color.surface,
+      insetPadding: EdgeInsets.all(12.dg),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 8.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // العنوان
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Scrollbar(
+            controller: _scrollController,
+            trackVisibility: true,
+            thumbVisibility: true,
+            interactive: true,
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Icon(
-                    Icons.view_quilt_rounded,
-                    color: context.color.primary,
-                    size: 24.sp,
+                  // العنوان
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.view_quilt_rounded,
+                          color: context.color.primary,
+                          size: 24.sp,
+                        ),
+                        SizedBox(width: 10.w),
+                        Text(
+                          'طريقة عرض الصفحة',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: context.mediaQueryWidth * 0.04,
+                            fontWeight: FontWeight.bold,
+                            color: context.color.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(width: 10.w),
-                  Text(
-                    'طريقة عرض الصفحة',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: context.color.onSurface,
+
+                  SizedBox(height: 8.h),
+                  Divider(color: context.color.onSurface.withValues(alpha: .1)),
+                  SizedBox(height: 4.h),
+
+                  // الخيارات
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: viewOptions.length,
+                    itemBuilder: (context, index) {
+                      final option = viewOptions[index];
+                      final isSelected = option['value'] == selectedType;
+
+                      return InkWell(
+                        onTap: () {
+                          final optionValue = option['value'];
+                          final notifier = ref.read(
+                            quranSettingsProvider.notifier,
+                          );
+                          Navigator.of(context).pop();
+                          // تأخير بسيط للسماح للحركة بالانتهاء قبل تغيير الحالة الثقيلة
+                          Future.delayed(const Duration(milliseconds: 250), () {
+                            notifier.setQuranViewType(optionValue);
+                          });
+                          // notifier.setQuranViewType(optionValue);
+                        },
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 14.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? context.color.primary.withValues(alpha: .12)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: isSelected
+                                ? Border.all(
+                                    color: context.color.primary.withValues(
+                                      alpha: .4,
+                                    ),
+                                    width: 1.5,
+                                  )
+                                : null,
+                          ),
+                          child: Row(
+                            children: [
+                              // أيقونة الخيار
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: EdgeInsets.all(8.r),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? context.color.primary.withValues(
+                                          alpha: .15,
+                                        )
+                                      : context.color.onSurface.withValues(
+                                          alpha: .06,
+                                        ),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                child: Icon(
+                                  option['icon'] as IconData,
+                                  color: isSelected
+                                      ? context.color.primary
+                                      : context.color.onSurface.withValues(
+                                          alpha: .45,
+                                        ),
+                                  size: 20.sp,
+                                ),
+                              ),
+                              SizedBox(width: 14.w),
+                              // النص
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      option['label'] as String,
+                                      style: TextStyle(
+                                        fontFamily: 'Cairo',
+                                        fontSize: 16.sp,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? context.color.primary
+                                            : context.color.onSurface,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Text(
+                                      option['description'] as String,
+                                      style: TextStyle(
+                                        fontFamily: 'Cairo',
+                                        fontSize: 11.sp,
+                                        color: context.color.onSurface
+                                            .withValues(alpha: .5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // مؤشر الاختيار
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 200),
+                                child: isSelected
+                                    ? Icon(
+                                        Icons.check_circle_rounded,
+                                        key: const ValueKey('selected'),
+                                        color: context.color.primary,
+                                        size: 22.sp,
+                                      )
+                                    : Icon(
+                                        Icons.radio_button_unchecked_rounded,
+                                        key: const ValueKey('unselected'),
+                                        color: context.color.onSurface
+                                            .withValues(alpha: .3),
+                                        size: 22.sp,
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  if (selectedType == QuranViewType.zoomable) ...[
+                    SizedBox(height: 16.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.format_size_rounded,
+                            color: context.color.primary,
+                            size: 20.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'حجم الخط',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: context.color.onSurface,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            currentFontSize.toInt().toString(),
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              color: context.color.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16.w),
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16.h,
+                        horizontal: 8.w,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.color.onSurface.withValues(alpha: .04),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: context.color.onSurface.withValues(alpha: .08),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Quran',
+                            fontSize: currentFontSize,
+                            color: context.color.onSurface,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    SliderTheme(
+                      data: SliderThemeData(
+                        activeTrackColor: context.color.primary,
+                        inactiveTrackColor: context.color.primary.withValues(
+                          alpha: .2,
+                        ),
+                        thumbColor: context.color.primary,
+                        overlayColor: context.color.primary.withValues(
+                          alpha: .1,
+                        ),
+                        trackHeight: 4.h,
+                        valueIndicatorTextStyle: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: Slider(
+                        value: currentFontSize,
+                        min: 14.0,
+                        max: 40.0,
+                        divisions: 26,
+                        label: currentFontSize.toInt().toString(),
+                        onChanged: (value) {
+                          setState(() {
+                            _localFontSize = value;
+                          });
+                        },
+                        onChangeEnd: (value) {
+                          ref
+                              .read(quranSettingsProvider.notifier)
+                              .setQuranVerticalFontSize(value);
+                        },
+                      ),
+                    ),
+                  ],
+
+                  SizedBox(height: 8.h),
+                  Divider(color: context.color.onSurface.withValues(alpha: .1)),
+
+                  // زر الإلغاء
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'إغلاق',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 14.sp,
+                        color: context.color.onSurface.withValues(alpha: .6),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            SizedBox(height: 8.h),
-            Divider(color: context.color.onSurface.withValues(alpha: .1)),
-            SizedBox(height: 4.h),
-
-            // الخيارات
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: viewOptions.length,
-              itemBuilder: (context, index) {
-                final option = viewOptions[index];
-                final isSelected = option['value'] == selectedType;
-
-                return InkWell(
-                  onTap: () {
-                    final optionValue = option['value'];
-                    final notifier = ref.read(quranSettingsProvider.notifier);
-                    Navigator.of(context).pop();
-                    // تأخير بسيط للسماح للحركة بالانتهاء قبل تغيير الحالة الثقيلة
-                    Future.delayed(const Duration(milliseconds: 250), () {
-                      notifier.setQuranViewType(optionValue);
-                    });
-                    // notifier.setQuranViewType(optionValue);
-                  },
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 14.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? context.color.primary.withValues(alpha: .12)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: isSelected
-                          ? Border.all(
-                              color: context.color.primary.withValues(
-                                alpha: .4,
-                              ),
-                              width: 1.5,
-                            )
-                          : null,
-                    ),
-                    child: Row(
-                      children: [
-                        // أيقونة الخيار
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: EdgeInsets.all(8.r),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? context.color.primary.withValues(alpha: .15)
-                                : context.color.onSurface.withValues(
-                                    alpha: .06,
-                                  ),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Icon(
-                            option['icon'] as IconData,
-                            color: isSelected
-                                ? context.color.primary
-                                : context.color.onSurface.withValues(
-                                    alpha: .45,
-                                  ),
-                            size: 20.sp,
-                          ),
-                        ),
-                        SizedBox(width: 14.w),
-                        // النص
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                option['label'] as String,
-                                style: TextStyle(
-                                  fontFamily: 'Cairo',
-                                  fontSize: 16.sp,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? context.color.primary
-                                      : context.color.onSurface,
-                                ),
-                              ),
-                              SizedBox(height: 2.h),
-                              Text(
-                                option['description'] as String,
-                                style: TextStyle(
-                                  fontFamily: 'Cairo',
-                                  fontSize: 11.sp,
-                                  color: context.color.onSurface.withValues(
-                                    alpha: .5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // مؤشر الاختيار
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 200),
-                          child: isSelected
-                              ? Icon(
-                                  Icons.check_circle_rounded,
-                                  key: const ValueKey('selected'),
-                                  color: context.color.primary,
-                                  size: 22.sp,
-                                )
-                              : Icon(
-                                  Icons.radio_button_unchecked_rounded,
-                                  key: const ValueKey('unselected'),
-                                  color: context.color.onSurface.withValues(
-                                    alpha: .3,
-                                  ),
-                                  size: 22.sp,
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            if (selectedType == QuranViewType.zoomable) ...[
-              SizedBox(height: 16.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.format_size_rounded,
-                      color: context.color.primary,
-                      size: 20.sp,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'حجم الخط',
-                      style: TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: context.color.onSurface,
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      currentFontSize.toInt().toString(),
-                      style: TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: context.color.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.w),
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
-                decoration: BoxDecoration(
-                  color: context.color.onSurface.withValues(alpha: .04),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: context.color.onSurface.withValues(alpha: .08),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Quran',
-                      fontSize: currentFontSize,
-                      color: context.color.onSurface,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              SliderTheme(
-                data: SliderThemeData(
-                  activeTrackColor: context.color.primary,
-                  inactiveTrackColor: context.color.primary.withValues(
-                    alpha: .2,
-                  ),
-                  thumbColor: context.color.primary,
-                  overlayColor: context.color.primary.withValues(alpha: .1),
-                  trackHeight: 4.h,
-                  valueIndicatorTextStyle: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 12.sp,
-                    color: Colors.white,
-                  ),
-                ),
-                child: Slider(
-                  value: currentFontSize,
-                  min: 14.0,
-                  max: 40.0,
-                  divisions: 26,
-                  label: currentFontSize.toInt().toString(),
-                  onChanged: (value) {
-                    setState(() {
-                      _localFontSize = value;
-                    });
-                  },
-                  onChangeEnd: (value) {
-                    ref
-                        .read(quranSettingsProvider.notifier)
-                        .setQuranVerticalFontSize(value);
-                  },
-                ),
-              ),
-            ],
-
-            SizedBox(height: 8.h),
-            Divider(color: context.color.onSurface.withValues(alpha: .1)),
-
-            // زر الإلغاء
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'إغلاق',
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 14.sp,
-                  color: context.color.onSurface.withValues(alpha: .6),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
