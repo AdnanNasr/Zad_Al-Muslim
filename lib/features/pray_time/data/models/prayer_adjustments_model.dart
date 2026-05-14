@@ -86,4 +86,11 @@ class PrayerAdjustmentsModel {
         return 0;
     }
   }
+
+  int get fajrAdjustment => fajrOffset;
+  int get sunriseAdjustment => sunriseOffset;
+  int get dhuhrAdjustment => dhuhrOffset;
+  int get asrAdjustment => asrOffset;
+  int get maghribAdjustment => maghribOffset;
+  int get ishaAdjustment => ishaOffset;
 }

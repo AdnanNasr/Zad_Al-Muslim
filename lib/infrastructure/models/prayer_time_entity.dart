@@ -13,7 +13,7 @@ class PrayerTimeEntity {
   @enumerated
   late PrayerName prayerName;
 
-  late DateTime utcTime;
+  late DateTime time;
   late String localTimezone;
   late DateTime date;
 
@@ -24,7 +24,7 @@ class PrayerTimeEntity {
     return PrayerTimeEntity()
       ..deterministicId = prayer.id
       ..prayerName = prayer.prayerName
-      ..utcTime = prayer.utcTime
+      ..time = prayer.time
       ..localTimezone = prayer.localTimezone
       ..date = prayer.date;
   }
@@ -34,9 +34,9 @@ class PrayerTimeEntity {
     return PrayerTime(
       id: deterministicId,
       prayerName: prayerName,
-      utcTime: utcTime.toUtc(),
+      time: time,
       localTimezone: localTimezone,
-      date: date.toUtc(),
+      date: date,
     );
   }
 }

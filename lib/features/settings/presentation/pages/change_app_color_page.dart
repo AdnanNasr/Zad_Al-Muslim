@@ -21,7 +21,7 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
       116,
       129,
     ), // ازرق هادئ: اللون الافتراضي
-    "نيلي": Colors.teal, // ازرق هادئ
+    "فيروزي ": Colors.teal, // ازرق هادئ
     "ازرق": Colors.blue.shade700, // أزرق براند
     "أخضر": Colors.green.shade700, // أخضر إسلامي
     "أحمر": Colors.red, // أحمر

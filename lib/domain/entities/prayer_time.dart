@@ -3,17 +3,17 @@ enum PrayerName { fajr, sunrise, dhuhr, asr, maghrib, isha }
 class PrayerTime {
   final int id;
   final PrayerName prayerName;
-  final DateTime utcTime;
+  final DateTime time;
   final String localTimezone;
   final DateTime date;
 
   PrayerTime({
     required this.id,
     required this.prayerName,
-    required this.utcTime,
+    required this.time,
     required this.localTimezone,
     required this.date,
-  }) : assert(utcTime.isUtc, 'utcTime must be in UTC');
+  });
 
   int get prayerIndex {
     switch (prayerName) {

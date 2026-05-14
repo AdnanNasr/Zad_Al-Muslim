@@ -36,7 +36,7 @@ class NotificationSchedulerImpl implements INotificationScheduler {
         id: id,
         title: _getPrayerTitle(prayer.prayerName),
         body: 'حان وقت أذان ${_getArabicPrayerName(prayer.prayerName)}',
-        scheduledDate: tz.TZDateTime.from(prayer.utcTime, tz.local),
+        scheduledDate: tz.TZDateTime.from(prayer.time, tz.local),
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
             'prayer_times_channel',
@@ -71,7 +71,7 @@ class NotificationSchedulerImpl implements INotificationScheduler {
 
   int _generateDeterministicId(PrayerTime prayer) {
     // Format: YYYYMMDDN (where N is prayer index 1-5)
-    final dateStr = DateFormat('yyyyMMdd').format(prayer.utcTime);
+    final dateStr = DateFormat('yyyyMMdd').format(prayer.time);
     return int.parse('$dateStr${prayer.prayerIndex}');
   }
 

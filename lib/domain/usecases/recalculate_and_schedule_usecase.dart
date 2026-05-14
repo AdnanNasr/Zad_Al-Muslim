@@ -1,4 +1,5 @@
 import 'package:adhan/adhan.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import '../entities/location.dart';
 import '../entities/prayer_time.dart';
 import '../repositories/i_prayer_repository.dart';
@@ -14,30 +15,36 @@ class RecalculateAndScheduleUseCase {
   );
 
   Future<void> call(Location location) async {
-    // Optimization: Check if location has changed significantly
+    // 1. التحقق من تغير الموقع لتجنب إعادة الحساب غير الضرورية
     final lastLoc = await _prayerRepository.getLastKnownLocation();
-    bool locationChanged = true;
-    
+    bool shouldRecalculate = true;
+
     if (lastLoc != null) {
       final double latDiff = (lastLoc['lat']! - location.latitude).abs();
       final double lngDiff = (lastLoc['lng']! - location.longitude).abs();
-      // If difference is very small (approx 100m), consider it the same location
+      // إذا كان الفرق أقل من 0.001 (حوالي 100 متر)، نعتبره نفس الموقع
       if (latDiff < 0.001 && lngDiff < 0.001) {
-        locationChanged = false;
+        shouldRecalculate = false;
       }
     }
 
-    if (!locationChanged) {
-      // Location didn't change, just try to refresh the 7-day schedule if needed
+    if (!shouldRecalculate) {
+      // نتحقق أيضاً من وجود بيانات حالية
+      final todayPrayers = await _prayerRepository.getPrayersForDay(
+        DateTime.now(),
+      );
+      if (todayPrayers.isEmpty) shouldRecalculate = true;
+    }
+
+    if (!shouldRecalculate) {
       await _scheduleNotifications(force: false);
       return;
     }
 
-    // Location changed, perform full recalculation for 30 days
+    // 2. الحساب الفعلي (نحفظ بصيغة UTC دائماً لضمان الدقة العالمية)
     final coordinates = Coordinates(location.latitude, location.longitude);
-    final params = CalculationMethod.umm_al_qura.getParameters(); 
-    
-    final now = DateTime.now().toUtc();
+    final params = CalculationMethod.north_america.getParameters();
+    final now = DateTime.now();
     final prayersToSave = <PrayerTime>[];
 
     for (int i = 0; i < 30; i++) {
@@ -45,14 +52,21 @@ class RecalculateAndScheduleUseCase {
       final dateComponents = DateComponents(date.year, date.month, date.day);
       final prayerTimes = PrayerTimes(coordinates, dateComponents, params);
 
-      void addPrayer(PrayerName name, DateTime time) {
-         prayersToSave.add(PrayerTime(
-            id: int.parse('${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}${_getPrayerIndex(name)}'),
+      void addPrayer(PrayerName name, DateTime? time) {
+        // TODO: fix prayer times logic
+        if (time == null) return;
+        final prayerDate = DateTime.utc(date.year, date.month, date.day);
+        prayersToSave.add(
+          PrayerTime(
+            id: int.parse(
+              '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}${_getPrayerIndex(name)}',
+            ),
             prayerName: name,
-            utcTime: time.toUtc(),
+            time: time.toUtc(), // نحفظ UTC دائماً
             localTimezone: location.timezone,
-            date: DateTime.utc(date.year, date.month, date.day),
-         ));
+            date: prayerDate,
+          ),
+        );
       }
 
       addPrayer(PrayerName.fajr, prayerTimes.fajr);
@@ -63,24 +77,33 @@ class RecalculateAndScheduleUseCase {
       addPrayer(PrayerName.isha, prayerTimes.isha);
     }
 
-    await _prayerRepository.deleteAll();
-    await _prayerRepository.savePrayers(prayersToSave);
-    
-    // Save the new location
-    await _prayerRepository.saveLastKnownLocation(location.latitude, location.longitude);
-    
-    // Force reschedule since data has changed
-    await _scheduleNotifications(force: true);
+    try {
+      await _prayerRepository.deleteAll();
+      await _prayerRepository.savePrayers(prayersToSave);
+      await _prayerRepository.saveLastKnownLocation(
+        location.latitude,
+        location.longitude,
+      );
+      await _scheduleNotifications(force: true);
+    } catch (e) {
+      AppLogger.logger.e("Error saving prayers: $e");
+    }
   }
 
   int _getPrayerIndex(PrayerName name) {
     switch (name) {
-      case PrayerName.fajr: return 1;
-      case PrayerName.sunrise: return 2;
-      case PrayerName.dhuhr: return 3;
-      case PrayerName.asr: return 4;
-      case PrayerName.maghrib: return 5;
-      case PrayerName.isha: return 6;
+      case PrayerName.fajr:
+        return 1;
+      case PrayerName.sunrise:
+        return 2;
+      case PrayerName.dhuhr:
+        return 3;
+      case PrayerName.asr:
+        return 4;
+      case PrayerName.maghrib:
+        return 5;
+      case PrayerName.isha:
+        return 6;
     }
   }
 }

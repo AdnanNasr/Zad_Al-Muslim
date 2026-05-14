@@ -36,11 +36,7 @@ const PrayerTimeEntitySchema = CollectionSchema(
       type: IsarType.byte,
       enumMap: _PrayerTimeEntityprayerNameEnumValueMap,
     ),
-    r'utcTime': PropertySchema(
-      id: 4,
-      name: r'utcTime',
-      type: IsarType.dateTime,
-    ),
+    r'time': PropertySchema(id: 4, name: r'time', type: IsarType.dateTime),
   },
   estimateSize: _prayerTimeEntityEstimateSize,
   serialize: _prayerTimeEntitySerialize,
@@ -90,7 +86,7 @@ void _prayerTimeEntitySerialize(
   writer.writeLong(offsets[1], object.deterministicId);
   writer.writeString(offsets[2], object.localTimezone);
   writer.writeByte(offsets[3], object.prayerName.index);
-  writer.writeDateTime(offsets[4], object.utcTime);
+  writer.writeDateTime(offsets[4], object.time);
 }
 
 PrayerTimeEntity _prayerTimeEntityDeserialize(
@@ -109,7 +105,7 @@ PrayerTimeEntity _prayerTimeEntityDeserialize(
         offsets[3],
       )] ??
       PrayerName.fajr;
-  object.utcTime = reader.readDateTime(offsets[4]);
+  object.time = reader.readDateTime(offsets[4]);
   return object;
 }
 
@@ -141,17 +137,19 @@ P _prayerTimeEntityDeserializeProp<P>(
 
 const _PrayerTimeEntityprayerNameEnumValueMap = {
   'fajr': 0,
-  'dhuhr': 1,
-  'asr': 2,
-  'maghrib': 3,
-  'isha': 4,
+  'sunrise': 1,
+  'dhuhr': 2,
+  'asr': 3,
+  'maghrib': 4,
+  'isha': 5,
 };
 const _PrayerTimeEntityprayerNameValueEnumMap = {
   0: PrayerName.fajr,
-  1: PrayerName.dhuhr,
-  2: PrayerName.asr,
-  3: PrayerName.maghrib,
-  4: PrayerName.isha,
+  1: PrayerName.sunrise,
+  2: PrayerName.dhuhr,
+  3: PrayerName.asr,
+  4: PrayerName.maghrib,
+  5: PrayerName.isha,
 };
 
 Id _prayerTimeEntityGetId(PrayerTimeEntity object) {
@@ -789,21 +787,21 @@ extension PrayerTimeEntityQueryFilter
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-  utcTimeEqualTo(DateTime value) {
+  timeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'utcTime', value: value),
+        FilterCondition.equalTo(property: r'time', value: value),
       );
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-  utcTimeGreaterThan(DateTime value, {bool include = false}) {
+  timeGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'utcTime',
+          property: r'time',
           value: value,
         ),
       );
@@ -811,12 +809,12 @@ extension PrayerTimeEntityQueryFilter
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-  utcTimeLessThan(DateTime value, {bool include = false}) {
+  timeLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'utcTime',
+          property: r'time',
           value: value,
         ),
       );
@@ -824,7 +822,7 @@ extension PrayerTimeEntityQueryFilter
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterFilterCondition>
-  utcTimeBetween(
+  timeBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -833,7 +831,7 @@ extension PrayerTimeEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'utcTime',
+          property: r'time',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -907,17 +905,16 @@ extension PrayerTimeEntityQuerySortBy
     });
   }
 
-  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-  sortByUtcTime() {
+  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy> sortByTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'utcTime', Sort.asc);
+      return query.addSortBy(r'time', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-  sortByUtcTimeDesc() {
+  sortByTimeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'utcTime', Sort.desc);
+      return query.addSortBy(r'time', Sort.desc);
     });
   }
 }
@@ -992,17 +989,16 @@ extension PrayerTimeEntityQuerySortThenBy
     });
   }
 
-  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-  thenByUtcTime() {
+  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy> thenByTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'utcTime', Sort.asc);
+      return query.addSortBy(r'time', Sort.asc);
     });
   }
 
   QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QAfterSortBy>
-  thenByUtcTimeDesc() {
+  thenByTimeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'utcTime', Sort.desc);
+      return query.addSortBy(r'time', Sort.desc);
     });
   }
 }
@@ -1039,10 +1035,9 @@ extension PrayerTimeEntityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QDistinct>
-  distinctByUtcTime() {
+  QueryBuilder<PrayerTimeEntity, PrayerTimeEntity, QDistinct> distinctByTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'utcTime');
+      return query.addDistinctBy(r'time');
     });
   }
 }
@@ -1082,9 +1077,9 @@ extension PrayerTimeEntityQueryProperty
     });
   }
 
-  QueryBuilder<PrayerTimeEntity, DateTime, QQueryOperations> utcTimeProperty() {
+  QueryBuilder<PrayerTimeEntity, DateTime, QQueryOperations> timeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'utcTime');
+      return query.addPropertyName(r'time');
     });
   }
 }

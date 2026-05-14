@@ -56,7 +56,7 @@ class ScheduleQuranReadingNotification {
       final fajr = todayPrayers.where((p) => p.prayerName == PrayerName.fajr).firstOrNull;
 
       if (fajr != null) {
-        final fajrLocal = fajr.utcTime.toLocal();
+        final fajrLocal = fajr.time;
         // حساب الفجر والدقائق
         targetHour = fajrLocal.hour;
         targetMinute = fajrLocal.minute;

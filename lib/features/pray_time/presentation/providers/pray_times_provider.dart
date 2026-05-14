@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
 import 'package:zad_al_muslim/domain/entities/prayer_time.dart' as domain;
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/prayer_adjustments_provider.dart';
@@ -19,10 +20,16 @@ final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>(
     ref.keepAlive();
 
     final pos = ref.watch(userPositionProvider);
-    if (pos == null) return null;
+    if (pos == null) {
+      AppLogger.logger.e("todayPrayerTimesProvider: الموقع (pos) غير متوفر.");
+      return null;
+    }
 
     final now = DateTime.now();
     final todayDate = DateTime(now.year, now.month, now.day);
+    AppLogger.logger.e(
+      "todayPrayerTimesProvider: جاري طلب مواقيت اليوم: $todayDate",
+    );
 
     final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
     final adjustments = adjustmentsAsync.valueOrNull;
@@ -57,14 +64,37 @@ final selectedDatePrayerTimesProvider =
       return _mapToUiEntity(prayers, selectedDate, adjustments);
     });
 
-PrayerTimesEntity _mapToUiEntity(List<domain.PrayerTime> prayers, DateTime date, dynamic adjustments) {
-  final fajr = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.fajr).utcTime.toLocal();
-  final sunrise = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.sunrise).utcTime.toLocal();
-  final dhuhr = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.dhuhr).utcTime.toLocal();
-  final asr = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.asr).utcTime.toLocal();
-  final maghrib = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.maghrib).utcTime.toLocal();
-  final isha = prayers.firstWhere((p) => p.prayerName == domain.PrayerName.isha).utcTime.toLocal();
-  
+PrayerTimesEntity _mapToUiEntity(
+  List<domain.PrayerTime> prayers,
+  DateTime date,
+  dynamic adjustments,
+) {
+  // نقوم بتحويل الوقت من UTC إلى Local هنا لضمان دقة العرض حسب توقيت الجهاز
+  final fajr = prayers
+      .firstWhere((p) => p.prayerName == domain.PrayerName.fajr)
+      .time
+      .toLocal();
+  final sunrise = prayers
+      .firstWhere((p) => p.prayerName == domain.PrayerName.sunrise)
+      .time
+      .toLocal();
+  final dhuhr = prayers
+      .firstWhere((p) => p.prayerName == domain.PrayerName.dhuhr)
+      .time
+      .toLocal();
+  final asr = prayers
+      .firstWhere((p) => p.prayerName == domain.PrayerName.asr)
+      .time
+      .toLocal();
+  final maghrib = prayers
+      .firstWhere((p) => p.prayerName == domain.PrayerName.maghrib)
+      .time
+      .toLocal();
+  final isha = prayers
+      .firstWhere((p) => p.prayerName == domain.PrayerName.isha)
+      .time
+      .toLocal();
+
   return PrayerTimesEntity(
     date: date,
     fajr: _applyAdjustment(fajr, adjustments?.fajrAdjustment ?? 0),

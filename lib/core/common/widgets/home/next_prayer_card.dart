@@ -208,7 +208,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     ];
 
     for (final prayer in prayers) {
-      final time = (prayer['time'] as DateTime).toLocal();
+      final time = (prayer['time'] as DateTime);
       if (now.isBefore(time)) {
         return {
           'name': prayer['name'],
@@ -219,7 +219,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     }
 
     // بعد العشاء → ننتظر فجر الغد
-    final tomorrowFajr = model.fajr.toLocal().add(const Duration(days: 1));
+    final tomorrowFajr = model.fajr.add(const Duration(days: 1));
     return {
       'name': 'الفجر',
       'icon': Icons.wb_twilight,

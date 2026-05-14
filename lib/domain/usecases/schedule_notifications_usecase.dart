@@ -13,7 +13,7 @@ class ScheduleNotificationsUseCase {
   /// Schedules notifications for the next 7 days.
   /// [force] if true, bypasses the check for redundant scheduling.
   Future<void> call({bool force = false}) async {
-    final now = DateTime.now().toUtc();
+    final now = DateTime.now();
     
     // Optimization: Skip if already scheduled recently (unless forced)
     if (!force) {
@@ -32,7 +32,7 @@ class ScheduleNotificationsUseCase {
     
     final futurePrayers = prayers.where((prayer) {
       final bufferTime = now.add(const Duration(minutes: 2));
-      return prayer.utcTime.isAfter(bufferTime);
+      return prayer.time.isAfter(bufferTime);
     }).toList();
 
     await _notificationScheduler.cancelAll();

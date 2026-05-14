@@ -157,23 +157,23 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
       margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: .2),
+        color: context.color.primary.withValues(alpha: .03),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.amber.withValues(alpha: .4)),
+        border: Border.all(color: context.color.primary.withValues(alpha: .4)),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 20.sp),
-          SizedBox(width: 10.w),
+          Icon(
+            Icons.warning_amber_rounded,
+            color: context.color.primary,
+            size: 25.sp,
+          ),
+          SizedBox(width: 8.w),
           Expanded(
             child: Text(
               "للحصول على أعلى دقة، يرجى الأبتعاد عن الأجهزة الكهربائية والمجالات الكهرومغناطيسية",
-              style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 12.sp,
-                color: Colors.amber.shade700,
-              ),
-              // textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15.sp, color: context.color.primary),
             ),
           ),
         ],
@@ -396,9 +396,7 @@ class _CompassWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final qiblaColor = isAligned
-        ? Colors.amber
-        : const Color(0xFF4CAF50); // يتغير اللون عند المطابقة
+    final qiblaColor = isAligned ? Colors.amber : context.color.primary;
     final ringColor = Theme.of(context).colorScheme.onSurface;
     final labelColor = Theme.of(context).colorScheme.onSurface;
 
@@ -442,14 +440,18 @@ class _CompassWidget extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
           decoration: BoxDecoration(
-            color: qiblaColor.withValues(alpha: .12),
+            color: context.color.primary.withValues(alpha: .12),
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(color: qiblaColor.withValues(alpha: .35)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.mosque_outlined, color: qiblaColor, size: 18.sp),
+              Icon(
+                Icons.mosque_outlined,
+                color: context.color.primary,
+                size: 18.sp,
+              ),
               SizedBox(width: 6.w),
               Text(
                 'اتجاه القبلة',
@@ -457,7 +459,7 @@ class _CompassWidget extends StatelessWidget {
                   fontFamily: 'Cairo',
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
-                  color: qiblaColor,
+                  color: context.color.primary,
                 ),
               ),
             ],

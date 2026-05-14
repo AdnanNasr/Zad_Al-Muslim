@@ -11,7 +11,7 @@ class Env {
   // TODO: change endpoint to domain server
   // current is local development ip
   static String tafseerEndpint =
-      "https://unadmonitory-yuki-unconsigned.ngrok-free.dev/tafsser/tafsser_file";
+      "https://4e28-176-0-65-124.ngrok-free.app/tafsser/tafsser_file";
 
   // this endpoint for quran ayah by ayah (quran page)
   static String voiceAyahByAyahBaseUrl = "https://verse.mp3quran.net/arabic";

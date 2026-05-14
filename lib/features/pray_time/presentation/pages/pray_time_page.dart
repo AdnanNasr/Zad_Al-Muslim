@@ -147,8 +147,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     });
 
     ref.listen(locationStatusProvider, (previous, next) {
-      if (next.keys.isNotEmpty &&
-          next.keys.first == LocationMessage.locationAllowed) {
+      final userPos = ref.read(userPositionProvider);
+      if (userPos == null &&
+          next.keys.isNotEmpty &&
+          next.keys.first == LocationMessage.locationAllowed &&
+          (previous == null ||
+              previous.keys.isEmpty ||
+              previous.keys.first != LocationMessage.locationAllowed)) {
         Future.microtask(() => _checkAndFetchLocation());
       }
     });
@@ -429,12 +434,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     };
 
     final prayerList = [
-      {"name": "الفجر", "time": entity.fajr},
-      {"name": "الشروق", "time": entity.sunrise},
-      {"name": "الظهر", "time": entity.dhuhr},
-      {"name": "العصر", "time": entity.asr},
-      {"name": "المغرب", "time": entity.maghrib},
-      {"name": "العشاء", "time": entity.isha},
+      {"name": "الفجر", "time": entity.fajr.toLocal()},
+      {"name": "الشروق", "time": entity.sunrise.toLocal()},
+      {"name": "الظهر", "time": entity.dhuhr.toLocal()},
+      {"name": "العصر", "time": entity.asr.toLocal()},
+      {"name": "المغرب", "time": entity.maghrib.toLocal()},
+      {"name": "العشاء", "time": entity.isha.toLocal()},
     ];
 
     final currentPrayer = isCurrentDay
@@ -559,8 +564,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                       final isModified = offset != 0;
 
                       final timeStr = use24format
-                          ? DateFormat.Hm().format(time.toLocal())
-                          : DateFormat.jm("ar").format(time.toLocal());
+                          ? DateFormat.Hm().format(time)
+                          : DateFormat.jm("ar").format(time);
 
                       return _buildPrayerRow(
                         context: context,

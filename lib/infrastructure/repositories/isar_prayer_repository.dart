@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../../domain/repositories/i_prayer_repository.dart';
 import '../models/prayer_time_entity.dart';
@@ -8,10 +9,7 @@ class IsarPrayerRepository implements IPrayerRepository {
   final Isar isar;
   final SharedPreferences sharedPreferences;
 
-  IsarPrayerRepository({
-    required this.isar,
-    required this.sharedPreferences,
-  });
+  IsarPrayerRepository({required this.isar, required this.sharedPreferences});
 
   static const String _lastLatKey = 'last_prayer_lat';
   static const String _lastLngKey = 'last_prayer_lng';
@@ -19,7 +17,9 @@ class IsarPrayerRepository implements IPrayerRepository {
 
   @override
   Future<void> savePrayers(List<PrayerTime> prayers) async {
-    final entities = prayers.map((p) => PrayerTimeEntity.fromDomain(p)).toList();
+    final entities = prayers
+        .map((p) => PrayerTimeEntity.fromDomain(p))
+        .toList();
     await isar.writeTxn(() async {
       await isar.prayerTimeEntitys.putAll(entities);
     });
@@ -28,7 +28,9 @@ class IsarPrayerRepository implements IPrayerRepository {
   @override
   Future<List<PrayerTime>> getPrayersForDay(DateTime date) async {
     final startOfDay = DateTime.utc(date.year, date.month, date.day);
-    final endOfDay = startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
+    final endOfDay = startOfDay.add(
+      const Duration(hours: 23, minutes: 59, seconds: 59),
+    );
 
     final entities = await isar.prayerTimeEntitys
         .filter()
@@ -39,10 +41,13 @@ class IsarPrayerRepository implements IPrayerRepository {
   }
 
   @override
-  Future<List<PrayerTime>> getPrayersForRange(DateTime from, DateTime to) async {
+  Future<List<PrayerTime>> getPrayersForRange(
+    DateTime from,
+    DateTime to,
+  ) async {
     final entities = await isar.prayerTimeEntitys
         .filter()
-        .utcTimeBetween(from, to)
+        .timeBetween(from, to)
         .findAll();
     return entities.map((e) => e.toDomain()).toList();
   }
