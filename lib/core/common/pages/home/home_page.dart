@@ -12,7 +12,6 @@ import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart
 import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/home_button.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/next_prayer_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/reading_progress_card.dart';
@@ -28,19 +27,11 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
   @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
-    _animationController.forward();
   }
 
   bool showCopiedMessage = false;
@@ -48,7 +39,6 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    _animationController.dispose();
     super.dispose();
   }
 
@@ -514,10 +504,7 @@ class ComingPrayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AnimationConfiguration.synchronized(
-      duration: Duration(milliseconds: 700),
-      child: SlideAnimation(horizontalOffset: 40, child: NextPrayerCard()),
-    );
+    return const NextPrayerCard();
   }
 }
 

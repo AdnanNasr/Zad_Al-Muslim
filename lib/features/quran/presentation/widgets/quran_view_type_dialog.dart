@@ -28,7 +28,7 @@ class _QuranViewTypeDialogState extends ConsumerState<QuranViewTypeDialog> {
       {
         'label': 'الشكل الثابت',
         'description': 'عرض الصفحة بحجم ثابت لا يتغيّر',
-        'icon': Icons.crop_square_rounded,
+        'icon': Icons.push_pin,
         'value': QuranViewType.fixed,
       },
       {

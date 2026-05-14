@@ -1,4 +1,6 @@
 import 'package:adhan/adhan.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import '../entities/location.dart';
 import '../entities/prayer_time.dart';
@@ -43,7 +45,10 @@ class RecalculateAndScheduleUseCase {
 
     // 2. الحساب الفعلي (نحفظ بصيغة UTC دائماً لضمان الدقة العالمية)
     final coordinates = Coordinates(location.latitude, location.longitude);
-    final params = CalculationMethod.north_america.getParameters();
+    final params = await sl.call<LocationLocator>().getCalculationParameters(
+      location.latitude,
+      location.longitude,
+    );
     final now = DateTime.now();
     final prayersToSave = <PrayerTime>[];
 
