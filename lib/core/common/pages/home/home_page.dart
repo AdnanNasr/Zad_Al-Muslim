@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
@@ -38,7 +39,8 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // TODO: maybe make edit
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
@@ -172,25 +174,52 @@ class BodyContent extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.brightness_2,
+                        size: 12.sp,
+                        color: context.color.primary.withValues(alpha: 0.8),
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        _getFormattedDateHijri(),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontFamily: "Cairo",
+                          color: context.color.onSurface.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
             // الجانب الأيسر: مكان الصورة الشخصية مستقبلاً
-            Container(
-              width: 50.r,
-              height: 50.r,
-              decoration: BoxDecoration(
-                color: context.color.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: context.color.primary.withValues(alpha: 0.2),
-                  width: 1.5,
+            InkWell(
+              borderRadius: BorderRadius.circular(360),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(Routes.notificationsPage),
+              child: Tooltip(
+                message: "مركز الإشعارات",
+                child: Container(
+                  width: 50.r,
+                  height: 50.r,
+                  decoration: BoxDecoration(
+                    color: context.color.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: context.color.primary.withValues(alpha: 0.2),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.notifications,
+                    color: context.color.primary,
+                    size: 26.sp,
+                  ),
                 ),
-              ),
-              child: Icon(
-                Icons.notifications,
-                color: context.color.primary,
-                size: 26.sp,
               ),
             ),
           ],
@@ -339,7 +368,7 @@ class BodyContent extends ConsumerWidget {
 
   String _getFormattedDate() {
     final now = DateTime.now();
-    // يوم الأسبوع بالعربي
+    // أيام الأسبوع بالعربي
     final dayNames = [
       'الإثنين',
       'الثلاثاء',
@@ -349,6 +378,7 @@ class BodyContent extends ConsumerWidget {
       'السبت',
       'الأحد',
     ];
+    // اسماء الأشهر بالعربي
     final months = [
       'يناير',
       'فبراير',
@@ -366,6 +396,12 @@ class BodyContent extends ConsumerWidget {
     final dayName = dayNames[now.weekday - 1];
     final month = months[now.month - 1];
     return "$dayName، ${now.day} $month ${now.year}";
+  }
+
+  String _getFormattedDateHijri() {
+    HijriCalendar.setLocal("ar");
+    final hijriDate = HijriCalendar.now();
+    return "${hijriDate.hDay} ${hijriDate.longMonthName} ${hijriDate.hYear}";
   }
 }
 
@@ -603,7 +639,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
                       clipBehavior: Clip.none,
                       children: [
                         Positioned(
-                          left: context.mediaQueryWidth * 0.25,
+                          left: 80.w,
                           child: AnimatedOpacity(
                             duration: const Duration(milliseconds: 200),
                             opacity: _showCopiedMessage ? 1.0 : 0.0,

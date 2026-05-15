@@ -18,10 +18,10 @@ import 'package:zad_al_muslim/infrastructure/services/permission_service.dart';
 import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
 import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_init.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
-  final bool hasSeenOnboarding;
-  const SplashScreen({super.key, required this.hasSeenOnboarding});
+  const SplashScreen({super.key});
 
   @override
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
@@ -115,10 +115,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       });
 
       // الانتقال للوجهة الصحيحة
+      final hasSeen = await OnboardingInit.hasSeen();
+      
       await Future.delayed(const Duration(milliseconds: 600));
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(
-          widget.hasSeenOnboarding ? "/custom_navigation_bar" : "/onboarding",
+          hasSeen ? "/custom_navigation_bar" : "/onboarding",
         );
       }
     } catch (e) {

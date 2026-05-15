@@ -168,27 +168,40 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
   }
 
   void _onScaleStart(ScaleStartDetails details) {
-    _isScaling = true;
+    // 1. استخدام setState هنا ضروري لتعطيل الـ Scroll فوراً
+    setState(() {
+      _isScaling = true;
+    });
     _baseFontSize = _fontSize;
   }
 
   void _onScaleUpdate(ScaleUpdateDetails details) {
-    if (details.pointerCount < 2) return;
+    // 2. التحقق من عدد الأصابع ومن أننا في وضع Scaling
+    if (details.pointerCount < 2 && !_isScaling) return;
+
     final newSize = (_baseFontSize * details.scale).clamp(14.0, 40.0);
-    if ((newSize - _fontSize).abs() > 0.2) {
+
+    // 3. تقليل العتبة (Threshold) إلى 0.1 يجعل الزوم يبدو "لحظياً" أكثر
+    if ((newSize - _fontSize).abs() > 0.1) {
       setState(() {
         _fontSize = newSize;
         _showFontIndicator = true;
       });
+
       _indicatorTimer?.cancel();
-      _indicatorTimer = Timer(const Duration(seconds: 1), () {
+      _indicatorTimer = Timer(const Duration(milliseconds: 800), () {
         if (mounted) setState(() => _showFontIndicator = false);
       });
     }
   }
 
   void _onScaleEnd(ScaleEndDetails details) {
-    _isScaling = false;
+    // 4. إعادة تفعيل الـ Scroll وتخزين القيمة نهائياً
+    setState(() {
+      _isScaling = false;
+    });
+
+    // حفظ القيمة في الـ Provider (يفضل بدون await لسرعة الاستجابة)
     ref
         .read(quranSettingsProvider.notifier)
         .setQuranVerticalFontSize(_fontSize);
@@ -275,26 +288,14 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
               child: Scaffold(
                 backgroundColor: bgColor,
                 extendBody: true,
-                body: GestureDetector(
-                  onTap: () {
-                    if (isMenuOpen) {
-                      _closeMenu();
-                      return;
-                    }
-
-                    if (_highlightAyah) {
-                      _hideAyahMenu();
-                    } else {
-                      _toggleShowAppBar();
-                    }
-                  },
-                  onScaleStart: _onScaleStart,
-                  onScaleUpdate: _onScaleUpdate,
-                  onScaleEnd: _onScaleEnd,
-                  child: Stack(
-                    children: [
-                      // ─── المحتوى الرئيسي ───────────────────────────────
-                      ScrollablePositionedList.builder(
+                body: Stack(
+                  children: [
+                    // ─── المحتوى الرئيسي ───────────────────────────────
+                    Positioned.fill(
+                      child: ScrollablePositionedList.builder(
+                        physics: _isScaling
+                            ? const NeverScrollableScrollPhysics()
+                            : const AlwaysScrollableScrollPhysics(),
                         itemScrollController: itemScrollController,
                         itemPositionsListener: itemPositionsListener,
                         padding: EdgeInsets.only(top: 70.h, bottom: 120.h),
@@ -320,107 +321,129 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
                           );
                         },
                       ),
+                    ),
 
-                      // ─── شريط العنوان التفاعلي (Toggling AppBar) ─────────
-                      if (showBars)
-                        AppAndBottomBar(
-                          globalSurahNumber: _currentVisibleSurah,
-                          globalStartOfSurah: 1,
-                        ),
+                    Positioned.fill(
+                      child: GestureDetector(
+                        // behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (isMenuOpen) {
+                            _closeMenu();
+                            return;
+                          }
 
-                      // ─── مؤشر حجم الخط ────────────────────────────────
-                      AnimatedOpacity(
-                        opacity: _showFontIndicator ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 200),
-                        child: Center(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.w,
-                              vertical: 12.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: .7),
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.format_size_rounded,
+                          if (_highlightAyah) {
+                            _hideAyahMenu();
+                          } else {
+                            _toggleShowAppBar();
+                          }
+                        },
+                        onScaleStart: _onScaleStart,
+                        onScaleUpdate: _onScaleUpdate,
+                        onScaleEnd: _onScaleEnd,
+                      ),
+                    ),
+
+                    // ─── شريط العنوان التفاعلي (Toggling AppBar) ─────────
+                    if (showBars)
+                      AppAndBottomBar(
+                        globalSurahNumber: _currentVisibleSurah,
+                        globalStartOfSurah: 1,
+                      ),
+
+                    // ─── مؤشر حجم الخط ────────────────────────────────
+                    AnimatedOpacity(
+                      // TODO
+                      opacity: _showFontIndicator ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Center(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 12.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: .7),
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.format_size_rounded,
+                                color: Colors.white,
+                                size: 20.sp,
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                _fontSize.toStringAsFixed(0),
+                                style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
                                   color: Colors.white,
-                                  size: 20.sp,
                                 ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  _fontSize.toStringAsFixed(0),
-                                  style: TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ─── قائمة الآية عند الضغط المطول ─────────────────
+                    if (_highlightAyah)
+                      Positioned(
+                        top: _tapPosition != null
+                            ? (_tapPosition!.dy - 80.h).clamp(
+                                80.0,
+                                MediaQuery.of(context).size.height - 150.0,
+                              )
+                            : null,
+                        bottom: _tapPosition == null ? 120.h : null,
+                        left: 20.w,
+                        right: 20.w,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutBack,
+                          builder: (context, value, child) =>
+                              Transform.translate(
+                                offset: Offset(0, 40 * (1 - value)),
+                                child: Opacity(
+                                  opacity: value.clamp(0.0, 1.0),
+                                  child: child,
                                 ),
-                              ],
-                            ),
+                              ),
+                          child: _AyahActionMenu(
+                            surahNumber: _selectedSurah,
+                            verseNumber: _selectedVerse,
+                            themeMode: themeMode,
+                            onDismiss: _hideAyahMenu,
                           ),
                         ),
                       ),
 
-                      // ─── قائمة الآية عند الضغط المطول ─────────────────
-                      if (_highlightAyah)
-                        Positioned(
-                          top: _tapPosition != null
-                              ? (_tapPosition!.dy - 80.h).clamp(
-                                  80.0,
-                                  MediaQuery.of(context).size.height - 150.0,
-                                )
-                              : null,
-                          bottom: _tapPosition == null ? 120.h : null,
-                          left: 20.w,
-                          right: 20.w,
-                          child: TweenAnimationBuilder<double>(
-                            tween: Tween(begin: 0.0, end: 1.0),
-                            duration: const Duration(milliseconds: 250),
-                            curve: Curves.easeOutBack,
-                            builder: (context, value, child) =>
-                                Transform.translate(
-                                  offset: Offset(0, 40 * (1 - value)),
-                                  child: Opacity(
-                                    opacity: value.clamp(0.0, 1.0),
-                                    child: child,
-                                  ),
-                                ),
-                            child: _AyahActionMenu(
-                              surahNumber: _selectedSurah,
-                              verseNumber: _selectedVerse,
-                              themeMode: themeMode,
-                              onDismiss: _hideAyahMenu,
-                            ),
-                          ),
-                        ),
+                    // ─── المشغل الصوتي ─────────────────────────────────
+                    Positioned(
+                      bottom: showBars
+                          ? kBottomNavigationBarHeight + 10.h
+                          : 10.h,
+                      left: 0,
+                      right: 0,
+                      child: const MiniAudioPlayer(),
+                    ),
 
-                      // ─── المشغل الصوتي ─────────────────────────────────
+                    // ─── شريط التنقل السفلي ───────────────────────────
+                    if (showBars)
                       Positioned(
-                        bottom: showBars
-                            ? kBottomNavigationBarHeight + 10.h
-                            : 10.h,
+                        bottom: kBottomNavigationBarHeight / 2,
                         left: 0,
                         right: 0,
-                        child: const MiniAudioPlayer(),
-                      ),
-
-                      // ─── شريط التنقل السفلي ───────────────────────────
-                      if (showBars)
-                        Positioned(
-                          bottom: kBottomNavigationBarHeight / 2,
-                          left: 0,
-                          right: 0,
-                          child: QurahPageBottomNavigationBar(
-                            onIndexPressed: _toggleMenu,
-                          ),
+                        child: QurahPageBottomNavigationBar(
+                          onIndexPressed: _toggleMenu,
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
             ),

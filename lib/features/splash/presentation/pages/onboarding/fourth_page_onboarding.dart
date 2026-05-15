@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SecondPageOnboarding extends StatelessWidget {
-  const SecondPageOnboarding({super.key});
+class FourthPageOnboarding extends StatelessWidget {
+  const FourthPageOnboarding({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class SecondPageOnboarding extends StatelessWidget {
         children: [
           SizedBox(height: 10.h),
 
-          /// الصورة
+          /// الصورة (نفس نمط باقي الصفحات)
           Expanded(
             flex: 6,
             child: TweenAnimationBuilder(
@@ -48,9 +48,9 @@ class SecondPageOnboarding extends StatelessWidget {
                     ),
                   ),
 
-                  /// الصورة
+                  /// أيقونة
                   Image.asset(
-                    'assets/images/hadith_onboarding.png',
+                    'assets/images/quran_moratal.png',
                     fit: BoxFit.contain,
                   ),
                 ],
@@ -58,44 +58,48 @@ class SecondPageOnboarding extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 8.h),
+          // SizedBox(height: 8.h),
 
-          /// المحتوى
+          /// المحتوى النصي (بدون overflow)
           Expanded(
-            flex: 4,
+            flex: 6,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 /// العنوان
                 Text(
-                  'الأحاديث والسنة',
+                  'الاستماع إلى تلاوات القرآن',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     fontFamily: 'Cairo',
-                    height: 1.2,
+                    // height: 1.2,
                   ),
                 ),
 
                 SizedBox(height: 12.h),
 
                 /// الوصف
-                Text(
-                  'ابحث واستعرض الأحاديث النبوية بسهولة، مع إمكانية التصفية حسب الكتاب أو الراوي أو الموضوع، وعرض درجة صحة الحديث بشكل واضح.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.white.withValues(alpha: .78),
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Cairo',
-                    height: 1.9,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: Text(
+                    'استمع إلى القرآن الكريم بأصوات نخبة من القراء، مع إمكانية اختيار القارئ المفضل لديك وتجربة روحانية هادئة في أي وقت.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white.withValues(alpha: .78),
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Cairo',
+                      height: 1.9,
+                    ),
                   ),
                 ),
 
                 SizedBox(height: 16.h),
 
-                /// بطاقة مميزة
+                /// البطاقة السفلية
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 16.w,
@@ -110,6 +114,7 @@ class SecondPageOnboarding extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
+                      /// الأيقونة
                       Container(
                         width: 44.w,
                         height: 44.w,
@@ -118,17 +123,16 @@ class SecondPageOnboarding extends StatelessWidget {
                           color: Colors.white.withValues(alpha: .08),
                         ),
                         child: Icon(
-                          Icons.menu_book_rounded,
+                          Icons.play_circle_fill_rounded,
                           color: Colors.white,
                           size: 22.sp,
                         ),
                       ),
 
                       SizedBox(width: 14.w),
-
-                      Expanded(
+                      Flexible(
                         child: Text(
-                          'مصدر موثوق لاستكشاف السنة النبوية بشكل منظم وسهل.',
+                          'اختر القارئ واستمتع بتلاوة خاشعة عالية الجودة.',
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: Colors.white.withValues(alpha: .75),
