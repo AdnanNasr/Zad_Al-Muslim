@@ -34,7 +34,7 @@ class QariNamesAyahByAyah {
   static const QariModel alHossary = QariModel(
     id: "118",
     name: "محمود خليل الحصري",
-    server: "https://verse.mp3quran.net/arabic/mahmood_alhusary/64/",
+    server: "https://verse.mp3quran.net/arabic/mahmood_alhusary/128/",
   );
 
   static const QariModel alMinshawi = QariModel(

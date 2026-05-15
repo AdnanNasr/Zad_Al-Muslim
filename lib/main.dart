@@ -15,8 +15,7 @@ void main() async {
     ScreenUtilInit(
       minTextAdapt: true,
       designSize: const Size(392.72727272727275, 800.7272727272727),
-      builder: (_, _) =>
-          const ProviderScope(child: AppRoot()),
+      builder: (_, _) => const ProviderScope(child: AppRoot()),
     ),
   );
 }
