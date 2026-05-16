@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:zad_al_muslim/core/common/widgets/home/today_duaa.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
@@ -16,7 +15,6 @@ import 'package:zad_al_muslim/core/common/widgets/home/home_button.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/next_prayer_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/reading_progress_card.dart';
-import 'package:zad_al_muslim/core/common/providers/daily_content_provider.dart';
 import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -31,18 +29,9 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   bool showCopiedMessage = false;
-
-  @override
-  void dispose() {
-    // TODO: maybe make edit
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +128,7 @@ class BodyContent extends ConsumerWidget {
                   Text(
                     _getGreeting(),
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 15.sp,
                       fontFamily: "Cairo",
                       fontWeight: FontWeight.w500,
                       color: context.color.onSurface.withValues(alpha: 0.6),
@@ -148,10 +137,10 @@ class BodyContent extends ConsumerWidget {
                   Text(
                     "زاد المسلم",
                     style: TextStyle(
-                      fontSize: 22.sp,
+                      fontSize: 25.sp,
                       fontFamily: "Cairo",
                       fontWeight: FontWeight.bold,
-                      color: context.color.primary,
+                      color: context.color.onSurface,
                       height: 1.2,
                     ),
                   ),
@@ -160,14 +149,14 @@ class BodyContent extends ConsumerWidget {
                     children: [
                       Icon(
                         Icons.calendar_today_rounded,
-                        size: 12.sp,
+                        size: 14.sp,
                         color: context.color.primary.withValues(alpha: 0.8),
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         _getFormattedDate(),
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           fontFamily: "Cairo",
                           color: context.color.onSurface.withValues(alpha: 0.8),
                         ),
@@ -179,14 +168,14 @@ class BodyContent extends ConsumerWidget {
                     children: [
                       Icon(
                         Icons.brightness_2,
-                        size: 12.sp,
+                        size: 14.sp,
                         color: context.color.primary.withValues(alpha: 0.8),
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         _getFormattedDateHijri(),
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           fontFamily: "Cairo",
                           color: context.color.onSurface.withValues(alpha: 0.8),
                         ),
@@ -196,7 +185,6 @@ class BodyContent extends ConsumerWidget {
                 ],
               ),
             ),
-            // الجانب الأيسر: مكان الصورة الشخصية مستقبلاً
             InkWell(
               borderRadius: BorderRadius.circular(360),
               onTap: () =>
@@ -216,7 +204,7 @@ class BodyContent extends ConsumerWidget {
                   ),
                   child: Icon(
                     Icons.notifications,
-                    color: context.color.primary,
+                    color: context.color.onSurface,
                     size: 26.sp,
                   ),
                 ),
@@ -541,195 +529,5 @@ class ComingPrayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const NextPrayerCard();
-  }
-}
-
-class TodayDuaa extends ConsumerStatefulWidget {
-  const TodayDuaa({
-    super.key,
-    required this.colorScheme,
-    required this.themeMode,
-  });
-  final ColorScheme colorScheme;
-  final ThemeMode themeMode;
-
-  @override
-  ConsumerState<TodayDuaa> createState() => _TodayDuaaState();
-}
-
-class _TodayDuaaState extends ConsumerState<TodayDuaa> {
-  bool _showCopiedMessage = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final duaaAsync = ref.watch(dailyDuaaProvider);
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-      child: Container(
-        padding: EdgeInsets.all(20.r),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.r),
-          color: context.color.primary.withValues(alpha: .08),
-          border: Border.all(
-            color: context.color.primary.withValues(alpha: 0.25),
-            width: 1.5,
-          ),
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(
-                    thickness: 2.sp,
-                    color: widget.colorScheme.primary.withValues(alpha: 0.1),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(12.0.r),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.volunteer_activism_rounded,
-                        color: context.color.primary,
-                        size: 22.sp,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        "دعاء اليوم",
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontFamily: "Cairo",
-                          fontWeight: FontWeight.bold,
-                          color: context.color.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Divider(
-                    thickness: 2.sp,
-                    color: widget.colorScheme.primary.withValues(alpha: 0.1),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 8.h),
-              child: duaaAsync.when(
-                data: (duaaText) => Column(
-                  children: [
-                    Text(
-                      "« $duaaText »",
-                      style: TextStyle(
-                        fontSize: 19.sp,
-                        fontFamily: "Tajawal",
-                        height: 1.6,
-                        color: widget.colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16.h),
-                    Stack(
-                      alignment: Alignment.center,
-                      clipBehavior: Clip.none,
-                      children: [
-                        Positioned(
-                          left: 80.w,
-                          child: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 200),
-                            opacity: _showCopiedMessage ? 1.0 : 0.0,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 4.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.color.primary,
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              child: Text(
-                                "تم النسخ",
-                                style: TextStyle(
-                                  color: context.color.onPrimary,
-                                  fontSize: 12.sp,
-                                  fontFamily: "Cairo",
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        _buildActionButton(
-                          icon: Icons.copy_rounded,
-                          label: "نسخ",
-                          color: widget.colorScheme.primary,
-                          onTap: () {
-                            Clipboard.setData(
-                              ClipboardData(
-                                text: "$duaaText\n\nمن تطبيق زاد المسلم",
-                              ),
-                            );
-                            _showCopiedMessage = true;
-                            setState(() {});
-                            Future.delayed(
-                              const Duration(seconds: 1, milliseconds: 500),
-                              () {
-                                if (mounted) {
-                                  setState(() => _showCopiedMessage = false);
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    // SizedBox(height: 8.h),
-                  ],
-                ),
-                loading: () => const CircularProgressIndicator(),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18.sp, color: color.withValues(alpha: 0.7)),
-            SizedBox(width: 6.w),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontFamily: "Cairo",
-                fontWeight: FontWeight.bold,
-                color: color.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

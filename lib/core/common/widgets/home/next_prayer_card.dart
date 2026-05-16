@@ -54,6 +54,9 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     final icon = nextInfo['icon'] as IconData;
     final remaining = nextInfo['remaining'] as Duration;
 
+    final Color lightModeColor = context.color.scrim.withValues(alpha: .9);
+    final Color darkModeColor = context.color.onPrimary.withValues(alpha: .8);
+
     final hours = remaining.inHours;
     final minutes = remaining.inMinutes.remainder(60);
     final seconds = remaining.inSeconds.remainder(60);
@@ -61,16 +64,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 14.w),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.r),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: baseColor.withValues(alpha: isDark ? 0.05 : 0.1),
-          //     blurRadius: 20,
-          //     offset: const Offset(0, 10),
-          //   ),
-          // ],
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.r)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20.r),
           child: BackdropFilter(
@@ -113,7 +107,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                         child: Icon(
                           icon,
                           size: 24.sp,
-                          color: context.color.primary,
+                          color: isDark ? darkModeColor : lightModeColor,
                         ),
                       ),
                       SizedBox(width: 14.w),
@@ -128,9 +122,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: "Cairo",
-                                color: context.color.primary.withValues(
-                                  alpha: 0.6,
-                                ),
+                                color: isDark ? darkModeColor : lightModeColor,
                               ),
                             ),
                             Text(
@@ -139,7 +131,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                                 fontSize: 20.sp,
                                 fontFamily: "Cairo",
                                 fontWeight: FontWeight.bold,
-                                color: context.color.primary,
+                                color: isDark ? darkModeColor : lightModeColor,
                                 height: 1.2,
                               ),
                             ),
@@ -153,7 +145,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                           vertical: 10.h,
                         ),
                         decoration: BoxDecoration(
-                          color: context.color.primary.withValues(alpha: .2),
+                          color: context.color.primary.withValues(alpha: .1),
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
                             color: context.color.primary.withValues(alpha: 0.1),
@@ -165,7 +157,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                             Icon(
                               Icons.timer_outlined,
                               size: 14.sp,
-                              color: context.color.primary,
+                              color: isDark ? darkModeColor : lightModeColor,
                             ),
                             SizedBox(width: 6.w),
                             Text(
@@ -173,7 +165,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
-                                color: context.color.primary,
+                                color: isDark ? darkModeColor : lightModeColor,
                                 letterSpacing: 1.2,
                               ),
                             ),

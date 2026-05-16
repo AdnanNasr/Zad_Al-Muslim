@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/providers/adkar_provider.dart';
@@ -22,6 +23,8 @@ class QuickAdkarStrip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final adkarAsync = ref.watch(allAdkarProvider);
+    final ThemeMode themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
 
     return adkarAsync.when(
       data: (adkarList) {
@@ -69,6 +72,7 @@ class QuickAdkarStrip extends ConsumerWidget {
                     final categoryColors = _getColorDependsOnCategory(
                       category,
                       context,
+                      isDark,
                     );
                     final bgColor = categoryColors["background"] as Color;
                     final contentColor = categoryColors["icon"] as Color;
@@ -112,7 +116,7 @@ class QuickAdkarStrip extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 13.sp,
                                   fontFamily: "Cairo",
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                   color: contentColor,
                                 ),
                               ),
@@ -148,9 +152,8 @@ class QuickAdkarStrip extends ConsumerWidget {
   Map<String, Color> _getColorDependsOnCategory(
     String category,
     BuildContext context,
+    bool isDark,
   ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     Color baseColor;
     if (category == "أذكار الصباح والمساء") {
       baseColor = context.color.primary;
@@ -171,8 +174,12 @@ class QuickAdkarStrip extends ConsumerWidget {
     return {
       "background": baseColor.withValues(alpha: isDark ? 0.2 : 0.08),
       "icon": isDark
-          ? (baseColor is MaterialColor ? baseColor.shade200 : baseColor)
-          : (baseColor is MaterialColor ? baseColor.shade900 : baseColor),
+          ? (baseColor is MaterialColor
+                ? baseColor.shade200
+                : context.color.onPrimary.withValues(alpha: .85))
+          : (baseColor is MaterialColor
+                ? baseColor.shade900
+                : context.color.scrim.withValues(alpha: 9)),
     };
   }
 }

@@ -80,8 +80,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
       initialRoute: "/splash_screen",
 
       routes: {
-        "/splash_screen": (_) =>
-            const SplashScreen(),
+        "/splash_screen": (_) => const SplashScreen(),
         "/home_page": (_) => const HomePage(),
         "/quran_pages": (_) => const QuranPages(),
         "/quran_moratal": (_) => const QuranMoratalPage(),

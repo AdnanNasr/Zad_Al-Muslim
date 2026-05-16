@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 
 class HomeButton extends ConsumerStatefulWidget {
   final String text;
@@ -36,12 +37,10 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
         : widget.color.withValues(alpha: 0.1);
 
     final contentColor = isDark
-        ? (widget.color is MaterialColor
-              ? (widget.color as MaterialColor).shade200
-              : widget.color)
-        : (widget.color is MaterialColor
-              ? (widget.color as MaterialColor).shade900
-              : widget.color);
+        ? (context.color.onSurface.withValues(alpha: .9))
+        : (context.color.scrim.withValues(alpha: .7));
+
+    final Color backgroundIconColor = context.color.primary;
 
     return Container(
       decoration: BoxDecoration(
@@ -83,7 +82,7 @@ class _HomeButtonState extends ConsumerState<HomeButton> {
                       child: Icon(
                         Icons.auto_awesome_rounded,
                         size: 40.sp,
-                        color: contentColor.withValues(
+                        color: backgroundIconColor.withValues(
                           alpha: isDark ? 0.08 : 0.12,
                         ),
                       ),
