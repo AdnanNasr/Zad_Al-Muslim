@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Noor Bayan Logo](assets/images/app_logo.png)
+![Noor Bayan Logo](assets/images/ic_launcher_foreground.png)
 
 ### تطبيق إسلامي شامل مطور بأحدث التقنيات 🕌
 ### A Comprehensive Islamic App Built with Modern Tech 🌟
