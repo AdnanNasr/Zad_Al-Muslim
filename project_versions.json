@@ -1,0 +1,12 @@
+{
+  "versions": {
+    "flutter": "3.41.0",
+    "dart": "3.11.0",
+    "DevTools": "2.54.1",
+    "java": "21.0.10 2026-01-20 LTS",
+    "Gradle": "8.14",
+    "Kotlin": "2.0.21",
+    "Groovy": "3.0.24",
+    "compileSdk": "36"
+  }
+}
