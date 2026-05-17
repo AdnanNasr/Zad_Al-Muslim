@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
 import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -114,6 +117,12 @@ void _playNextPreparedAyah(
   );
   urlEither.fold((failure) {}, (url) async {
     try {
+      final bytes = await rootBundle.load('assets/images/app_logo.png');
+
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/app_logo.png');
+
+      await file.writeAsBytes(bytes.buffer.asUint8List());
       await player.setAudioSource(
         AudioSource.uri(
           Uri.parse(url),
@@ -121,7 +130,7 @@ void _playNextPreparedAyah(
             id: 'ayah_${nextSurah}_$nextAyah',
             title: 'سورة ${SurahNames.getFormattedName(nextSurah)}',
             artist: 'الآية $nextAyah',
-            // artUri: Uri.parse('asset:///assets/icons/moon.png'), // TODO: add app icon
+            artUri: file.uri,
           ),
         ),
       );
@@ -226,4 +235,3 @@ final audioPositionStreamProvider = Provider<Stream<PositionData>>((ref) {
         PositionData(position, bufferedPosition, duration ?? Duration.zero),
   ).asBroadcastStream();
 });
-

@@ -358,8 +358,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     text: "تنبيه أذكار الصباح",
                     subText: appSettings.morningAdkarReminder
                         ? (appSettings.morningAdkarTime != null
-                            ? "الوقت: ${appSettings.morningAdkarTime}"
-                            : "الوقت: وقت الفجر")
+                              ? "الوقت: ${appSettings.morningAdkarTime}"
+                              : "الوقت: وقت الفجر")
                         : "اضغط هنا لتحديد وقت التذكير",
                     forgroundColor: primarycolor,
                     toggle: true,
@@ -378,11 +378,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             if (time != null) {
                               final formattedTime =
                                   '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-                              await appSettingsNotifier
-                                  .setMorningAdkarTime(formattedTime);
+                              await appSettingsNotifier.setMorningAdkarTime(
+                                formattedTime,
+                              );
                             } else {
-                              await appSettingsNotifier
-                                  .setMorningAdkarTime(null);
+                              await appSettingsNotifier.setMorningAdkarTime(
+                                null,
+                              );
                             }
                           }
                         : null,
@@ -392,8 +394,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     text: "تنبيه أذكار المساء",
                     subText: appSettings.eveningAdkarReminder
                         ? (appSettings.eveningAdkarTime != null
-                            ? "الوقت: ${appSettings.eveningAdkarTime}"
-                            : "الوقت: وقت المغرب")
+                              ? "الوقت: ${appSettings.eveningAdkarTime}"
+                              : "الوقت: وقت المغرب")
                         : "اضغط هنا لتحديد وقت التذكير",
                     forgroundColor: primarycolor,
                     toggle: true,
@@ -412,11 +414,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             if (time != null) {
                               final formattedTime =
                                   '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-                              await appSettingsNotifier
-                                  .setEveningAdkarTime(formattedTime);
+                              await appSettingsNotifier.setEveningAdkarTime(
+                                formattedTime,
+                              );
                             } else {
-                              await appSettingsNotifier
-                                  .setEveningAdkarTime(null);
+                              await appSettingsNotifier.setEveningAdkarTime(
+                                null,
+                              );
                             }
                           }
                         : null,
@@ -512,7 +516,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onTap: () => Navigator.of(context).pushNamed("/app_info"),
                   ),
                   SettingCards(
-                    // borderRadius: BorderRadius.vertical(bottom: Radius.circular(9)), // TODO: Temp
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(9),
+                    ),
                     icon: const Right(Icons.share),
                     text: "نشر التطبيق (صدقة جارية)",
                     forgroundColor: primarycolor,

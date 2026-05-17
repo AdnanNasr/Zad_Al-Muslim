@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +100,12 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
       },
       (url) async {
         try {
+          final bytes = await rootBundle.load('assets/images/app_logo.png');
+
+          final dir = await getTemporaryDirectory();
+          final file = File('${dir.path}/app_logo.png');
+
+          await file.writeAsBytes(bytes.buffer.asUint8List());
           await player.setAudioSource(
             AudioSource.uri(
               Uri.parse(url),
@@ -103,9 +113,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
                 id: 'ayah_${surah}_$ayah',
                 title: 'سورة ${SurahNames.getFormattedName(surah)}',
                 artist: 'الآية $ayah',
-                artUri: Uri.parse(
-                  'asset:///assets/images/app_logo.png',
-                ), // TODO: maybe a problem
+                artUri: file.uri,
               ),
             ),
           );

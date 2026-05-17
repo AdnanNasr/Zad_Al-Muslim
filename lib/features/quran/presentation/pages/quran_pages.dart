@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/constants/enums/qrai_names_ayah_by_ayah.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
@@ -700,6 +703,15 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       surahName: SurahNames.getFormattedName(_surahNumber),
                     );
 
+                    final bytes = await rootBundle.load(
+                      'assets/images/app_logo.png',
+                    );
+
+                    final dir = await getTemporaryDirectory();
+                    final file = File('${dir.path}/app_logo.png');
+
+                    await file.writeAsBytes(bytes.buffer.asUint8List());
+
                     await player.setAudioSource(
                       AudioSource.uri(
                         Uri.parse(url),
@@ -708,9 +720,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                           title:
                               'سورة ${SurahNames.getFormattedName(_surahNumber)}',
                           artist: 'الآية $_verseNumber',
-                          // artUri: Uri.parse(
-                          //   'asset:///assets/icons/moon.png',
-                          // ), // TODO: change app icon
+                          artUri: file.uri,
                         ),
                       ),
                     );

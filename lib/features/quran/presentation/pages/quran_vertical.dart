@@ -353,7 +353,6 @@ class _QuranVerticalPageState extends ConsumerState<QuranVerticalPage> {
 
                     // ─── مؤشر حجم الخط ────────────────────────────────
                     AnimatedOpacity(
-                      // TODO
                       opacity: _showFontIndicator ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 200),
                       child: Center(

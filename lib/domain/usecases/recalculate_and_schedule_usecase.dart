@@ -63,7 +63,6 @@ class RecalculateAndScheduleUseCase {
       final prayerTimes = PrayerTimes(coordinates, dateComponents, params);
 
       void addPrayer(PrayerName name, DateTime? time) {
-        // TODO: fix prayer times logic
         if (time == null) return;
         final prayerDate = DateTime.utc(date.year, date.month, date.day);
         prayersToSave.add(

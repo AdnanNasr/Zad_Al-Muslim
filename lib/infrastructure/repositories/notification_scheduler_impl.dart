@@ -44,12 +44,12 @@ class NotificationSchedulerImpl implements INotificationScheduler {
             channelDescription: 'إشعارات أوقات الصلاة',
             importance: Importance.max,
             priority: Priority.high,
-            // sound: RawResourceAndroidNotificationSound('adhan'), // تم تعطيله مؤقتاً لعدم وجود ملف adhan في raw
+            // sound: RawResourceAndroidNotificationSound('adhan'), // TODO: add adhan file
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
             presentSound: true,
-            // sound: 'adhan.aiff', // تم تعطيله مؤقتاً لعدم وجود الملف TODO
+            // sound: 'adhan.aiff', // تم تعطيله مؤقتاً لعدم وجود الملف // TODO: add adhan file
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
