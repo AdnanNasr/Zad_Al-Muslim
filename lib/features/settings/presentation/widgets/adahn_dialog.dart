@@ -35,7 +35,7 @@ class _AdahnDialogState extends State<AdahnDialog> {
               children: [
                 Icon(
                   Icons.multitrack_audio_sharp,
-                  color: context.color.primary,
+                  color: context.color.onSurface,
                 ),
                 SizedBox(width: 8.w),
                 const Text(
@@ -86,6 +86,11 @@ class _AdahnDialogState extends State<AdahnDialog> {
             ),
             const Divider(),
             TextButton(
+              style: ButtonStyle(
+                foregroundColor: WidgetStatePropertyAll<Color>(
+                  context.color.onSurface,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },

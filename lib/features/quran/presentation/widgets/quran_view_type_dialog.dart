@@ -326,7 +326,7 @@ class _QuranViewTypeDialogState extends ConsumerState<QuranViewTypeDialog> {
                       style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 14.sp,
-                        color: context.color.onSurface.withValues(alpha: .6),
+                        color: context.color.onSurface,
                       ),
                     ),
                   ),

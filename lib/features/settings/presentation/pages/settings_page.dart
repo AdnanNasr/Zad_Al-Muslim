@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/constants/env.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
@@ -47,6 +48,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ),
         actions: [
           TextButton(
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll<Color>(
+                context.color.onSurface,
+              ),
+            ),
             onPressed: () => Navigator.pop(context, false),
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
@@ -463,6 +469,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                           actions: [
                             TextButton(
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStatePropertyAll<Color>(
+                                  context.color.onSurface,
+                                ),
+                              ),
                               onPressed: () => Navigator.pop(context),
                               child: const Text(
                                 "إلغاء",
@@ -524,7 +535,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     forgroundColor: primarycolor,
                     onTap: () {
                       SharePlus.instance.share(
-                        ShareParams(text: "https://zad_al-muslim.com"),
+                        ShareParams(
+                          text: Platform.isAndroid
+                              ? Env.androidAppLink
+                              : Env.iOSAppLink,
+                        ),
                       );
                     },
                   ),

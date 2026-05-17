@@ -4,6 +4,10 @@ class Env {
   // must be changed when the server is hosted
   // static String pingDomain = "google.com";
 
+  static String androidAppLink =
+      "https://play.google.com/store/apps/details?id=com.zad_al_muslim.adnan";
+  static String iOSAppLink = "https://apps.apple.com/app/idXXXXXXXXXX";
+
   //  pure api url
   static String baseUrl = "http://10.0.2.2:8000";
 

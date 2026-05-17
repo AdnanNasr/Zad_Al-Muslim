@@ -55,43 +55,73 @@ class MadhabDialog extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(madhabs.length, (index) {
                   final bool isSelected = currentMadhab == index;
-                  return ListTile(
-                    title: Text(
-                      madhabs[index],
-                      style: TextStyle(
-                        fontFamily: "Cairo",
-                        fontSize: 14.sp,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                            : null,
-                      ),
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    // margin: EdgeInsets.symmetric(
+                    //   horizontal: 8.w,
+                    //   vertical: 4.h,
+                    // ),
+                    // padding: EdgeInsets.symmetric(
+                    //   horizontal: 16.w,
+                    //   vertical: 14.h,
+                    // ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? context.color.primary.withValues(alpha: .12)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: isSelected
+                          ? Border.all(
+                              color: context.color.primary.withValues(
+                                alpha: .4,
+                              ),
+                              width: 1.5,
+                            )
+                          : null,
                     ),
-                    trailing: isSelected
-                        ? Icon(
-                            Icons.check_circle,
-                            color: Theme.of(context).colorScheme.primary,
-                          )
-                        : null,
-                    onTap: () {
-                      ref.read(appSettingsProvider.notifier).setMadhab(index);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "تم تحديث المذهب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
-                          ),
+                    child: ListTile(
+                      title: Text(
+                        madhabs[index],
+                        style: TextStyle(
+                          fontFamily: "Cairo",
+                          fontSize: 14.sp,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
                         ),
-                      );
-                    },
+                      ),
+                      trailing: isSelected
+                          ? Icon(
+                              Icons.check_circle,
+                              color: Theme.of(context).colorScheme.primary,
+                            )
+                          : null,
+                      onTap: () {
+                        ref.read(appSettingsProvider.notifier).setMadhab(index);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "تم تحديث المذهب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 }),
               ),
             ),
             const Divider(),
             TextButton(
+              style: ButtonStyle(
+                foregroundColor: WidgetStatePropertyAll<Color>(
+                  context.color.onSurface,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },

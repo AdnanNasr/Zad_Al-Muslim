@@ -28,7 +28,6 @@ class CalculationMethodDialog extends ConsumerWidget {
     ];
 
     return Dialog(
-      // backgroundColor: context.color.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 10.w),
@@ -41,7 +40,7 @@ class CalculationMethodDialog extends ConsumerWidget {
                   tag: "timer",
                   child: Icon(
                     Icons.timer,
-                    color: context.color.primary,
+                    color: context.color.onSurface,
                     size: 25.sp,
                   ),
                 ),
@@ -71,7 +70,12 @@ class CalculationMethodDialog extends ConsumerWidget {
             SizedBox(height: 8.h),
             Divider(color: context.color.onSurface.withValues(alpha: .1)),
             TextButton(
-              style: const ButtonStyle(splashFactory: NoSplash.splashFactory),
+              style: ButtonStyle(
+                splashFactory: NoSplash.splashFactory,
+                foregroundColor: WidgetStatePropertyAll<Color>(
+                  context.color.onSurface,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -97,33 +101,48 @@ class CalculationMethodDialog extends ConsumerWidget {
   ) {
     return List.generate(methods.length, (index) {
       final bool isSelected = currentMethod == index;
-      return ListTile(
-        title: Text(
-          methods[index],
-          style: TextStyle(
-            fontFamily: "Cairo",
-            fontSize: 14.sp,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Theme.of(context).colorScheme.primary : null,
-          ),
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? context.color.primary.withValues(alpha: .12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12.r),
+          border: isSelected
+              ? Border.all(
+                  color: context.color.primary.withValues(alpha: .4),
+                  width: 1.5,
+                )
+              : null,
         ),
-        trailing: isSelected
-            ? Icon(
-                Icons.check_circle,
-                color: Theme.of(context).colorScheme.primary,
-              )
-            : null,
-        onTap: () {
-          ref.read(appSettingsProvider.notifier).setCalculationMethod(index);
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                "تم تحديث طريقة الحساب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
-              ),
+        child: ListTile(
+          title: Text(
+            methods[index],
+            style: TextStyle(
+              fontFamily: "Cairo",
+              fontSize: 14.sp,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected ? Theme.of(context).colorScheme.primary : null,
             ),
-          );
-        },
+          ),
+          trailing: isSelected
+              ? Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).colorScheme.primary,
+                )
+              : null,
+          onTap: () {
+            ref.read(appSettingsProvider.notifier).setCalculationMethod(index);
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  "تم تحديث طريقة الحساب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
+                ),
+              ),
+            );
+          },
+        ),
       );
     });
   }
