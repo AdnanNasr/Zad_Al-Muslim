@@ -31,11 +31,16 @@ class RecalculateAndScheduleUseCase {
     }
 
     if (!shouldRecalculate) {
-      // نتحقق أيضاً من وجود بيانات حالية
+      // نتحقق أيضاً من وجود بيانات حالية لليوم ولأمس
       final todayPrayers = await _prayerRepository.getPrayersForDay(
         DateTime.now(),
       );
-      if (todayPrayers.isEmpty) shouldRecalculate = true;
+      final yesterdayPrayers = await _prayerRepository.getPrayersForDay(
+        DateTime.now().subtract(const Duration(days: 1)),
+      );
+      if (todayPrayers.isEmpty || yesterdayPrayers.isEmpty) {
+        shouldRecalculate = true;
+      }
     }
 
     if (!shouldRecalculate) {
@@ -52,7 +57,7 @@ class RecalculateAndScheduleUseCase {
     final now = DateTime.now();
     final prayersToSave = <PrayerTime>[];
 
-    for (int i = 0; i < 30; i++) {
+    for (int i = -30; i <= 30; i++) {
       final date = now.add(Duration(days: i));
       final dateComponents = DateComponents(date.year, date.month, date.day);
       final prayerTimes = PrayerTimes(coordinates, dateComponents, params);

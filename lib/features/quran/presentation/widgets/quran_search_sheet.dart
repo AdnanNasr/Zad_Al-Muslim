@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:zad_al_muslim/features/quran/domain/services/quran_search_indexer.dart';
-import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
 import 'package:qcf_quran/qcf_quran.dart' as qcf;
