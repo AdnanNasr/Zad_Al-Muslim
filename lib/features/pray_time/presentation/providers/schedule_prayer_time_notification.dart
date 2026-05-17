@@ -30,12 +30,13 @@ class SchedulePrayerTimeNotification {
           // sound: RawResourceAndroidNotificationSound('adhan'),
         ),
         iOS: DarwinNotificationDetails(
-          sound: 'adhan.aiff',
+          // sound: 'adhan.aiff',
         ),
       ),
       // المعاملات الجديدة والمطلوبة في إصدارك:
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: null, // لا نريد تكراراً تلقائياً لأن الأوقات تتغير يومياً
+      matchDateTimeComponents:
+          null, // لا نريد تكراراً تلقائياً لأن الأوقات تتغير يومياً
     );
   }
 }

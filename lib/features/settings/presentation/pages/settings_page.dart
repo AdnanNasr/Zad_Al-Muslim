@@ -356,26 +356,70 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   SettingCards(
                     icon: const Right(Icons.wb_sunny_rounded),
                     text: "تنبيه أذكار الصباح",
+                    subText: appSettings.morningAdkarReminder
+                        ? (appSettings.morningAdkarTime != null
+                            ? "الوقت: ${appSettings.morningAdkarTime}"
+                            : "الوقت: وقت الفجر")
+                        : "اضغط هنا لتحديد وقت التذكير",
                     forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: appSettings.morningAdkarReminder,
                     onChanged: (value) async {
                       await appSettingsNotifier.toggleMorningAdkarReminder();
-                      ref.invalidate(todayPrayerTimesProvider);
-                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
+                    onTap: appSettings.morningAdkarReminder
+                        ? () async {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                              helpText:
+                                  'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
+                            );
+                            if (time != null) {
+                              final formattedTime =
+                                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                              await appSettingsNotifier
+                                  .setMorningAdkarTime(formattedTime);
+                            } else {
+                              await appSettingsNotifier
+                                  .setMorningAdkarTime(null);
+                            }
+                          }
+                        : null,
                   ),
                   SettingCards(
                     icon: const Right(Icons.nightlight_round),
                     text: "تنبيه أذكار المساء",
+                    subText: appSettings.eveningAdkarReminder
+                        ? (appSettings.eveningAdkarTime != null
+                            ? "الوقت: ${appSettings.eveningAdkarTime}"
+                            : "الوقت: وقت المغرب")
+                        : "اضغط هنا لتحديد وقت التذكير",
                     forgroundColor: primarycolor,
                     toggle: true,
                     switchValue: appSettings.eveningAdkarReminder,
                     onChanged: (value) async {
                       await appSettingsNotifier.toggleEveningAdkarReminder();
-                      ref.invalidate(todayPrayerTimesProvider);
-                      ref.invalidate(selectedDatePrayerTimesProvider);
                     },
+                    onTap: appSettings.eveningAdkarReminder
+                        ? () async {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                              helpText:
+                                  'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
+                            );
+                            if (time != null) {
+                              final formattedTime =
+                                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                              await appSettingsNotifier
+                                  .setEveningAdkarTime(formattedTime);
+                            } else {
+                              await appSettingsNotifier
+                                  .setEveningAdkarTime(null);
+                            }
+                          }
+                        : null,
                   ),
                 ],
               ),

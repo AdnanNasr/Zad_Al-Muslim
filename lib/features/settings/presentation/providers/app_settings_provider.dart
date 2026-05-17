@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zad_al_muslim/features/settings/presentation/providers/schedule_adkar_notification.dart';
+
 
 class AppSettings {
   final double adkarFontSize;
@@ -10,7 +12,9 @@ class AppSettings {
   final int calculationMethodIndex; // 0: Auto, 1-13: specific methods
   final int madhabIndex; // 0: Shafi/Standard, 1: Hanafi
   final bool morningAdkarReminder;
+  final String? morningAdkarTime;
   final bool eveningAdkarReminder;
+  final String? eveningAdkarTime;
 
   AppSettings({
     required this.adkarFontSize,
@@ -20,7 +24,9 @@ class AppSettings {
     required this.calculationMethodIndex,
     required this.madhabIndex,
     required this.morningAdkarReminder,
+    this.morningAdkarTime,
     required this.eveningAdkarReminder,
+    this.eveningAdkarTime,
   });
 
   AppSettings copyWith({
@@ -31,7 +37,9 @@ class AppSettings {
     int? calculationMethodIndex,
     int? madhabIndex,
     bool? morningAdkarReminder,
+    String? morningAdkarTime,
     bool? eveningAdkarReminder,
+    String? eveningAdkarTime,
   }) {
     return AppSettings(
       adkarFontSize: adkarFontSize ?? this.adkarFontSize,
@@ -44,7 +52,9 @@ class AppSettings {
           calculationMethodIndex ?? this.calculationMethodIndex,
       madhabIndex: madhabIndex ?? this.madhabIndex,
       morningAdkarReminder: morningAdkarReminder ?? this.morningAdkarReminder,
+      morningAdkarTime: morningAdkarTime ?? this.morningAdkarTime,
       eveningAdkarReminder: eveningAdkarReminder ?? this.eveningAdkarReminder,
+      eveningAdkarTime: eveningAdkarTime ?? this.eveningAdkarTime,
     );
   }
 }
@@ -59,6 +69,8 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
   static const String _madhabKey = 'madhab_key';
   static const String _morningAdkarKey = 'morning_adkar_key';
   static const String _eveningAdkarKey = 'evening_adkar_key';
+  static const String _morningAdkarTimeKey = 'morning_adkar_time_key';
+  static const String _eveningAdkarTimeKey = 'evening_adkar_time_key';
 
   AppSettingsNotifier(this._prefs)
     : super(
@@ -70,7 +82,9 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
           calculationMethodIndex: 0,
           madhabIndex: 0,
           morningAdkarReminder: false,
+          morningAdkarTime: null,
           eveningAdkarReminder: false,
+          eveningAdkarTime: null,
         ),
       ) {
     _init();
@@ -85,7 +99,9 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     final calcMethod = _prefs.getInt(_calculationMethodKey) ?? 0;
     final madhab = _prefs.getInt(_madhabKey) ?? 0;
     final morningAdkar = _prefs.getBool(_morningAdkarKey) ?? false;
+    final morningAdkarTime = _prefs.getString(_morningAdkarTimeKey);
     final eveningAdkar = _prefs.getBool(_eveningAdkarKey) ?? false;
+    final eveningAdkarTime = _prefs.getString(_eveningAdkarTimeKey);
 
     state = AppSettings(
       adkarFontSize: fontSize,
@@ -95,8 +111,23 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       calculationMethodIndex: calcMethod,
       madhabIndex: madhab,
       morningAdkarReminder: morningAdkar,
+      morningAdkarTime: morningAdkarTime,
       eveningAdkarReminder: eveningAdkar,
+      eveningAdkarTime: eveningAdkarTime,
     );
+
+    if (morningAdkar) {
+      ScheduleAdkarNotification.updateMorningSchedule(
+        isEnabled: true,
+        timeString: morningAdkarTime,
+      );
+    }
+    if (eveningAdkar) {
+      ScheduleAdkarNotification.updateEveningSchedule(
+        isEnabled: true,
+        timeString: eveningAdkarTime,
+      );
+    }
   }
 
   Future<void> setAdkarFontSize(double size) async {
@@ -136,12 +167,54 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     final newValue = !state.morningAdkarReminder;
     await _prefs.setBool(_morningAdkarKey, newValue);
     state = state.copyWith(morningAdkarReminder: newValue);
+
+    await ScheduleAdkarNotification.updateMorningSchedule(
+      isEnabled: newValue,
+      timeString: state.morningAdkarTime,
+    );
+  }
+
+  Future<void> setMorningAdkarTime(String? time) async {
+    if (time != null) {
+      await _prefs.setString(_morningAdkarTimeKey, time);
+    } else {
+      await _prefs.remove(_morningAdkarTimeKey);
+    }
+    state = state.copyWith(morningAdkarTime: time);
+
+    if (state.morningAdkarReminder) {
+      await ScheduleAdkarNotification.updateMorningSchedule(
+        isEnabled: true,
+        timeString: time,
+      );
+    }
   }
 
   Future<void> toggleEveningAdkarReminder() async {
     final newValue = !state.eveningAdkarReminder;
     await _prefs.setBool(_eveningAdkarKey, newValue);
     state = state.copyWith(eveningAdkarReminder: newValue);
+
+    await ScheduleAdkarNotification.updateEveningSchedule(
+      isEnabled: newValue,
+      timeString: state.eveningAdkarTime,
+    );
+  }
+
+  Future<void> setEveningAdkarTime(String? time) async {
+    if (time != null) {
+      await _prefs.setString(_eveningAdkarTimeKey, time);
+    } else {
+      await _prefs.remove(_eveningAdkarTimeKey);
+    }
+    state = state.copyWith(eveningAdkarTime: time);
+
+    if (state.eveningAdkarReminder) {
+      await ScheduleAdkarNotification.updateEveningSchedule(
+        isEnabled: true,
+        timeString: time,
+      );
+    }
   }
 
   Future<void> resetSettings() async {
@@ -152,7 +225,9 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     await _prefs.remove(_calculationMethodKey);
     await _prefs.remove(_madhabKey);
     await _prefs.remove(_morningAdkarKey);
+    await _prefs.remove(_morningAdkarTimeKey);
     await _prefs.remove(_eveningAdkarKey);
+    await _prefs.remove(_eveningAdkarTimeKey);
     state = AppSettings(
       adkarFontSize: 24.0,
       use24HourFormat: false,
@@ -161,7 +236,9 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       calculationMethodIndex: 0,
       madhabIndex: 0,
       morningAdkarReminder: false,
+      morningAdkarTime: null,
       eveningAdkarReminder: false,
+      eveningAdkarTime: null,
     );
   }
 }
