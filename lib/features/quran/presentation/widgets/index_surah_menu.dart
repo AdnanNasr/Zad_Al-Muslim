@@ -3,6 +3,7 @@ import "package:dartz/dartz.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import "package:zad_al_muslim/core/common/providers/theme_provider.dart";
 import "package:zad_al_muslim/core/errors/failures.dart";
 import "package:zad_al_muslim/core/extensions/color_ext.dart";
 import "package:zad_al_muslim/features/quran/data/models/juzz_model.dart";
@@ -25,25 +26,33 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
     final surahsMetaAsync = ref.watch(surahsMetaProvider);
     final juzzDataAsync = ref.watch(allJuzzProvider);
 
-    final Color primary = context.color.primary;
+    final Color color = context.color.primary;
+
+    final ThemeMode themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      backgroundColor: context.color.primary.withValues(alpha: .08),
+      backgroundColor: context.color.primary.withValues(alpha: .02),
       body: SafeArea(
         child: DefaultTabController(
           length: 2,
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _IndexMenuTabBar(primaryColor: primary),
+              _IndexMenuTabBar(primaryColor: color),
               const SizedBox(height: 10),
               Expanded(
                 child: TabBarView(
                   children: [
                     // التبويب الأول: السور
-                    _buildSurahsTab(surahsMetaAsync, primary),
+                    _buildSurahsTab(surahsMetaAsync, color, isDark),
                     // التبويب الثاني: الأجزاء
-                    _buildAjzaTab(surahsMetaAsync, juzzDataAsync, primary),
+                    _buildAjzaTab(
+                      surahsMetaAsync,
+                      juzzDataAsync,
+                      color,
+                      isDark,
+                    ),
                   ],
                 ),
               ),
@@ -56,11 +65,12 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
 
   Widget _buildSurahsTab(
     Either<Failure, List<SurahMetaEntity>> data,
-    Color primary,
+    Color color,
+    bool isDark,
   ) {
     return data.fold(
       (failure) => Center(child: Text(failure.message)),
-      (list) => _SurahList(surahList: list, primaryColor: primary),
+      (list) => _SurahList(surahList: list, color: color, isDark: isDark),
     );
   }
 
@@ -68,11 +78,13 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
     Either<Failure, List<SurahMetaEntity>> surahsMeta,
     Either<Failure, List<JuzzModel>> juzzData,
     Color primary,
+    bool isDark,
   ) {
     return _JuzList(
       primaryColor: primary,
       surahsMeta: surahsMeta,
       juzzData: juzzData,
+      isDark: isDark,
     );
   }
 }
@@ -133,8 +145,13 @@ class _IndexMenuTabBar extends StatelessWidget {
 // --- قائمة السور ---
 class _SurahList extends StatelessWidget {
   final List<SurahMetaEntity> surahList;
-  final Color primaryColor;
-  const _SurahList({required this.surahList, required this.primaryColor});
+  final Color color;
+  final bool isDark;
+  const _SurahList({
+    required this.surahList,
+    required this.color,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -146,10 +163,11 @@ class _SurahList extends StatelessWidget {
         return Column(
           children: [
             _SurahCard(
+              isDark: isDark,
               index: surah.surahNumber,
               surahName: 'surah${surah.surahNumber.toString().padLeft(3, '0')}',
               englishName: surah.englishName,
-              primaryColor: primaryColor,
+              primaryColor: color,
               onTap: () {
                 Navigator.push(
                   context,
@@ -173,11 +191,13 @@ class _JuzList extends StatelessWidget {
   final Either<Failure, List<SurahMetaEntity>> surahsMeta;
   final Either<Failure, List<JuzzModel>> juzzData;
   final Color primaryColor;
+  final bool isDark;
 
   const _JuzList({
     required this.primaryColor,
     required this.surahsMeta,
     required this.juzzData,
+    required this.isDark,
   });
 
   @override
@@ -198,6 +218,7 @@ class _JuzList extends StatelessWidget {
                 currentJuz.versesEntity.verses.values.first.first;
 
             return _JuzCard(
+              isDark: isDark,
               index: currentJuz.id,
               partLabel: 'الجزء ${currentJuz.id}',
               partDescription:
@@ -234,6 +255,7 @@ class _SurahCard extends StatelessWidget {
   final String englishName;
   final Color primaryColor;
   final VoidCallback onTap;
+  final bool isDark;
 
   const _SurahCard({
     required this.index,
@@ -241,6 +263,7 @@ class _SurahCard extends StatelessWidget {
     required this.englishName,
     required this.primaryColor,
     required this.onTap,
+    required this.isDark,
   });
 
   @override
@@ -249,21 +272,36 @@ class _SurahCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.color.surface,
         borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: context.color.primary.withValues(alpha: .8),
+          width: .5,
+        ),
       ),
       child: ListTile(
-        leading: _SurahIndexCircle(index: index, primaryColor: primaryColor),
+        leading: _SurahIndexCircle(
+          index: index,
+          primaryColor: primaryColor,
+          isDark: isDark,
+        ),
         title: Text(
           surahName,
           style: TextStyle(
             fontFamily: 'surahname',
             package: 'qcf_quran',
-            fontSize: 40.sp,
+            fontSize: 38.sp,
             color: context.color.onSurface,
           ),
         ),
         subtitle: Text(
           englishName,
-          style: TextStyle(fontSize: 13.sp, color: primaryColor),
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontFamily: "Tajawal",
+            fontWeight: FontWeight.w700,
+            color: isDark
+                ? context.color.onSurface.withValues(alpha: .85)
+                : context.color.primary,
+          ),
         ),
         trailing: const Icon(
           Icons.arrow_forward_ios,
@@ -289,6 +327,7 @@ class _JuzCard extends StatelessWidget {
   final int pageNumber;
   final Color primaryColor;
   final VoidCallback onTap;
+  final bool isDark;
 
   const _JuzCard({
     required this.index,
@@ -298,6 +337,7 @@ class _JuzCard extends StatelessWidget {
     required this.pageNumber,
     required this.primaryColor,
     required this.onTap,
+    required this.isDark,
   });
 
   @override
@@ -313,7 +353,7 @@ class _JuzCard extends StatelessWidget {
               fontSize: 14.sp,
               fontFamily: "Cairo",
               fontWeight: FontWeight.bold,
-              color: primaryColor,
+              color: isDark ? context.color.onSurface : primaryColor,
             ),
           ),
         ),
@@ -321,7 +361,10 @@ class _JuzCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: context.color.surface,
             borderRadius: BorderRadius.circular(15.r),
-            border: Border.all(color: Colors.grey.withValues(alpha: .2)),
+            border: Border.all(
+              color: context.color.primary.withValues(alpha: .8),
+              width: .5,
+            ),
           ),
           child: ListTile(
             contentPadding: EdgeInsets.symmetric(
@@ -331,6 +374,7 @@ class _JuzCard extends StatelessWidget {
             leading: _SurahIndexCircle(
               index: index,
               primaryColor: primaryColor,
+              isDark: isDark,
             ),
             title: Padding(
               padding: EdgeInsets.only(bottom: 8.h),
@@ -346,13 +390,18 @@ class _JuzCard extends StatelessWidget {
                 maxLines: 1,
               ),
             ),
-            subtitle: Text(
-              partDescription,
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontFamily: "Cairo",
-                color: context.color.primary,
-                fontWeight: FontWeight.bold,
+            subtitle: Padding(
+              padding: EdgeInsets.only(top: 5.h),
+              child: Text(
+                partDescription,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontFamily: "Tajawal",
+                  color: isDark
+                      ? context.color.onSurface.withValues(alpha: .7)
+                      : context.color.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             trailing: Icon(
@@ -377,7 +426,12 @@ class _JuzCard extends StatelessWidget {
 class _SurahIndexCircle extends StatelessWidget {
   final int index;
   final Color primaryColor;
-  const _SurahIndexCircle({required this.index, required this.primaryColor});
+  final bool isDark;
+  const _SurahIndexCircle({
+    required this.index,
+    required this.primaryColor,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -390,7 +444,9 @@ class _SurahIndexCircle extends StatelessWidget {
             width: 35.w,
             height: 35.w,
             decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: .1),
+              color: isDark
+                  ? primaryColor.withValues(alpha: .3)
+                  : primaryColor.withValues(alpha: .1),
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
@@ -400,7 +456,7 @@ class _SurahIndexCircle extends StatelessWidget {
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.bold,
-            color: primaryColor,
+            color: isDark ? context.color.onSurface : primaryColor,
           ),
         ),
       ],

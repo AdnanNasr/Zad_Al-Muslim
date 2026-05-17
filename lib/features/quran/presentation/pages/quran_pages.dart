@@ -127,8 +127,6 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(quranSettingsProvider);
-    final double nativeWidthSize = context.widthScreen;
-    final double nativeHightSize = context.heightScreen;
     // التوجيه للصفحة العمودية إذا كان وضع العرض القابل للتكبير مفعلاً
     if (settings.quranViewType == QuranViewType.zoomable) {
       return QuranVerticalPage(
@@ -214,9 +212,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     QariModel currentSelectedQariProvider,
   ) {
     final settings = ref.watch(quranSettingsProvider);
-    final theme = Theme.of(context);
-    final isDark =
-        themeMode == ThemeMode.dark || theme.brightness == Brightness.dark;
+    final isDark = themeMode == ThemeMode.dark;
 
     final List<Color> currentColorsList = isDark
         ? [
@@ -389,10 +385,13 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                               fontFamily: "Cairo",
                               fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
-                              color: context.color.primary,
+                              color: isDark
+                                  ? context.color.onSurface.withValues(
+                                      alpha: .85,
+                                    )
+                                  : context.color.scrim,
                             ),
                           ),
-                          // جهة اليسار: رقم الجزء
                           Row(
                             children: [
                               Text(
@@ -401,7 +400,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                   fontFamily: "Cairo",
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
-                                  color: context.color.primary,
+                                  color: isDark
+                                      ? context.color.onSurface.withValues(
+                                          alpha: .85,
+                                        )
+                                      : context.color.scrim,
                                 ),
                               ),
                               Consumer(

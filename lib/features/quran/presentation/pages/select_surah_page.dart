@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:dartz/dartz.dart' show Either;
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/errors/failures.dart';
@@ -35,6 +36,8 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsMetaProvider);
     final juzzData = ref.watch(allJuzzProvider);
+    final ThemeMode themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -87,10 +90,10 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         body: TabBarView(
           children: [
             // التبويب الأول: قائمة السور
-            _buildSurahTab(surahsMeta),
+            _buildSurahTab(surahsMeta, isDark),
 
             // التبويب الثاني: قائمة الأجزاء (تم تعديلها لتشبه السور)
-            _buildJuzTab(juzzData, surahsMeta),
+            _buildJuzTab(juzzData, surahsMeta, isDark),
           ],
         ),
       ),
@@ -98,7 +101,10 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   }
 
   // --- بناء تبويب السور ---
-  Widget _buildSurahTab(Either<Failure, List<SurahMetaEntity>> surahsMeta) {
+  Widget _buildSurahTab(
+    Either<Failure, List<SurahMetaEntity>> surahsMeta,
+    bool isDark,
+  ) {
     return surahsMeta.fold(
       (failure) => Center(
         child: Text(
@@ -128,7 +134,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                   child: SlideAnimation(
                     verticalOffset: 50,
                     child: FadeInAnimation(
-                      child: _buildSurahItem(context, surahs[index]),
+                      child: _buildSurahItem(context, surahs[index], isDark),
                     ),
                   ),
                 );
@@ -141,7 +147,11 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   }
 
   // --- بناء عنصر السورة الواحد ---
-  Widget _buildSurahItem(BuildContext context, SurahMetaEntity surah) {
+  Widget _buildSurahItem(
+    BuildContext context,
+    SurahMetaEntity surah,
+    bool isDark,
+  ) {
     return _buildListTileContainer(
       context: context,
       onTap: () {
@@ -151,14 +161,14 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           ),
         );
       },
-      leading: _buildNumberIndicator(context, surah.surahNumber),
+      leading: _buildNumberIndicator(context, surah.surahNumber, isDark),
       title: Text(
         'surah${surah.surahNumber.toString().padLeft(3, '0')}',
         style: TextStyle(
           fontFamily: 'surahname',
           package: 'qcf_quran',
-          fontSize: 45.sp,
-          color: context.color.primary,
+          fontSize: 40.sp,
+          color: context.color.onSurface.withValues(alpha: .8),
         ),
       ),
       subtitle: Column(
@@ -169,7 +179,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w300,
-              color: Colors.grey[400],
+              color: context.color.onSurface.withValues(alpha: .7),
             ),
           ),
           SizedBox(height: 6.h),
@@ -199,6 +209,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   Widget _buildJuzTab(
     Either<Failure, List<JuzzModel>> juzz,
     Either<Failure, List<SurahMetaEntity>> surahsMeta,
+    bool isDark,
   ) {
     return juzz.fold(
       (failure) {
@@ -254,6 +265,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                                 verseNumber,
                                 verseEndSymbol: false,
                               ),
+                              isDark,
                             ),
                           ),
                         ),
@@ -276,6 +288,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
     String surahName,
     int pageNumber,
     String verse,
+    bool isDark,
   ) {
     return _buildListTileContainer(
       context: context,
@@ -289,7 +302,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         );
       },
       juzzNumber: juzNo,
-      leading: _buildNumberIndicator(context, juzNo),
+      leading: _buildNumberIndicator(context, juzNo, isDark),
       title: Text(
         verse,
         style: TextStyle(
@@ -381,7 +394,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                     Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 14.sp,
-                      color: context.color.primary.withValues(alpha: .2),
+                      color: context.color.primary,
                     ),
                   ],
                 ),
@@ -394,7 +407,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   }
 
   // --- مكون رقم السورة/الجزء ---
-  Widget _buildNumberIndicator(BuildContext context, int number) {
+  Widget _buildNumberIndicator(BuildContext context, int number, bool isDark) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -404,7 +417,9 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
             width: 35.w,
             height: 35.w,
             decoration: BoxDecoration(
-              color: context.color.primary.withValues(alpha: .1),
+              color: isDark
+                  ? context.color.primary.withValues(alpha: .3)
+                  : context.color.primary.withValues(alpha: .1),
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
@@ -414,7 +429,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.bold,
-            color: context.color.primary,
+            color: isDark ? context.color.onSurface : context.color.primary,
           ),
         ),
       ],
@@ -428,7 +443,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         Icon(
           icon,
           size: 13.sp,
-          color: context.color.primary.withValues(alpha: .5),
+          color: context.color.primary.withValues(alpha: .98),
           fontWeight: FontWeight.bold,
         ),
         SizedBox(width: 4.w),
@@ -436,7 +451,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           label,
           style: TextStyle(
             fontSize: 11.5.sp,
-            color: context.color.primary,
+            color: context.color.onSurface,
             fontWeight: FontWeight.bold,
             fontFamily: "Cairo",
           ),
