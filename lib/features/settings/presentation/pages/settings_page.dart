@@ -165,6 +165,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final appSettings = ref.watch(appSettingsProvider);
     final appSettingsNotifier = ref.read(appSettingsProvider.notifier);
     final primarycolor = context.color.primary;
+    final bool isDark = themeMode == ThemeMode.dark;
     return Scaffold(
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.settings,
@@ -273,7 +274,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         child: Icon(
                           Icons.mosque_rounded,
                           size: context.witdthScreen * 0.08,
-                          color: primarycolor,
+                          color: isDark
+                              ? context.color.onSurface.withValues(alpha: .95)
+                              : context.color.scrim.withValues(alpha: .8),
                         ),
                       ),
                     ),
@@ -398,7 +401,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     icon: const Right(Icons.restart_alt_rounded),
                     text: "إعادة ضبط جميع الإعدادات",
-                    forgroundColor: Colors.red,
                     onTap: () {
                       showDialog(
                         context: context,
@@ -458,9 +460,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onTap: _isClearingCache
                         ? null
                         : () => _clearAudioCache(context),
-
-                    // trallingIcon: Icons.delete,
-                    forgroundColor: Colors.amber.shade700,
                   ),
                   SettingCards(
                     icon: const Right(Icons.app_settings_alt),

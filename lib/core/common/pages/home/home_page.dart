@@ -126,42 +126,13 @@ class BodyContent extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _getGreeting(),
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontFamily: "Cairo",
-                      fontWeight: FontWeight.w500,
-                      color: context.color.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  Text(
                     "زاد المسلم",
                     style: TextStyle(
                       fontSize: 25.sp,
                       fontFamily: "Cairo",
                       fontWeight: FontWeight.bold,
                       color: context.color.onSurface,
-                      height: 1.2,
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_rounded,
-                        size: 14.sp,
-                        color: context.color.primary.withValues(alpha: 0.8),
-                      ),
-                      SizedBox(width: 4.w),
-                      Text(
-                        _getFormattedDate(),
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: "Cairo",
-                          color: context.color.onSurface.withValues(alpha: 0.8),
-                        ),
-                      ),
-                    ],
                   ),
                   SizedBox(height: 4.h),
                   Row(
@@ -185,30 +156,38 @@ class BodyContent extends ConsumerWidget {
                 ],
               ),
             ),
-            InkWell(
-              borderRadius: BorderRadius.circular(360),
-              onTap: () =>
-                  Navigator.of(context).pushNamed(Routes.notificationsPage),
-              child: Tooltip(
-                message: "مركز الإشعارات",
-                child: Container(
-                  width: 50.r,
-                  height: 50.r,
-                  decoration: BoxDecoration(
-                    color: context.color.primary.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: context.color.primary.withValues(alpha: 0.2),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.notifications,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _getGreeting(),
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontFamily: "Cairo",
+                    fontWeight: FontWeight.bold,
                     color: context.color.onSurface,
-                    size: 26.sp,
                   ),
                 ),
-              ),
+                SizedBox(height: 12.h),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_rounded,
+                      size: 14.sp,
+                      color: context.color.primary.withValues(alpha: 0.8),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      _getFormattedDate(),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontFamily: "Cairo",
+                        color: context.color.onSurface.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
@@ -304,7 +283,9 @@ class BodyContent extends ConsumerWidget {
                                   fontSize: 22.sp,
                                   fontFamily: "Amiri",
                                   fontWeight: FontWeight.bold,
-                                  color: context.color.primary,
+                                  color: themeMode == ThemeMode.dark
+                                      ? context.color.onSurface
+                                      : context.color.scrim,
                                   height: 1.2,
                                 ),
                               ),

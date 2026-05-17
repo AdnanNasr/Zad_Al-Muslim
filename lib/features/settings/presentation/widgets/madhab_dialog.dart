@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 
@@ -12,6 +13,8 @@ class MadhabDialog extends ConsumerWidget {
     final currentMadhab = ref.watch(appSettingsProvider).madhabIndex;
 
     final List<String> madhabs = ["تلقائي (شافعي، مالكي، حنبلي)", "حنفي"];
+    final ThemeMode themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
 
     return Dialog(
       // backgroundColor: context.color.surface,
@@ -26,7 +29,9 @@ class MadhabDialog extends ConsumerWidget {
                   tag: "mosque",
                   child: Icon(
                     Icons.mosque_rounded,
-                    color: context.color.primary,
+                    color: isDark
+                        ? context.color.onSurface.withValues(alpha: .95)
+                        : context.color.scrim.withValues(alpha: .8),
                     size: 25.sp,
                   ),
                 ),

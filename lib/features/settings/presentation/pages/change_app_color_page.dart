@@ -24,9 +24,9 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     "فيروزي ": Colors.teal, // ازرق هادئ
     "ازرق": Colors.blue.shade700, // أزرق براند
     "أخضر": Colors.green.shade700, // أخضر إسلامي
-    "أحمر": Colors.red, // أحمر
-    "بنفسجي": Colors.purple, // بنفسجي
-    "وردي": Colors.pink, // وردي
+    "أحمر": Colors.red.shade900, // أحمر
+    "بنفسجي": Colors.purple.shade700, // بنفسجي
+    "وردي": Colors.pink.shade700, // وردي
     "برتقالي": Colors.orange.shade700, // برتقالي
   };
 
@@ -118,7 +118,7 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     return GestureDetector(
       onTap: () => ref.read(userThemeProvider.notifier).setScheme(color),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 100),
         padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -127,15 +127,6 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
             color: isSelected ? color : Colors.transparent,
             width: 2.5,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? color.withValues(alpha: .15)
-                  : Colors.black.withValues(alpha: .05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,13 +149,6 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
                   color: Colors.white.withValues(alpha: 0.2),
                   width: 1,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withValues(alpha: 0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
             ),
             if (isSelected) Icon(Icons.check_circle, size: 22.sp, color: color),

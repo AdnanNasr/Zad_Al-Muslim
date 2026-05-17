@@ -2,6 +2,7 @@ import "package:dartz/dartz.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import "package:zad_al_muslim/core/extensions/color_ext.dart";
 import "package:zad_al_muslim/core/extensions/sizes_ext.dart";
 import "package:zad_al_muslim/core/common/providers/theme_provider.dart";
 
@@ -36,18 +37,10 @@ class SettingCards extends ConsumerWidget {
     this.subText,
   });
 
-  // checkTheme
-  Color checkTheme({
-    required themeMode,
-    required lightColor,
-    required darkColor,
-  }) {
-    return themeMode == ThemeMode.light ? lightColor : darkColor;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
     Color? bgColor;
     if (forgroundColor == Colors.blue) {
       bgColor = Colors.blue.shade100;
@@ -92,9 +85,9 @@ class SettingCards extends ConsumerWidget {
                       return Icon(
                         iconData,
                         size: context.witdthScreen * 0.08,
-                        color:
-                            forgroundColor ??
-                            Theme.of(context).colorScheme.primary,
+                        color: isDark
+                            ? context.color.onSurface.withValues(alpha: .95)
+                            : context.color.scrim.withValues(alpha: .8),
                       );
                     },
                   ),
@@ -139,20 +132,12 @@ class SettingCards extends ConsumerWidget {
               else if (trallingIcon != null)
                 Icon(
                   trallingIcon,
-                  color: checkTheme(
-                    themeMode: themeMode,
-                    lightColor: Colors.grey.shade400,
-                    darkColor: Colors.grey.shade700,
-                  ),
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
                 )
               else
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: checkTheme(
-                    themeMode: themeMode,
-                    lightColor: Colors.grey.shade400,
-                    darkColor: Colors.grey.shade700,
-                  ),
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
                 ),
             ],
           ),
