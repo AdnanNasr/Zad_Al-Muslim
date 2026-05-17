@@ -167,7 +167,7 @@ class TafsserItemState extends State<TafsserItem> {
     if (isDownloading) {
       return Container(
         decoration: BoxDecoration(
-          color: context.color.primaryContainer.withValues(alpha: 0.5),
+          color: context.color.primary.withValues(alpha: .3),
           shape: BoxShape.circle,
         ),
         padding: EdgeInsets.all(8.w),
@@ -191,7 +191,7 @@ class TafsserItemState extends State<TafsserItem> {
               style: TextStyle(
                 fontSize: 10.sp,
                 fontWeight: FontWeight.bold,
-                color: context.color.primary,
+                color: context.color.onSurface,
               ),
             ),
           ],
@@ -201,7 +201,7 @@ class TafsserItemState extends State<TafsserItem> {
 
     return Container(
       decoration: BoxDecoration(
-        color: context.color.primaryContainer.withValues(alpha: 0.5),
+        color: context.color.primary.withValues(alpha: .3),
         shape: BoxShape.circle,
       ),
       child: IconButton(

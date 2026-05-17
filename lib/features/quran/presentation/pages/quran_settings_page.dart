@@ -6,6 +6,7 @@ import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/widgets/quran_view_type_dialog.dart';
@@ -81,7 +82,8 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
                         color: selectedColor,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.grey.withValues(alpha: 0.3),
+                          color: context.color.onSurface.withValues(alpha: 0.4),
+                          width: 1.5,
                         ),
                       ),
                     ),
