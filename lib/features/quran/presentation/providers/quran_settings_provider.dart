@@ -71,7 +71,8 @@ class QuranSettingsNotifier extends StateNotifier<QuranSettings> {
       'is_daily_reminder_enabled_key';
   static const String _dailyReminderTimeKey = 'daily_reminder_time_key';
   static const String _quranViewTypeKey = 'quran_view_type_key';
-  static const String _quranVerticalFontSizeKey = 'quran_vertical_font_size_key';
+  static const String _quranVerticalFontSizeKey =
+      'quran_vertical_font_size_key';
 
   QuranSettingsNotifier(this._prefs)
     : super(

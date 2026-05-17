@@ -159,6 +159,7 @@ class BodyContent extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 3.5.h),
                 Text(
                   _getGreeting(),
                   style: TextStyle(

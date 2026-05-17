@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_tap_handler.dart';
+import 'package:zad_al_muslim/core/utils/notifications/pending_notification_navigation.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
 
 class CustomNavigationBar extends ConsumerStatefulWidget {
@@ -21,20 +23,34 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
   final List<Widget> _pages = [const HomePage(), const SettingsPage()];
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final payload = PendingNotificationNavigation.payload;
+
+      if (payload != null) {
+        PendingNotificationNavigation.payload = null;
+        NotificationTapHandler.handle(payload);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeProvider);
     final isLight = themeMode == ThemeMode.light;
     final themeColor = Theme.of(context).colorScheme;
     final local = AppLocalizations.of(context)!;
     Color getInactiveColor() {
-      return themeColor.primary.withValues(alpha: .8);
+      return themeColor.onSurface.withValues(alpha: .8);
     }
 
     return Scaffold(
       extendBody: true,
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.fromLTRB(20.w, 0, 20.w, 25.h),
+        margin: EdgeInsets.fromLTRB(10.w, 0, 10.w, 25.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30.r),
           boxShadow: [
@@ -55,7 +71,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
                     .withValues(alpha: isLight ? 0.9 : 0.9),
                 borderRadius: BorderRadius.circular(30.r),
                 border: Border.all(
-                  color: (themeColor.outline).withValues(alpha: 0.2),
+                  color: (themeColor.primary).withValues(alpha: 0.3),
                   width: 1.2,
                 ),
               ),
@@ -68,8 +84,8 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
                       fontSize: 12.sp,
                       fontFamily: "Cairo",
                       fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.w500,
+                          ? FontWeight.w900
+                          : FontWeight.w700,
                       color: isSelected
                           ? themeColor.primary
                           : getInactiveColor(),

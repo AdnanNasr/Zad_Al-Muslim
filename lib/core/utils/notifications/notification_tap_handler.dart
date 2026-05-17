@@ -14,16 +14,12 @@ class NotificationTapHandler {
     try {
       final db = IsarDb.database;
       if (db != null) {
-        final marks = await db.marks.where().findAll();
-        if (marks.isNotEmpty) {
-          page = marks.last.pageNumber;
+        final marks = await db.marks.where().sortByPageNumberDesc().findFirst();
+        if (marks != null) {
+          page = marks.pageNumber;
         }
       }
     } catch (_) {}
-
-    while (appNavigatorKey.currentState == null) {
-      await Future.delayed(const Duration(milliseconds: 150));
-    }
 
     appNavigatorKey.currentState?.push(
       MaterialPageRoute(builder: (_) => QuranPages(pageNumber: page)),
