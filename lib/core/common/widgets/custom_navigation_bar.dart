@@ -25,7 +25,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
   @override
   void initState() {
     super.initState();
-
+    // The user is redirected to the Quran page if they click on the daily Quran reading notification
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final payload = PendingNotificationNavigation.payload;
 

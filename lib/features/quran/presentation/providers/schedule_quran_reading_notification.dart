@@ -2,13 +2,14 @@ import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_service.dart';
 import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
 import 'package:zad_al_muslim/domain/entities/prayer_time.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 class ScheduleQuranReadingNotification {
   static const int notificationId = 9999;
-  
+
   static final List<Map<String, String>> messages = [
     {
       'title': 'أنِر يومك بالقرآن 📖',
@@ -16,11 +17,13 @@ class ScheduleQuranReadingNotification {
     },
     {
       'title': 'أحب الأعمال إلى الله.. ✨',
-      'body': 'قليلٌ دائم خير من كثير منقطع. دقائق مع وردك ستصنع فرقاً في يومك.',
+      'body':
+          'قليلٌ دائم خير من كثير منقطع. دقائق مع وردك ستصنع فرقاً في يومك.',
     },
     {
       'title': 'طمأنينة لروحك 🌿',
-      'body': '"ألا بذكر الله تطمئن القلوب".. حان موعد وردك، استقطع وقتاً لنفسك مع كلام الله.',
+      'body':
+          '"ألا بذكر الله تطمئن القلوب".. حان موعد وردك، استقطع وقتاً لنفسك مع كلام الله.',
     },
     {
       'title': 'وردك القرآني ⚡',
@@ -32,7 +35,7 @@ class ScheduleQuranReadingNotification {
     required bool isEnabled,
     required String? timeString,
   }) async {
-    final notifications = FlutterLocalNotificationsPlugin();
+    final notifications = NotificationService.plugin;
 
     if (!isEnabled) {
       await notifications.cancel(id: notificationId);
@@ -51,9 +54,11 @@ class ScheduleQuranReadingNotification {
       // إعداد افتراضي: بعد صلاة الفجر بنصف ساعة
       final repo = sl<IPrayerRepository>();
       final now = DateTime.now();
-      
+
       final todayPrayers = await repo.getPrayersForDay(now);
-      final fajr = todayPrayers.where((p) => p.prayerName == PrayerName.fajr).firstOrNull;
+      final fajr = todayPrayers
+          .where((p) => p.prayerName == PrayerName.fajr)
+          .firstOrNull;
 
       if (fajr != null) {
         final fajrLocal = fajr.time;
@@ -75,7 +80,7 @@ class ScheduleQuranReadingNotification {
     }
 
     final randomData = messages[Random().nextInt(messages.length)];
-    
+
     // إنشاء تكرار يومي في التوقيت المحسوب
     final tz.TZDateTime nowTz = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
@@ -86,7 +91,7 @@ class ScheduleQuranReadingNotification {
       targetHour,
       targetMinute,
     );
-    
+
     if (scheduledDate.isBefore(nowTz)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
@@ -111,7 +116,9 @@ class ScheduleQuranReadingNotification {
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'quran_reading_reminder',
     );
-    
-    AppLogger.logger.i("تم جدولة ورد القرآن يومياً الساعة $targetHour:$targetMinute");
+
+    AppLogger.logger.i(
+      "تم جدولة ورد القرآن يومياً الساعة $targetHour:$targetMinute",
+    );
   }
 }

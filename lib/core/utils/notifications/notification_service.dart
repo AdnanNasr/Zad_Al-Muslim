@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/core/utils/notifications/pending_notification_navigation.dart';
 import 'notification_tap_handler.dart';
 
@@ -21,8 +22,11 @@ class NotificationService {
 
     await _plugin.initialize(
       settings: settings,
-      onDidReceiveNotificationResponse: (response) {
-        NotificationTapHandler.handle(response.payload);
+
+      onDidReceiveNotificationResponse: (response) async {
+        AppLogger.logger.i("تم قراءة إشعار ورد القرآن اليومي والتطبيق يعمل");
+        await NotificationTapHandler.handle(response.payload);
+        PendingNotificationNavigation.payload = null;
       },
     );
 
