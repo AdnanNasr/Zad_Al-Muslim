@@ -2,7 +2,7 @@
   <img src="assets/images/ic_launcher_foreground.png" alt="Zad Al-Muslim Logo" width="300"/>
 
   # Zad Al-Muslim (زاد المسلم)
-
+<br>
   **تطبيق إسلامي شامل وعالي الأداء**
   **A Comprehensive, High-Performance Islamic Application**
 
