@@ -1,164 +1,111 @@
-# زاد المسلم - Zad Al-Muslim
-
 <div align="center">
+  <img src="assets/images/app_logo.png" alt="Zad Al-Muslim Logo" width="150"/>
 
-![Noor Bayan Logo](assets/images/ic_launcher_foreground.png)
+  # Zad Al-Muslim (زاد المسلم)
+  
+  **A Comprehensive, High-Performance Islamic Application**
 
-### تطبيق إسلامي شامل مطور بأحدث التقنيات 🕌
-### A Comprehensive Islamic App Built with Modern Tech 🌟
+  [![Flutter](https://img.shields.io/badge/Flutter-3.9-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+  [![Dart](https://img.shields.io/badge/Dart-3.9-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+  [![Clean Architecture](https://img.shields.io/badge/Architecture-Clean_Architecture-FF9900?style=for-the-badge)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+  [![State Management](https://img.shields.io/badge/State-Riverpod-005571?style=for-the-badge)](https://riverpod.dev)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.9-blue?style=for-the-badge&logo=flutter)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.9-blue?style=for-the-badge&logo=dart)](https://dart.dev)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android%20|%20iOS-brightgreen?style=for-the-badge)](https://flutter.dev)
-
-[نسخة عربية](#الوصف-العربي) • [English Version](#english-description)
-
+  [العربية](#-النسخة-العربية) | [English](#-english-documentation)
 </div>
 
 ---
 
-## 🌍 الوصف العربي
+## 🌍 النسخة العربية
 
-**زاد المسلم** هو رفيقك المسلم اليومي المتكامل. تم تطويره باستخدام إطار العمل **Flutter** وباتباع منهجية **المعمارية النظيفة (Clean Architecture)** لضمان الأداء العالي، الاستدامة، وسهولة التوسع. يوفر التطبيق تجربة مستخدم فريدة تجمع بين جمال التصميم وعمق المحتوى.
+### 🚀 نظرة عامة
+**زاد المسلم** هو تطبيق إسلامي متكامل تم بناؤه بمعايير هندسية احترافية ليقدم تجربة مستخدم خالية من العيوب وسريعة الاستجابة. يعتمد التطبيق على إطار عمل **Flutter** ويتبع منهجية **المعمارية النظيفة (Clean Architecture)**، مما يضمن أداءً فائقاً وقابلية عالية للصيانة والتطوير. يخدم التطبيق احتياجات المسلم اليومية من قراءة القرآن، الاستماع للتلاوات، تصفح الأحاديث، مواقيت الصلاة، تحديد القبلة، والأذكار.
 
-### ✨ الميزات الرئيسية (من الألف إلى الياء)
+### 🏗 المعمارية الهندسية
+تم تصميم المشروع بالتركيز على استدامة الكود البرمجي (Long-term Maintainability) عبر تطبيق مبدأ **فصل المهام (Separation of Concerns)**:
+- **طبقة العرض (Presentation)**: مبنية لتكون تفاعلية بالكامل باستخدام `Riverpod` لإدارة الحالة، مع دعم `Skeletonizer` لعرض حالات التحميل بسلاسة، و `FlexColorScheme` لإدارة المظاهر الديناميكية (Material 3).
+- **طبقة المجال (Domain)**: تمثل قلب التطبيق وتحتوي على كيانات الأعمال (Entities) وحالات الاستخدام (UseCases). هذه الطبقة مجردة تماماً من أي اعتماديات خارجية أو إطارات عمل.
+- **طبقة البنية التحتية (Infrastructure)**: تتعامل مع البيانات القادمة من الشبكة عبر `Dio` أو قاعدة البيانات المحلية فائقة السرعة `Isar`. يتم التعامل مع الأخطاء برمجياً بشكل وظيفي عبر (Functional Error Handling).
+- **حقن الاعتماديات (DI)**: استخدام مكتبة `GetIt` لإدارة حقن الاعتماديات بكفاءة عالية مركزياً.
 
-#### 📖 القرآن الكريم (قراءة وتدبر)
-*   **عرض فائق الجودة**: صفحات قرآنية واضحة جداً مأخوذة من مجمع الملك فهد.
-*   **تخصيص كامل للخطوط**: اختر بين خط (Hafs) أو الخط العثماني (Naskh) بما يناسب بصرك.
-*   **خلفيات القراءة الذكية**: أربعة أنماط مختلفة (أبيض، سبيا "ورقي"، ليلي، ورمادي) لراحة العين في كافة ظروف الإضاءة.
-*   **البحث المتقدم**: محرك بحث سريع ودقيق في الآيات والسور.
-*   **العلامات المرجعية**: حفظ آخر ما قرأت والرجوع إليه بلمسة واحدة.
-*   **التفسير المتكامل**: تفسير الجلالين مدمج، مع إمكانية تحميل كتب تفسير إضافية من السحابة.
+### ⚡ أبرز التقنيات
+- **المعالجة في الخلفية (Isolates)**: معالجة نصوص القرآن وبناء فهارس البحث في مسارات خلفية (Background Isolates) لضمان عدم تأثر واجهة المستخدم (UI) والحفاظ على معدل 60 إطاراً في الثانية.
+- **محرك صوتي متطور**: تكامل عميق مع `just_audio_background` لتشغيل التلاوات في الخلفية مع مزامنة التمرير التلقائي للآيات ودعم نظام التخزين المؤقت الذكي (Caching).
+- **قواعد بيانات فائقة الأداء**: الاعتماد على محرك `Isar` (مبني على C++) لضمان استعلام لحظي من آلاف الأحاديث والأذكار باستخدام الفهارس المركبة (Composite Indexes).
+- **خوارزميات فلكية وجغرافية**: حساب مواقيت الصلاة بدون إنترنت باستخدام معادلات فلكية دقيقة (`Adhan`) بالإضافة إلى بوصلة مكانية متكاملة لتحديد القبلة.
 
-#### 🎙️ القرآن المرتل (الاستماع)
-*   **نخبة القراء**: مكتبة واسعة تضم أشهر قراء العالم الإسلامي.
-*   **الاستماع في الخلفية**: ميزة التشغيل المتواصل حتى عند إغلاق الشاشة.
-*   **المزامنة التلقائية (Auto-Scroll)**: شاشة القراءة تتحرك تلقائياً مع تلاوة القارئ.
-*   **إدارة التحميل**: نظام ذكي لإدارة الملفات الصوتية وتخزينها مؤقتاً (Cache) لتوفير البيانات.
-*   **التحكم في الفواصل**: إمكانية إضافة تأخير زمني بين الآيات لأغراض الحفظ والتدبر.
-
-#### 📚 الأحاديث النبوية
-*   **صحيح البخاري**: قاعدة بيانات ضخمة تضم آلاف الأحاديث.
-*   **البحث الذكي**: ميزة البحث بتجاهل التشكيل (Search Diacritic-Insensitive) لسهولة الوصول للحديث.
-*   **المشاركة والنسخ**: سهولة نسخ الحديث أو مشاركته مع الآخرين.
-
-#### 📿 الأذكار اليومية
-*   **موسوعة الأذكار**: أذكار الصباح، المساء، الاستيقاظ، النوم، وغيرها الكثير.
-*   **السبحة الإلكترونية**: عداد تفاعلي لكل ذكر مع اهتزاز بسيط عند الانتهاء.
-*   **التوثيق والمراجع**: عرض المصدر لكل ذكر مع إمكانية نسخ المرجع.
-
-#### 🕌 مواقيت الصلاة والقبلة
-*   **دقة متناهية**: حساب المواقيت بناءً على موقعك الجغرافي باستخدام مكتبة (Adhan).
-*   **العد التنازلي**: عرض الوقت المتبقي لأقرب صلاة بدقة.
-*   **تنبيهات ذكية**: إشعارات لكل صلاة مع إمكانية التخصيص.
-*   **القبلة التفاعلية**: بوصلة دقيقة مبنية على الخرائط (Map-based Compass) لتحديد الاتجاه في أي مكان.
-
-#### ⚙️ الإعدادات والتخصيص
-*   **نظام الألوان**: تخصيص لون التطبيق الأساسي بالكامل باستخدام (FlexColorScheme).
-*   **اللغات**: دعم كامل للعربية، الإنجليزية، والألمانية.
-*   **منع انطفاء الشاشة**: خيلار (Wake-lock) للحفاظ على الشاشة مفتوحة أثناء القراءة.
+### 💻 خطوات التشغيل للتطوير
+1. **جلب الحزم**: `flutter pub get`
+2. **توليد الأكواد (مهم جداً)**: `flutter pub run build_runner build --delete-conflicting-outputs`
+3. **تشغيل التطبيق**: `flutter run`
 
 ---
 
-### 🏗️ المعمارية التقنية (Technical Architecture)
+## 📖 English Documentation
 
-يتبع المشروع معمارية **Clean Architecture** لضمان فصل المهام (Separation of Concerns):
+### 🚀 Overview
+**Zad Al-Muslim** is an enterprise-grade Islamic utility application crafted with a strict adherence to modern software engineering principles. Built on the Flutter framework, the application utilizes **Clean Architecture** to ensure modularity, scalability, and extreme testability. It serves as an all-encompassing digital companion for Muslims, delivering features such as Quran reading, audio recitations, Hadith databases, prayer times, Qibla direction, and daily Adkar.
 
-*   **Core**: يحتوي على المكونات المشتركة، الثوابت، قواعد البيانات، وإدارة المظاهر.
-*   **Features**: كل ميزة (Quran, Hadith, etc.) مستقلة بذاتها وتتكون من:
-    *   **Data**: النماذج (Models) ومصادر البيانات والمستودعات.
-    *   **Domain**: الكيانات (Entities) وحالات الاستخدام (Use-cases).
-    *   **Presentation**: واجهات المستخدم وإدارة الحالة (Riverpod).
+### 🏗 Architecture & Engineering
+This project was developed with a focus on long-term maintainability. It heavily enforces **Separation of Concerns (SoC)** by dividing the codebase into orthogonal layers:
 
-### 🛠️ التقنيات المستخدمة (Tech Stack)
+- **Presentation Layer**: Built with Flutter and fully reactive using `Riverpod` for state management. Uses `Skeletonizer` for seamless loading states and `FlexColorScheme` for a dynamic, Material 3 compliant theming engine.
+- **Domain Layer**: The core business logic, encapsulating `Entities`, `UseCases`, and Repository Interfaces. This layer is entirely pure Dart and framework-agnostic.
+- **Infrastructure / Data Layer**: Implements repository contracts. Handles API networking via `Dio`, local NoSQL storage via `Isar Database`, and robust error handling using functional paradigms (e.g., `dartz` Either).
+- **Core / DI**: Utilizes `GetIt` as a Service Locator for robust Dependency Injection, alongside centralized configuration, theming, and routing.
 
-*   **Riverpod**: لإدارة الحالة (State Management) بشكل رد فعلي وقوي.
-*   **Isar Database**: قاعدة بيانات NoSQL فائقة السرعة لتخزين الأذكار، الأحاديث، والمقالات.
-*   **Just Audio**: لتجربة استماع احترافية وسلسة.
-*   **Skeletonizer**: لتوفير واجهات تحميل (Shimmer) أنيقة وعصرية.
-*   **Flex Color Scheme**: لإدارة السمات والألوان بشكل متطور.
+### ⚡ Technical Highlights
+- **Isolate-Driven Indexing**: Employs background isolates (`QuranSearchIndexer`) to parse and index Quranic text without blocking the main UI thread, ensuring 60/120 FPS rendering during complex operations.
+- **Advanced Audio Engine**: Integrates `just_audio` and `just_audio_background` to provide a robust background audio daemon with intelligent caching, auto-scrolling synchronization, and system media controls.
+- **High-Performance Persistence**: Leverages `Isar Database` (C++ backed NoSQL) for instantaneous querying of tens of thousands of Hadiths and Adkar, utilizing composite indexes.
+- **Geospatial Processing**: Offline prayer time calculation via mathematical astronomical algorithms (`Adhan` library) combined with geospatial mapping for Qibla direction.
+- **Lifecycle Awareness**: Implements rigorous app lifecycle observers (`AppLifecycleObserver`) to manage memory constraints and background resource synchronization gracefully.
 
----
+### ✨ Core Features
+- **Holy Quran**: High-fidelity Uthmani typography, multi-theme reading modes (Sepia, Dark, Light), bookmarking, and integrated Jalalayn Tafseer.
+- **Audio Recitations**: Background playback, verse-by-verse sync, gapless playback, and configurable inter-verse delays for memorization.
+- **Hadith Library**: Comprehensive Sahih Bukhari integration with diacritic-insensitive search algorithms.
+- **Daily Adkar**: Morning/evening supplications with a haptic-feedback digital Tasbih counter.
+- **Prayer & Qibla**: Highly accurate localized prayer schedules with offline geocoding and a map-integrated compass.
 
-### 🚀 التشغيل والتثبيت
+### 🛠 Tech Stack
+| Category | Libraries / Tools |
+|---|---|
+| **Core Framework** | Flutter 3.9, Dart 3.9 |
+| **State & DI** | `flutter_riverpod`, `riverpod_annotation`, `get_it` |
+| **Database** | `isar`, `isar_flutter_libs`, `shared_preferences` |
+| **Networking** | `dio`, `internet_connection_checker_plus` |
+| **Audio** | `just_audio`, `just_audio_background` |
+| **Location & Math** | `geolocator`, `geocoding`, `adhan`, `flutter_compass` |
+| **UI & Styling** | `flex_color_scheme`, `skeletonizer`, `flutter_screenutil` |
+| **Background & Notifications**| `flutter_local_notifications`, `timezone`, `wakelock_plus` |
 
-1. تأكد من تثبيت **Flutter SDK** (الإصدار 3.9 فما فوق).
-2. قم باستنساخ المشروع:
+### 💻 Getting Started
+#### Prerequisites
+- Flutter SDK `^3.9.2`
+- Android Studio / Xcode
+
+#### Installation
+1. **Clone the repository**
    ```bash
    git clone https://github.com/AdnanNasr/noor_bayan.git
+   cd noor_bayan
    ```
-3. تثبيت المكتبات:
+2. **Fetch dependencies**
    ```bash
    flutter pub get
    ```
-4. توليد الكود (ضروري لقاعدة البيانات وRiverpod):
+3. **Generate required code (Riverpod & Isar)**
    ```bash
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
-5. التشغيل:
+4. **Run the application**
    ```bash
    flutter run
    ```
 
 ---
-
-## 🌍 English Description
-
-**Zad Al-Muslim** is an all-in-one Islamic companion app. Developed with **Flutter** using **Clean Architecture** principles, it ensures high performance, maintainability, and scalability. The app offers a unique user experience by blending visual beauty with deep spiritual content.
-
-### ✨ Key Features (A to Z)
-
-#### 📖 Holy Quran (Reading)
-*   **Ultra High-Quality**: Crystal clear Quran pages from King Fahd Complex.
-*   **Font Customization**: Choose between Hafs or Naskh (Uthmanic) fonts.
-*   **Reading Backgrounds**: 4 themes (White, Sepia, Night, and Gray) for eye comfort.
-*   **Advanced search**: Fast and accurate search across verses and surahs.
-*   **Bookmarks**: Save your last read position and favorite verses.
-*   **Integrated Tafseer**: Built-in Jalalayn, with the ability to download more from the cloud.
-
-#### 🎙️ Quran Moratal (Audio)
-*   **Top Reciters**: A wide library of the world's most famous reciters.
-*   **Background Playback**: Keep listening even when the screen is off or app is minimized.
-*   **Auto-Scroll**: The reading page automatically scrolls in sync with the recitation.
-*   **Offline Support**: Smart caching system for audio files to save your data.
-*   **Verse Delay**: Customizable interval between verses for memorization and reflection.
-
-#### 📚 Prophetic Hadith
-*   **Sahih Bukhari**: A massive database containing thousands of authentic hadith.
-*   **Smart Search**: Diacritic-insensitive search for easy access.
-*   **Share & Copy**: Share the sunnah easily with friends and family.
-
-#### 📿 Daily Adkar
-*   **Dhikr Encyclopedia**: Morning, Evening, Wake-up, Sleep adkar, and more.
-*   **Digital Tasbih**: Interactive counter with haptic feedback.
-*   **References**: View and copy the source/hadith for every dhikr.
-
-#### 🕌 Prayer Times & Qibla
-*   **Hyper-Accurate**: Calculations based on your GPS location using the (Adhan) library.
-*   **Countdown**: Precise timer showing time remaining for the next prayer.
-*   **Smart Alerts**: Customizable notifications for each prayer time.
-*   **Map-based Qibla**: An interactive compass integrated with maps for worldwide accuracy.
-
-#### ⚙️ Settings & Customization
-*   **Theme Engine**: Fully customize the app colors using (FlexColorScheme).
-*   **Multilingual**: Support for Arabic, English, and German.
-*   **Screen Wake-lock**: Option to keep the screen on during extended reading sessions.
-
----
-
-### 🎨 Design Philosophy
-*   **Modern Aesthetics**: Premium UI with Glassmorphism and smooth animations.
-*   **User Centric**: Responsive design that works perfectly on all screen sizes.
-*   **Responsive State**: Using Skeletonizer for beautiful loading states.
-
----
-
 <div align="center">
-
-Made with ❤️ by Adnan
-
-[⬆ Back to top](#نور-البيان---noor-bayan)
-
+  <sub>Developed with standard software engineering practices.</sub><br>
+  <b>© 2026 Adnan Nasr</b>
 </div>
