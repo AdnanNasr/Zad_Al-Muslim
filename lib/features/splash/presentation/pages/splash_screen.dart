@@ -116,7 +116,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
       // الانتقال للوجهة الصحيحة
       final hasSeen = await OnboardingInit.hasSeen();
-      
+
       await Future.delayed(const Duration(milliseconds: 600));
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(
@@ -161,7 +161,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.r),
               child: Image.asset(
-                "assets/images/app_logo.png",
+                "assets/images/ic_launcher_foreground.png",
                 width: 300.w,
                 height: 300.w,
               ),
