@@ -19,27 +19,26 @@ class _PrivcyPolicyPageState extends State<PrivcyPolicyPage> {
   @override
   void initState() {
     super.initState();
-    webViewController =
-        WebViewController() // TODO: handle errors when click on email links
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onNavigationRequest: (request) async {
-                final url = request.url;
+    webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (request) async {
+            final url = request.url;
 
-                if (url.startsWith("mailto:")) {
-                  await UrlLauncherHandler.openEmail(url);
-                  return NavigationDecision.prevent;
-                }
-                return NavigationDecision.navigate;
-              },
-              onWebResourceError: (WebResourceError error) {
-                AppLogger.logger.e("فشل تحميل الصفحة: ${error.description}");
-                AppLogger.logger.e("نوع الخطأ: ${error.errorType}");
-              },
-            ),
-          )
-          ..loadRequest(Uri.parse(currentUrl));
+            if (url.startsWith("mailto:")) {
+              await UrlLauncherHandler.openEmail(url);
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+          onWebResourceError: (WebResourceError error) {
+            AppLogger.logger.e("فشل تحميل الصفحة: ${error.description}");
+            AppLogger.logger.e("نوع الخطأ: ${error.errorType}");
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(currentUrl));
   }
 
   @override
