@@ -94,7 +94,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 18.h),
                     Stack(
                       alignment: Alignment.center,
                       clipBehavior: Clip.none,
@@ -177,7 +177,7 @@ Widget _buildActionButton({
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.r),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
