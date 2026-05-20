@@ -5,7 +5,6 @@
   
   
   **تطبيق إسلامي شامل وعالي الأداء**
-
   
   **A Comprehensive, High-Performance Islamic Application**
 
