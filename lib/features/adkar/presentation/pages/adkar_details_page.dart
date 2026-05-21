@@ -284,7 +284,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                           controller: scrollController,
                           padding: EdgeInsets.all(24.w),
                           children: [
-                            SelectableText(
+                            Text(
                               widget.text,
                               textAlign: TextAlign.right,
                               style: TextStyle(

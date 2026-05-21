@@ -93,7 +93,7 @@ class HadithModalBottom extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    child: SelectableText(
+                    child: Text(
                       hadith.text,
                       textAlign: TextAlign.justify,
                       style: TextStyle(
