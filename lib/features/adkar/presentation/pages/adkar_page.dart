@@ -304,7 +304,7 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
             itemCount: displayedText.length,
             separatorBuilder: (context, index) => SizedBox(height: 12.h),
             itemBuilder: (context, index) {
-              return SelectableText(
+              return Text(
                 displayedText[index],
                 textAlign: TextAlign.right,
                 style: TextStyle(
