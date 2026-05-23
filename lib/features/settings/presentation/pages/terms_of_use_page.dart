@@ -47,7 +47,7 @@ class _TermsOfUsePageState extends State<TermsOfUsePage> {
       appBar: const CustomAppBar(
         title: "اتفاقية الاستخدام",
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: WebViewWidget(controller: webViewController),
     );

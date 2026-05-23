@@ -26,7 +26,7 @@ import 'package:zad_al_muslim/features/quran/presentation/widgets/index_surah_me
 import 'package:zad_al_muslim/features/quran/presentation/widgets/mini_audio_player.dart';
 import 'package:zad_al_muslim/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
 import 'package:zad_al_muslim/features/quran/presentation/widgets/quran_page_app_bar.dart';
-import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/constants/surah_names.dart';
 import 'package:flutter/services.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';

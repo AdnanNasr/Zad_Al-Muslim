@@ -27,9 +27,9 @@ final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>(
 
     final now = DateTime.now();
     final todayDate = DateTime(now.year, now.month, now.day);
-    AppLogger.logger.e(
-      "todayPrayerTimesProvider: جاري طلب مواقيت اليوم: $todayDate",
-    );
+    // AppLogger.logger.e(
+    //   "todayPrayerTimesProvider: جاري طلب مواقيت اليوم: $todayDate",
+    // );
 
     final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
     final adjustments = adjustmentsAsync.valueOrNull;

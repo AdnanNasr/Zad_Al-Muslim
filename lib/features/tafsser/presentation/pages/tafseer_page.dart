@@ -34,7 +34,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       appBar: const CustomAppBar(
         title: "كتب التفسير",
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: booksAsync.when(
         data: (books) {

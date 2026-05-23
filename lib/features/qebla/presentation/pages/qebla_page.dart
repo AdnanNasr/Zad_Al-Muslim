@@ -80,7 +80,7 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
       appBar: const CustomAppBar(
         title: 'اتجاه القبلة',
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: SafeArea(
         child: compassSupport.when(

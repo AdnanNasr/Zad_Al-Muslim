@@ -12,7 +12,7 @@ class NotificationsPage extends StatelessWidget {
       appBar: const CustomAppBar(
         title: "مركز الإشعارات",
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: Center(
         child: Text(

@@ -38,7 +38,7 @@ class _HadithPageState extends ConsumerState<HadithPage> {
           // customVoid: () => ref.read(hadithProvider.notifier).clearFilters(),
           title: l10n.sunah_hadeth,
           center: true,
-          profile: false,
+          themeMode: false,
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(70.h),
             child: Container(

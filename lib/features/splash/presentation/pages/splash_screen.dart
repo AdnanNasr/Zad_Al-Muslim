@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:isar/isar.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/location_status_provider.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
@@ -130,12 +131,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeMode themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
     return Scaffold(
-      body: SizedBox(width: double.infinity, child: _buildLoadingState()),
+      body: SizedBox(
+        width: double.infinity,
+        child: _buildLoadingState(isDark: isDark),
+      ),
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildLoadingState({required bool isDark}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -164,6 +170,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 "assets/images/ic_launcher_foreground.png",
                 width: 300.w,
                 height: 300.w,
+                color: context.color.primary,
               ),
             ),
           ),
@@ -209,9 +216,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               SizedBox(height: 10.h),
 
               Text(
-                "${(_progress * 100).toInt()}%",
+                "${(_progress * 100).toInt()}%", // TODO
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: isDark
+                      ? context.color.onSurface
+                      : context.color.onSurface,
                   fontSize: 14.sp,
                   fontFamily: "Cairo",
                 ),

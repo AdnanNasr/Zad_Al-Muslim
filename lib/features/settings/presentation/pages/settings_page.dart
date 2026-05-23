@@ -176,7 +176,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.settings,
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: SingleChildScrollView(
         child: Padding(

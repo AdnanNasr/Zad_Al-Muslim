@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:zad_al_muslim/features/adkar/data/models/adkar_model.dart';
+import 'package:zad_al_muslim/features/adkar/data/models/dhikr_state_model.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/data/models/quran_models.dart';
 import 'package:zad_al_muslim/features/hadith/data/models/hadith_model.dart';
@@ -28,6 +29,7 @@ class IsarDb {
       PrayerAdjustmentsModelSchema,
       AdkarModelSchema,
       PrayerTimeEntitySchema,
+      DhikrStateModelSchema,
     ], directory: dir.path);
     AppLogger.logger.i("✅ تم تهيئة قاعدة البيانات بنجاح");
     return database!;

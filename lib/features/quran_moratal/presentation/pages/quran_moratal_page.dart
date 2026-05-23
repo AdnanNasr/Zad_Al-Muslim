@@ -14,11 +14,12 @@ class QuranMoratalPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
     return Scaffold(
       appBar: const CustomAppBar(
         title: "القرآن مُرتل",
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: AnimationLimiter(
         child: ListView.separated(
@@ -38,7 +39,7 @@ class QuranMoratalPage extends ConsumerWidget {
                   child: qariListTile(
                     qariData: qariData,
                     context: context,
-                    themeMode: themeMode,
+                    isDark: isDark,
                   ),
                 ),
               ),
@@ -53,7 +54,7 @@ class QuranMoratalPage extends ConsumerWidget {
 Widget qariListTile({
   required Map<String, String> qariData,
   required BuildContext context,
-  required ThemeMode themeMode,
+  required bool isDark,
 }) {
   return Material(
     color: Colors.transparent,
@@ -87,13 +88,17 @@ Widget qariListTile({
               width: 55.w,
               height: 55.w,
               decoration: BoxDecoration(
-                color: context.color.primary,
+                color: isDark
+                    ? context.color.primary.withValues(alpha: .7)
+                    : context.color.primary.withValues(alpha: .1),
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Icon(
                   Icons.spatial_audio_off_rounded,
-                  color: context.color.onPrimary,
+                  color: isDark
+                      ? context.color.onSurface
+                      : context.color.primary,
                 ),
               ),
             ),
@@ -109,7 +114,9 @@ Widget qariListTile({
                       fontSize: 15.sp,
                       fontWeight: FontWeight.bold,
                       fontFamily: "Cairo",
-                      color: context.color.primary,
+                      color: isDark
+                          ? context.color.onSurface
+                          : context.color.onSurface,
                     ),
                   ),
                   Text(
@@ -117,7 +124,10 @@ Widget qariListTile({
                     style: TextStyle(
                       fontSize: 11.sp,
                       fontFamily: "Cairo",
-                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? context.color.onSurface.withValues(alpha: .8)
+                          : context.color.onSurface,
                     ),
                   ),
                 ],
@@ -127,12 +137,14 @@ Widget qariListTile({
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: context.color.primary.withValues(alpha: 0.1),
+                color: isDark
+                    ? context.color.primary.withValues(alpha: 0.7)
+                    : context.color.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.play_arrow_rounded,
-                color: context.color.primary,
+                color: isDark ? context.color.onSurface : context.color.primary,
                 size: 24.sp,
               ),
             ),

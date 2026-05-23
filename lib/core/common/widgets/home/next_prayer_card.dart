@@ -92,20 +92,20 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                   ),
                   child: Row(
                     children: [
-                      // أيقونة الصلاة بتصميم مميز
                       Container(
                         padding: EdgeInsets.all(10.r),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.white.withValues(alpha: 0.05)
-                              : Colors.white.withValues(alpha: 0.9),
+                              ? context.color.primary.withValues(alpha: 0.1)
+                              : context.color.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(14.r),
                           border: Border.all(
                             color: context.color.primary.withValues(alpha: 0.1),
                           ),
                         ),
                         child: Icon(
-                          icon,
+                          // TODO
+                          Icons.wb_twilight,
                           size: 24.sp,
                           color: isDark ? darkModeColor : lightModeColor,
                         ),
@@ -215,6 +215,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
     return {
       'name': 'الفجر',
       'icon': Icons.wb_twilight,
+      "color": Colors.amber,
       'remaining': tomorrowFajr.difference(now),
     };
   }

@@ -956,6 +956,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 style: TextStyle(
                   color: Colors.white60,
                   fontSize: 11.sp,
+                  fontWeight: FontWeight.w600,
                   fontFamily: "Cairo",
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
 
@@ -8,7 +9,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final bool center;
   final IconData? icon;
-  final bool profile;
+  final bool themeMode; //! only for dev
   final bool isFullscreen;
   final Color? backgroundColor;
   final Widget? flexibleSpace;
@@ -22,7 +23,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required this.title,
     required this.center,
     this.icon,
-    required this.profile,
+    required this.themeMode,
     this.isFullscreen = false,
     this.backgroundColor,
     this.flexibleSpace,
@@ -34,6 +35,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ThemeMode themeMode = ref.watch(themeProvider);
     return AppBar(
       primary: true,
       // toolbarHeight: kToolbarHeight,
@@ -74,38 +76,12 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             )
           : null,
       actions: [
-        if (profile)
-          Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 300),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                            return ScaleTransition(
-                              scale: animation,
-                              child: child,
-                            );
-                          },
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return const SettingsPage();
-                      },
-                    ),
-                  );
-                },
-                icon: Icon(
-                  Icons.person,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20.sp,
-                ),
-              ),
-            ),
+        if (this.themeMode)
+          Switch(
+            value: themeMode == ThemeMode.dark,
+            onChanged: (value) async {
+              await ref.read(themeProvider.notifier).toggleTheme(themeMode);
+            },
           ),
       ],
     );

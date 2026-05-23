@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:qcf_quran/qcf_quran.dart' as qcf;
-import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/constants/surah_names.dart';
 
 class QuranSearchIndexer {
   static List<Map<String, dynamic>> cache = [];
@@ -9,7 +9,7 @@ class QuranSearchIndexer {
 
   static Future<void> initialize() async {
     if (cache.isNotEmpty) return;
-    
+
     // We run it on a separate isolate so it doesn't block app startup
     cache = await compute(_buildQuranIndexTask, null);
   }
@@ -48,10 +48,7 @@ String robustNormalizeQuranText(String input) {
   return clean
       .replaceAll(RegExp(r'[أإآاٱ]'), 'ا') // توحيد الألف وهمزة الوصل
       .replaceAll('ة', 'ه') // توحيد التاء المربوطة
-      .replaceAll(
-        RegExp(r'[يىئ]'),
-        'ى',
-      ) // توحيد الياء والألف المقصورة والنبرة
+      .replaceAll(RegExp(r'[يىئ]'), 'ى') // توحيد الياء والألف المقصورة والنبرة
       .replaceAll('ؤ', 'و')
       .replaceAll(RegExp(r'\s+'), ' ') // إزالة المسافات المزدوجة
       .trim();

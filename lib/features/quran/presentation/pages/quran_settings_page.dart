@@ -57,7 +57,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
       appBar: const CustomAppBar(
         title: "إعدادات القرآن الكريم",
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: Padding(
         padding: EdgeInsets.all(context.heightScreen * 0.015),

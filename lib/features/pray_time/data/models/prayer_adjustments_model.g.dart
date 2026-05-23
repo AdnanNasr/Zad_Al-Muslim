@@ -18,38 +18,68 @@ const PrayerAdjustmentsModelSchema = CollectionSchema(
   name: r'PrayerAdjustmentsModel',
   id: 1874310038821533155,
   properties: {
-    r'asrOffset': PropertySchema(
+    r'asrAdjustment': PropertySchema(
       id: 0,
+      name: r'asrAdjustment',
+      type: IsarType.long,
+    ),
+    r'asrOffset': PropertySchema(
+      id: 1,
       name: r'asrOffset',
       type: IsarType.long,
     ),
+    r'dhuhrAdjustment': PropertySchema(
+      id: 2,
+      name: r'dhuhrAdjustment',
+      type: IsarType.long,
+    ),
     r'dhuhrOffset': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'dhuhrOffset',
       type: IsarType.long,
     ),
+    r'fajrAdjustment': PropertySchema(
+      id: 4,
+      name: r'fajrAdjustment',
+      type: IsarType.long,
+    ),
     r'fajrOffset': PropertySchema(
-      id: 2,
+      id: 5,
       name: r'fajrOffset',
       type: IsarType.long,
     ),
     r'hasAnyAdjustment': PropertySchema(
-      id: 3,
+      id: 6,
       name: r'hasAnyAdjustment',
       type: IsarType.bool,
     ),
+    r'ishaAdjustment': PropertySchema(
+      id: 7,
+      name: r'ishaAdjustment',
+      type: IsarType.long,
+    ),
     r'ishaOffset': PropertySchema(
-      id: 4,
+      id: 8,
       name: r'ishaOffset',
       type: IsarType.long,
     ),
+    r'maghribAdjustment': PropertySchema(
+      id: 9,
+      name: r'maghribAdjustment',
+      type: IsarType.long,
+    ),
     r'maghribOffset': PropertySchema(
-      id: 5,
+      id: 10,
       name: r'maghribOffset',
       type: IsarType.long,
     ),
+    r'sunriseAdjustment': PropertySchema(
+      id: 11,
+      name: r'sunriseAdjustment',
+      type: IsarType.long,
+    ),
     r'sunriseOffset': PropertySchema(
-      id: 6,
+      id: 12,
       name: r'sunriseOffset',
       type: IsarType.long,
     )
@@ -83,13 +113,19 @@ void _prayerAdjustmentsModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.asrOffset);
-  writer.writeLong(offsets[1], object.dhuhrOffset);
-  writer.writeLong(offsets[2], object.fajrOffset);
-  writer.writeBool(offsets[3], object.hasAnyAdjustment);
-  writer.writeLong(offsets[4], object.ishaOffset);
-  writer.writeLong(offsets[5], object.maghribOffset);
-  writer.writeLong(offsets[6], object.sunriseOffset);
+  writer.writeLong(offsets[0], object.asrAdjustment);
+  writer.writeLong(offsets[1], object.asrOffset);
+  writer.writeLong(offsets[2], object.dhuhrAdjustment);
+  writer.writeLong(offsets[3], object.dhuhrOffset);
+  writer.writeLong(offsets[4], object.fajrAdjustment);
+  writer.writeLong(offsets[5], object.fajrOffset);
+  writer.writeBool(offsets[6], object.hasAnyAdjustment);
+  writer.writeLong(offsets[7], object.ishaAdjustment);
+  writer.writeLong(offsets[8], object.ishaOffset);
+  writer.writeLong(offsets[9], object.maghribAdjustment);
+  writer.writeLong(offsets[10], object.maghribOffset);
+  writer.writeLong(offsets[11], object.sunriseAdjustment);
+  writer.writeLong(offsets[12], object.sunriseOffset);
 }
 
 PrayerAdjustmentsModel _prayerAdjustmentsModelDeserialize(
@@ -99,13 +135,13 @@ PrayerAdjustmentsModel _prayerAdjustmentsModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = PrayerAdjustmentsModel();
-  object.asrOffset = reader.readLong(offsets[0]);
-  object.dhuhrOffset = reader.readLong(offsets[1]);
-  object.fajrOffset = reader.readLong(offsets[2]);
+  object.asrOffset = reader.readLong(offsets[1]);
+  object.dhuhrOffset = reader.readLong(offsets[3]);
+  object.fajrOffset = reader.readLong(offsets[5]);
   object.id = id;
-  object.ishaOffset = reader.readLong(offsets[4]);
-  object.maghribOffset = reader.readLong(offsets[5]);
-  object.sunriseOffset = reader.readLong(offsets[6]);
+  object.ishaOffset = reader.readLong(offsets[8]);
+  object.maghribOffset = reader.readLong(offsets[10]);
+  object.sunriseOffset = reader.readLong(offsets[12]);
   return object;
 }
 
@@ -123,12 +159,24 @@ P _prayerAdjustmentsModelDeserializeProp<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 4:
       return (reader.readLong(offset)) as P;
     case 5:
       return (reader.readLong(offset)) as P;
     case 6:
+      return (reader.readBool(offset)) as P;
+    case 7:
+      return (reader.readLong(offset)) as P;
+    case 8:
+      return (reader.readLong(offset)) as P;
+    case 9:
+      return (reader.readLong(offset)) as P;
+    case 10:
+      return (reader.readLong(offset)) as P;
+    case 11:
+      return (reader.readLong(offset)) as P;
+    case 12:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -233,6 +281,62 @@ extension PrayerAdjustmentsModelQueryWhere on QueryBuilder<
 extension PrayerAdjustmentsModelQueryFilter on QueryBuilder<
     PrayerAdjustmentsModel, PrayerAdjustmentsModel, QFilterCondition> {
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> asrAdjustmentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'asrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> asrAdjustmentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'asrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> asrAdjustmentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'asrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> asrAdjustmentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'asrAdjustment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
       QAfterFilterCondition> asrOffsetEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -289,6 +393,62 @@ extension PrayerAdjustmentsModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> dhuhrAdjustmentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dhuhrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> dhuhrAdjustmentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dhuhrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> dhuhrAdjustmentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dhuhrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> dhuhrAdjustmentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dhuhrAdjustment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
       QAfterFilterCondition> dhuhrOffsetEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -336,6 +496,62 @@ extension PrayerAdjustmentsModelQueryFilter on QueryBuilder<
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'dhuhrOffset',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> fajrAdjustmentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'fajrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> fajrAdjustmentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'fajrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> fajrAdjustmentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'fajrAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> fajrAdjustmentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'fajrAdjustment',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -467,6 +683,62 @@ extension PrayerAdjustmentsModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> ishaAdjustmentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ishaAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> ishaAdjustmentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ishaAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> ishaAdjustmentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ishaAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> ishaAdjustmentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ishaAdjustment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
       QAfterFilterCondition> ishaOffsetEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -523,6 +795,62 @@ extension PrayerAdjustmentsModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> maghribAdjustmentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'maghribAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> maghribAdjustmentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'maghribAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> maghribAdjustmentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'maghribAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> maghribAdjustmentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'maghribAdjustment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
       QAfterFilterCondition> maghribOffsetEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -570,6 +898,62 @@ extension PrayerAdjustmentsModelQueryFilter on QueryBuilder<
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'maghribOffset',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> sunriseAdjustmentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sunriseAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> sunriseAdjustmentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sunriseAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> sunriseAdjustmentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sunriseAdjustment',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel,
+      QAfterFilterCondition> sunriseAdjustmentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sunriseAdjustment',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -644,6 +1028,20 @@ extension PrayerAdjustmentsModelQueryLinks on QueryBuilder<
 extension PrayerAdjustmentsModelQuerySortBy
     on QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QSortBy> {
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByAsrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'asrAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByAsrAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'asrAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       sortByAsrOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'asrOffset', Sort.asc);
@@ -658,6 +1056,20 @@ extension PrayerAdjustmentsModelQuerySortBy
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByDhuhrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dhuhrAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByDhuhrAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dhuhrAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       sortByDhuhrOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhuhrOffset', Sort.asc);
@@ -668,6 +1080,20 @@ extension PrayerAdjustmentsModelQuerySortBy
       sortByDhuhrOffsetDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhuhrOffset', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByFajrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'fajrAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByFajrAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'fajrAdjustment', Sort.desc);
     });
   }
 
@@ -700,6 +1126,20 @@ extension PrayerAdjustmentsModelQuerySortBy
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByIshaAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ishaAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByIshaAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ishaAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       sortByIshaOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ishaOffset', Sort.asc);
@@ -714,6 +1154,20 @@ extension PrayerAdjustmentsModelQuerySortBy
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByMaghribAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maghribAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortByMaghribAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maghribAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       sortByMaghribOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghribOffset', Sort.asc);
@@ -724,6 +1178,20 @@ extension PrayerAdjustmentsModelQuerySortBy
       sortByMaghribOffsetDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghribOffset', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortBySunriseAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sunriseAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      sortBySunriseAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sunriseAdjustment', Sort.desc);
     });
   }
 
@@ -745,6 +1213,20 @@ extension PrayerAdjustmentsModelQuerySortBy
 extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
     PrayerAdjustmentsModel, PrayerAdjustmentsModel, QSortThenBy> {
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByAsrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'asrAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByAsrAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'asrAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       thenByAsrOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'asrOffset', Sort.asc);
@@ -759,6 +1241,20 @@ extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByDhuhrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dhuhrAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByDhuhrAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dhuhrAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       thenByDhuhrOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhuhrOffset', Sort.asc);
@@ -769,6 +1265,20 @@ extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
       thenByDhuhrOffsetDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhuhrOffset', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByFajrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'fajrAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByFajrAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'fajrAdjustment', Sort.desc);
     });
   }
 
@@ -815,6 +1325,20 @@ extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByIshaAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ishaAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByIshaAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ishaAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       thenByIshaOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ishaOffset', Sort.asc);
@@ -829,6 +1353,20 @@ extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByMaghribAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maghribAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenByMaghribAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maghribAdjustment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
       thenByMaghribOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghribOffset', Sort.asc);
@@ -839,6 +1377,20 @@ extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
       thenByMaghribOffsetDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'maghribOffset', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenBySunriseAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sunriseAdjustment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QAfterSortBy>
+      thenBySunriseAdjustmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sunriseAdjustment', Sort.desc);
     });
   }
 
@@ -860,6 +1412,13 @@ extension PrayerAdjustmentsModelQuerySortThenBy on QueryBuilder<
 extension PrayerAdjustmentsModelQueryWhereDistinct
     on QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct> {
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
+      distinctByAsrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'asrAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
       distinctByAsrOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'asrOffset');
@@ -867,9 +1426,23 @@ extension PrayerAdjustmentsModelQueryWhereDistinct
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
+      distinctByDhuhrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dhuhrAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
       distinctByDhuhrOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dhuhrOffset');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
+      distinctByFajrAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'fajrAdjustment');
     });
   }
 
@@ -888,6 +1461,13 @@ extension PrayerAdjustmentsModelQueryWhereDistinct
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
+      distinctByIshaAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'ishaAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
       distinctByIshaOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'ishaOffset');
@@ -895,9 +1475,23 @@ extension PrayerAdjustmentsModelQueryWhereDistinct
   }
 
   QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
+      distinctByMaghribAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'maghribAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
       distinctByMaghribOffset() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'maghribOffset');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, PrayerAdjustmentsModel, QDistinct>
+      distinctBySunriseAdjustment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sunriseAdjustment');
     });
   }
 
@@ -918,6 +1512,13 @@ extension PrayerAdjustmentsModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
+      asrAdjustmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'asrAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
       asrOffsetProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'asrOffset');
@@ -925,9 +1526,23 @@ extension PrayerAdjustmentsModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
+      dhuhrAdjustmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dhuhrAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
       dhuhrOffsetProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dhuhrOffset');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
+      fajrAdjustmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'fajrAdjustment');
     });
   }
 
@@ -946,6 +1561,13 @@ extension PrayerAdjustmentsModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
+      ishaAdjustmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'ishaAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
       ishaOffsetProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'ishaOffset');
@@ -953,9 +1575,23 @@ extension PrayerAdjustmentsModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
+      maghribAdjustmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'maghribAdjustment');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
       maghribOffsetProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'maghribOffset');
+    });
+  }
+
+  QueryBuilder<PrayerAdjustmentsModel, int, QQueryOperations>
+      sunriseAdjustmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sunriseAdjustment');
     });
   }
 

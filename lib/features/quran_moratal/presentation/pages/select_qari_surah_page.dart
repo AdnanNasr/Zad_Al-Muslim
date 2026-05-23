@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran/domain/entities/surah_meta_entity.dart';
@@ -30,12 +31,14 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
   @override
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsMetaProvider);
+    final ThemeMode themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
       appBar: CustomAppBar(
         title: "سور القرآن - ${widget.qariData['name']}",
         center: true,
-        profile: false,
+        themeMode: false,
       ),
       body: Stack(
         children: [
@@ -74,7 +77,11 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                         child: SlideAnimation(
                           verticalOffset: 50,
                           child: FadeInAnimation(
-                            child: _buildSurahItem(context, surahs[index]),
+                            child: _buildSurahItem(
+                              context: context,
+                              surah: surahs[index],
+                              isDark: isDark,
+                            ),
                           ),
                         ),
                       );
@@ -97,7 +104,11 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     );
   }
 
-  Widget _buildSurahItem(BuildContext context, SurahMetaEntity surah) {
+  Widget _buildSurahItem({
+    required BuildContext context,
+    required SurahMetaEntity surah,
+    required bool isDark,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -134,8 +145,13 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
               child: Padding(
                 padding: EdgeInsets.all(12.dg),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildNumberIndicator(context, surah.surahNumber),
+                    _buildNumberIndicator(
+                      context: context,
+                      number: surah.surahNumber,
+                      isDark: isDark,
+                    ),
                     SizedBox(width: 16.w),
                     Expanded(
                       child: Column(
@@ -159,8 +175,11 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                                 surah.englishName,
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.grey[400],
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Naskh",
+                                  color: context.color.onSurface.withValues(
+                                    alpha: .7,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 6.h),
@@ -188,7 +207,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                     ),
                     Icon(
                       Icons.play_circle_outline_rounded,
-                      size: 28.sp,
+                      size: 35.sp,
                       color: context.color.primary.withValues(alpha: .8),
                     ),
                   ],
@@ -201,7 +220,11 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     );
   }
 
-  Widget _buildNumberIndicator(BuildContext context, int number) {
+  Widget _buildNumberIndicator({
+    required BuildContext context,
+    required int number,
+    required bool isDark,
+  }) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -211,7 +234,9 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
             width: 35.w,
             height: 35.w,
             decoration: BoxDecoration(
-              color: context.color.primary.withValues(alpha: .1),
+              color: isDark
+                  ? context.color.primary.withValues(alpha: .8)
+                  : context.color.primary.withValues(alpha: .25),
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
@@ -221,7 +246,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.bold,
-            color: context.color.primary,
+            color: isDark ? context.color.onSurface : context.color.primary,
           ),
         ),
       ],
@@ -231,17 +256,13 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
   Widget _buildInfoChip(IconData icon, String label, BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 13.sp,
-          color: context.color.primary.withValues(alpha: .5),
-        ),
+        Icon(icon, size: 13.sp, color: context.color.primary),
         SizedBox(width: 4.w),
         Text(
           label,
           style: TextStyle(
             fontSize: 11.5.sp,
-            color: context.color.primary,
+            color: context.color.onSurface,
             fontWeight: FontWeight.bold,
             fontFamily: "Cairo",
           ),

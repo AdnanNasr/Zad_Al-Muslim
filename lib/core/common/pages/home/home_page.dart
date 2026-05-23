@@ -15,7 +15,7 @@ import 'package:zad_al_muslim/core/common/widgets/home/home_button.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/next_prayer_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/reading_progress_card.dart';
-import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/constants/surah_names.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});

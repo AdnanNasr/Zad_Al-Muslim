@@ -5,6 +5,7 @@ import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
+import 'package:zad_al_muslim/features/adkar/presentation/providers/dhikr_state_provider.dart';
 import 'package:flutter/services.dart';
 
 class AdkarDetailsPage extends ConsumerWidget {
@@ -18,7 +19,7 @@ class AdkarDetailsPage extends ConsumerWidget {
       appBar: CustomAppBar(
         title: adkarEntity.category,
         center: true,
-        profile: false,
+        themeMode: false,
       ),
       body: ListView.separated(
         padding: EdgeInsets.all(16.w),
@@ -26,6 +27,7 @@ class AdkarDetailsPage extends ConsumerWidget {
         separatorBuilder: (context, index) => SizedBox(height: 16.h),
         itemBuilder: (context, index) {
           return DhikrCard(
+            category: adkarEntity.category,
             text: adkarEntity.text[index],
             footnote: index < adkarEntity.footnote.length
                 ? adkarEntity.footnote[index]
@@ -41,7 +43,8 @@ class AdkarDetailsPage extends ConsumerWidget {
   }
 }
 
-class DhikrCard extends ConsumerStatefulWidget {
+class DhikrCard extends ConsumerWidget {
+  final String category;
   final String text;
   final String footnote;
   final int index;
@@ -49,6 +52,7 @@ class DhikrCard extends ConsumerStatefulWidget {
 
   const DhikrCard({
     super.key,
+    required this.category,
     required this.text,
     required this.footnote,
     required this.index,
@@ -56,38 +60,14 @@ class DhikrCard extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<DhikrCard> createState() => _DhikrCardState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final params = DhikrStateParams(
+      dhikrId: '${category}_$index',
+      initialCount: initialCount,
+    );
 
-class _DhikrCardState extends ConsumerState<DhikrCard> {
-  late int _remainingCount;
-
-  @override
-  void initState() {
-    super.initState();
-    _remainingCount = widget.initialCount;
-  }
-
-  void _decrement() {
-    if (_remainingCount > 0) {
-      if (ref.read(appSettingsProvider).hapticFeedbackEnabled) {
-        HapticFeedback.lightImpact();
-      }
-      setState(() {
-        _remainingCount--;
-      });
-    }
-  }
-
-  void _reset() {
-    setState(() {
-      _remainingCount = widget.initialCount;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    bool isFinished = _remainingCount == 0;
+    final remainingCount = ref.watch(dhikrStateProvider(params));
+    bool isFinished = remainingCount == 0;
 
     return Card(
       elevation: 0,
@@ -106,7 +86,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
           : context.color.surface,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => _showDetailsDialog(context),
+        onTap: () => _showDetailsDialog(context, ref),
         child: Padding(
           padding: EdgeInsets.all(20.w),
           child: Column(
@@ -126,7 +106,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                       borderRadius: BorderRadius.circular(15.r),
                     ),
                     child: Text(
-                      'ذكر رقم ${widget.index}',
+                      'ذكر رقم $index',
                       style: TextStyle(
                         color: context.color.primary,
                         fontFamily: 'Cairo',
@@ -135,7 +115,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                       ),
                     ),
                   ),
-                  if (widget.footnote.isNotEmpty)
+                  if (footnote.isNotEmpty)
                     Container(
                       padding: EdgeInsets.all(6.w),
                       decoration: BoxDecoration(
@@ -154,7 +134,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
 
               // Dhikr Text
               Text(
-                widget.text,
+                text,
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   fontFamily: 'Naskh',
@@ -172,7 +152,9 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                 children: [
                   // Reset button
                   IconButton(
-                    onPressed: _reset,
+                    onPressed: () {
+                      ref.read(dhikrStateProvider(params).notifier).reset();
+                    },
                     icon: Icon(
                       Icons.refresh_rounded,
                       color: context.color.onSurface.withValues(alpha: 0.3),
@@ -182,7 +164,14 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
 
                   // Tasbeeh Button
                   GestureDetector(
-                    onTap: _decrement,
+                    onTap: () {
+                      if (remainingCount > 0) {
+                        if (ref.read(appSettingsProvider).hapticFeedbackEnabled) {
+                          HapticFeedback.lightImpact();
+                        }
+                        ref.read(dhikrStateProvider(params).notifier).decrement();
+                      }
+                    },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
@@ -208,7 +197,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                           ),
                           SizedBox(width: 8.w),
                           Text(
-                            isFinished ? 'اكتمل' : '$_remainingCount',
+                            isFinished ? 'اكتمل' : '$remainingCount',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14.sp,
@@ -231,7 +220,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
     );
   }
 
-  void _showDetailsDialog(BuildContext context) {
+  void _showDetailsDialog(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -285,7 +274,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                           padding: EdgeInsets.all(24.w),
                           children: [
                             Text(
-                              widget.text,
+                              text,
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                 fontFamily: 'Naskh',
@@ -299,7 +288,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                                 color: context.color.onSurface,
                               ),
                             ),
-                            if (widget.footnote.isNotEmpty) ...[
+                            if (footnote.isNotEmpty) ...[
                               SizedBox(height: 32.h),
                               Container(
                                 padding: EdgeInsets.all(16.w),
@@ -339,7 +328,7 @@ class _DhikrCardState extends ConsumerState<DhikrCard> {
                                     ),
                                     SizedBox(height: 12.h),
                                     SelectableText(
-                                      widget.footnote,
+                                      footnote,
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                         fontFamily: 'Cairo',

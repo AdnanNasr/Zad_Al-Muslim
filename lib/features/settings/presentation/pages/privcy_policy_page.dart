@@ -47,7 +47,7 @@ class _PrivcyPolicyPageState extends State<PrivcyPolicyPage> {
       appBar: const CustomAppBar(
         title: "سياسة الخصوصية",
         center: false,
-        profile: false,
+        themeMode: false,
       ),
       body: WebViewWidget(controller: webViewController),
     );

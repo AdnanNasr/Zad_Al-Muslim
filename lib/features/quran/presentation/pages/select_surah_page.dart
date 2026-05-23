@@ -12,7 +12,7 @@ import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart
 import 'package:zad_al_muslim/features/quran/presentation/providers/all_juzz_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/surahs_meta_provider.dart';
 import 'package:zad_al_muslim/features/quran/domain/entities/surah_meta_entity.dart';
-import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/constants/surah_names.dart';
 import "package:qcf_quran/qcf_quran.dart";
 
 class SelectSurahPage extends ConsumerStatefulWidget {
@@ -44,7 +44,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         appBar: CustomAppBar(
           title: "فهرس المصحف",
           center: true,
-          profile: false,
+          themeMode: false,
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(70.h),
             child: Container(

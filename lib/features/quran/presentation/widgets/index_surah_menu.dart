@@ -1,4 +1,4 @@
-import 'package:zad_al_muslim/core/common/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/constants/surah_names.dart';
 import "package:dartz/dartz.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
