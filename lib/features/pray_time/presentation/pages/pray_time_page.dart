@@ -320,50 +320,56 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           SizedBox(width: 12.w),
           // العنوان والموقع
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  "أوقات الصلاة",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Cairo",
-                  ),
-                ),
-                userAddress.when(
-                  data: (data) {
-                    if (data != null) {
-                      return Text(
-                        "${data.country} • ${data.locality}",
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 12.sp,
-                          fontFamily: "Cairo",
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                  error: (_, __) => const SizedBox.shrink(),
-                  loading: () => Skeletonizer(
-                    enabled: true,
-                    effect: ShimmerEffect(
-                      baseColor: context.color.primary.withValues(alpha: 0.2),
-                      highlightColor: context.color.primary.withValues(
-                        alpha: 0.1,
-                      ),
-                    ),
-                    child: Text(
-                      "جاري تحميل الموقع...",
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "أوقات الصلاة",
                       style: TextStyle(
-                        color: context.color.primary.withValues(alpha: 0.8),
-                        fontSize: 12.sp,
+                        color: Colors.white,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
                         fontFamily: "Cairo",
                       ),
                     ),
-                  ),
+                    userAddress.when(
+                      data: (data) {
+                        if (data != null) {
+                          return Text(
+                            "${data.country} • ${data.locality}",
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 12.sp,
+                              fontFamily: "Cairo",
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                      error: (_, __) => const SizedBox.shrink(),
+                      loading: () => Skeletonizer(
+                        enabled: true,
+                        effect: ShimmerEffect(
+                          baseColor: context.color.primary.withValues(
+                            alpha: 0.2,
+                          ),
+                          highlightColor: context.color.primary.withValues(
+                            alpha: 0.1,
+                          ),
+                        ),
+                        child: Text(
+                          "جاري تحميل الموقع...",
+                          style: TextStyle(
+                            color: context.color.primary.withValues(alpha: 0.8),
+                            fontSize: 12.sp,
+                            fontFamily: "Cairo",
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -576,6 +582,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                         isModified: isModified,
                         offset: offset,
                         adjustments: adjustments,
+                        ref: ref,
                       );
                     },
                   ),
@@ -971,6 +978,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   // صف صلاة واحدة في القائمة
   // ==========================================
   Widget _buildPrayerRow({
+    // TODO: IM Working here
     required BuildContext context,
     required String name,
     required String time,
@@ -979,9 +987,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required bool isModified,
     required int offset,
     required PrayerAdjustmentsModel adjustments,
+    required WidgetRef ref,
   }) {
     final primaryColor = context.color.primary;
     final surfaceColor = context.color.onSurface;
+    final themeMode = ref.watch(themeProvider);
+    final bool isDark = themeMode == ThemeMode.dark;
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5.h),
@@ -1012,7 +1023,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             icon,
             color: isCurrent
                 ? primaryColor
-                : surfaceColor.withValues(alpha: 0.5),
+                : _prayerIconColorResolver(name: name, isDark: isDark),
             size: 20.sp,
           ),
         ),
@@ -1800,6 +1811,31 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         return "العشاء";
       default:
         return "قريباً";
+    }
+  }
+
+  Color _prayerIconColorResolver({required String name, required bool isDark}) {
+    switch (name) {
+      case "الفجر":
+        return isDark ? Colors.amber : Colors.orange;
+
+      case "الشروق":
+        return isDark ? Colors.yellow.shade600 : Colors.yellow.shade900;
+
+      case "الظهر":
+        return isDark ? Colors.amber.shade300 : Colors.amber.shade900;
+
+      case "العصر":
+        return isDark ? Colors.cyan.shade300 : Colors.cyan;
+
+      case "المغرب":
+        return isDark ? Colors.indigo.shade300 : Colors.purple.shade900;
+
+      case "العشاء":
+        return isDark ? Colors.indigo.shade400 : Colors.indigo.shade900;
+
+      default:
+        return isDark ? Colors.grey.shade400 : Colors.grey;
     }
   }
 }
