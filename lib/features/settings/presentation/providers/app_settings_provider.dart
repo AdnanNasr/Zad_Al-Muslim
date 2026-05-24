@@ -15,6 +15,14 @@ class AppSettings {
   final String? morningAdkarTime;
   final bool eveningAdkarReminder;
   final String? eveningAdkarTime;
+  
+  // Custom prayer notifications
+  final bool fajrNotificationEnabled;
+  final bool sunriseNotificationEnabled;
+  final bool dhuhrNotificationEnabled;
+  final bool asrNotificationEnabled;
+  final bool maghribNotificationEnabled;
+  final bool ishaNotificationEnabled;
 
   AppSettings({
     required this.adkarFontSize,
@@ -27,6 +35,12 @@ class AppSettings {
     this.morningAdkarTime,
     required this.eveningAdkarReminder,
     this.eveningAdkarTime,
+    required this.fajrNotificationEnabled,
+    required this.sunriseNotificationEnabled,
+    required this.dhuhrNotificationEnabled,
+    required this.asrNotificationEnabled,
+    required this.maghribNotificationEnabled,
+    required this.ishaNotificationEnabled,
   });
 
   AppSettings copyWith({
@@ -40,6 +54,12 @@ class AppSettings {
     String? morningAdkarTime,
     bool? eveningAdkarReminder,
     String? eveningAdkarTime,
+    bool? fajrNotificationEnabled,
+    bool? sunriseNotificationEnabled,
+    bool? dhuhrNotificationEnabled,
+    bool? asrNotificationEnabled,
+    bool? maghribNotificationEnabled,
+    bool? ishaNotificationEnabled,
   }) {
     return AppSettings(
       adkarFontSize: adkarFontSize ?? this.adkarFontSize,
@@ -55,6 +75,12 @@ class AppSettings {
       morningAdkarTime: morningAdkarTime ?? this.morningAdkarTime,
       eveningAdkarReminder: eveningAdkarReminder ?? this.eveningAdkarReminder,
       eveningAdkarTime: eveningAdkarTime ?? this.eveningAdkarTime,
+      fajrNotificationEnabled: fajrNotificationEnabled ?? this.fajrNotificationEnabled,
+      sunriseNotificationEnabled: sunriseNotificationEnabled ?? this.sunriseNotificationEnabled,
+      dhuhrNotificationEnabled: dhuhrNotificationEnabled ?? this.dhuhrNotificationEnabled,
+      asrNotificationEnabled: asrNotificationEnabled ?? this.asrNotificationEnabled,
+      maghribNotificationEnabled: maghribNotificationEnabled ?? this.maghribNotificationEnabled,
+      ishaNotificationEnabled: ishaNotificationEnabled ?? this.ishaNotificationEnabled,
     );
   }
 }
@@ -71,6 +97,13 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
   static const String _eveningAdkarKey = 'evening_adkar_key';
   static const String _morningAdkarTimeKey = 'morning_adkar_time_key';
   static const String _eveningAdkarTimeKey = 'evening_adkar_time_key';
+  
+  static const String _fajrNotifKey = 'fajr_notif_key';
+  static const String _sunriseNotifKey = 'sunrise_notif_key';
+  static const String _dhuhrNotifKey = 'dhuhr_notif_key';
+  static const String _asrNotifKey = 'asr_notif_key';
+  static const String _maghribNotifKey = 'maghrib_notif_key';
+  static const String _ishaNotifKey = 'isha_notif_key';
 
   AppSettingsNotifier(this._prefs)
     : super(
@@ -85,6 +118,12 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
           morningAdkarTime: null,
           eveningAdkarReminder: false,
           eveningAdkarTime: null,
+          fajrNotificationEnabled: true,
+          sunriseNotificationEnabled: false,
+          dhuhrNotificationEnabled: true,
+          asrNotificationEnabled: true,
+          maghribNotificationEnabled: true,
+          ishaNotificationEnabled: true,
         ),
       ) {
     _init();
@@ -103,6 +142,13 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     final eveningAdkar = _prefs.getBool(_eveningAdkarKey) ?? false;
     final eveningAdkarTime = _prefs.getString(_eveningAdkarTimeKey);
 
+    final fajrNotif = _prefs.getBool(_fajrNotifKey) ?? true;
+    final sunriseNotif = _prefs.getBool(_sunriseNotifKey) ?? false;
+    final dhuhrNotif = _prefs.getBool(_dhuhrNotifKey) ?? true;
+    final asrNotif = _prefs.getBool(_asrNotifKey) ?? true;
+    final maghribNotif = _prefs.getBool(_maghribNotifKey) ?? true;
+    final ishaNotif = _prefs.getBool(_ishaNotifKey) ?? true;
+
     state = AppSettings(
       adkarFontSize: fontSize,
       use24HourFormat: use24h,
@@ -114,6 +160,12 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       morningAdkarTime: morningAdkarTime,
       eveningAdkarReminder: eveningAdkar,
       eveningAdkarTime: eveningAdkarTime,
+      fajrNotificationEnabled: fajrNotif,
+      sunriseNotificationEnabled: sunriseNotif,
+      dhuhrNotificationEnabled: dhuhrNotif,
+      asrNotificationEnabled: asrNotif,
+      maghribNotificationEnabled: maghribNotif,
+      ishaNotificationEnabled: ishaNotif,
     );
 
     if (morningAdkar) {
@@ -151,6 +203,42 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     final newValue = !state.prayerNotificationsEnabled;
     await _prefs.setBool('prayer_notifications_enabled_key', newValue);
     state = state.copyWith(prayerNotificationsEnabled: newValue);
+  }
+
+  Future<void> toggleFajrNotification() async {
+    final newValue = !state.fajrNotificationEnabled;
+    await _prefs.setBool(_fajrNotifKey, newValue);
+    state = state.copyWith(fajrNotificationEnabled: newValue);
+  }
+
+  Future<void> toggleSunriseNotification() async {
+    final newValue = !state.sunriseNotificationEnabled;
+    await _prefs.setBool(_sunriseNotifKey, newValue);
+    state = state.copyWith(sunriseNotificationEnabled: newValue);
+  }
+
+  Future<void> toggleDhuhrNotification() async {
+    final newValue = !state.dhuhrNotificationEnabled;
+    await _prefs.setBool(_dhuhrNotifKey, newValue);
+    state = state.copyWith(dhuhrNotificationEnabled: newValue);
+  }
+
+  Future<void> toggleAsrNotification() async {
+    final newValue = !state.asrNotificationEnabled;
+    await _prefs.setBool(_asrNotifKey, newValue);
+    state = state.copyWith(asrNotificationEnabled: newValue);
+  }
+
+  Future<void> toggleMaghribNotification() async {
+    final newValue = !state.maghribNotificationEnabled;
+    await _prefs.setBool(_maghribNotifKey, newValue);
+    state = state.copyWith(maghribNotificationEnabled: newValue);
+  }
+
+  Future<void> toggleIshaNotification() async {
+    final newValue = !state.ishaNotificationEnabled;
+    await _prefs.setBool(_ishaNotifKey, newValue);
+    state = state.copyWith(ishaNotificationEnabled: newValue);
   }
 
   Future<void> setCalculationMethod(int methodIndex) async {
@@ -228,6 +316,14 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     await _prefs.remove(_morningAdkarTimeKey);
     await _prefs.remove(_eveningAdkarKey);
     await _prefs.remove(_eveningAdkarTimeKey);
+    
+    await _prefs.remove(_fajrNotifKey);
+    await _prefs.remove(_sunriseNotifKey);
+    await _prefs.remove(_dhuhrNotifKey);
+    await _prefs.remove(_asrNotifKey);
+    await _prefs.remove(_maghribNotifKey);
+    await _prefs.remove(_ishaNotifKey);
+    
     state = AppSettings(
       adkarFontSize: 24.0,
       use24HourFormat: false,
@@ -239,6 +335,12 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       morningAdkarTime: null,
       eveningAdkarReminder: false,
       eveningAdkarTime: null,
+      fajrNotificationEnabled: true,
+      sunriseNotificationEnabled: false,
+      dhuhrNotificationEnabled: true,
+      asrNotificationEnabled: true,
+      maghribNotificationEnabled: true,
+      ishaNotificationEnabled: true,
     );
   }
 }

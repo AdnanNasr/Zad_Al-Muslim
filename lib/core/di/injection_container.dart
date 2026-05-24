@@ -196,7 +196,7 @@ Future<void> init() async {
 
   // Repositories
   sl.registerLazySingleton<NotificationSchedulerImpl>(
-    () => NotificationSchedulerImpl(sl()),
+    () => NotificationSchedulerImpl(sl(), sl()),
   );
   sl.registerLazySingleton<INotificationScheduler>(
     () => sl<NotificationSchedulerImpl>(),

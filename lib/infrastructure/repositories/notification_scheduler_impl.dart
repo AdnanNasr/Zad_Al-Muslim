@@ -1,13 +1,15 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../../domain/repositories/i_notification_scheduler.dart';
 
 class NotificationSchedulerImpl implements INotificationScheduler {
   final FlutterLocalNotificationsPlugin _notificationsPlugin;
+  final SharedPreferences _prefs;
 
-  NotificationSchedulerImpl(this._notificationsPlugin);
+  NotificationSchedulerImpl(this._notificationsPlugin, this._prefs);
 
   Future<void> init() async {
     const androidSettings = AndroidInitializationSettings(
@@ -29,7 +31,24 @@ class NotificationSchedulerImpl implements INotificationScheduler {
 
   @override
   Future<void> scheduleAll(List<PrayerTime> prayers) async {
+    final bool globalEnabled = _prefs.getBool('prayer_notifications_enabled_key') ?? true;
+    if (!globalEnabled) return;
+
+    final bool fajrEnabled = _prefs.getBool('fajr_notif_key') ?? true;
+    final bool sunriseEnabled = _prefs.getBool('sunrise_notif_key') ?? false;
+    final bool dhuhrEnabled = _prefs.getBool('dhuhr_notif_key') ?? true;
+    final bool asrEnabled = _prefs.getBool('asr_notif_key') ?? true;
+    final bool maghribEnabled = _prefs.getBool('maghrib_notif_key') ?? true;
+    final bool ishaEnabled = _prefs.getBool('isha_notif_key') ?? true;
+
     for (final prayer in prayers) {
+      if (prayer.prayerName == PrayerName.fajr && !fajrEnabled) continue;
+      if (prayer.prayerName == PrayerName.sunrise && !sunriseEnabled) continue;
+      if (prayer.prayerName == PrayerName.dhuhr && !dhuhrEnabled) continue;
+      if (prayer.prayerName == PrayerName.asr && !asrEnabled) continue;
+      if (prayer.prayerName == PrayerName.maghrib && !maghribEnabled) continue;
+      if (prayer.prayerName == PrayerName.isha && !ishaEnabled) continue;
+
       final id = _generateDeterministicId(prayer);
 
       await _notificationsPlugin.zonedSchedule(

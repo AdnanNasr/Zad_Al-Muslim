@@ -13,6 +13,7 @@ import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/adahn_dialog.dart';
+import 'package:zad_al_muslim/features/settings/presentation/widgets/prayer_notification_selection_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/font_size_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/calculation_method_dialog.dart';
@@ -347,6 +348,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       ref.invalidate(selectedDatePrayerTimesProvider);
                     },
                   ),
+                  if (appSettings.prayerNotificationsEnabled)
+                    SettingCards(
+                      icon: const Right(Icons.tune_rounded),
+                      text: "تخصيص أوقات الإشعارات",
+                      forgroundColor: primarycolor,
+                      subText: "اختر الصلوات لتلقي إشعاراتها",
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const PrayerNotificationSelectionDialog(),
+                        );
+                      },
+                    ),
                   SettingCards(
                     icon: const Right(Icons.multitrack_audio_sharp),
                     text: "صوت الأذان",

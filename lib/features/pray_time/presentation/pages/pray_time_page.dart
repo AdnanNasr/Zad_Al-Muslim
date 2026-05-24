@@ -994,6 +994,30 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final themeMode = ref.watch(themeProvider);
     final bool isDark = themeMode == ThemeMode.dark;
 
+    final appSettings = ref.watch(appSettingsProvider);
+    bool isNotificationEnabled = false;
+    switch (name) {
+      case 'الفجر':
+        isNotificationEnabled = appSettings.fajrNotificationEnabled;
+        break;
+      case 'الشروق':
+        isNotificationEnabled = appSettings.sunriseNotificationEnabled;
+        break;
+      case 'الظهر':
+        isNotificationEnabled = appSettings.dhuhrNotificationEnabled;
+        break;
+      case 'العصر':
+        isNotificationEnabled = appSettings.asrNotificationEnabled;
+        break;
+      case 'المغرب':
+        isNotificationEnabled = appSettings.maghribNotificationEnabled;
+        break;
+      case 'العشاء':
+        isNotificationEnabled = appSettings.ishaNotificationEnabled;
+        break;
+    }
+    isNotificationEnabled = appSettings.prayerNotificationsEnabled && isNotificationEnabled;
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5.h),
       decoration: BoxDecoration(
@@ -1016,7 +1040,10 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           decoration: BoxDecoration(
             color: isCurrent
                 ? primaryColor.withValues(alpha: 0.12)
-                : surfaceColor.withValues(alpha: 0.06),
+                : _prayerIconColorResolver(
+                    name: name,
+                    isDark: isDark,
+                  ).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Icon(
@@ -1088,6 +1115,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 color: isCurrent ? primaryColor : surfaceColor,
                 fontFamily: "Cairo",
               ),
+            ),
+            SizedBox(width: 8.w),
+            // حالة الإشعار
+            Icon(
+              isNotificationEnabled
+                  ? Icons.notifications_active_rounded
+                  : Icons.notifications_off_rounded,
+              size: 16.sp,
+              color: isNotificationEnabled
+                  ? primaryColor.withValues(alpha: 0.8)
+                  : surfaceColor.withValues(alpha: 0.3),
             ),
             SizedBox(width: 8.w),
             // زر الإعدادات
