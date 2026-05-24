@@ -21,7 +21,8 @@ class HadithTab extends ConsumerStatefulWidget {
 
 class _HadithTabState extends ConsumerState<HadithTab> {
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey<HadithSearchBarState> _searchBarKey = GlobalKey<HadithSearchBarState>();
+  final GlobalKey<HadithSearchBarState> _searchBarKey =
+      GlobalKey<HadithSearchBarState>();
 
   @override
   void initState() {
@@ -190,6 +191,9 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                                     showDragHandle: true,
                                     useSafeArea: true,
                                     isScrollControlled: true,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).scaffoldBackgroundColor,
                                     builder: (context) =>
                                         HadithModalBottom(hadith: hadith),
                                   );

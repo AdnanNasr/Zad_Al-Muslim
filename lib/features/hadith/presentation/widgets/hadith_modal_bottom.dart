@@ -83,7 +83,7 @@ class HadithModalBottom extends ConsumerWidget {
                       color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(24.r),
                       border: Border.all(
-                        color: colorScheme.primary.withValues(alpha: 0.1),
+                        color: colorScheme.primary.withValues(alpha: 0.4),
                       ),
                       boxShadow: [
                         BoxShadow(

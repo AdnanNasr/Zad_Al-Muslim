@@ -37,8 +37,8 @@ class HadithCard extends ConsumerWidget {
         color: cardBackground,
         borderRadius: BorderRadius.circular(24.r),
         border: Border.all(
-          color: colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.08),
-          width: 1,
+          color: colorScheme.primary.withValues(alpha: 0.3),
+          width: 1.5,
         ),
       ),
       child: Material(
