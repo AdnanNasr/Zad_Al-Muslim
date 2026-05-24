@@ -87,13 +87,20 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                       curve: Curves.ease,
                       child: FadeInAnimation(
                         child: ChoiceChip(
+                          selectedColor: context.color.primary.withValues(
+                            alpha: .9,
+                          ),
                           label: Text(
                             tag.arabicName,
                             style: TextStyle(
                               fontFamily: "Cairo",
                               fontSize: 13.sp,
+                              color: isSelected
+                                  ? Colors.white
+                                  : context.color.onSurface,
                             ),
                           ),
+                          checkmarkColor: Colors.white,
                           selected: isSelected,
                           onSelected: (selected) {
                             ref
