@@ -87,7 +87,14 @@ class PrayerNotificationSelectionDialog extends ConsumerWidget {
             ),
           ),
           onPressed: () => Navigator.pop(context),
-          child: const Text("إغلاق", style: TextStyle(fontFamily: 'Cairo')),
+          child: Text(
+            "إغلاق",
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
@@ -102,7 +109,11 @@ class PrayerNotificationSelectionDialog extends ConsumerWidget {
     return CheckboxListTile(
       title: Text(
         title,
-        style: TextStyle(fontFamily: 'Cairo', fontSize: 14.sp),
+        style: TextStyle(
+          fontFamily: 'Cairo',
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w500,
+        ),
       ),
       value: value,
       onChanged: onChanged,

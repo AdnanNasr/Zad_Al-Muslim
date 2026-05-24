@@ -172,8 +172,8 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
-              "للحصول على أعلى دقة، يرجى الأبتعاد عن الأجهزة الكهربائية والمجالات الكهرومغناطيسية",
-              style: TextStyle(fontSize: 15.sp, color: context.color.primary),
+              "للحصول على أعلى دقة، يرجى الأبتعاد عن الأجهزة الكهربائية والمجالات الكهرومغناطيسية.",
+              style: TextStyle(fontSize: 15.sp, color: context.color.onSurface),
             ),
           ),
         ],
@@ -240,8 +240,9 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
           label,
           style: TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 11.sp,
-            color: context.color.onSurface.withValues(alpha: .5),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+            color: context.color.onSurface.withValues(alpha: .7),
           ),
         ),
       ],
