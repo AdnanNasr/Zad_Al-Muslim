@@ -216,7 +216,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               SizedBox(height: 10.h),
 
               Text(
-                "${(_progress * 100).toInt()}%", // TODO
+                "${(_progress * 100).toInt()}%",
                 style: TextStyle(
                   color: isDark
                       ? context.color.onSurface

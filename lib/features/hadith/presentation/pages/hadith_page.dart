@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/featured_hadith_tab.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadeeth_tab.dart';
 
@@ -35,7 +36,11 @@ class _HadithPageState extends ConsumerState<HadithPage> {
         appBar: CustomAppBar(
           tooltip: "الصفحة الرئيسية",
           icon: Icons.arrow_back,
-          // customVoid: () => ref.read(hadithProvider.notifier).clearFilters(),
+          customVoid: () async {
+            await Future.delayed(const Duration(milliseconds: 50));
+            if (!mounted) return;
+            ref.read(hadithProvider.notifier).clearFilters();
+          },
           title: l10n.sunah_hadeth,
           center: true,
           themeMode: false,
@@ -53,13 +58,6 @@ class _HadithPageState extends ConsumerState<HadithPage> {
                 indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.r),
                   color: context.color.onPrimary,
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: context.color.primary.withValues(alpha: .3),
-                  //     blurRadius: 8,
-                  //     offset: const Offset(0, 4),
-                  //   ),
-                  // ],
                 ),
                 labelColor: context.color.primary,
                 unselectedLabelColor: context.color.onPrimary,
