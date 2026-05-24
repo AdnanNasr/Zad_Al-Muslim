@@ -35,7 +35,7 @@ class NotificationSchedulerImpl implements INotificationScheduler {
       await _notificationsPlugin.zonedSchedule(
         id: id,
         title: _getPrayerTitle(prayer.prayerName),
-        body: 'حان وقت أذان ${_getArabicPrayerName(prayer.prayerName)}',
+        body: 'حان وقت صلاة ${_getArabicPrayerName(prayer.prayerName)}',
         scheduledDate: tz.TZDateTime.from(prayer.time, tz.local),
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(

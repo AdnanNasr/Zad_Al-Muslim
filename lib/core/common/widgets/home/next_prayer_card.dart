@@ -104,8 +104,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
                           ),
                         ),
                         child: Icon(
-                          // TODO
-                          Icons.wb_twilight,
+                          icon,
                           size: 24.sp,
                           color: isDark ? darkModeColor : lightModeColor,
                         ),

@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: experimental_member_use
+
 part of 'dhikr_state_model.dart';
 
 // **************************************************************************
@@ -17,21 +19,13 @@ const DhikrStateModelSchema = CollectionSchema(
   name: r'DhikrStateModel',
   id: 1798232581178000100,
   properties: {
-    r'date': PropertySchema(
-      id: 0,
-      name: r'date',
-      type: IsarType.dateTime,
-    ),
-    r'dhikrId': PropertySchema(
-      id: 1,
-      name: r'dhikrId',
-      type: IsarType.string,
-    ),
+    r'date': PropertySchema(id: 0, name: r'date', type: IsarType.dateTime),
+    r'dhikrId': PropertySchema(id: 1, name: r'dhikrId', type: IsarType.string),
     r'remainingCount': PropertySchema(
       id: 2,
       name: r'remainingCount',
       type: IsarType.long,
-    )
+    ),
   },
   estimateSize: _dhikrStateModelEstimateSize,
   serialize: _dhikrStateModelSerialize,
@@ -49,9 +43,9 @@ const DhikrStateModelSchema = CollectionSchema(
           name: r'dhikrId',
           type: IndexType.hash,
           caseSensitive: true,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -123,7 +117,10 @@ List<IsarLinkBase<dynamic>> _dhikrStateModelGetLinks(DhikrStateModel object) {
 }
 
 void _dhikrStateModelAttach(
-    IsarCollection<dynamic> col, Id id, DhikrStateModel object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  DhikrStateModel object,
+) {
   object.id = id;
 }
 
@@ -176,8 +173,10 @@ extension DhikrStateModelByIndex on IsarCollection<DhikrStateModel> {
     return putAllByIndex(r'dhikrId', objects);
   }
 
-  List<Id> putAllByDhikrIdSync(List<DhikrStateModel> objects,
-      {bool saveLinks = true}) {
+  List<Id> putAllByDhikrIdSync(
+    List<DhikrStateModel> objects, {
+    bool saveLinks = true,
+  }) {
     return putAllByIndexSync(r'dhikrId', objects, saveLinks: saveLinks);
   }
 }
@@ -194,17 +193,15 @@ extension DhikrStateModelQueryWhereSort
 extension DhikrStateModelQueryWhere
     on QueryBuilder<DhikrStateModel, DhikrStateModel, QWhereClause> {
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterWhereClause> idEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+  idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -227,7 +224,7 @@ extension DhikrStateModelQueryWhere
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+  idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -236,8 +233,9 @@ extension DhikrStateModelQueryWhere
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterWhereClause> idLessThan(
-      Id id,
-      {bool include = false}) {
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -252,56 +250,65 @@ extension DhikrStateModelQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterWhereClause>
-      dhikrIdEqualTo(String dhikrId) {
+  dhikrIdEqualTo(String dhikrId) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'dhikrId',
-        value: [dhikrId],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'dhikrId', value: [dhikrId]),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterWhereClause>
-      dhikrIdNotEqualTo(String dhikrId) {
+  dhikrIdNotEqualTo(String dhikrId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'dhikrId',
-              lower: [],
-              upper: [dhikrId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'dhikrId',
-              lower: [dhikrId],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dhikrId',
+                lower: [],
+                upper: [dhikrId],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dhikrId',
+                lower: [dhikrId],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'dhikrId',
-              lower: [dhikrId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'dhikrId',
-              lower: [],
-              upper: [dhikrId],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dhikrId',
+                lower: [dhikrId],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dhikrId',
+                lower: [],
+                upper: [dhikrId],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -310,109 +317,111 @@ extension DhikrStateModelQueryWhere
 extension DhikrStateModelQueryFilter
     on QueryBuilder<DhikrStateModel, DhikrStateModel, QFilterCondition> {
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dateEqualTo(DateTime value) {
+  dateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'date', value: value),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dateGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dateGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'date',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dateLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  dateLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'date',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'date',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dateBetween(
+  dateBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'date',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'date',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  dhikrIdEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dhikrId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'dhikrId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dhikrId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdLessThan(
+  dhikrIdGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dhikrId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'dhikrId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdBetween(
+  dhikrIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'dhikrId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
+  dhikrIdBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -420,196 +429,196 @@ extension DhikrStateModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dhikrId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'dhikrId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  dhikrIdStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'dhikrId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'dhikrId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  dhikrIdEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'dhikrId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'dhikrId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdContains(String value, {bool caseSensitive = true}) {
+  dhikrIdContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'dhikrId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'dhikrId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdMatches(String pattern, {bool caseSensitive = true}) {
+  dhikrIdMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'dhikrId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'dhikrId',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdIsEmpty() {
+  dhikrIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dhikrId',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'dhikrId', value: ''),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      dhikrIdIsNotEmpty() {
+  dhikrIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'dhikrId',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'dhikrId', value: ''),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      idEqualTo(Id value) {
+  idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      idBetween(
+  idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      remainingCountEqualTo(int value) {
+  remainingCountEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'remainingCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'remainingCount', value: value),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      remainingCountGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  remainingCountGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'remainingCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'remainingCount',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      remainingCountLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  remainingCountLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'remainingCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'remainingCount',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterFilterCondition>
-      remainingCountBetween(
+  remainingCountBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'remainingCount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'remainingCount',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -629,7 +638,7 @@ extension DhikrStateModelQuerySortBy
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      sortByDateDesc() {
+  sortByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
     });
@@ -642,21 +651,21 @@ extension DhikrStateModelQuerySortBy
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      sortByDhikrIdDesc() {
+  sortByDhikrIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhikrId', Sort.desc);
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      sortByRemainingCount() {
+  sortByRemainingCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remainingCount', Sort.asc);
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      sortByRemainingCountDesc() {
+  sortByRemainingCountDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remainingCount', Sort.desc);
     });
@@ -672,7 +681,7 @@ extension DhikrStateModelQuerySortThenBy
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      thenByDateDesc() {
+  thenByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
     });
@@ -685,7 +694,7 @@ extension DhikrStateModelQuerySortThenBy
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      thenByDhikrIdDesc() {
+  thenByDhikrIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dhikrId', Sort.desc);
     });
@@ -704,14 +713,14 @@ extension DhikrStateModelQuerySortThenBy
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      thenByRemainingCount() {
+  thenByRemainingCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remainingCount', Sort.asc);
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QAfterSortBy>
-      thenByRemainingCountDesc() {
+  thenByRemainingCountDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remainingCount', Sort.desc);
     });
@@ -726,15 +735,16 @@ extension DhikrStateModelQueryWhereDistinct
     });
   }
 
-  QueryBuilder<DhikrStateModel, DhikrStateModel, QDistinct> distinctByDhikrId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<DhikrStateModel, DhikrStateModel, QDistinct> distinctByDhikrId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dhikrId', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<DhikrStateModel, DhikrStateModel, QDistinct>
-      distinctByRemainingCount() {
+  distinctByRemainingCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'remainingCount');
     });
@@ -762,7 +772,7 @@ extension DhikrStateModelQueryProperty
   }
 
   QueryBuilder<DhikrStateModel, int, QQueryOperations>
-      remainingCountProperty() {
+  remainingCountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'remainingCount');
     });
