@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/filter_container.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadith_search_bar.dart';
@@ -18,6 +21,7 @@ class HadithTab extends ConsumerStatefulWidget {
 
 class _HadithTabState extends ConsumerState<HadithTab> {
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey<HadithSearchBarState> _searchBarKey = GlobalKey<HadithSearchBarState>();
 
   @override
   void initState() {
@@ -61,7 +65,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Search Bar
-          const HadithSearchBar(),
+          HadithSearchBar(key: _searchBarKey),
           SizedBox(height: 8.h),
           // Smart Tags
           ConstrainedBox(
@@ -111,9 +115,11 @@ class _HadithTabState extends ConsumerState<HadithTab> {
               const BookFilterContainer(
                 title: "الكتاب",
                 iconData: Icons.book_outlined,
+                // color: context.color.primary,
               ),
               const Spacer(),
-              if (!notifier.isFilterEmpty) const ClearAllFilters(),
+              if (!notifier.isFilterEmpty)
+                clearAllFilters(context: context, ref: ref),
             ],
           ),
 
@@ -124,12 +130,23 @@ class _HadithTabState extends ConsumerState<HadithTab> {
           Expanded(
             child: hadithState.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) =>
-                  Center(child: Text("خطأ في تحميل الأحاديث: $err")),
+              error: (err, stack) => Center(
+                child: Text(
+                  "خطأ في تحميل الأحاديث: $err",
+                  style: TextStyle(fontSize: 16.sp, fontFamily: "Cairo"),
+                ),
+              ),
               data: (hadiths) {
                 if (hadiths.isEmpty) {
-                  return const Center(
-                    child: Text("لا توجد أحاديث مطابقة للفلاتر"),
+                  return Center(
+                    child: Text(
+                      "لا توجد أحاديث مطابقة للفلاتر",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontFamily: "Cairo",
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   );
                 }
 
@@ -197,19 +214,20 @@ class _HadithTabState extends ConsumerState<HadithTab> {
       ),
     );
   }
-}
 
-class ClearAllFilters extends ConsumerWidget {
-  const ClearAllFilters({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget clearAllFilters({
+    required BuildContext context,
+    required WidgetRef ref,
+  }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
       child: InkWell(
         borderRadius: BorderRadius.circular(12.r),
         onTap: () {
           ref.read(hadithProvider.notifier).clearFilters();
+          _searchBarKey.currentState?.clearText();
+
+          setState(() {});
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),

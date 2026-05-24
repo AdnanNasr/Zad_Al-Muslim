@@ -43,7 +43,7 @@ class _HadithPageState extends ConsumerState<HadithPage> {
           },
           title: l10n.sunah_hadeth,
           center: true,
-          themeMode: false,
+          themeMode: true,
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(70.h),
             child: Container(

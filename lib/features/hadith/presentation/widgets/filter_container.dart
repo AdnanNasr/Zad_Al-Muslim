@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
 
@@ -53,27 +54,39 @@ class _BookFilterContainerState extends ConsumerState<BookFilterContainer> {
         SahihBukhariBook? selected = await showMenu<SahihBukhariBook>(
           context: context,
           elevation: 4,
+          constraints: BoxConstraints(maxHeight: context.mediaQueryHeight / 2),
           color: Theme.of(context).cardColor,
+          menuPadding: EdgeInsets.all(8.dg),
+          // positionBuilder: (context, constraints) {
+
+          // },
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.r),
+            side: BorderSide(color: context.color.primary),
           ),
           position: RelativeRect.fromLTRB(
             position.dx,
-            position.dy + size.height,
-            position.dx + size.width,
+            position.dy + size.height + 5.h,
+            position.dx + size.width + 5.w,
             position.dy,
           ),
           items: SahihBukhariBook.values
               .map(
                 (book) => PopupMenuItem<SahihBukhariBook>(
                   value: book,
-                  child: Text(
-                    book.arabicName,
-                    style: TextStyle(
-                      fontSize: context.witdthScreen * 0.035,
-                      color: widget.color ?? primary,
-                      fontFamily: fontFamily,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        book.arabicName,
+                        style: TextStyle(
+                          fontSize: context.witdthScreen * 0.035,
+                          color: context.color.onSurface,
+                          fontFamily: fontFamily,
+                        ),
+                      ),
+                      const Divider(),
+                    ],
                   ),
                 ),
               )
@@ -91,7 +104,7 @@ class _BookFilterContainerState extends ConsumerState<BookFilterContainer> {
           decoration: BoxDecoration(
             color: isFiltered
                 ? (widget.color ?? primary).withValues(alpha: .3)
-                : (widget.color ?? primary).withValues(alpha: .1),
+                : (widget.color ?? primary).withValues(alpha: .2),
             borderRadius: BorderRadius.circular(16.r),
             border: isFiltered
                 ? Border.all(color: widget.color ?? primary, width: 1)
@@ -112,7 +125,7 @@ class _BookFilterContainerState extends ConsumerState<BookFilterContainer> {
                     ),
                     child: Icon(
                       Icons.close,
-                      color: widget.color ?? primary,
+                      color: widget.color ?? context.color.onSurface,
                       size: 15.sp,
                     ),
                   ),
@@ -123,7 +136,7 @@ class _BookFilterContainerState extends ConsumerState<BookFilterContainer> {
                 maxLines: 1,
                 style: TextStyle(
                   fontSize: isFiltered ? 12.sp : 15.sp,
-                  color: widget.color ?? primary,
+                  color: context.color.onSurface,
                   fontWeight: isFiltered ? FontWeight.bold : FontWeight.w600,
                   fontFamily: fontFamily,
                 ),
@@ -131,7 +144,7 @@ class _BookFilterContainerState extends ConsumerState<BookFilterContainer> {
               SizedBox(width: 8.w),
               Icon(
                 widget.iconData,
-                color: widget.color ?? primary,
+                color: context.color.onSurface,
                 size: 18.sp,
               ),
             ],

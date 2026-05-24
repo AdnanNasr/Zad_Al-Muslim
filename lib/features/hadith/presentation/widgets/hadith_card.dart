@@ -64,9 +64,9 @@ class HadithCard extends ConsumerWidget {
                           "كتاب ${hadith.bookName} • ${hadith.reference.hadith}",
                           style: TextStyle(
                             fontFamily: "Cairo",
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onSurface,
                           ),
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.rtl,
@@ -109,20 +109,6 @@ class HadithCard extends ConsumerWidget {
                   },
                 ),
                 SizedBox(height: 16.h),
-
-                // Bottom Metadata Chips
-                // Row(
-                //   children: [
-                //     _buildSmallChip(
-                //       context,
-                //       icon: Icons.person_outline_rounded,
-                //       label: hadith.,
-                //       color: colorScheme.secondary,
-                //     ),
-                //     SizedBox(width: 8.w),
-                //     // _buildGradeBadge(context, hadith.grade),
-                //   ],
-                // ),
               ],
             ),
           ),

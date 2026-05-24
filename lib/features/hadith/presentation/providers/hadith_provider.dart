@@ -19,13 +19,12 @@ class HadithNotifier extends AsyncNotifier<List<HadithEntity>> {
 
   Future<List<HadithEntity>> _fetchHadiths() async {
     final result = await _getHadithsUseCase(_filters);
-    return result.fold(
-      (failure) => throw Exception(failure.message),
-      (hadiths) {
-        _hasMore = hadiths.length >= _filters.limit;
-        return hadiths;
-      },
-    );
+    return result.fold((failure) => throw Exception(failure.message), (
+      hadiths,
+    ) {
+      _hasMore = hadiths.length >= _filters.limit;
+      return hadiths;
+    });
   }
 
   Future<void> loadMore() async {
@@ -36,13 +35,10 @@ class HadithNotifier extends AsyncNotifier<List<HadithEntity>> {
 
     try {
       final result = await _getHadithsUseCase(_filters);
-      result.fold(
-        (failure) => throw Exception(failure.message),
-        (newHadiths) {
-          _hasMore = newHadiths.length >= _filters.limit;
-          state = AsyncData([...currentHadiths, ...newHadiths]);
-        },
-      );
+      result.fold((failure) => throw Exception(failure.message), (newHadiths) {
+        _hasMore = newHadiths.length >= _filters.limit;
+        state = AsyncData([...currentHadiths, ...newHadiths]);
+      });
     } catch (e, st) {
       state = AsyncError(e, st);
     }
@@ -82,7 +78,7 @@ class HadithNotifier extends AsyncNotifier<List<HadithEntity>> {
       !_filters.favoritesOnly;
 
   int? get currentBookNumber => _filters.bookNumber;
-  String? get currentSearchQuery => _filters.searchQuery;
+  String? get currentSearchQuery => _filters.searchQuery ?? "";
   bool get hasMore => _hasMore;
 
   // ---------------- SETTERS (تعديل قيم الفلاتر) ----------------
@@ -108,10 +104,7 @@ class HadithNotifier extends AsyncNotifier<List<HadithEntity>> {
   }
 
   void setFavoritesOnly(bool value) {
-    _filters = _filters.copyWith(
-      favoritesOnly: value,
-      offset: 0,
-    );
+    _filters = _filters.copyWith(favoritesOnly: value, offset: 0);
     _hasMore = true;
     ref.invalidateSelf();
   }

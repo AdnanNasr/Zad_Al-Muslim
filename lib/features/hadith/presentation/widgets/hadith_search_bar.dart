@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
 
 class HadithSearchBar extends ConsumerStatefulWidget {
   const HadithSearchBar({super.key});
 
   @override
-  ConsumerState<HadithSearchBar> createState() => _HadithSearchBarState();
+  ConsumerState<HadithSearchBar> createState() => HadithSearchBarState();
 }
 
-class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
+class HadithSearchBarState extends ConsumerState<HadithSearchBar> {
   final TextEditingController _controller = TextEditingController();
   Timer? _debounce;
 
@@ -25,6 +27,7 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
     });
     // Initialize controller with current search query if present
     final initialQuery = ref.read(hadithProvider.notifier).currentSearchQuery;
+
     if (initialQuery != null) {
       _controller.text = initialQuery;
     }
@@ -35,6 +38,11 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
     _controller.dispose();
     _debounce?.cancel();
     super.dispose();
+  }
+
+  void clearText() {
+    _controller.clear();
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
   }
 
   @override
@@ -76,7 +84,7 @@ class _HadithSearchBarState extends ConsumerState<HadithSearchBar> {
                   child: FadeInAnimation(
                     child: IconButton(
                       onPressed: () {
-                        _controller.clear();
+                        clearText();
                         onSearchChanged("");
                         setState(() {});
                       },
