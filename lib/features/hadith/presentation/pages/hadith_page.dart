@@ -6,7 +6,7 @@ import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/featured_hadith_tab.dart';
-import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadeeth_tab.dart';
+import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadith_tab.dart';
 
 class HadithPage extends ConsumerStatefulWidget {
   const HadithPage({super.key});

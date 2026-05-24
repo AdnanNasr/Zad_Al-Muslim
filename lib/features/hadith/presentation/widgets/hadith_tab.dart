@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/providers/hadith_provider.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/filter_container.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/widgets/hadith_search_bar.dart';
