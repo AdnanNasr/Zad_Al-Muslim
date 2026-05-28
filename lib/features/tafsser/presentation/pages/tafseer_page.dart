@@ -11,6 +11,7 @@ import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_bo
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/tafseer_dialog.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/tafsser_buttons.dart';
 import 'package:zad_al_muslim/features/tafsser/domain/usecases/tafseer_utils.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_download_provider.dart';
 
 class TafseerPage extends ConsumerStatefulWidget {
   const TafseerPage({super.key});
@@ -20,8 +21,6 @@ class TafseerPage extends ConsumerStatefulWidget {
 }
 
 class _TafseerPageState extends ConsumerState<TafseerPage> {
-  final Map<String, GlobalKey<TafsserItemState>> itemKeys = {};
-
   @override
   Widget build(BuildContext context) {
     final themeMode = context.themeMode(ref);
@@ -43,13 +42,8 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index];
-              itemKeys.putIfAbsent(
-                book.id,
-                () => GlobalKey<TafsserItemState>(),
-              );
 
               return TafsserItem(
-                key: itemKeys[book.id],
                 info: book,
                 isDownloaded: book.isDownloaded,
                 onPressed: () async {
@@ -70,49 +64,69 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
   }
 
   Future<void> _handleDownload(TafsserBookEntity book) async {
+    final downloadNotifier = ref.read(tafsserDownloadProvider.notifier);
+    
+    // نظهر للمستخدم أن العملية بدأت (حتى لو أخذ فحص الإنترنت وقتاً)
+    downloadNotifier.startDownload(book.id);
+
     final bool internetConnected = await NetworkInfo().hasValidConnection();
 
     if (!internetConnected) {
-      _showErrorMessage("لا يوجد إتصال بالإنترنت");
-      itemKeys[book.id]?.currentState?.setIsDownloading(false);
+      downloadNotifier.stopDownload(book.id);
+      if (mounted) {
+        _showErrorMessage("لا يوجد إتصال بالإنترنت");
+      }
       return;
     }
 
     if (book.isDownloaded) {
-      _showErrorMessage("هذا التفسير مثبت بالفعل");
+      downloadNotifier.stopDownload(book.id);
+      if (mounted) {
+        _showErrorMessage("هذا التفسير مثبت بالفعل");
+      }
       return;
     }
 
     final String url = "${Env.tafseerEndpint}/${book.id}";
 
-    // سنستخدم TafseerUtils مؤقتاً للتقدم حتى يتم تحسين الـ Repository
     TafseerUtils.downloadTafseer(
       url: url,
       onProgress: (progress) {
-        if (mounted) {
-          itemKeys[book.id]?.currentState?.updateDownloadProgress(progress);
-        }
+        downloadNotifier.updateProgress(book.id, progress);
+      },
+      onStart: () {
+        if (!mounted) return;
+        _showStartMessage(book.name);
       },
       onComplete: () {
+        downloadNotifier.stopDownload(book.id);
         if (mounted) {
-          itemKeys[book.id]?.currentState?.markAsDownloaded();
           _showSuccessMessage(book.name);
-          ref.invalidate(tafsserBooksProvider);
         }
       },
       onError: (msg) {
+        downloadNotifier.stopDownload(book.id);
         if (mounted) {
-          itemKeys[book.id]?.currentState?.setIsDownloading(false);
           _showErrorMessage(msg);
         }
       },
     );
   }
 
-  void _showSuccessMessage(String name) {
+  void _showSuccessMessage(String bookName) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("تم تثبيت $name بنجاح"),
+        content: Text("تم تثبيت $bookName بنجاح"),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _showStartMessage(String bookName) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("جاري تثبيت $bookName"),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
       ),

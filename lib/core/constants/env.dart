@@ -1,21 +1,16 @@
 class Env {
-  // TODO: Change to server domain on Release
   // domain name must be the server domain
   // must be changed when the server is hosted
-  // static String pingDomain = "google.com";
 
   static String androidAppLink =
       "https://play.google.com/store/apps/details?id=com.zad_al_muslim.adnan";
   static String iOSAppLink = "https://apps.apple.com/app/idXXXXXXXXXX";
 
   //  pure api url
-  static String baseUrl = "http://10.0.2.2:8000";
+  static String baseUrl = "https://adnandev.cloud";
 
   // enpoint where App can get Tafsser from the server
-  // TODO: change endpoint to domain server
-  // current is local development ip
-  static String tafseerEndpint =
-      "https://4e28-176-0-65-124.ngrok-free.app/tafsser/tafsser_file";
+  static String tafseerEndpint = "https://adnandev.cloud/tafsser/tafsser_file";
 
   // this endpoint for quran ayah by ayah (quran page)
   static String voiceAyahByAyahBaseUrl = "https://verse.mp3quran.net/arabic";

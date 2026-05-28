@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import '../../domain/entities/tafsser_entities.dart';
+import '../providers/tafsser_download_provider.dart';
 
-class TafsserItem extends StatefulWidget {
+class TafsserItem extends ConsumerWidget {
   final TafsserBookEntity info;
   final void Function() onPressed;
   final VoidCallback? onTap;
@@ -18,42 +20,17 @@ class TafsserItem extends StatefulWidget {
   });
 
   @override
-  State<TafsserItem> createState() => TafsserItemState();
-}
-
-class TafsserItemState extends State<TafsserItem> {
-  bool isDownloading = false;
-  late bool isDownloaded;
-  double downloadProgress = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    isDownloaded = widget.isDownloaded;
-  }
-
-  @override
-  void didUpdateWidget(TafsserItem oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isDownloaded != widget.isDownloaded) {
-      setState(() {
-        isDownloaded = widget.isDownloaded;
-        if (isDownloaded && isDownloading) {
-          isDownloading = false;
-          downloadProgress = 0.0;
-        }
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final downloadState = ref.watch(tafsserDownloadProvider.select((map) => map[info.id]));
+    final isDownloading = downloadState?.isDownloading ?? false;
+    final downloadProgress = downloadState?.progress ?? 0.0;
+    
     return Material(
       color: Colors.transparent,
       child: Tooltip(
         message: "عرض المعلومات",
         child: InkWell(
-          onTap: widget.onTap,
+          onTap: onTap,
           splashColor: context.color.primary.withValues(alpha: 0.1),
           highlightColor: context.color.primary.withValues(alpha: 0.05),
           child: Ink(
@@ -76,7 +53,7 @@ class TafsserItemState extends State<TafsserItem> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.info.name,
+                        info.name,
                         style: TextStyle(
                           color: context.color.onSurface,
                           fontFamily: "Cairo",
@@ -89,7 +66,7 @@ class TafsserItemState extends State<TafsserItem> {
                       ),
                       SizedBox(height: 6.h),
                       Text(
-                        widget.info.description,
+                        info.description,
                         style: TextStyle(
                           color: context.color.onSurfaceVariant,
                           fontSize: 14.sp,
@@ -102,7 +79,7 @@ class TafsserItemState extends State<TafsserItem> {
                   ),
                 ),
                 SizedBox(width: 10.w),
-                _buildDownloadButton(context),
+                _buildDownloadButton(context, isDownloaded, isDownloading, downloadProgress),
               ],
             ),
           ),
@@ -111,42 +88,12 @@ class TafsserItemState extends State<TafsserItem> {
     );
   }
 
-  void _handleDownload() {
-    setState(() {
-      isDownloading = true;
-      downloadProgress = 0.0;
-    });
-    widget.onPressed.call();
-  }
-
-  void updateDownloadProgress(double progress) {
-    if (mounted) {
-      setState(() {
-        downloadProgress = progress;
-      });
-    }
-  }
-
-  void setIsDownloading(bool value) {
-    if (mounted) {
-      setState(() {
-        isDownloading = value;
-      });
-    }
-  }
-
-  void markAsDownloaded() {
-    if (mounted) {
-      setState(() {
-        isDownloading = false;
-        isDownloaded = true;
-      });
-    }
-  }
-
-  Widget _buildDownloadButton(BuildContext context) {
-    final actualDownloaded = isDownloaded || widget.isDownloaded;
-
+  Widget _buildDownloadButton(
+    BuildContext context, 
+    bool actualDownloaded, 
+    bool isDownloading, 
+    double downloadProgress,
+  ) {
     if (actualDownloaded) {
       return Container(
         decoration: BoxDecoration(
@@ -178,7 +125,7 @@ class TafsserItemState extends State<TafsserItem> {
               width: 40.w,
               height: 40.w,
               child: CircularProgressIndicator(
-                value: downloadProgress,
+                value: downloadProgress < 0 ? null : downloadProgress,
                 strokeWidth: 2.5,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   context.color.primary,
@@ -186,14 +133,15 @@ class TafsserItemState extends State<TafsserItem> {
                 backgroundColor: context.color.primary.withValues(alpha: 0.2),
               ),
             ),
-            Text(
-              "${(downloadProgress * 100).toStringAsFixed(0)}%",
-              style: TextStyle(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.bold,
-                color: context.color.onSurface,
+            if (downloadProgress >= 0)
+              Text(
+                "${(downloadProgress * 100).toStringAsFixed(0)}%",
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.bold,
+                  color: context.color.onSurface,
+                ),
               ),
-            ),
           ],
         ),
       );
@@ -205,7 +153,7 @@ class TafsserItemState extends State<TafsserItem> {
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        onPressed: _handleDownload,
+        onPressed: onPressed,
         icon: Icon(
           Icons.cloud_download_rounded,
           size: 22.sp,

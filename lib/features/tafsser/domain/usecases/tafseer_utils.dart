@@ -30,6 +30,7 @@ class TafseerUtils {
   static Future<void> downloadTafseer({
     required String url,
     required void Function(double) onProgress,
+    required void Function() onStart,
     required void Function() onComplete,
     required void Function(String) onError,
   }) async {
@@ -40,11 +41,15 @@ class TafseerUtils {
       Response response;
 
       try {
+        onStart();
+        
         response = await dio.get(
           url,
           onReceiveProgress: (received, total) {
             if (total != -1) {
               onProgress((received / total) * 0.9);
+            } else {
+              onProgress(-1.0);
             }
           },
         );
