@@ -10,7 +10,11 @@ import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
+import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
+import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/location_status_provider.dart';
 import 'package:zad_al_muslim/core/common/providers/network_info_provider.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/service_status_provider.dart';
@@ -35,6 +39,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   Timer? _countdownTimer;
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
+  bool _hasShownLocationAlert = false;
 
   @override
   void initState() {
@@ -1740,6 +1745,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   // دوال المساعدة للصلوات
   // ==========================================
   Future<void> _checkAndFetchLocation() async {
+    final prefs = sl<SharedPreferences>();
+    final isLocationDeleted = prefs.getBool('is_location_deleted') ?? false;
+
+    if (isLocationDeleted) {
+      if (!_hasShownLocationAlert) {
+        _hasShownLocationAlert = true;
+        Future.microtask(() => _showLocationDeletedAlert());
+      }
+      return;
+    }
+
     final networkState = ref.read(networkInfoProvider);
     final userPos = ref.read(userPositionProvider);
 
@@ -1780,6 +1796,69 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
       ref.invalidate(todayPrayerTimesProvider);
     }
+  }
+
+  void _showLocationDeletedAlert() {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text("تنبيه", style: TextStyle(fontFamily: 'Cairo')),
+        content: const Text(
+          "تم حذف بيانات الموقع مسبقاً من التطبيق بناءً على طلبك. قد تكون أوقات الصلاة المعروضة حالياً غير دقيقة لأنها تعتمد على آخر موقع معروف قبل الحذف.\nهل ترغب في تحديث بيانات الموقع الآن لتصحيح الأوقات؟",
+          style: TextStyle(fontFamily: 'Cairo', height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text("تجاهل", style: TextStyle(fontFamily: 'Cairo', color: context.color.onSurface)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              sl<SharedPreferences>().setBool('is_location_deleted', false);
+              
+              ref.read(locationStatusProvider.notifier).setStatus({
+                LocationMessage.loading: "جاري تحديد موقعك الحالي...",
+              });
+              
+              final locationLocator = sl<LocationLocatorImpl>();
+              final pos = await locationLocator.determinePosition();
+              
+              pos.fold(
+                (failure) {
+                  ref.read(locationStatusProvider.notifier).setStatus({
+                    LocationMessage.error: failure.message,
+                  });
+                },
+                (position) async {
+                  ref.read(userPositionProvider.notifier).state = position;
+                  ref.read(locationStatusProvider.notifier).clearStatus();
+                  
+                  final tz = (await FlutterTimezone.getLocalTimezone()).toString();
+                  final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
+                  
+                  await recalculateUseCase(
+                    domain_loc.Location(
+                      latitude: position.latitude,
+                      longitude: position.longitude,
+                      timezone: tz,
+                    ),
+                  );
+                  
+                  ref.invalidate(todayPrayerTimesProvider);
+                  ref.invalidate(selectedDatePrayerTimesProvider);
+                  ref.invalidate(userAddressProvider);
+                },
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: context.color.primary),
+            child: const Text("تحديث الموقع", style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   bool _checkIfCurrent(String name, Prayer current) {

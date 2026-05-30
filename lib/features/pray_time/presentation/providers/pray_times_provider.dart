@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
-import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
 import 'package:zad_al_muslim/domain/entities/prayer_time.dart' as domain;
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/prayer_adjustments_provider.dart';
@@ -19,11 +17,12 @@ final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>(
   (ref) async {
     ref.keepAlive();
 
-    final pos = ref.watch(userPositionProvider);
-    if (pos == null) {
-      AppLogger.logger.e("todayPrayerTimesProvider: الموقع (pos) غير متوفر.");
-      return null;
-    }
+    // Remove the strict pos check so that cached prayer times can be loaded if they exist
+    // final pos = ref.watch(userPositionProvider);
+    // if (pos == null) {
+    //   AppLogger.logger.e("todayPrayerTimesProvider: الموقع (pos) غير متوفر.");
+    //   return null;
+    // }
 
     final now = DateTime.now();
     final todayDate = DateTime(now.year, now.month, now.day);
@@ -48,8 +47,9 @@ final selectedDatePrayerTimesProvider =
     FutureProvider.autoDispose<PrayerTimesEntity?>((ref) async {
       ref.keepAlive();
 
-      final pos = ref.watch(userPositionProvider);
-      if (pos == null) return null;
+      // Remove the strict pos check so that cached prayer times can be loaded if they exist
+      // final pos = ref.watch(userPositionProvider);
+      // if (pos == null) return null;
 
       final selectedDate = ref.watch(selectedDateProvider);
 

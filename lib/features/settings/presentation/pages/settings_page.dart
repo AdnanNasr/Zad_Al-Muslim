@@ -21,6 +21,13 @@ import 'package:zad_al_muslim/features/settings/presentation/widgets/madhab_dial
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/providers/user_address_provider.dart';
+import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
+import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -33,6 +40,149 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   double currentValue = 50;
 
   bool _isClearingCache = false;
+  bool _isUpdatingLocation = false;
+
+  Future<void> _deleteLocationData(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("حذف بيانات الموقع", style: TextStyle(fontFamily: 'Cairo')),
+        content: const Text(
+          "إذا تابعت في حذف بيانات الموقع الخاصة بك، قد لا تعمل أوقات الصلاة واتجاه القبلة بشكل صحيح.\nهل أنت متأكد من الحذف؟",
+          style: TextStyle(fontFamily: 'Cairo', height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll<Color>(context.color.onSurface),
+            ),
+            child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text("حذف", style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await sl<LocationLocatorImpl>().clearLocationData();
+      ref.invalidate(userPositionProvider);
+      ref.invalidate(userAddressProvider);
+      ref.invalidate(todayPrayerTimesProvider);
+      ref.invalidate(selectedDatePrayerTimesProvider);
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("تم حذف بيانات الموقع بنجاح", style: TextStyle(fontFamily: 'Cairo')),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("حدث خطأ أثناء حذف البيانات", style: TextStyle(fontFamily: 'Cairo')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _updateLocationData(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("تحديث بيانات الموقع", style: TextStyle(fontFamily: 'Cairo')),
+        content: const Text(
+          "سيتم جلب إحداثيات الموقع الخاصة بك لاستخدامها في ميزات أوقات الصلاة واتجاه القبلة، وسيتم حفظها محلياً ولن يكون لأي أحد إمكانية الوصول إلى هذه المعلومات كما هو مذكور في سياسة الخصوصية.\nهل توافق على التحديث؟",
+          style: TextStyle(fontFamily: 'Cairo', height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll<Color>(context.color.onSurface),
+            ),
+            child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: context.color.primary),
+            child: const Text("موافق", style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() => _isUpdatingLocation = true);
+
+    try {
+      final locationLocator = sl<LocationLocatorImpl>();
+      final posResult = await locationLocator.determinePosition();
+      
+      await posResult.fold(
+        (failure) async {
+           if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(failure.message, style: const TextStyle(fontFamily: 'Cairo')),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+        },
+        (position) async {
+          ref.read(userPositionProvider.notifier).state = position;
+          
+          final tz = (await FlutterTimezone.getLocalTimezone()).toString();
+          final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
+          
+          await recalculateUseCase(
+            domain_loc.Location(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              timezone: tz,
+            ),
+          );
+          
+          ref.invalidate(todayPrayerTimesProvider);
+          ref.invalidate(selectedDatePrayerTimesProvider);
+          ref.invalidate(userAddressProvider);
+          
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("تم تحديث بيانات الموقع بنجاح", style: TextStyle(fontFamily: 'Cairo')),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("حدث خطأ أثناء تحديث الموقع", style: TextStyle(fontFamily: 'Cairo')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdatingLocation = false);
+    }
+  }
 
   Future<void> _clearAudioCache(BuildContext context) async {
     // إظهار تنبيه للمستخدم
@@ -520,6 +670,25 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                       );
                     },
+                  ),
+                  SettingCards(
+                    icon: const Right(Icons.my_location_rounded),
+                    text: "تحديث بيانات الموقع",
+                    widget: _isUpdatingLocation
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : null,
+                    onTap: _isUpdatingLocation
+                        ? null
+                        : () => _updateLocationData(context),
+                  ),
+                  SettingCards(
+                    icon: const Right(Icons.location_off_rounded),
+                    text: "حذف بيانات الموقع",
+                    onTap: () => _deleteLocationData(context),
                   ),
                   SettingCards(
                     icon: const Right(Icons.delete),

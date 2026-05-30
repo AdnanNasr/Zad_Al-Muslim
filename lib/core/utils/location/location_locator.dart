@@ -22,6 +22,7 @@ abstract class LocationLocator {
     double lat,
     double lng,
   );
+  Future<void> clearLocationData();
 }
 
 class LocationLocatorImpl implements LocationLocator {
@@ -73,6 +74,7 @@ class LocationLocatorImpl implements LocationLocator {
 
       // حفظ الإحداثيات محلياً باستخدام setDouble
       await saveLocationCoords(position.latitude, position.longitude);
+      await sharedPreferences.setBool('is_location_deleted', false);
 
       return Right(position);
     } catch (e) {
@@ -296,8 +298,17 @@ class LocationLocatorImpl implements LocationLocator {
 
       return params;
     } catch (e) {
-      AppLogger.logger.e("خطأ في تحديد بارامترات الحساب: $e");
       return CalculationMethod.muslim_world_league.getParameters();
     }
+  }
+
+  @override
+  Future<void> clearLocationData() async {
+    await sharedPreferences.remove(SharedPrefKeys.lat);
+    await sharedPreferences.remove(SharedPrefKeys.long);
+    await sharedPreferences.remove(SharedPrefKeys.country);
+    await sharedPreferences.remove(SharedPrefKeys.locality);
+    await sharedPreferences.remove(SharedPrefKeys.countryCode);
+    await sharedPreferences.setBool('is_location_deleted', true);
   }
 }
