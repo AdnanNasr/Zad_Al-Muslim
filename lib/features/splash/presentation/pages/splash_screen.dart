@@ -134,6 +134,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     ThemeMode themeMode = ref.watch(themeProvider);
     final bool isDark = themeMode == ThemeMode.dark;
     return Scaffold(
+      backgroundColor: context.color.primary,
       body: SizedBox(
         width: double.infinity,
         child: _buildLoadingState(isDark: isDark),
@@ -154,30 +155,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             return Transform.scale(scale: value, child: child);
           },
           child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
+            decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.r),
               child: Image.asset(
                 "assets/images/ic_launcher_foreground.png",
-                width: 300.w,
-                height: 300.w,
-                color: context.color.primary,
+                width: 400.w,
+                height: 400.w,
+                // color: context.color.primary,
               ),
             ),
           ),
         ),
 
-        SizedBox(height: 60.h),
-
+        // SizedBox(height: 60.h),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 50.w),
           child: Column(
@@ -188,9 +179,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 child: LinearProgressIndicator(
                   value: _progress,
                   minHeight: 10.h,
-                  backgroundColor: context.color.primary.withValues(alpha: 0.1),
+                  backgroundColor: context.color.onPrimary.withValues(
+                    alpha: 0.1,
+                  ),
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    context.color.primary,
+                    context.color.onPrimary,
                   ),
                 ),
               ),
@@ -205,7 +198,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   key: ValueKey(_loadingText),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: context.color.primary,
+                    color: context.color.onPrimary,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w500,
                     fontFamily: "Cairo",
@@ -218,9 +211,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               Text(
                 "${(_progress * 100).toInt()}%",
                 style: TextStyle(
-                  color: isDark
-                      ? context.color.onSurface
-                      : context.color.onSurface,
+                  color: context.color.onPrimary,
                   fontSize: 14.sp,
                   fontFamily: "Cairo",
                 ),

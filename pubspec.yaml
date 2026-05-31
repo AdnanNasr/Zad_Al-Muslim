@@ -1,4 +1,4 @@
-name: zad_al_muslim # zad_al_muslim
+name: zad_al_muslim
 description: "زاد المسلم - تطبيق قرآني شامل يوفر قراءة القرآن الكريم، الأحاديث النبوية، مواقيت الصلاة، القبلة، التفسير، والأذكار بتصميم حديث ومعمارية نظيفة"
 
 publish_to: "none"
@@ -35,7 +35,6 @@ dependencies:
   geocoding: ^4.0.0
   flutter_local_notifications: ^20.1.0
   timezone: ^0.10.1
-  flutter_native_splash: ^2.4.7
   get_it: ^9.2.1
   dartz: ^0.10.1
   equatable: ^2.0.8
@@ -59,6 +58,7 @@ dependencies:
   flutter_timezone: ^5.0.2
   hijri: ^3.0.0
   url_launcher: ^6.3.2
+  flutter_native_splash: ^2.4.7
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -76,7 +76,6 @@ flutter:
     - assets/json/
     - assets/images/
     - assets/icons/
-    - assets/svgs/
 
   fonts: # custom app fonts
     - family: Amiri
@@ -131,16 +130,19 @@ flutter:
 flutter_launcher_icons:
   android: true
   min_sdk_android: 21
+  notification_image: "assets/images/ic_launcher_foreground.png"
+  image_path_android: "assets/images/app_logo.png"
   adaptive_icon_background: "assets/images/ic_launcher_background.png"
   adaptive_icon_foreground: "assets/images/ic_launcher_foreground.png"
   ios: true
   image_path_ios: "assets/images/app_logo.png"
   remove_alpha_ios: true
 flutter_native_splash:
-  color: "#FFFFFF"
+  color: "#137481"
   image: assets/images/ic_launcher_foreground.png
+  image_android: "assets/images/ic_launcher_foreground.png"
   fullscreen: true
 
   android_12:
-    color: "#FFFFFF"
+    color: "#137481"
     image: assets/images/ic_launcher_foreground.png
