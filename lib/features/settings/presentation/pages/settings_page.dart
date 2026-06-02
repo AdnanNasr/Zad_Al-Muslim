@@ -19,7 +19,6 @@ import 'package:zad_al_muslim/features/settings/presentation/widgets/font_size_d
 import 'package:zad_al_muslim/features/settings/presentation/widgets/calculation_method_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/madhab_dialog.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
@@ -39,7 +38,7 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   double currentValue = 50;
 
-  // this varibale belong to claen space
+  // this varibale belong to clean space
   // bool _isClearingCache = false;
   bool _isUpdatingLocation = false;
 
@@ -218,7 +217,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  // this method belnog to clear space
+  // this method belnog to clean space
   // Future<void> _clearAudioCache(BuildContext context) async {
   //   // إظهار تنبيه للمستخدم
   //   final confirm = await showDialog<bool>(

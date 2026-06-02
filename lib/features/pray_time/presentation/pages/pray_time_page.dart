@@ -983,7 +983,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   // صف صلاة واحدة في القائمة
   // ==========================================
   Widget _buildPrayerRow({
-    // TODO: IM Working here
     required BuildContext context,
     required String name,
     required String time,
@@ -1021,7 +1020,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         isNotificationEnabled = appSettings.ishaNotificationEnabled;
         break;
     }
-    isNotificationEnabled = appSettings.prayerNotificationsEnabled && isNotificationEnabled;
+    isNotificationEnabled =
+        appSettings.prayerNotificationsEnabled && isNotificationEnabled;
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5.h),
@@ -1812,20 +1812,26 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("تجاهل", style: TextStyle(fontFamily: 'Cairo', color: context.color.onSurface)),
+            child: Text(
+              "تجاهل",
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                color: context.color.onSurface,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
               sl<SharedPreferences>().setBool('is_location_deleted', false);
-              
+
               ref.read(locationStatusProvider.notifier).setStatus({
                 LocationMessage.loading: "جاري تحديد موقعك الحالي...",
               });
-              
+
               final locationLocator = sl<LocationLocatorImpl>();
               final pos = await locationLocator.determinePosition();
-              
+
               pos.fold(
                 (failure) {
                   ref.read(locationStatusProvider.notifier).setStatus({
@@ -1835,10 +1841,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 (position) async {
                   ref.read(userPositionProvider.notifier).state = position;
                   ref.read(locationStatusProvider.notifier).clearStatus();
-                  
-                  final tz = (await FlutterTimezone.getLocalTimezone()).toString();
-                  final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
-                  
+
+                  final tz = (await FlutterTimezone.getLocalTimezone())
+                      .toString();
+                  final recalculateUseCase =
+                      sl<RecalculateAndScheduleUseCase>();
+
                   await recalculateUseCase(
                     domain_loc.Location(
                       latitude: position.latitude,
@@ -1846,15 +1854,20 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                       timezone: tz,
                     ),
                   );
-                  
+
                   ref.invalidate(todayPrayerTimesProvider);
                   ref.invalidate(selectedDatePrayerTimesProvider);
                   ref.invalidate(userAddressProvider);
                 },
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: context.color.primary),
-            child: const Text("تحديث الموقع", style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.color.primary,
+            ),
+            child: const Text(
+              "تحديث الموقع",
+              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
+            ),
           ),
         ],
       ),
