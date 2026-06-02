@@ -39,14 +39,18 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   double currentValue = 50;
 
-  bool _isClearingCache = false;
+  // this varibale belong to claen space
+  // bool _isClearingCache = false;
   bool _isUpdatingLocation = false;
 
   Future<void> _deleteLocationData(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("حذف بيانات الموقع", style: TextStyle(fontFamily: 'Cairo')),
+        title: const Text(
+          "حذف بيانات الموقع",
+          style: TextStyle(fontFamily: 'Cairo'),
+        ),
         content: const Text(
           "إذا تابعت في حذف بيانات الموقع الخاصة بك، قد لا تعمل أوقات الصلاة واتجاه القبلة بشكل صحيح.\nهل أنت متأكد من الحذف؟",
           style: TextStyle(fontFamily: 'Cairo', height: 1.5),
@@ -55,14 +59,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             style: ButtonStyle(
-              foregroundColor: WidgetStatePropertyAll<Color>(context.color.onSurface),
+              foregroundColor: WidgetStatePropertyAll<Color>(
+                context.color.onSurface,
+              ),
             ),
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("حذف", style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+            child: const Text(
+              "حذف",
+              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -76,11 +85,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       ref.invalidate(userAddressProvider);
       ref.invalidate(todayPrayerTimesProvider);
       ref.invalidate(selectedDatePrayerTimesProvider);
-      
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("تم حذف بيانات الموقع بنجاح", style: TextStyle(fontFamily: 'Cairo')),
+            content: Text(
+              "تم حذف بيانات الموقع بنجاح",
+              style: TextStyle(fontFamily: 'Cairo'),
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -89,7 +101,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("حدث خطأ أثناء حذف البيانات", style: TextStyle(fontFamily: 'Cairo')),
+            content: Text(
+              "حدث خطأ أثناء حذف البيانات",
+              style: TextStyle(fontFamily: 'Cairo'),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -101,7 +116,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("تحديث بيانات الموقع", style: TextStyle(fontFamily: 'Cairo')),
+        title: const Text(
+          "تحديث بيانات الموقع",
+          style: TextStyle(fontFamily: 'Cairo'),
+        ),
         content: const Text(
           "سيتم جلب إحداثيات الموقع الخاصة بك لاستخدامها في ميزات أوقات الصلاة واتجاه القبلة، وسيتم حفظها محلياً ولن يكون لأي أحد إمكانية الوصول إلى هذه المعلومات كما هو مذكور في سياسة الخصوصية.\nهل توافق على التحديث؟",
           style: TextStyle(fontFamily: 'Cairo', height: 1.5),
@@ -110,14 +128,21 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             style: ButtonStyle(
-              foregroundColor: WidgetStatePropertyAll<Color>(context.color.onSurface),
+              foregroundColor: WidgetStatePropertyAll<Color>(
+                context.color.onSurface,
+              ),
             ),
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: context.color.primary),
-            child: const Text("موافق", style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.color.primary,
+            ),
+            child: const Text(
+              "موافق",
+              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -130,24 +155,27 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     try {
       final locationLocator = sl<LocationLocatorImpl>();
       final posResult = await locationLocator.determinePosition();
-      
+
       await posResult.fold(
         (failure) async {
-           if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(failure.message, style: const TextStyle(fontFamily: 'Cairo')),
-                  backgroundColor: Colors.red,
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  failure.message,
+                  style: const TextStyle(fontFamily: 'Cairo'),
                 ),
-              );
-            }
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         },
         (position) async {
           ref.read(userPositionProvider.notifier).state = position;
-          
+
           final tz = (await FlutterTimezone.getLocalTimezone()).toString();
           final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
-          
+
           await recalculateUseCase(
             domain_loc.Location(
               latitude: position.latitude,
@@ -155,15 +183,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               timezone: tz,
             ),
           );
-          
+
           ref.invalidate(todayPrayerTimesProvider);
           ref.invalidate(selectedDatePrayerTimesProvider);
           ref.invalidate(userAddressProvider);
-          
+
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("تم تحديث بيانات الموقع بنجاح", style: TextStyle(fontFamily: 'Cairo')),
+                content: Text(
+                  "تم تحديث بيانات الموقع بنجاح",
+                  style: TextStyle(fontFamily: 'Cairo'),
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -174,7 +205,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("حدث خطأ أثناء تحديث الموقع", style: TextStyle(fontFamily: 'Cairo')),
+            content: Text(
+              "حدث خطأ أثناء تحديث الموقع",
+              style: TextStyle(fontFamily: 'Cairo'),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -184,137 +218,138 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  Future<void> _clearAudioCache(BuildContext context) async {
-    // إظهار تنبيه للمستخدم
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          "تنظيف المساحة",
-          style: TextStyle(fontFamily: 'Cairo'),
-        ),
-        content: const Text(
-          "هل أنت متأكد من رغبتك في مسح الذاكرة المؤقتة للتلاوات الصوتية؟ سيتم تحرير المساحة ولكنك ستحتاج لاتصال بالإنترنت عند الاستماع لها مجدداً.",
-          style: TextStyle(fontFamily: 'Cairo'),
-        ),
-        actions: [
-          TextButton(
-            style: ButtonStyle(
-              foregroundColor: WidgetStatePropertyAll<Color>(
-                context.color.onSurface,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text(
-              "تأكيد ومسح",
-              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
+  // this method belnog to clear space
+  // Future<void> _clearAudioCache(BuildContext context) async {
+  //   // إظهار تنبيه للمستخدم
+  //   final confirm = await showDialog<bool>(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text(
+  //         "تنظيف المساحة",
+  //         style: TextStyle(fontFamily: 'Cairo'),
+  //       ),
+  //       content: const Text(
+  //         "هل أنت متأكد من رغبتك في مسح الذاكرة المؤقتة للتلاوات الصوتية؟ سيتم تحرير المساحة ولكنك ستحتاج لاتصال بالإنترنت عند الاستماع لها مجدداً.",
+  //         style: TextStyle(fontFamily: 'Cairo'),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           style: ButtonStyle(
+  //             foregroundColor: WidgetStatePropertyAll<Color>(
+  //               context.color.onSurface,
+  //             ),
+  //           ),
+  //           onPressed: () => Navigator.pop(context, false),
+  //           child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () => Navigator.pop(context, true),
+  //           style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+  //           child: const Text(
+  //             "تأكيد ومسح",
+  //             style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
 
-    if (confirm != true) return;
+  //   if (confirm != true) return;
 
-    setState(() => _isClearingCache = true);
+  //   setState(() => _isClearingCache = true);
 
-    try {
-      final List<Directory> dirsToScan = [];
+  //   try {
+  //     final List<Directory> dirsToScan = [];
 
-      // جلب جميع المجلدات المحتملة للتخزين المؤقت
-      try {
-        dirsToScan.add(await getTemporaryDirectory());
-      } catch (e) {
-        /* ignore */
-      }
+  //     // جلب جميع المجلدات المحتملة للتخزين المؤقت
+  //     try {
+  //       dirsToScan.add(await getTemporaryDirectory());
+  //     } catch (e) {
+  //       /* ignore */
+  //     }
 
-      try {
-        dirsToScan.add(await getApplicationCacheDirectory());
-      } catch (e) {
-        /* ignore */
-      }
+  //     try {
+  //       dirsToScan.add(await getApplicationCacheDirectory());
+  //     } catch (e) {
+  //       /* ignore */
+  //     }
 
-      int totalDeletedSize = 0;
+  //     int totalDeletedSize = 0;
 
-      for (var dir in dirsToScan) {
-        if (dir.existsSync()) {
-          final List<FileSystemEntity> entities = dir.listSync(
-            recursive: true,
-            followLinks: false,
-          );
-          for (FileSystemEntity entity in entities) {
-            try {
-              if (entity is File) {
-                final int fileSize = entity.lengthSync();
-                entity.deleteSync();
-                totalDeletedSize += fileSize;
-              } else if (entity is Directory) {
-                // قد نرغب في حذف المجلدات الفارغة أيضاً، لكن الحذر مطلوب
-                // سنترك محرك الحذف يتعامل معها لاحقاً إذا فرغت
-              }
-            } catch (e) {
-              // قد يكون الملف قيد الاستخدام حالياً (خاصة إذا كان المصحف يعمل)
-              // نتجاهل الخطأ ونستمر في تنظيف باقي الملفات
-              continue;
-            }
-          }
+  //     for (var dir in dirsToScan) {
+  //       if (dir.existsSync()) {
+  //         final List<FileSystemEntity> entities = dir.listSync(
+  //           recursive: true,
+  //           followLinks: false,
+  //         );
+  //         for (FileSystemEntity entity in entities) {
+  //           try {
+  //             if (entity is File) {
+  //               final int fileSize = entity.lengthSync();
+  //               entity.deleteSync();
+  //               totalDeletedSize += fileSize;
+  //             } else if (entity is Directory) {
+  //               // قد نرغب في حذف المجلدات الفارغة أيضاً، لكن الحذر مطلوب
+  //               // سنترك محرك الحذف يتعامل معها لاحقاً إذا فرغت
+  //             }
+  //           } catch (e) {
+  //             // قد يكون الملف قيد الاستخدام حالياً (خاصة إذا كان المصحف يعمل)
+  //             // نتجاهل الخطأ ونستمر في تنظيف باقي الملفات
+  //             continue;
+  //           }
+  //         }
 
-          // محاولة حذف المجلدات الفرعية الفارغة لتنظيف أفضل
-          try {
-            final List<FileSystemEntity> remainingEntities = dir.listSync(
-              followLinks: false,
-            );
-            for (var sub in remainingEntities) {
-              if (sub is Directory) {
-                try {
-                  sub.deleteSync(recursive: true);
-                } catch (e) {
-                  /* ignore */
-                }
-              }
-            }
-          } catch (e) {
-            /* ignore */
-          }
-        }
-      }
+  //         // محاولة حذف المجلدات الفرعية الفارغة لتنظيف أفضل
+  //         try {
+  //           final List<FileSystemEntity> remainingEntities = dir.listSync(
+  //             followLinks: false,
+  //           );
+  //           for (var sub in remainingEntities) {
+  //             if (sub is Directory) {
+  //               try {
+  //                 sub.deleteSync(recursive: true);
+  //               } catch (e) {
+  //                 /* ignore */
+  //               }
+  //             }
+  //           }
+  //         } catch (e) {
+  //           /* ignore */
+  //         }
+  //       }
+  //     }
 
-      final kbSize = (totalDeletedSize / 1024).toStringAsFixed(2);
+  //     final kbSize = (totalDeletedSize / 1024).toStringAsFixed(2);
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "تم تنظيف $kbSize كيلوبايت بنجاح!",
-              style: const TextStyle(fontFamily: 'Cairo'),
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "حدث خطأ أثناء تنظيف المساحة.",
-              style: TextStyle(fontFamily: 'Cairo'),
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isClearingCache = false);
-      }
-    }
-  }
+  //     if (context.mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(
+  //             "تم تنظيف $kbSize كيلوبايت بنجاح!",
+  //             style: const TextStyle(fontFamily: 'Cairo'),
+  //           ),
+  //           backgroundColor: Colors.green,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (context.mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text(
+  //             "حدث خطأ أثناء تنظيف المساحة.",
+  //             style: TextStyle(fontFamily: 'Cairo'),
+  //           ),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() => _isClearingCache = false);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -615,63 +650,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   //   },
                   // ),
                   SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.restart_alt_rounded),
-                    text: "إعادة ضبط جميع الإعدادات",
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text(
-                            "تأكيد",
-                            style: TextStyle(fontFamily: "Cairo"),
-                          ),
-                          content: const Text(
-                            "هل أنت متأكد من إعادة ضبط جميع الإعدادات العامة؟",
-                            style: TextStyle(fontFamily: "Cairo"),
-                          ),
-                          actions: [
-                            TextButton(
-                              style: ButtonStyle(
-                                foregroundColor: WidgetStatePropertyAll<Color>(
-                                  context.color.onSurface,
-                                ),
-                              ),
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                "إلغاء",
-                                style: TextStyle(fontFamily: "Cairo"),
-                              ),
-                            ),
-                            TextButton(
-                              style: const ButtonStyle(
-                                backgroundColor: WidgetStatePropertyAll<Color>(
-                                  Colors.red,
-                                ),
-                              ),
-                              onPressed: () async {
-                                await appSettingsNotifier.resetSettings();
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                }
-                              },
-                              child: const Text(
-                                "إعادة ضبط",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "Cairo",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  SettingCards(
                     icon: const Right(Icons.my_location_rounded),
                     text: "تحديث بيانات الموقع",
                     widget: _isUpdatingLocation
@@ -691,19 +669,30 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onTap: () => _deleteLocationData(context),
                   ),
                   SettingCards(
-                    icon: const Right(Icons.delete),
-                    text: "تنظيف المساحة",
-                    widget: _isClearingCache
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : null,
-                    onTap: _isClearingCache
-                        ? null
-                        : () => _clearAudioCache(context),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(9),
+                    ),
+                    icon: const Right(Icons.restart_alt_rounded),
+                    text: "إعادة ضبط الإعدادات",
+                    onTap: () {
+                      resetSettingsDialog(context, appSettingsNotifier);
+                    },
                   ),
+                  // TODO Later: add clean space feautre
+                  // SettingCards(
+                  //   icon: const Right(Icons.delete),
+                  //   text: "تنظيف المساحة",
+                  //   widget: _isClearingCache
+                  //       ? const SizedBox(
+                  //           width: 20,
+                  //           height: 20,
+                  //           child: CircularProgressIndicator(strokeWidth: 2),
+                  //         )
+                  //       : null,
+                  //   onTap: _isClearingCache
+                  //       ? null
+                  //       : () => _clearAudioCache(context),
+                  // ),
                   SettingCards(
                     icon: const Right(Icons.app_settings_alt),
                     text: AppLocalizations.of(context)!.app_information,
@@ -733,6 +722,52 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<dynamic> resetSettingsDialog(
+    BuildContext context,
+    AppSettingsNotifier appSettingsNotifier,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("تأكيد", style: TextStyle(fontFamily: "Cairo")),
+        content: const Text(
+          "هل أنت متأكد من إعادة ضبط جميع الإعدادات العامة؟",
+          style: TextStyle(fontFamily: "Cairo"),
+        ),
+        actions: [
+          TextButton(
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll<Color>(
+                context.color.onSurface,
+              ),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text("إلغاء", style: TextStyle(fontFamily: "Cairo")),
+          ),
+          TextButton(
+            style: const ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll<Color>(Colors.red),
+            ),
+            onPressed: () async {
+              await appSettingsNotifier.resetSettings();
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
+            },
+            child: const Text(
+              "إعادة ضبط",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Cairo",
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
