@@ -704,11 +704,11 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                     );
 
                     final bytes = await rootBundle.load(
-                      'assets/images/app_logo.png',
+                      'assets/images/logo.png',
                     );
 
                     final dir = await getTemporaryDirectory();
-                    final file = File('${dir.path}/app_logo.png');
+                    final file = File('${dir.path}/app_logo_v2.png');
 
                     await file.writeAsBytes(bytes.buffer.asUint8List());
 

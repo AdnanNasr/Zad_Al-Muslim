@@ -508,13 +508,13 @@ class _SurahSection extends ConsumerWidget {
       // final verseColor = isPlaying || isHighlighted
       //     ? primaryColor.withValues(alpha: isPlaying ? 0.85 : 0.6)
       //     : textColor;
-
       // النص الرئيسي للآية
       spans.add(
         TextSpan(
           text: verseText,
           style: TextStyle(
             fontFamily: "Quran",
+
             fontSize: fontSize,
             color: textColor,
             height: 2.0,
@@ -526,7 +526,7 @@ class _SurahSection extends ConsumerWidget {
           ),
           recognizer: LongPressGestureRecognizer()
             ..onLongPress = () {
-              // نحتاج الـ position لاحقاً — نستخدم center كـ fallback
+              // احتاج الـ position لاحقاً — نستخدم center كـ fallback
               onLongPress(
                 surahNumber,
                 v,
@@ -603,7 +603,7 @@ class _SurahSection extends ConsumerWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: RichText(
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.justify,
             textDirection: TextDirection.rtl,
             text: TextSpan(children: spans),
           ),

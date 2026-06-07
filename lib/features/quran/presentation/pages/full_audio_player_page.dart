@@ -100,10 +100,11 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
       },
       (url) async {
         try {
-          final bytes = await rootBundle.load('assets/images/app_logo.png');
+          // TODO
+          final bytes = await rootBundle.load('assets/images/logo.png');
 
           final dir = await getTemporaryDirectory();
-          final file = File('${dir.path}/app_logo.png');
+          final file = File('${dir.path}/app_logo_v2.png');
 
           await file.writeAsBytes(bytes.buffer.asUint8List());
           await player.setAudioSource(

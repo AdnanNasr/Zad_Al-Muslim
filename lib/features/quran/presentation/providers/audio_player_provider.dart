@@ -117,10 +117,10 @@ void _playNextPreparedAyah(
   );
   urlEither.fold((failure) {}, (url) async {
     try {
-      final bytes = await rootBundle.load('assets/images/app_logo.png');
+      final bytes = await rootBundle.load('assets/images/logo.png');
 
       final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/app_logo.png');
+      final file = File('${dir.path}/app_logo_v2.png');
 
       await file.writeAsBytes(bytes.buffer.asUint8List());
       await player.setAudioSource(
@@ -182,6 +182,13 @@ final playMoratalSurahActionProvider = Provider((ref) {
       },
       (url) async {
         try {
+          final bytes = await rootBundle.load('assets/images/logo.png');
+
+          final dir = await getTemporaryDirectory();
+          final file = File('${dir.path}/app_logo_v2.png');
+
+          await file.writeAsBytes(bytes.buffer.asUint8List());
+
           await audioPlayer.setAudioSource(
             AudioSource.uri(
               Uri.parse(url),
@@ -189,6 +196,7 @@ final playMoratalSurahActionProvider = Provider((ref) {
                 id: '${surah.qariId}_${surah.surahNumber}',
                 title: 'سورة ${surah.surahName}',
                 artist: surah.qariName,
+                artUri: file.uri,
               ),
             ),
             initialPosition: Duration.zero,
