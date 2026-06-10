@@ -55,6 +55,16 @@ class QariNames {
     "name": "سعد الغامدي",
     "server": "https://server7.mp3quran.net/s_gmd/",
   };
+  static const Map<String, String> hDukhain = {
+    "id": "273",
+    "name": "هيثم التدخين",
+    "server": "https://server16.mp3quran.net/h_dukhain/Rewayat-Hafs-A-n-Assem/",
+  };
+  static const Map<String, String> hazza = {
+    "id": "231",
+    "name": "هزاع البلوشي",
+    "server": "https://server11.mp3quran.net/hazza/",
+  };
 
   // قائمة مجمعة لاستخدامها في GridView.builder مباشرة إذا أردت
   static const List<Map<String, String>> allQaris = [
@@ -69,5 +79,7 @@ class QariNames {
     alAjmy,
     alDossari,
     alGhamdi,
+    hDukhain,
+    hazza,
   ];
 }

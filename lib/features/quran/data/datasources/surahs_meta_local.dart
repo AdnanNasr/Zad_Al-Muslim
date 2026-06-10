@@ -19,11 +19,19 @@ class SurahsMetaLocalImpl implements SurahsMetaLocal {
       final int juzzNumber = getJuzNumber(i, 1);
       final int verseCount = getVerseCount(i);
       if (arabicName.isNotEmpty) {
-        surahsMeta.add(SurahMetaModel.fromString(i, pageNumber, arabicName, englishName, juzzNumber, verseCount));
+        surahsMeta.add(
+          SurahMetaModel.fromString(
+            i,
+            pageNumber,
+            arabicName,
+            englishName,
+            juzzNumber,
+            verseCount,
+          ),
+        );
       }
     }
 
     return surahsMeta;
   }
 }
-

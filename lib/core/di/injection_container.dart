@@ -23,9 +23,13 @@ import 'package:zad_al_muslim/features/quran/domain/usecases/get_surah_number_by
 import 'package:zad_al_muslim/features/quran/domain/usecases/get_surahs_meta.dart';
 import 'package:zad_al_muslim/features/quran/domain/usecases/get_voice_ayah_by_ayah.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/datasources/surah_qari_remote_sources.dart';
+import 'package:zad_al_muslim/features/quran_moratal/data/datasources/surahs_moratal_meta_data.dart';
+import 'package:zad_al_muslim/features/quran_moratal/data/repositories/surah_meta_moratal_impl.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/repositories/surah_qari_voice_impl.dart';
+import 'package:zad_al_muslim/features/quran_moratal/domain/repositories/surah_meta_moratal_repo.dart';
 import 'package:zad_al_muslim/features/quran_moratal/domain/usecases/get_surah_qari_voice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zad_al_muslim/features/quran_moratal/domain/usecases/get_surahs_moratal_names.dart';
 import '../../features/tafsser/data/datasource/tafsser_local_data_source.dart';
 import '../../features/tafsser/data/datasource/tafsser_remote_data_source.dart';
 import '../../features/tafsser/data/repositories/tafsser_repository_impl.dart';
@@ -176,6 +180,16 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<SurahQariVoiceImpl>(() => SurahQariVoiceImpl(sl()));
   sl.registerLazySingleton<GetSurahQariVoice>(() => GetSurahQariVoice(sl()));
+
+  sl.registerLazySingleton<SurahsMoratalMetaData>(
+    () => SurahsMoratalMetaDataImpl(),
+  );
+  sl.registerLazySingleton<SurahMetaMoratalRepo>(
+    () => SurahMetaMoratalImpl(sl()),
+  );
+  sl.registerLazySingleton<GetSurahsMoratalNames>(
+    () => GetSurahsMoratalNames(sl()),
+  );
 
   // Features - Adkar
   sl.registerLazySingleton<AdkarRepo>(() => AdkarImpl());

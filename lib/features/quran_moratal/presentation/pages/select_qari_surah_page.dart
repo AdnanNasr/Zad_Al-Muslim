@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran/domain/entities/surah_meta_entity.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/surahs_meta_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/domain/entities/surah_meta_moratal_entity.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/surahs_names_moratal_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
 
 class SelectQariSurahPage extends ConsumerStatefulWidget {
@@ -30,7 +33,9 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
 
   @override
   Widget build(BuildContext context) {
-    final surahsMeta = ref.watch(surahsMetaProvider);
+    final surahsMetaAsyncProvider = ref.watch(
+      surahsNamesMoratalProvider(widget.qariData["server"] as String),
+    );
     final ThemeMode themeMode = ref.watch(themeProvider);
     final bool isDark = themeMode == ThemeMode.dark;
 
@@ -42,54 +47,77 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
       ),
       body: Stack(
         children: [
-          surahsMeta.fold(
-            (failure) => Center(
-              child: Text(
-                failure.message,
-                style: const TextStyle(fontFamily: "Cairo", color: Colors.red),
+          surahsMetaAsyncProvider.when(
+            data: (surahsMeta) => surahsMeta.fold(
+              (failure) => Center(
+                child: Text(
+                  failure.message,
+                  style: const TextStyle(
+                    fontFamily: "Cairo",
+                    color: Colors.red,
+                  ),
+                ),
               ),
-            ),
-            (surahs) => AnimationLimiter(
-              child: Padding(
-                padding: EdgeInsets.only(left: 4, top: 20.h),
-                child: Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  trackVisibility: true,
-                  interactive: true,
-                  thickness: 5,
-                  radius: const Radius.circular(24),
-                  child: ListView.separated(
+              (surahs) => AnimationLimiter(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 4, top: 20.h),
+                  child: Scrollbar(
                     controller: _scrollController,
-                    padding: EdgeInsets.only(
-                      left: 16.w,
-                      right: 16.w,
+                    thumbVisibility: true,
+                    trackVisibility: true,
+                    interactive: true,
+                    thickness: 5,
+                    radius: const Radius.circular(24),
+                    child: ListView.separated(
+                      controller: _scrollController,
+                      padding: EdgeInsets.only(
+                        left: 16.w,
+                        right: 16.w,
 
-                      bottom: 100.h, // padding for mini player
-                    ),
-                    itemCount: surahs.length,
-                    separatorBuilder: (context, index) =>
-                        SizedBox(height: 12.h),
-                    itemBuilder: (context, index) {
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 700),
-                        child: SlideAnimation(
-                          verticalOffset: 50,
-                          child: FadeInAnimation(
-                            child: _buildSurahItem(
-                              context: context,
-                              surah: surahs[index],
-                              isDark: isDark,
+                        bottom: 100.h, // padding for mini player
+                      ),
+                      itemCount: surahs.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 12.h),
+                      itemBuilder: (context, index) {
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 700),
+                          child: SlideAnimation(
+                            verticalOffset: 50,
+                            child: FadeInAnimation(
+                              child: _buildSurahItem(
+                                context: context,
+                                surah: surahs[index],
+                                isDark: isDark,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
+            loading: () => Skeletonizer(
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) => _buildSurahItem(
+                  context: context,
+                  surah: SurahMetaMoratalEntity(
+                    arabicName: "",
+                    englishName: "",
+                    juzzNumber: 0,
+                    pageNumber: 0,
+                    surahNumber: 0,
+                    verseCount: 0,
+                  ),
+                  isDark: isDark,
+                ),
+              ),
+            ),
+            error: (err, stack) => Text('خطأ في النظام: $err'),
           ),
 
           const Align(
@@ -106,7 +134,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
 
   Widget _buildSurahItem({
     required BuildContext context,
-    required SurahMetaEntity surah,
+    required SurahMetaMoratalEntity surah,
     required bool isDark,
   }) {
     return Column(
