@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
 final Dio dio = Dio();
 
@@ -17,5 +18,5 @@ void main(List<String> args) async {
 
   final int length = readerNames.length;
 
-  print("عدد العناصر المكتشفة: $length");
+  AppLogger.logger.e("عدد العناصر المكتشفة: $length");
 }

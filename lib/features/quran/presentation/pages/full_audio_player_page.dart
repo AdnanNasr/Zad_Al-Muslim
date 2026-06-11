@@ -100,7 +100,6 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
       },
       (url) async {
         try {
-          // TODO
           final bytes = await rootBundle.load('assets/images/logo.png');
 
           final dir = await getTemporaryDirectory();
