@@ -1,15 +1,29 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/constants/surah_names.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/utils/network/network_info.dart';
+import 'package:zad_al_muslim/features/quran_moratal/data/services/moratal_download_service.dart';
 import 'package:zad_al_muslim/features/quran_moratal/domain/entities/surah_meta_moratal_entity.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_download_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/surahs_names_moratal_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
 class SelectQariSurahPage extends ConsumerStatefulWidget {
   final Map<String, String> qariData;
@@ -23,106 +37,193 @@ class SelectQariSurahPage extends ConsumerStatefulWidget {
 class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
   final ScrollController _scrollController = ScrollController();
 
+  String get _qariId => widget.qariData['id']!;
+  String get _serverUrl => widget.qariData['server']!;
+  String get _qariName => widget.qariData['name'] ?? '';
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
 
+  // ---------------------------------------------------------------------------
+  // منطق التشغيل: تحقق أولاً من الملف المحلي ثم الإنترنت
+  // ---------------------------------------------------------------------------
+
+  Future<void> _playSurah(SurahMetaMoratalEntity surah) async {
+    // ١. التحقق من وجود الملف محلياً
+    final downloadService = sl<MoratalDownloadService>();
+    final localPath = await downloadService.getSurahLocalPath(
+      _qariId,
+      surah.surahNumber,
+    );
+    final localFile = File(localPath);
+    final isLocalAvailable = await downloadService.isSurahDownloaded(
+      _qariId,
+      surah.surahNumber,
+    );
+
+    final currentSurah = CurrentMoratalSurah(
+      surahNumber: surah.surahNumber,
+      surahName: surah.arabicName,
+      qariName: _qariName,
+      serverUrl: _serverUrl,
+      qariId: _qariId,
+    );
+
+    if (isLocalAvailable) {
+      // ✅ تشغيل من الجهاز مباشرة
+      await _playFromLocal(localFile, currentSurah);
+      return;
+    }
+
+    // ٢. التحقق من الإنترنت
+    final networkInfo = sl<NetworkInfo>();
+    final hasInternet = await networkInfo.hasValidConnection();
+
+    if (hasInternet) {
+      // ✅ تشغيل من الإنترنت كالمعتاد
+      ref.read(playMoratalSurahActionProvider)(currentSurah);
+      return;
+    }
+
+    // ٣. لا ملف ولا إنترنت
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(milliseconds: 900),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            backgroundColor: Colors.red.shade700,
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.wifi_off_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(
+                    'لا يوجد اتصال بالإنترنت. حمّل السورة أولاً للاستماع بدون إنترنت.',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.sp,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+    }
+  }
+
+  Future<void> _playFromLocal(File localFile, CurrentMoratalSurah surah) async {
+    // إيقاف أي تلاوة جارية
+    ref.read(currentPlayingAyahProvider.notifier).state = null;
+    ref.read(currentMoratalSurahProvider.notifier).state = surah;
+
+    final audioPlayer = ref.read(audioPlayerProvider);
+
+    try {
+      final bytes = await rootBundle.load('assets/images/logo.png');
+      final dir = await getTemporaryDirectory();
+      final artFile = File('${dir.path}/app_logo_v2.png');
+      await artFile.writeAsBytes(bytes.buffer.asUint8List());
+
+      await audioPlayer.setAudioSource(
+        AudioSource.file(
+          localFile.path,
+          tag: MediaItem(
+            id: '${surah.qariId}_${surah.surahNumber}_local',
+            title: 'سورة ${SurahNames.getFormattedName(surah.surahNumber)}',
+            artist: surah.qariName,
+            artUri: artFile.uri,
+          ),
+        ),
+        initialPosition: Duration.zero,
+      );
+
+      final current = ref.read(currentMoratalSurahProvider);
+      if (current != null &&
+          current.surahNumber == surah.surahNumber &&
+          current.qariId == surah.qariId) {
+        audioPlayer.play();
+      }
+    } on PlayerInterruptedException {
+      // التشغيل تم إيقافه من المستخدم
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('تعذر تشغيل السورة: $e')));
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // واجهة المستخدم
+  // ---------------------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
-    final surahsMetaAsyncProvider = ref.watch(
-      surahsNamesMoratalProvider(widget.qariData["server"] as String),
-    );
+    final surahsMeta = ref.watch(surahsNamesMoratalProvider);
     final ThemeMode themeMode = ref.watch(themeProvider);
     final bool isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: "سور القرآن - ${widget.qariData['name']}",
+        title: 'سور القرآن - ${widget.qariData['name']}',
         center: true,
         themeMode: false,
       ),
       body: Stack(
         children: [
-          surahsMetaAsyncProvider.when(
-            data: (surahsMeta) => surahsMeta.fold(
-              (failure) => Center(
-                child: Text(
-                  failure.message,
-                  style: const TextStyle(
-                    fontFamily: "Cairo",
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-              (surahs) => AnimationLimiter(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 4, top: 20.h),
-                  child: Scrollbar(
-                    controller: _scrollController,
-                    thumbVisibility: true,
-                    trackVisibility: true,
-                    interactive: true,
-                    thickness: 5,
-                    radius: const Radius.circular(24),
-                    child: ListView.separated(
-                      controller: _scrollController,
-                      padding: EdgeInsets.only(
-                        left: 16.w,
-                        right: 16.w,
-
-                        bottom: 100.h, // padding for mini player
-                      ),
-                      itemCount: surahs.length,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 12.h),
-                      itemBuilder: (context, index) {
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 700),
-                          child: SlideAnimation(
-                            verticalOffset: 50,
-                            child: FadeInAnimation(
-                              child: _buildSurahItem(
-                                context: context,
-                                surah: surahs[index],
-                                isDark: isDark,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            loading: () => Skeletonizer(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) => _buildSurahItem(
-                  context: context,
-                  surah: SurahMetaMoratalEntity(
-                    arabicName: "",
-                    englishName: "",
-                    juzzNumber: 0,
-                    pageNumber: 0,
-                    surahNumber: 0,
-                    verseCount: 0,
-                  ),
-                  isDark: isDark,
-                ),
-              ),
-            ),
-            error: (err, stack) => Text('خطأ في النظام: $err'),
-          ),
-
-          const Align(
-            alignment: Alignment.bottomCenter,
+          AnimationLimiter(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 20.0),
-              child: MoratalMiniPlayer(),
+              padding: EdgeInsets.only(left: 4, top: 20.h),
+              child: Scrollbar(
+                controller: _scrollController,
+                thumbVisibility: true,
+                trackVisibility: true,
+                interactive: true,
+                thickness: 5,
+                radius: const Radius.circular(24),
+                child: ListView.separated(
+                  controller: _scrollController,
+                  padding: EdgeInsets.only(
+                    left: 16.w,
+                    right: 16.w,
+                    bottom: 100.h,
+                  ),
+                  itemCount: surahsMeta.length,
+                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                  itemBuilder: (context, index) {
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 700),
+                      child: SlideAnimation(
+                        verticalOffset: 50,
+                        child: FadeInAnimation(
+                          child: _buildSurahItem(
+                            context: context,
+                            surah: surahsMeta[index],
+                            isDark: isDark,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],
@@ -157,17 +258,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(16.r),
-              onTap: () {
-                final currentSurah = CurrentMoratalSurah(
-                  surahNumber: surah.surahNumber,
-                  surahName: surah.arabicName,
-                  qariName: widget.qariData['name'] ?? "",
-                  serverUrl: widget.qariData['server'] ?? "",
-                  qariId: widget.qariData['id'] ?? "",
-                );
-                // Call the action provider
-                ref.read(playMoratalSurahActionProvider)(currentSurah);
-              },
+              onTap: () => _playSurah(surah),
               child: Padding(
                 padding: EdgeInsets.all(12.dg),
                 child: Row(
@@ -202,7 +293,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: "Naskh",
+                                  fontFamily: 'Naskh',
                                   color: context.color.onSurface.withValues(
                                     alpha: .7,
                                   ),
@@ -214,14 +305,14 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                                   _buildInfoChip(
                                     Icons.menu_book_rounded,
                                     surah.verseCount >= 10
-                                        ? "${surah.verseCount} آية"
-                                        : "${surah.verseCount} آيات",
+                                        ? '${surah.verseCount} آية'
+                                        : '${surah.verseCount} آيات',
                                     context,
                                   ),
                                   SizedBox(width: 12.w),
                                   _buildInfoChip(
                                     Icons.grid_view_rounded,
-                                    "الجزء ${surah.juzzNumber}",
+                                    'الجزء ${surah.juzzNumber}',
                                     context,
                                   ),
                                 ],
@@ -231,11 +322,24 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                         ],
                       ),
                     ),
+
+                    // أيقونة التشغيل
                     Icon(
                       Icons.play_circle_outline_rounded,
-                      size: 35.sp,
+                      size: 32.sp,
                       color: context.color.primary.withValues(alpha: .8),
                     ),
+
+                    SizedBox(width: 8.w),
+
+                    // زر تحميل السورة الفردي
+                    if (surah.surahNumber > 0)
+                      _SurahDownloadButton(
+                        qariId: _qariId,
+                        serverUrl: _serverUrl,
+                        surahNumber: surah.surahNumber,
+                        isDark: isDark,
+                      ),
                   ],
                 ),
               ),
@@ -290,10 +394,251 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
             fontSize: 11.5.sp,
             color: context.color.onSurface,
             fontWeight: FontWeight.bold,
-            fontFamily: "Cairo",
+            fontFamily: 'Cairo',
           ),
         ),
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// زر تحميل سورة واحدة
+// ---------------------------------------------------------------------------
+
+class _SurahDownloadButton extends ConsumerStatefulWidget {
+  final String qariId;
+  final String serverUrl;
+  final int surahNumber;
+  final bool isDark;
+
+  const _SurahDownloadButton({
+    required this.qariId,
+    required this.serverUrl,
+    required this.surahNumber,
+    required this.isDark,
+  });
+
+  @override
+  ConsumerState<_SurahDownloadButton> createState() =>
+      _SurahDownloadButtonState();
+}
+
+class _SurahDownloadButtonState extends ConsumerState<_SurahDownloadButton> {
+  late ({String qariId, String serverUrl, int surahNumber}) _params;
+
+  @override
+  void initState() {
+    super.initState();
+    _params = (
+      qariId: widget.qariId,
+      serverUrl: widget.serverUrl,
+      surahNumber: widget.surahNumber,
+    );
+    // تهيئة الحالة الأولية بالتحقق من الملف
+    Future.microtask(() {
+      ref.read(singleSurahDownloadProvider(_params).notifier).initialize();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final surahDownloadState = ref.watch(singleSurahDownloadProvider(_params));
+
+    return GestureDetector(
+      onTap: () => _handleTap(context, surahDownloadState),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        width: 34.w,
+        height: 34.w,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _getColor(context, surahDownloadState.status),
+        ),
+        child: Center(child: _buildIcon(context, surahDownloadState)),
+      ),
+    );
+  }
+
+  Color _getColor(BuildContext context, SurahDownloadStatus status) {
+    switch (status) {
+      case SurahDownloadStatus.downloaded:
+        return Colors.green.withValues(alpha: widget.isDark ? 0.7 : 0.15);
+      case SurahDownloadStatus.downloading:
+        return context.color.primary.withValues(alpha: 0.1);
+      default:
+        return context.color.primary.withValues(
+          alpha: widget.isDark ? 0.6 : 0.08,
+        );
+    }
+  }
+
+  Widget _buildIcon(BuildContext context, SurahDownloadState state) {
+    switch (state.status) {
+      case SurahDownloadStatus.downloaded:
+        return Icon(
+          Icons.download_done_rounded,
+          color: Colors.green.shade600,
+          size: 16.sp,
+        );
+      case SurahDownloadStatus.downloading:
+        return SizedBox(
+          width: 16.w,
+          height: 16.w,
+          child: CircularProgressIndicator(
+            value: state.progress > 0 ? state.progress : null,
+            strokeWidth: 2,
+            color: context.color.primary,
+          ),
+        );
+      default:
+        return Icon(
+          Icons.download_rounded,
+          color: widget.isDark
+              ? context.color.onSurface.withValues(alpha: 0.7)
+              : context.color.primary,
+          size: 16.sp,
+        );
+    }
+  }
+
+  Future<void> _handleTap(
+    BuildContext context,
+    SurahDownloadState state,
+  ) async {
+    final notifier = ref.read(singleSurahDownloadProvider(_params).notifier);
+
+    if (state.status == SurahDownloadStatus.downloaded) {
+      // حذف السورة
+      final confirm = await _showDeleteDialog(context);
+      if (confirm == true) {
+        await notifier.delete();
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.red.shade700,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                content: Text(
+                  'تم حذف السورة من الجهاز.',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.sp,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            );
+        }
+      }
+      return;
+    }
+
+    if (state.status == SurahDownloadStatus.downloading) return;
+
+    final hasInternet = await NetworkInfo().hasValidConnection();
+
+    if (!hasInternet) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(milliseconds: 900), // TODO
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          backgroundColor: Colors.red.shade700,
+          content: Row(
+            children: [
+              const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'يرجى التحقق من إتصالك بالإنترنت.',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.sp,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // بدء التحميل
+    await WakelockPlus.enable();
+    await notifier.startDownload();
+    await WakelockPlus.disable();
+
+    if (context.mounted && state.status != SurahDownloadStatus.downloaded) {
+      final newState = ref.read(singleSurahDownloadProvider(_params));
+      if (newState.status == SurahDownloadStatus.downloaded) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.green.shade700,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              content: Text(
+                'تم تحميل السورة بنجاح ✅',
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.sp,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          );
+      }
+    }
+  }
+
+  Future<bool?> _showDeleteDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        title: Text(
+          'حذف السورة',
+          style: TextStyle(fontFamily: 'Cairo', fontSize: 15.sp),
+        ),
+        content: Text(
+          'هل تريد حذف هذه السورة من الجهاز؟',
+          style: TextStyle(fontFamily: 'Cairo', fontSize: 13.sp),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              'إلغاء',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 13.sp),
+            ),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red.shade600),
+            child: Text(
+              'حذف',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 13.sp),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/today_duaa.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
@@ -460,8 +464,33 @@ class PrimarySectionWidget extends StatelessWidget {
                     description: "استماع وتحميل",
                     iconImage: "assets/icons/voice.png",
                     color: primaryColor,
-                    onTap: () =>
-                        Navigator.pushNamed(context, Routes.quranMoratal),
+                    onTap: () async {
+                      final prefs = await SharedPreferences.getInstance();
+
+                      final int permissionShownCount =
+                          prefs.getInt(SharedPrefKeys.batteryPermissionKey) ??
+                          0;
+
+                      var status =
+                          await Permission.ignoreBatteryOptimizations.status;
+
+                      if (!status.isDenied) {
+                        await prefs.remove(SharedPrefKeys.batteryPermissionKey);
+                      }
+
+                      if (permissionShownCount < 2 && status.isDenied) {
+                        if (context.mounted) {
+                          await Permission.ignoreBatteryOptimizations.request();
+                          await prefs.setInt(
+                            SharedPrefKeys.batteryPermissionKey,
+                            permissionShownCount + 1,
+                          );
+                        }
+                      }
+
+                      if (!context.mounted) return;
+                      Navigator.pushNamed(context, Routes.quranMoratal);
+                    },
                   ),
                   HomeButton(
                     text: AppLocalizations.of(context)!.sunah,

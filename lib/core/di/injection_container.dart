@@ -23,6 +23,7 @@ import 'package:zad_al_muslim/features/quran/domain/usecases/get_surah_number_by
 import 'package:zad_al_muslim/features/quran/domain/usecases/get_surahs_meta.dart';
 import 'package:zad_al_muslim/features/quran/domain/usecases/get_voice_ayah_by_ayah.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/datasources/surah_qari_remote_sources.dart';
+import 'package:zad_al_muslim/features/quran_moratal/data/services/moratal_download_service.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/datasources/surahs_moratal_meta_data.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/repositories/surah_meta_moratal_impl.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/repositories/surah_qari_voice_impl.dart';
@@ -175,6 +176,10 @@ Future<void> init() async {
   sl.registerLazySingleton<GetVoiceAyahByAyah>(() => GetVoiceAyahByAyah(sl()));
 
   // Qari Moratal
+  sl.registerLazySingleton<MoratalDownloadService>(
+    () => MoratalDownloadService(prefs: sl()),
+  );
+
   sl.registerLazySingleton<SurahQariRemoteSourcesImpl>(
     () => SurahQariRemoteSourcesImpl(),
   );

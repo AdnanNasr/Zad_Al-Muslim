@@ -6,6 +6,8 @@ import 'package:zad_al_muslim/app_root.dart';
 import 'package:zad_al_muslim/app_bootstrap.dart';
 
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

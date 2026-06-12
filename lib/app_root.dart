@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
 import 'package:zad_al_muslim/core/common/pages/notifications_page.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
@@ -11,6 +12,7 @@ import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_settings_page.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/select_surah_page.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/pages/quran_moratal_page.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_download_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/app_info.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
@@ -42,6 +44,44 @@ class _AppRootState extends ConsumerState<AppRoot> {
       await ref.read(languageProvider.notifier).loadlang();
       await ref.read(marksProvder.notifier).loadMarks();
     });
+
+    // تسجيل callback لإشعار اكتمال تحميل قارئ من أي صفحة
+    moratalDownloadCompletedCallback = (qariId) {
+      scaffoldMessengerKey.currentState
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 5),
+            margin: EdgeInsets.all(16.w),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            backgroundColor: const Color(0xFF1B8A5A),
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.download_done_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
+                SizedBox(width: 10.w),
+                const Expanded(
+                  child: Text(
+                    'اكتمل التحميل! يمكنك الاستماع بدون إنترنت الآن. ✅',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+    };
   }
 
   @override
@@ -52,6 +92,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
 
     return MaterialApp(
       navigatorKey: appNavigatorKey,
+      scaffoldMessengerKey: scaffoldMessengerKey,
 
       debugShowCheckedModeBanner: false,
 

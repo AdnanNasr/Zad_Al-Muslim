@@ -3,7 +3,6 @@ import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/schedule_adkar_notification.dart';
 
-
 class AppSettings {
   final double adkarFontSize;
   final bool use24HourFormat;
@@ -15,7 +14,7 @@ class AppSettings {
   final String? morningAdkarTime;
   final bool eveningAdkarReminder;
   final String? eveningAdkarTime;
-  
+
   // Custom prayer notifications
   final bool fajrNotificationEnabled;
   final bool sunriseNotificationEnabled;
@@ -75,12 +74,18 @@ class AppSettings {
       morningAdkarTime: morningAdkarTime ?? this.morningAdkarTime,
       eveningAdkarReminder: eveningAdkarReminder ?? this.eveningAdkarReminder,
       eveningAdkarTime: eveningAdkarTime ?? this.eveningAdkarTime,
-      fajrNotificationEnabled: fajrNotificationEnabled ?? this.fajrNotificationEnabled,
-      sunriseNotificationEnabled: sunriseNotificationEnabled ?? this.sunriseNotificationEnabled,
-      dhuhrNotificationEnabled: dhuhrNotificationEnabled ?? this.dhuhrNotificationEnabled,
-      asrNotificationEnabled: asrNotificationEnabled ?? this.asrNotificationEnabled,
-      maghribNotificationEnabled: maghribNotificationEnabled ?? this.maghribNotificationEnabled,
-      ishaNotificationEnabled: ishaNotificationEnabled ?? this.ishaNotificationEnabled,
+      fajrNotificationEnabled:
+          fajrNotificationEnabled ?? this.fajrNotificationEnabled,
+      sunriseNotificationEnabled:
+          sunriseNotificationEnabled ?? this.sunriseNotificationEnabled,
+      dhuhrNotificationEnabled:
+          dhuhrNotificationEnabled ?? this.dhuhrNotificationEnabled,
+      asrNotificationEnabled:
+          asrNotificationEnabled ?? this.asrNotificationEnabled,
+      maghribNotificationEnabled:
+          maghribNotificationEnabled ?? this.maghribNotificationEnabled,
+      ishaNotificationEnabled:
+          ishaNotificationEnabled ?? this.ishaNotificationEnabled,
     );
   }
 }
@@ -97,7 +102,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
   static const String _eveningAdkarKey = 'evening_adkar_key';
   static const String _morningAdkarTimeKey = 'morning_adkar_time_key';
   static const String _eveningAdkarTimeKey = 'evening_adkar_time_key';
-  
+
   static const String _fajrNotifKey = 'fajr_notif_key';
   static const String _sunriseNotifKey = 'sunrise_notif_key';
   static const String _dhuhrNotifKey = 'dhuhr_notif_key';
@@ -316,14 +321,14 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     await _prefs.remove(_morningAdkarTimeKey);
     await _prefs.remove(_eveningAdkarKey);
     await _prefs.remove(_eveningAdkarTimeKey);
-    
+
     await _prefs.remove(_fajrNotifKey);
     await _prefs.remove(_sunriseNotifKey);
     await _prefs.remove(_dhuhrNotifKey);
     await _prefs.remove(_asrNotifKey);
     await _prefs.remove(_maghribNotifKey);
     await _prefs.remove(_ishaNotifKey);
-    
+
     state = AppSettings(
       adkarFontSize: 24.0,
       use24HourFormat: false,

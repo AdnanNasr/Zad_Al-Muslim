@@ -60,11 +60,6 @@ class QariNames {
     "name": "هيثم التدخين",
     "server": "https://server16.mp3quran.net/h_dukhain/Rewayat-Hafs-A-n-Assem/",
   };
-  static const Map<String, String> hazza = {
-    "id": "231",
-    "name": "هزاع البلوشي",
-    "server": "https://server11.mp3quran.net/hazza/",
-  };
   static const Map<String, String> kurdi = {
     "id": "221",
     "name": "رعد محمد الكردي",
@@ -75,11 +70,21 @@ class QariNames {
     "name": "وديع اليمني",
     "server": "https://server6.mp3quran.net/wdee3/",
   };
+  static const Map<String, String> frsA = {
+    "id": "81",
+    "name": "فارس عباد",
+    "server": "https://server8.mp3quran.net/frs_a/",
+  };
+  static const Map<String, String> islam = {
+    "id": "253",
+    "name": "إسلام صبحي",
+    "server": "https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/",
+  };
 
   // قائمة مجمعة لاستخدامها في GridView.builder مباشرة إذا أردت
   static const List<Map<String, String>> allQaris = [
-    masharyAlafassy,
     abdulBaset,
+    masharyAlafassy,
     alHossary,
     alMinshawi,
     alMuaiqly,
@@ -91,7 +96,8 @@ class QariNames {
     alGhamdi,
     hDukhain,
     kurdi,
+    frsA,
     wdee3,
-    hazza,
+    islam,
   ];
 }

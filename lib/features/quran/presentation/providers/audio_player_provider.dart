@@ -6,10 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:zad_al_muslim/core/constants/enums/qrai_names_ayah_by_ayah.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/quran/domain/repositories/voice_ayah_by_ayah_repo.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/data/services/moratal_download_service.dart';
 import 'package:zad_al_muslim/features/quran_moratal/domain/repositories/surah_qari_voice_repo.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/surah_qari_voice_provider.dart';
 import 'package:qcf_quran/qcf_quran.dart';
@@ -158,7 +160,7 @@ void _playNextMoratalSurah(
   ref.read(playMoratalSurahActionProvider)(nextSurah);
 }
 
-// مزود الأكشن لتشغيل سورة كاملة (Moratal)
+// مزود الأكشن لتشغيل سورة كاملة (Moratal) - يدعم التشغيل من الملف المحلي
 final playMoratalSurahActionProvider = Provider((ref) {
   return (CurrentMoratalSurah surah) async {
     final audioPlayer = ref.read(audioPlayerProvider);
@@ -169,57 +171,72 @@ final playMoratalSurahActionProvider = Provider((ref) {
     // تحديث حالة السورة المرتلة الحالية
     ref.read(currentMoratalSurahProvider.notifier).state = surah;
 
-    final params = QariParameters(
-      serverUrl: surah.serverUrl,
-      surahNumber: surah.surahNumber,
+    // --- التحقق من الملف المحلي أولاً ---
+    final downloadService = sl<MoratalDownloadService>();
+    final localPath = await downloadService.getSurahLocalPath(
+      surah.qariId,
+      surah.surahNumber,
     );
+    final isLocalAvailable =
+        await downloadService.isSurahDownloaded(surah.qariId, surah.surahNumber);
 
-    final urlEither = ref.read(surahQariVoiceProvider(params));
+    try {
+      final bytes = await rootBundle.load('assets/images/logo.png');
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/app_logo_v2.png');
+      await file.writeAsBytes(bytes.buffer.asUint8List());
 
-    await urlEither.fold(
-      (failure) async {
-        ref.read(currentMoratalSurahProvider.notifier).state = null;
-      },
-      (url) async {
-        try {
-          final bytes = await rootBundle.load('assets/images/logo.png');
+      final mediaItem = MediaItem(
+        id: '${surah.qariId}_${surah.surahNumber}',
+        title: 'سورة ${surah.surahName}',
+        artist: surah.qariName,
+        artUri: file.uri,
+      );
 
-          final dir = await getTemporaryDirectory();
-          final file = File('${dir.path}/app_logo_v2.png');
+      AudioSource audioSource;
 
-          await file.writeAsBytes(bytes.buffer.asUint8List());
-
-          await audioPlayer.setAudioSource(
-            AudioSource.uri(
-              Uri.parse(url),
-              tag: MediaItem(
-                id: '${surah.qariId}_${surah.surahNumber}',
-                title: 'سورة ${surah.surahName}',
-                artist: surah.qariName,
-                artUri: file.uri,
-              ),
-            ),
-            initialPosition: Duration.zero,
-          );
-
-          final current = ref.read(currentMoratalSurahProvider);
-          if (current != null &&
-              current.surahNumber == surah.surahNumber &&
-              current.qariId == surah.qariId) {
-            audioPlayer.play();
-          }
-        } on PlayerInterruptedException {
-          // nothing will happen
-        } on PlatformException catch (e) {
-          final msg = e.message?.toLowerCase() ?? '';
-          if (!msg.contains('abort') && !msg.contains('10000000')) {
+      if (isLocalAvailable) {
+        // ✅ تشغيل من الجهاز مباشرة (بدون إنترنت)
+        audioSource = AudioSource.file(localPath, tag: mediaItem);
+      } else {
+        // 🌐 تشغيل من الإنترنت
+        final params = QariParameters(
+          serverUrl: surah.serverUrl,
+          surahNumber: surah.surahNumber,
+        );
+        final urlEither = ref.read(surahQariVoiceProvider(params));
+        String? remoteUrl;
+        urlEither.fold(
+          (failure) {
             ref.read(currentMoratalSurahProvider.notifier).state = null;
-          }
-        } catch (e) {
-          ref.read(currentMoratalSurahProvider.notifier).state = null;
-        }
-      },
-    );
+          },
+          (url) => remoteUrl = url,
+        );
+        if (remoteUrl == null) return;
+        audioSource = AudioSource.uri(Uri.parse(remoteUrl!), tag: mediaItem);
+      }
+
+      await audioPlayer.setAudioSource(
+        audioSource,
+        initialPosition: Duration.zero,
+      );
+
+      final current = ref.read(currentMoratalSurahProvider);
+      if (current != null &&
+          current.surahNumber == surah.surahNumber &&
+          current.qariId == surah.qariId) {
+        audioPlayer.play();
+      }
+    } on PlayerInterruptedException {
+      // nothing will happen
+    } on PlatformException catch (e) {
+      final msg = e.message?.toLowerCase() ?? '';
+      if (!msg.contains('abort') && !msg.contains('10000000')) {
+        ref.read(currentMoratalSurahProvider.notifier).state = null;
+      }
+    } catch (e) {
+      ref.read(currentMoratalSurahProvider.notifier).state = null;
+    }
   };
 });
 
