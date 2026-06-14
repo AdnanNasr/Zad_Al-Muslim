@@ -1,10 +1,8 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
-import 'package:zad_al_muslim/core/utils/network/network_info.dart';
 
 /// معلومات تقدم التحميل
 class DownloadProgressInfo {
@@ -154,6 +152,7 @@ class MoratalDownloadService {
     required int surahNumber,
     void Function(double progress)? onProgress,
     CancelToken? cancelToken,
+    void Function()? onConnectionError,
   }) async {
     final localPath = await getSurahLocalPath(qariId, surahNumber);
     final tempPath = '$localPath.temp';
@@ -215,7 +214,9 @@ class MoratalDownloadService {
           return true;
         } else {
           await tempFile.delete();
-          AppLogger.logger.e('حذف ملف مؤقت تالف للسورة $surahNumber بعد التحميل');
+          AppLogger.logger.e(
+            'حذف ملف مؤقت تالف للسورة $surahNumber بعد التحميل',
+          );
           return false;
         }
       }
@@ -233,21 +234,23 @@ class MoratalDownloadService {
         return false;
       }
 
-      // التحقق من الأخطاء الشبكية القاتلة لإيقاف التحميل الكلي فوراً
-      final isFatalNetworkError = e.type == DioExceptionType.connectionTimeout ||
+      // التحقق مما إذا كان الخطأ شبكياً
+      final isNetworkError =
+          e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.connectionError ||
-          (e.type == DioExceptionType.badResponse &&
-              (e.response?.statusCode == 429 ||
-                  e.response?.statusCode == 503 ||
-                  e.response?.statusCode == 403));
+          e.type == DioExceptionType.connectionError;
 
-      if (isFatalNetworkError && cancelToken != null && !cancelToken.isCancelled) {
-        cancelToken.cancel('network_error');
+      if (isNetworkError && onConnectionError != null) {
+        onConnectionError();
       }
 
-      AppLogger.logger.e('خطأ في تحميل السورة $surahNumber: ${e.message}');
+      final errorDetail =
+          e.message ??
+          e.error?.toString() ??
+          e.response?.statusMessage ??
+          e.type.toString();
+      AppLogger.logger.e('خطأ في تحميل السورة $surahNumber: $errorDetail');
       return false;
     } catch (e) {
       // حذف الملف المؤقت عند أي خطأ آخر
@@ -334,7 +337,9 @@ class MoratalDownloadService {
       }
 
       // حساب عدد السور المكتملة بناءً على عدد العناصر ذات التقدم 1.0 في الخريطة
-      final completedCount = progressMap.values.where((val) => val == 1.0).length;
+      final completedCount = progressMap.values
+          .where((val) => val == 1.0)
+          .length;
 
       final totalProgressSum = progressMap.values.fold(
         0.0,
@@ -373,6 +378,7 @@ class MoratalDownloadService {
 
     int nextIndex = 0;
     final failedSurahs = <int>[];
+    int consecutiveConnectionErrors = 0;
 
     // دالة العامل (Worker) لتحميل السور واحدة تلو الأخرى من القائمة المشتركة
     Future<void> downloadWorker() async {
@@ -392,11 +398,20 @@ class MoratalDownloadService {
             onProgress: (progress) {
               updateProgress(currentSurahNumber, progress);
             },
+            onConnectionError: () {
+              consecutiveConnectionErrors++;
+              if (consecutiveConnectionErrors >= 3) {
+                if (!cancelToken.isCancelled) {
+                  cancelToken.cancel('network_error');
+                }
+              }
+            },
           );
 
           if (cancelToken.isCancelled) return;
 
           if (success) {
+            consecutiveConnectionErrors = 0;
             await _saveLastDownloadedSurah(qariId, currentSurahNumber);
             onSurahCompleted?.call(currentSurahNumber);
             updateProgress(currentSurahNumber, 1.0);
@@ -424,10 +439,13 @@ class MoratalDownloadService {
 
     if (cancelToken.isCancelled) {
       AppLogger.logger.i('تم إلغاء تحميل السور للقارئ $qariId');
-      final isNetworkCancel = cancelToken.cancelError?.error == 'network_error' ||
+      final isNetworkCancel =
+          cancelToken.cancelError?.error == 'network_error' ||
           cancelToken.cancelError?.message == 'network_error';
       if (isNetworkCancel && errorCallback != null) {
-        errorCallback('انقطع الاتصال بالخادم. يرجى التحقق من الاتصال بالإنترنت وإعادة المحاولة.');
+        errorCallback(
+          'انقطع الاتصال بالخادم. يرجى التحقق من الاتصال بالإنترنت وإعادة المحاولة.',
+        );
       }
       return false;
     }

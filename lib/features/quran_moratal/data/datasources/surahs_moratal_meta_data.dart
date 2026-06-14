@@ -1,11 +1,5 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
-import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart' as parser;
 import 'package:qcf_quran/qcf_quran.dart';
 import 'package:zad_al_muslim/core/constants/surah_names.dart';
-import 'package:zad_al_muslim/core/errors/failures.dart';
-import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/models/surah_meta_moratal_model.dart';
 
 abstract class SurahsMoratalMetaData {

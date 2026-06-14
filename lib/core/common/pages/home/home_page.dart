@@ -10,7 +10,6 @@ import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
-import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
