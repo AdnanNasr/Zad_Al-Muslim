@@ -1,15 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
-import 'package:zad_al_muslim/core/constants/surah_names.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';
@@ -18,10 +13,7 @@ import 'package:zad_al_muslim/features/quran_moratal/domain/entities/surah_meta_
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_download_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/surahs_names_moratal_provider.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
 
 class SelectQariSurahPage extends ConsumerStatefulWidget {
   final Map<String, String> qariData;
@@ -52,11 +44,6 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
   Future<void> _playSurah(SurahMetaMoratalEntity surah) async {
     // ١. التحقق من وجود الملف محلياً
     final downloadService = sl<MoratalDownloadService>();
-    final localPath = await downloadService.getSurahLocalPath(
-      _qariId,
-      surah.surahNumber,
-    );
-    final localFile = File(localPath);
     final isLocalAvailable = await downloadService.isSurahDownloaded(
       _qariId,
       surah.surahNumber,
@@ -71,8 +58,8 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     );
 
     if (isLocalAvailable) {
-      // ✅ تشغيل من الجهاز مباشرة
-      await _playFromLocal(localFile, currentSurah);
+      // ✅ تشغيل من الجهاز مباشرة عبر المزود المشترك
+      ref.read(playMoratalSurahActionProvider)(currentSurah);
       return;
     }
 
@@ -81,7 +68,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     final hasInternet = await networkInfo.hasValidConnection();
 
     if (hasInternet) {
-      // ✅ تشغيل من الإنترنت كالمعتاد
+      // ✅ تشغيل من الإنترنت كالمعتاد عبر المزود المشترك
       ref.read(playMoratalSurahActionProvider)(currentSurah);
       return;
     }
@@ -124,49 +111,6 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     }
   }
 
-  Future<void> _playFromLocal(File localFile, CurrentMoratalSurah surah) async {
-    // إيقاف أي تلاوة جارية
-    ref.read(currentPlayingAyahProvider.notifier).state = null;
-    ref.read(currentMoratalSurahProvider.notifier).state = surah;
-
-    final audioPlayer = ref.read(audioPlayerProvider);
-
-    try {
-      final bytes = await rootBundle.load('assets/images/logo.png');
-      final dir = await getTemporaryDirectory();
-      final artFile = File('${dir.path}/app_logo_v2.png');
-      await artFile.writeAsBytes(bytes.buffer.asUint8List());
-
-      await audioPlayer.setAudioSource(
-        AudioSource.file(
-          localFile.path,
-          tag: MediaItem(
-            id: '${surah.qariId}_${surah.surahNumber}_local',
-            title: 'سورة ${SurahNames.getFormattedName(surah.surahNumber)}',
-            artist: surah.qariName,
-            artUri: artFile.uri,
-          ),
-        ),
-        initialPosition: Duration.zero,
-      );
-
-      final current = ref.read(currentMoratalSurahProvider);
-      if (current != null &&
-          current.surahNumber == surah.surahNumber &&
-          current.qariId == surah.qariId) {
-        audioPlayer.play();
-      }
-    } on PlayerInterruptedException {
-      // التشغيل تم إيقافه من المستخدم
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('تعذر تشغيل السورة: $e')));
-      }
-    }
-  }
-
   // ---------------------------------------------------------------------------
   // واجهة المستخدم
   // ---------------------------------------------------------------------------
@@ -176,6 +120,10 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     final surahsMeta = ref.watch(surahsNamesMoratalProvider);
     final ThemeMode themeMode = ref.watch(themeProvider);
     final bool isDark = themeMode == ThemeMode.dark;
+
+    // جلب حالة تحميل جميع السور دفعةً واحدة (I/O واحد متوازٍ بدلاً من 114 طلب)
+    final allStatusAsync = ref.watch(allSurahsDownloadStatusProvider(_qariId));
+    final allStatus = allStatusAsync.valueOrNull ?? {};
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -215,6 +163,8 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                             context: context,
                             surah: surahsMeta[index],
                             isDark: isDark,
+                            isAlreadyDownloaded:
+                                allStatus[surahsMeta[index].surahNumber] ?? false,
                           ),
                         ),
                       ),
@@ -223,6 +173,12 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                 ),
               ),
             ),
+          ),
+          Positioned(
+            bottom: 10.h,
+            left: 0,
+            right: 0,
+            child: const MoratalMiniPlayer(),
           ),
         ],
       ),
@@ -233,6 +189,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     required BuildContext context,
     required SurahMetaMoratalEntity surah,
     required bool isDark,
+    required bool isAlreadyDownloaded,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,6 +294,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                         serverUrl: _serverUrl,
                         surahNumber: surah.surahNumber,
                         isDark: isDark,
+                        initiallyDownloaded: isAlreadyDownloaded,
                       ),
                   ],
                 ),
@@ -409,12 +367,16 @@ class _SurahDownloadButton extends ConsumerStatefulWidget {
   final String serverUrl;
   final int surahNumber;
   final bool isDark;
+  /// حالة التحميل الأولية من allSurahsDownloadStatusProvider بدلاً
+  /// من استدعاء initialize() فردياً
+  final bool initiallyDownloaded;
 
   const _SurahDownloadButton({
     required this.qariId,
     required this.serverUrl,
     required this.surahNumber,
     required this.isDark,
+    required this.initiallyDownloaded,
   });
 
   @override
@@ -433,10 +395,16 @@ class _SurahDownloadButtonState extends ConsumerState<_SurahDownloadButton> {
       serverUrl: widget.serverUrl,
       surahNumber: widget.surahNumber,
     );
-    // تهيئة الحالة الأولية بالتحقق من الملف
+    // إذا كانت الحالة الأولية محدّدة من allSurahsDownloadStatusProvider
+    // نستخدم setInitialStatus مباشرةً دون I/O إضافي
     Future.microtask(() {
-      ref.read(singleSurahDownloadProvider(_params).notifier).initialize();
+      if (mounted) {
+        ref
+            .read(singleSurahDownloadProvider(_params).notifier)
+            .setInitialStatus(widget.initiallyDownloaded);
+      }
     });
+    // لا نستدعي initialize() بعد الآن لأن الحالة تأتي من الأعلى
   }
 
   @override

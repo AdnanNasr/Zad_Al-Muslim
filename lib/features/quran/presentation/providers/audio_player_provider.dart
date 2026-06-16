@@ -12,8 +12,7 @@ import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settin
 import 'package:zad_al_muslim/features/quran/presentation/providers/voice_ayah_by_ayah_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/services/moratal_download_service.dart';
-import 'package:zad_al_muslim/features/quran_moratal/domain/repositories/surah_qari_voice_repo.dart';
-import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/surah_qari_voice_provider.dart';
+import 'package:zad_al_muslim/core/utils/network/network_info.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/services.dart';
@@ -95,6 +94,30 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
     }
   });
 
+  player.currentIndexStream.listen((index) {
+    if (index == null) return;
+    final sequence = player.sequence;
+    if (index >= sequence.length) return;
+
+    final activeSource = sequence[index];
+    final tag = activeSource.tag;
+    if (tag is MediaItem) {
+      final parts = tag.id.split('_');
+      if (parts.length >= 2) {
+        final newSurahNumber = int.tryParse(parts.last);
+        if (newSurahNumber != null) {
+          final currentMoratal = ref.read(currentMoratalSurahProvider);
+          if (currentMoratal != null && currentMoratal.surahNumber != newSurahNumber) {
+            ref.read(currentMoratalSurahProvider.notifier).state = currentMoratal.copyWith(
+              surahNumber: newSurahNumber,
+              surahName: SurahNames.getFormattedName(newSurahNumber),
+            );
+          }
+        }
+      }
+    }
+  });
+
   ref.onDispose(() => player.dispose());
   return player;
 });
@@ -171,61 +194,136 @@ final playMoratalSurahActionProvider = Provider((ref) {
     // تحديث حالة السورة المرتلة الحالية
     ref.read(currentMoratalSurahProvider.notifier).state = surah;
 
-    // --- التحقق من الملف المحلي أولاً ---
     final downloadService = sl<MoratalDownloadService>();
-    final localPath = await downloadService.getSurahLocalPath(
-      surah.qariId,
-      surah.surahNumber,
-    );
-    final isLocalAvailable =
-        await downloadService.isSurahDownloaded(surah.qariId, surah.surahNumber);
+    final networkInfo = sl<NetworkInfo>();
 
     try {
       final bytes = await rootBundle.load('assets/images/logo.png');
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/app_logo_v2.png');
-      await file.writeAsBytes(bytes.buffer.asUint8List());
-
-      final mediaItem = MediaItem(
-        id: '${surah.qariId}_${surah.surahNumber}',
-        title: 'سورة ${surah.surahName}',
-        artist: surah.qariName,
-        artUri: file.uri,
-      );
-
-      AudioSource audioSource;
-
-      if (isLocalAvailable) {
-        // ✅ تشغيل من الجهاز مباشرة (بدون إنترنت)
-        audioSource = AudioSource.file(localPath, tag: mediaItem);
-      } else {
-        // 🌐 تشغيل من الإنترنت
-        final params = QariParameters(
-          serverUrl: surah.serverUrl,
-          surahNumber: surah.surahNumber,
-        );
-        final urlEither = ref.read(surahQariVoiceProvider(params));
-        String? remoteUrl;
-        urlEither.fold(
-          (failure) {
-            ref.read(currentMoratalSurahProvider.notifier).state = null;
-          },
-          (url) => remoteUrl = url,
-        );
-        if (remoteUrl == null) return;
-        audioSource = AudioSource.uri(Uri.parse(remoteUrl!), tag: mediaItem);
+      if (!await file.exists()) {
+        await file.writeAsBytes(bytes.buffer.asUint8List());
       }
 
-      await audioPlayer.setAudioSource(
-        audioSource,
-        initialPosition: Duration.zero,
-      );
+      // تشغيل فحص الاتصال + فحص السور المحملة بشكل متوازٍ لتقليل وقت الانتظار
+      final results = await Future.wait([
+        networkInfo.hasValidConnection(),
+        Future.wait(
+          List.generate(114, (i) => downloadService.isSurahDownloaded(surah.qariId, i + 1)),
+        ),
+      ]);
 
-      final current = ref.read(currentMoratalSurahProvider);
-      if (current != null &&
-          current.surahNumber == surah.surahNumber &&
-          current.qariId == surah.qariId) {
-        audioPlayer.play();
+      final isOnline = results[0] as bool;
+      final checkedList = results[1] as List<bool>;
+      final downloadedSurahs = [
+        for (int i = 0; i < 114; i++)
+          if (checkedList[i]) i + 1,
+      ];
+
+      final sequence = audioPlayer.sequence;
+      bool isSamePlaylist = false;
+
+      if (isOnline) {
+        if (sequence.length == 114) {
+          final firstSource = sequence.first;
+          final tag = firstSource.tag;
+          if (tag is MediaItem && tag.id.startsWith('${surah.qariId}_')) {
+            isSamePlaylist = true;
+          }
+        }
+      } else {
+        if (sequence.length == downloadedSurahs.length && downloadedSurahs.isNotEmpty) {
+          final firstSource = sequence.first;
+          final tag = firstSource.tag;
+          if (tag is MediaItem && tag.id.startsWith('${surah.qariId}_')) {
+            isSamePlaylist = true;
+          }
+        }
+      }
+
+      if (isSamePlaylist) {
+        // إذا كانت القائمة محملة مسبقاً، ننتقل مباشرة للفهرس المطلوب
+        final targetIndex = isOnline
+            ? surah.surahNumber - 1
+            : downloadedSurahs.indexOf(surah.surahNumber);
+
+        if (targetIndex != -1) {
+          await audioPlayer.seek(Duration.zero, index: targetIndex);
+          if (!audioPlayer.playing) {
+            audioPlayer.play();
+          }
+        }
+      } else {
+        if (isOnline) {
+          // بناء قائمة التشغيل لـ 114 سورة بشكل متوازي وسريع
+          final sources = await Future.wait(
+            List.generate(114, (i) async {
+              final surahNumber = i + 1;
+              final localPath = await downloadService.getSurahLocalPath(
+                surah.qariId,
+                surahNumber,
+              );
+              final isLocalAvailable = downloadedSurahs.contains(surahNumber);
+
+              final mediaItem = MediaItem(
+                id: '${surah.qariId}_$surahNumber',
+                title: 'سورة ${SurahNames.getFormattedName(surahNumber)}',
+                artist: surah.qariName,
+                artUri: file.uri,
+              );
+
+              if (isLocalAvailable) {
+                return AudioSource.file(localPath, tag: mediaItem);
+              } else {
+                final remoteUrl = '${surah.serverUrl}${surahNumber.toString().padLeft(3, "0")}.mp3';
+                return AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem);
+              }
+            }),
+          );
+
+          await audioPlayer.setAudioSources(
+            sources,
+            initialIndex: surah.surahNumber - 1,
+            initialPosition: Duration.zero,
+          );
+        } else {
+          // في وضع عدم الاتصال، نبني قائمة تشغيل تحتوي فقط على السور المحملة
+          if (!downloadedSurahs.contains(surah.surahNumber)) {
+            downloadedSurahs.add(surah.surahNumber);
+            downloadedSurahs.sort();
+          }
+
+          final sources = await Future.wait(
+            downloadedSurahs.map((surahNumber) async {
+              final localPath = await downloadService.getSurahLocalPath(
+                surah.qariId,
+                surahNumber,
+              );
+              final mediaItem = MediaItem(
+                id: '${surah.qariId}_$surahNumber',
+                title: 'سورة ${SurahNames.getFormattedName(surahNumber)}',
+                artist: surah.qariName,
+                artUri: file.uri,
+              );
+              return AudioSource.file(localPath, tag: mediaItem);
+            }),
+          );
+
+          final targetIndex = downloadedSurahs.indexOf(surah.surahNumber);
+
+          await audioPlayer.setAudioSources(
+            sources,
+            initialIndex: targetIndex != -1 ? targetIndex : 0,
+            initialPosition: Duration.zero,
+          );
+        }
+
+        final current = ref.read(currentMoratalSurahProvider);
+        if (current != null &&
+            current.surahNumber == surah.surahNumber &&
+            current.qariId == surah.qariId) {
+          audioPlayer.play();
+        }
       }
     } on PlayerInterruptedException {
       // nothing will happen

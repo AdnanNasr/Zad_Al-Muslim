@@ -38,6 +38,15 @@ class MoratalDownloadService {
   // مسار الحفظ الأساسي: {appDocumentsDir}/moratal/{qariId}/{surahNumber}.mp3
   static const String _baseFolder = 'moratal';
 
+  // تخزين مسار مجلد التطبيق مؤقتاً لتجنب استدعاء getApplicationDocumentsDirectory
+  // مئات المرات في كل عملية فحص أو تحميل
+  String? _cachedAppDocPath;
+
+  Future<String> _getAppDocPath() async {
+    _cachedAppDocPath ??= (await getApplicationDocumentsDirectory()).path;
+    return _cachedAppDocPath!;
+  }
+
   // تتبع التقدم الفعلي والـ callbacks لكل قارئ
   final Map<String, DownloadProgressInfo> _currentProgress = {};
   final Map<
@@ -78,7 +87,20 @@ class MoratalDownloadService {
 
   MoratalDownloadService({required SharedPreferences prefs, Dio? dio})
     : _prefs = prefs,
-      _dio = dio ?? Dio();
+      _dio = dio ?? _createDio();
+
+  /// إنشاء Dio مُهيَّأ خصيصاً لتحميل الملفات الكبيرة
+  static Dio _createDio() {
+    final dio = Dio();
+    dio.options = BaseOptions(
+      // فقط timeout لبدء الاتصال — لا receiveTimeout هنا!
+      // receiveTimeout مُضرّ لتحميل الملفات الكبيرة: يُلغي التحميل
+      // إذا توقف تدفق البيانات بين الـ chunks لأي سبب (TCP buffering, etc)
+      connectTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
+    );
+    return dio;
+  }
 
   // ---------------------------------------------------------------------------
   // مسارات الملفات
@@ -86,15 +108,15 @@ class MoratalDownloadService {
 
   /// يبني مسار مجلد القارئ على جهاز المستخدم
   Future<String> getQariFolderPath(String qariId) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    return '${appDir.path}/$_baseFolder/$qariId';
+    final appDocPath = await _getAppDocPath();
+    return '$appDocPath/$_baseFolder/$qariId';
   }
 
-  /// يبني مسار ملف السورة على جهاز المستخدم
+  /// يبني مسار ملف السورة على جهاز المستخدم (يستخدم المسار المخزن مؤقتاً)
   Future<String> getSurahLocalPath(String qariId, int surahNumber) async {
-    final folder = await getQariFolderPath(qariId);
+    final appDocPath = await _getAppDocPath();
     final paddedNumber = surahNumber.toString().padLeft(3, '0');
-    return '$folder/$paddedNumber.mp3';
+    return '$appDocPath/$_baseFolder/$qariId/$paddedNumber.mp3';
   }
 
   // ---------------------------------------------------------------------------
@@ -194,10 +216,14 @@ class MoratalDownloadService {
           }
         },
         options: Options(
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 15),
-          sendTimeout: const Duration(seconds: 15),
-          headers: {'Accept': '*/*', 'Connection': 'keep-alive'},
+          // لا receiveTimeout هنا — تحميل الملفات الكبيرة قد يأخذ دقائق
+          // receiveTimeout يقيس الوقت بين الـ chunks، ليس الوقت الإجمالي
+          headers: {
+            'Accept': '*/*',
+            'Connection': 'keep-alive',
+            // منع الخادم من إرسال بيانات مضغوطة غير ضرورية لملفات MP3
+            'Accept-Encoding': 'identity',
+          },
         ),
       );
 
@@ -273,11 +299,6 @@ class MoratalDownloadService {
   /// [onSurahCompleted]: callback يُستدعى عند اكتمال كل سورة
   /// [onError]: callback عند حدوث خطأ
   /// يعيد: true إذا اكتمل التحميل، false إذا تم الإلغاء أو حدث خطأ
-  /// تحميل جميع سور القرآن لقارئ معين مع دعم التحميل المتوازي (بحد أقصى ٣ سور معاً)
-  /// [onProgress]: callback يُستدعى عند تحديث تقدم التحميل
-  /// [onSurahCompleted]: callback يُستدعى عند اكتمال كل سورة
-  /// [onError]: callback عند حدوث خطأ
-  /// يعيد: true إذا اكتمل التحميل، false إذا تم الإلغاء أو حدث خطأ
   Future<bool> downloadAllSurahs({
     required String qariId,
     required String serverUrl,
@@ -300,16 +321,22 @@ class MoratalDownloadService {
     final cancelToken = CancelToken();
     _cancelTokens[qariId] = cancelToken;
 
-    // تحديد قائمة السور المتبقية للتحميل وحساب السور المحملة مسبقاً
+    // تحديد قائمة السور المتبقية للتحميل بشكل متوازٍ لتوفير الوقت
+    // بدلاً من فحص كل سورة بشكل تسلسلي (114 عملية I/O) نفحصها كلها دفعة واحدة
+    final downloadChecks = await Future.wait(
+      List.generate(totalSurahs, (i) => isSurahDownloaded(qariId, i + 1)),
+    );
+
     final remainingSurahs = <int>[];
     final progressMap = <int, double>{};
 
-    for (int i = 1; i <= totalSurahs; i++) {
-      if (await isSurahDownloaded(qariId, i)) {
-        progressMap[i] = 1.0;
+    for (int i = totalSurahs - 1; i >= 0; i--) {
+      final surahNum = i + 1;
+      if (downloadChecks[i]) {
+        progressMap[surahNum] = 1.0;
       } else {
-        remainingSurahs.add(i);
-        progressMap[i] = 0.0;
+        remainingSurahs.add(surahNum);
+        progressMap[surahNum] = 0.0;
       }
     }
 
@@ -321,7 +348,7 @@ class MoratalDownloadService {
     }
 
     AppLogger.logger.i(
-      'بدء تحميل جميع سور قارئ $qariId بشكل متوازٍ (المتبقي: ${remainingSurahs.length} من $totalSurahs)',
+      'بدء تحميل جميع سور قارئ $qariId بشكل متتالٍ (المتبقي: ${remainingSurahs.length} من $totalSurahs)',
     );
 
     int lastPercent = -1;
@@ -376,61 +403,45 @@ class MoratalDownloadService {
     // إرسال التحديث الأولي للبداية
     updateProgress(remainingSurahs.first, 0.0);
 
-    int nextIndex = 0;
     final failedSurahs = <int>[];
     int consecutiveConnectionErrors = 0;
 
-    // دالة العامل (Worker) لتحميل السور واحدة تلو الأخرى من القائمة المشتركة
-    Future<void> downloadWorker() async {
-      while (!cancelToken.isCancelled) {
-        int currentSurahNumber;
-        if (nextIndex >= remainingSurahs.length) {
-          break;
-        }
-        currentSurahNumber = remainingSurahs[nextIndex++];
+    for (final currentSurahNumber in remainingSurahs) {
+      if (cancelToken.isCancelled) break;
 
-        try {
-          final success = await downloadSingleSurah(
-            qariId: qariId,
-            serverUrl: serverUrl,
-            surahNumber: currentSurahNumber,
-            cancelToken: cancelToken,
-            onProgress: (progress) {
-              updateProgress(currentSurahNumber, progress);
-            },
-            onConnectionError: () {
-              consecutiveConnectionErrors++;
-              if (consecutiveConnectionErrors >= 3) {
-                if (!cancelToken.isCancelled) {
-                  cancelToken.cancel('network_error');
-                }
+      try {
+        final success = await downloadSingleSurah(
+          qariId: qariId,
+          serverUrl: serverUrl,
+          surahNumber: currentSurahNumber,
+          cancelToken: cancelToken,
+          onProgress: (progress) {
+            updateProgress(currentSurahNumber, progress);
+          },
+          onConnectionError: () {
+            consecutiveConnectionErrors++;
+            if (consecutiveConnectionErrors >= 3) {
+              if (!cancelToken.isCancelled) {
+                cancelToken.cancel('network_error');
               }
-            },
-          );
+            }
+          },
+        );
 
-          if (cancelToken.isCancelled) return;
+        if (cancelToken.isCancelled) break;
 
-          if (success) {
-            consecutiveConnectionErrors = 0;
-            await _saveLastDownloadedSurah(qariId, currentSurahNumber);
-            onSurahCompleted?.call(currentSurahNumber);
-            updateProgress(currentSurahNumber, 1.0);
-          } else {
-            failedSurahs.add(currentSurahNumber);
-          }
-        } catch (e) {
+        if (success) {
+          consecutiveConnectionErrors = 0;
+          await _saveLastDownloadedSurah(qariId, currentSurahNumber);
+          onSurahCompleted?.call(currentSurahNumber);
+          updateProgress(currentSurahNumber, 1.0);
+        } else {
           failedSurahs.add(currentSurahNumber);
         }
+      } catch (e) {
+        failedSurahs.add(currentSurahNumber);
       }
     }
-
-    // تشغيل 3 عمال تحميل متوازيين كحد أقصى (Max Concurrent Downloads = 3)
-    final concurrencyLimit = remainingSurahs.length < 3
-        ? remainingSurahs.length
-        : 3;
-    final workers = List.generate(concurrencyLimit, (_) => downloadWorker());
-
-    await Future.wait(workers);
 
     _cancelTokens.remove(qariId);
     _progressCallbacks.remove(qariId);
@@ -463,7 +474,7 @@ class MoratalDownloadService {
     // اكتمل التحميل بنجاح - مسح سجل الاستكمال
     await _clearLastDownloadedSurah(qariId);
     AppLogger.logger.i(
-      '✅ تم تحميل جميع سور القارئ $qariId بنجاح وبشكل متوازٍ!',
+      '✅ تم تحميل جميع سور القارئ $qariId بنجاح وبشكل متتالٍ!',
     );
     return true;
   }

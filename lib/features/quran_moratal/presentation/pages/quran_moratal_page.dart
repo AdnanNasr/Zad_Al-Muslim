@@ -9,6 +9,7 @@ import 'package:zad_al_muslim/core/constants/enums/qari_names_moratal.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/pages/select_qari_surah_page.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_download_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
 
 class QuranMoratalPage extends ConsumerStatefulWidget {
   const QuranMoratalPage({super.key});
@@ -41,26 +42,41 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
         center: false,
         themeMode: false,
       ),
-      body: AnimationLimiter(
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-          itemCount: QariNames.allQaris.length,
-          separatorBuilder: (context, index) => SizedBox(height: 12.h),
-          itemBuilder: (context, index) {
-            final Map<String, String> qariData = QariNames.allQaris[index];
-            return AnimationConfiguration.staggeredList(
-              duration: const Duration(milliseconds: 700),
-              position: index,
-              child: SlideAnimation(
-                curve: Curves.linear,
-                verticalOffset: 50,
-                child: FadeInAnimation(
-                  child: _QariListTile(qariData: qariData, isDark: isDark),
-                ),
+      body: Stack(
+        children: [
+          AnimationLimiter(
+            child: ListView.separated(
+              padding: EdgeInsets.only(
+                left: 16.w,
+                right: 16.w,
+                top: 20.h,
+                bottom: 100.h,
               ),
-            );
-          },
-        ),
+              itemCount: QariNames.allQaris.length,
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                final Map<String, String> qariData = QariNames.allQaris[index];
+                return AnimationConfiguration.staggeredList(
+                  duration: const Duration(milliseconds: 700),
+                  position: index,
+                  child: SlideAnimation(
+                    curve: Curves.linear,
+                    verticalOffset: 50,
+                    child: FadeInAnimation(
+                      child: _QariListTile(qariData: qariData, isDark: isDark),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Positioned(
+            bottom: 10.h,
+            left: 0,
+            right: 0,
+            child: const MoratalMiniPlayer(),
+          ),
+        ],
       ),
     );
   }
@@ -306,6 +322,7 @@ class _DownloadButton extends ConsumerWidget {
     final notifier = ref.read(moratalDownloadProvider(params).notifier);
 
     switch (downloadState.status) {
+      // TODO
       case QariDownloadStatus.completed:
         // لا شيء - التحميل مكتمل
         ScaffoldMessenger.of(context)

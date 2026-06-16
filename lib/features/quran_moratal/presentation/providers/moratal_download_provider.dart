@@ -352,6 +352,10 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
   final String _serverUrl;
   final int _surahNumber;
 
+  // Throttle: نمنع الـ rebuild إلا عند تغيّر النسبة المئوية
+  // مثلما يفعل MoratalDownloadNotifier في downloadAllSurahs
+  int _lastProgressPercent = -1;
+
   SingleSurahDownloadNotifier(
     this._qariId,
     this._serverUrl,
@@ -372,8 +376,21 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
     }
   }
 
+  /// تعيين الحالة الأولية مباشرةً دون I/O إضافي
+  /// يُستخدم عندما تكون الحالة معروفة مسبقاً من allSurahsDownloadStatusProvider
+  void setInitialStatus(bool isDownloaded) {
+    if (mounted && state.status == SurahDownloadStatus.notDownloaded) {
+      state = SurahDownloadState(
+        status: isDownloaded
+            ? SurahDownloadStatus.downloaded
+            : SurahDownloadStatus.notDownloaded,
+      );
+    }
+  }
+
   Future<void> startDownload() async {
     if (state.status == SurahDownloadStatus.downloading) return;
+    _lastProgressPercent = -1;
     if (mounted) {
       state = const SurahDownloadState(
         status: SurahDownloadStatus.downloading,
@@ -387,10 +404,16 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
       surahNumber: _surahNumber,
       onProgress: (progress) {
         if (mounted) {
-          state = SurahDownloadState(
-            status: SurahDownloadStatus.downloading,
-            progress: progress,
-          );
+          // Throttle: نُحدّث الـ state فقط عند تغيّر النسبة المئوية
+          // هذا يُقلل عمليات الـ rebuild من آلاف المرات إلى 100 مرة كحد أقصى
+          final percent = (progress * 100).toInt();
+          if (percent != _lastProgressPercent) {
+            _lastProgressPercent = percent;
+            state = SurahDownloadState(
+              status: SurahDownloadStatus.downloading,
+              progress: progress,
+            );
+          }
         }
       },
     );
@@ -413,3 +436,20 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// Provider لجلب حالة جميع السور دفعةً واحدة (بدلاً من 114 I/O منفصل)
+// ---------------------------------------------------------------------------
+
+/// يُحضر حالة تحميل جميع السور لقارئ معين في طلب I/O واحد متوازٍ
+/// الـ key: qariId
+/// النتيجة: Map of surahNumber to isDownloaded
+final allSurahsDownloadStatusProvider =
+    FutureProvider.family<Map<int, bool>, String>((ref, qariId) async {
+  final service = sl<MoratalDownloadService>();
+  // تنفيذ 114 فحص بشكل متوازٍ (Future.wait) بدلاً من متسلسل
+  final results = await Future.wait(
+    List.generate(114, (i) => service.isSurahDownloaded(qariId, i + 1)),
+  );
+  return {for (int i = 0; i < 114; i++) i + 1: results[i]};
+});
