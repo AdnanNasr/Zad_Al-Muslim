@@ -164,7 +164,8 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
                             surah: surahsMeta[index],
                             isDark: isDark,
                             isAlreadyDownloaded:
-                                allStatus[surahsMeta[index].surahNumber] ?? false,
+                                allStatus[surahsMeta[index].surahNumber] ??
+                                false,
                           ),
                         ),
                       ),
@@ -367,6 +368,7 @@ class _SurahDownloadButton extends ConsumerStatefulWidget {
   final String serverUrl;
   final int surahNumber;
   final bool isDark;
+
   /// حالة التحميل الأولية من allSurahsDownloadStatusProvider بدلاً
   /// من استدعاء initialize() فردياً
   final bool initiallyDownloaded;
@@ -444,7 +446,7 @@ class _SurahDownloadButtonState extends ConsumerState<_SurahDownloadButton> {
       case SurahDownloadStatus.downloaded:
         return Icon(
           Icons.download_done_rounded,
-          color: Colors.green.shade600,
+          color: widget.isDark ? Colors.green.shade100 : Colors.green.shade600,
           size: 16.sp,
         );
       case SurahDownloadStatus.downloading:
@@ -461,7 +463,7 @@ class _SurahDownloadButtonState extends ConsumerState<_SurahDownloadButton> {
         return Icon(
           Icons.download_rounded,
           color: widget.isDark
-              ? context.color.onSurface.withValues(alpha: 0.7)
+              ? context.color.onSurface
               : context.color.primary,
           size: 16.sp,
         );

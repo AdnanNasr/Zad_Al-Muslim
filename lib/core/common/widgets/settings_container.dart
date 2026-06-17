@@ -37,7 +37,7 @@ class SettingsContainer extends ConsumerWidget {
         SizedBox(height: 16.h),
         Container(
           decoration: BoxDecoration(
-            color: primary.withValues(alpha: 0.09),
+            color: primary.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Column(

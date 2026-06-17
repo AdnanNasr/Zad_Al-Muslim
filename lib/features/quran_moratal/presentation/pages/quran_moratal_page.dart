@@ -281,7 +281,7 @@ class _DownloadButton extends ConsumerWidget {
       case QariDownloadStatus.completed:
         return Icon(
           Icons.download_done_rounded,
-          color: Colors.green.shade600,
+          color: isDark ? Colors.green.shade100 : Colors.green.shade600,
           size: 24.sp,
         );
 
@@ -305,7 +305,7 @@ class _DownloadButton extends ConsumerWidget {
       case QariDownloadStatus.error:
         return Icon(
           Icons.refresh_rounded,
-          color: Colors.orange.shade600,
+          color: isDark ? Colors.orange.shade100 : Colors.orange.shade600,
           size: 24.sp,
         );
 
@@ -613,7 +613,7 @@ class _DeleteButton extends ConsumerWidget {
         ),
         child: Icon(
           Icons.delete_outline_rounded,
-          color: isDark ? Colors.red.shade200 : Colors.red.shade600,
+          color: isDark ? Colors.red.shade100 : Colors.red.shade600,
           size: 22.sp,
         ),
       ),
