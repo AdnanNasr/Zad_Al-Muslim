@@ -439,18 +439,22 @@ class _DownloadButton extends ConsumerWidget {
             Container(
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: .1),
+                color: context.color.primary.withValues(alpha: .1),
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: Colors.orange.withValues(alpha: .3)),
+                border: Border.all(
+                  color: context.color.primary.withValues(alpha: .3),
+                ),
               ),
               child: Column(
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.warning_amber_rounded,
-                        color: Colors.orange,
+                        color: isDark
+                            ? context.color.onSurface
+                            : context.color.primary,
                         size: 18,
                       ),
                       SizedBox(width: 8.w),
@@ -460,7 +464,9 @@ class _DownloadButton extends ConsumerWidget {
                           style: TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 12.sp,
-                            color: Colors.orange.shade800,
+                            color: isDark
+                                ? context.color.onSurface
+                                : context.color.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -471,9 +477,11 @@ class _DownloadButton extends ConsumerWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.phone_android_rounded,
-                        color: Colors.orange,
+                        color: isDark
+                            ? context.color.onSurface
+                            : context.color.primary,
                         size: 18,
                       ),
                       SizedBox(width: 8.w),
@@ -483,7 +491,9 @@ class _DownloadButton extends ConsumerWidget {
                           style: TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 12.sp,
-                            color: Colors.orange.shade800,
+                            color: isDark
+                                ? context.color.onSurface
+                                : context.color.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
