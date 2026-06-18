@@ -62,7 +62,6 @@ class _HomePageState extends ConsumerState<HomePage>
 }
 
 class BodyContent extends ConsumerWidget {
-  // تم تحويله لـ ConsumerWidget لمراقبة الـ Providers
   const BodyContent({
     super.key,
     required this.colorScheme,
@@ -78,19 +77,15 @@ class BodyContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final children = [
       headerWidget(context, themeMode),
-      SizedBox(height: 8.h),
-      // ويدجت الصلاة القادمة
+
       const ComingPrayWidget(),
 
-      // ويدجت أذكار سريعة
       const QuickAdkarStrip(),
 
-      // ويدحت الأقسام الرئيسية
       PrimarySectionWidget(colorScheme: colorScheme, themeMode: themeMode),
 
       SizedBox(height: 8.h),
       if (lastReadingPostion != null)
-        // ... (كود الـ "آخر قراءة" يبقى كما هو) ...
         _buildLastReadingWidget(
           context,
           colorScheme,
@@ -98,12 +93,10 @@ class BodyContent extends ConsumerWidget {
           lastReadingPostion!,
         ),
 
-      // شريط التقدم الخاص بالقراءة
       const ReadingProgressCard(),
 
-      // const DailyVerseCard(),
       SizedBox(height: 8.h),
-      // دعاء اليوم
+
       TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
       SizedBox(height: 100.h),
     ];
@@ -118,8 +111,8 @@ class BodyContent extends ConsumerWidget {
         padding: EdgeInsets.only(
           top: 16.h,
           bottom: 10.h,
-          right: 20.w,
-          left: 20.w,
+          right: 14.w,
+          left: 14.w,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,70 +121,113 @@ class BodyContent extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "زاد المسلم",
-                    style: TextStyle(
-                      fontSize: 25.sp,
-                      fontFamily: "Cairo",
-                      fontWeight: FontWeight.bold,
-                      color: context.color.onSurface,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(
-                        Icons.brightness_2,
-                        size: 14.sp,
-                        color: context.color.primary.withValues(alpha: 0.8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontFamily: "Cairo",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "زاد المسلم",
+                            style: TextStyle(
+                              fontSize: 23.sp,
+                              fontFamily: "Cairo",
+                              fontWeight: FontWeight.bold,
+                              color: context.color.onSurface,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 4.w),
-                      Text(
-                        _getFormattedDateHijri(),
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: "Cairo",
-                          color: context.color.onSurface.withValues(alpha: 0.8),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.w),
+                        child: Image.asset(
+                          "assets/images/icon-512.png",
+                          width: 50.w,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 3.5.h),
-                Text(
-                  _getGreeting(),
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontFamily: "Cairo",
-                    fontWeight: FontWeight.bold,
-                    color: context.color.onSurface,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today_rounded,
-                      size: 14.sp,
-                      color: context.color.primary.withValues(alpha: 0.8),
+                  SizedBox(height: 8.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12.h,
+                      horizontal: 16.w,
                     ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      _getFormattedDate(),
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontFamily: "Cairo",
-                        color: context.color.onSurface.withValues(alpha: 0.8),
+                    decoration: BoxDecoration(
+                      color: context.color.primary.withValues(alpha: .08),
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: context.color.outlineVariant,
+                        width: 1,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.brightness_2_outlined,
+                                size: 16.sp,
+                                color: context.color.primary,
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                _getFormattedDateHijri(),
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontFamily: "Cairo",
+                                  fontWeight: FontWeight.w700,
+                                  color: context.color.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          VerticalDivider(
+                            color: context.color.outlineVariant,
+                            thickness: 1,
+                            width: 24.w,
+                            indent: 2,
+                            endIndent: 2,
+                          ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_today_rounded,
+                                size: 15.sp,
+                                color: context.color.primary,
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                _getFormattedDate(),
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontFamily: "Cairo",
+                                  fontWeight: FontWeight.w700,
+                                  color: context.color.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -199,7 +235,6 @@ class BodyContent extends ConsumerWidget {
     );
   }
 
-  // دالة مساعدة لتنظيم كود الـ Last Reading
   Widget _buildLastReadingWidget(
     BuildContext context,
     ColorScheme colorScheme,
@@ -211,7 +246,6 @@ class BodyContent extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             child: Row(
@@ -232,7 +266,6 @@ class BodyContent extends ConsumerWidget {
           ),
           SizedBox(height: 12.h),
 
-          // Card
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.r),
@@ -298,7 +331,7 @@ class BodyContent extends ConsumerWidget {
                                 "${AppLocalizations.of(context)!.page_number} ${lastReadingPostion.pageNumber}",
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  // fontFamily: "Cairo",
+
                                   fontWeight: FontWeight.w600,
                                   color: context.color.secondary.withValues(
                                     alpha: 0.9,
@@ -341,7 +374,7 @@ class BodyContent extends ConsumerWidget {
 
   String _getFormattedDate() {
     final now = DateTime.now();
-    // أيام الأسبوع بالعربي
+
     final dayNames = [
       'الإثنين',
       'الثلاثاء',
@@ -351,7 +384,7 @@ class BodyContent extends ConsumerWidget {
       'السبت',
       'الأحد',
     ];
-    // اسماء الأشهر بالعربي
+
     final months = [
       'يناير',
       'فبراير',
@@ -442,7 +475,7 @@ class PrimarySectionWidget extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 10.r, right: 10.r, left: 10.r),
             child: AlignedGridView.count(
               shrinkWrap: true,
-              crossAxisCount: 2, // عدد الأعمدة
+              crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               padding: EdgeInsets.zero,
