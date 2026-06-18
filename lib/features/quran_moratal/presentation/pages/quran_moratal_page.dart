@@ -7,9 +7,12 @@ import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/constants/enums/qari_names_moratal.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/utils/network/network_info.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/pages/select_qari_surah_page.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_download_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
+
+import '../widgets/internet_error_message.dart';
 
 class QuranMoratalPage extends ConsumerStatefulWidget {
   const QuranMoratalPage({super.key});
@@ -322,7 +325,6 @@ class _DownloadButton extends ConsumerWidget {
     final notifier = ref.read(moratalDownloadProvider(params).notifier);
 
     switch (downloadState.status) {
-      // TODO
       case QariDownloadStatus.completed:
         // لا شيء - التحميل مكتمل
         ScaffoldMessenger.of(context)
@@ -366,9 +368,10 @@ class _DownloadButton extends ConsumerWidget {
         }
         break;
 
-      case QariDownloadStatus.error:
+      case QariDownloadStatus.error: // TODO
         // استكمال التحميل
         final confirm = await _showConfirmDialog(context, isResume: true);
+
         if (confirm == true && context.mounted) {
           await WakelockPlus.enable();
           notifier.startDownloadAll().then((_) => WakelockPlus.disable());
@@ -519,7 +522,17 @@ class _DownloadButton extends ConsumerWidget {
             ),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
+            onPressed: () async {
+              final hasInternet = await NetworkInfo().hasValidConnection();
+
+              if (!hasInternet) {
+                if (!context.mounted) return;
+                InternetErrorMessage.showMessage(context: ctx);
+              }
+
+              if (!ctx.mounted) return;
+              Navigator.of(ctx).pop(true);
+            },
             style: FilledButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.r),

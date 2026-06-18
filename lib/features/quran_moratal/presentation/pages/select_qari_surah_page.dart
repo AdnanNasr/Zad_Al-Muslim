@@ -13,6 +13,7 @@ import 'package:zad_al_muslim/features/quran_moratal/domain/entities/surah_meta_
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_download_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/moratal_player_provider.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/providers/surahs_names_moratal_provider.dart';
+import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/internet_error_message.dart';
 import 'package:zad_al_muslim/features/quran_moratal/presentation/widgets/moratal_mini_player.dart';
 
 class SelectQariSurahPage extends ConsumerStatefulWidget {
@@ -513,33 +514,7 @@ class _SurahDownloadButtonState extends ConsumerState<_SurahDownloadButton> {
 
     if (!hasInternet) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(milliseconds: 900), // TODO
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          backgroundColor: Colors.red.shade700,
-          content: Row(
-            children: [
-              const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  'يرجى التحقق من إتصالك بالإنترنت.',
-                  style: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.sp,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      InternetErrorMessage.showMessage(context: context);
     }
 
     // بدء التحميل
