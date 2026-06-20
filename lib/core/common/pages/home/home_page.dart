@@ -155,7 +155,7 @@ class BodyContent extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 16.h),
                   Container(
                     padding: EdgeInsets.symmetric(
                       vertical: 12.h,

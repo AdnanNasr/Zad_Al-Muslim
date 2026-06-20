@@ -81,7 +81,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
         ..showSnackBar(
           SnackBar(
             behavior: SnackBarBehavior.floating,
-            duration: const Duration(milliseconds: 900),
+            duration: const Duration(seconds: 2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
