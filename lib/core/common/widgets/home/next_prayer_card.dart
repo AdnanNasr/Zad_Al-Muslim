@@ -42,7 +42,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
         return _buildCard(context, model);
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 

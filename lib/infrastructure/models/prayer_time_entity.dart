@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import '../../domain/entities/prayer_time.dart';
 
 part 'prayer_time_entity.g.dart';

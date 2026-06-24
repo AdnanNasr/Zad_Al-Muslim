@@ -13,17 +13,10 @@ const ReferenceModelSchema = Schema(
   name: r'ReferenceModel',
   id: -5005050515208716348,
   properties: {
-    r'book': PropertySchema(
-      id: 0,
-      name: r'book',
-      type: IsarType.long,
-    ),
-    r'hadith': PropertySchema(
-      id: 1,
-      name: r'hadith',
-      type: IsarType.long,
-    )
+    r'book': PropertySchema(id: 0, name: r'book', type: IsarType.long),
+    r'hadith': PropertySchema(id: 1, name: r'hadith', type: IsarType.long),
   },
+
   estimateSize: _referenceModelEstimateSize,
   serialize: _referenceModelSerialize,
   deserialize: _referenceModelDeserialize,
@@ -81,150 +74,148 @@ P _referenceModelDeserializeProp<P>(
 extension ReferenceModelQueryFilter
     on QueryBuilder<ReferenceModel, ReferenceModel, QFilterCondition> {
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      bookIsNull() {
+  bookIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'book',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'book'),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      bookIsNotNull() {
+  bookIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'book',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'book'),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      bookEqualTo(int? value) {
+  bookEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'book',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'book', value: value),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      bookGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  bookGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'book',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'book',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      bookLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  bookLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'book',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'book',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      bookBetween(
+  bookBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'book',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'book',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      hadithIsNull() {
+  hadithIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'hadith',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'hadith'),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      hadithIsNotNull() {
+  hadithIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'hadith',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'hadith'),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      hadithEqualTo(int? value) {
+  hadithEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'hadith',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hadith', value: value),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      hadithGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  hadithGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'hadith',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'hadith',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      hadithLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  hadithLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'hadith',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'hadith',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<ReferenceModel, ReferenceModel, QAfterFilterCondition>
-      hadithBetween(
+  hadithBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'hadith',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'hadith',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }

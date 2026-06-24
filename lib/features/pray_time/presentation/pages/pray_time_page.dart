@@ -134,7 +134,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final selectedDate = ref.watch(selectedDateProvider);
     final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
     final adjustments =
-        adjustmentsAsync.valueOrNull ?? PrayerAdjustmentsModel();
+        adjustmentsAsync.value ?? PrayerAdjustmentsModel();
 
     ref.listen<NetworkInfoState>(networkInfoProvider, (previous, next) {
       if (next == NetworkInfoState.connected) {
@@ -353,7 +353,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                         }
                         return const SizedBox.shrink();
                       },
-                      error: (_, __) => const SizedBox.shrink(),
+                      error: (_, _) => const SizedBox.shrink(),
                       loading: () => Skeletonizer(
                         enabled: true,
                         effect: ShimmerEffect(

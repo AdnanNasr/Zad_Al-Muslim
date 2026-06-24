@@ -21,6 +21,7 @@ const QuranPageSchema = CollectionSchema(
       id: 0,
       name: r'ayahs',
       type: IsarType.objectList,
+
       target: r'Ayah',
     ),
     r'pageNumber': PropertySchema(
@@ -28,12 +29,9 @@ const QuranPageSchema = CollectionSchema(
       name: r'pageNumber',
       type: IsarType.long,
     ),
-    r'saved': PropertySchema(
-      id: 2,
-      name: r'saved',
-      type: IsarType.bool,
-    )
+    r'saved': PropertySchema(id: 2, name: r'saved', type: IsarType.bool),
   },
+
   estimateSize: _quranPageEstimateSize,
   serialize: _quranPageSerialize,
   deserialize: _quranPageDeserialize,
@@ -42,10 +40,11 @@ const QuranPageSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {r'Ayah': AyahSchema},
+
   getId: _quranPageGetId,
   getLinks: _quranPageGetLinks,
   attach: _quranPageAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _quranPageEstimateSize(
@@ -88,7 +87,8 @@ QuranPage _quranPageDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = QuranPage();
-  object.ayahs = reader.readObjectList<Ayah>(
+  object.ayahs =
+      reader.readObjectList<Ayah>(
         offsets[0],
         AyahSchema.deserialize,
         allOffsets,
@@ -110,12 +110,13 @@ P _quranPageDeserializeProp<P>(
   switch (propertyId) {
     case 0:
       return (reader.readObjectList<Ayah>(
-            offset,
-            AyahSchema.deserialize,
-            allOffsets,
-            Ayah(),
-          ) ??
-          []) as P;
+                offset,
+                AyahSchema.deserialize,
+                allOffsets,
+                Ayah(),
+              ) ??
+              [])
+          as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
@@ -150,10 +151,7 @@ extension QuranPageQueryWhere
     on QueryBuilder<QuranPage, QuranPage, QWhereClause> {
   QueryBuilder<QuranPage, QuranPage, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
@@ -179,8 +177,10 @@ extension QuranPageQueryWhere
     });
   }
 
-  QueryBuilder<QuranPage, QuranPage, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<QuranPage, QuranPage, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -188,8 +188,10 @@ extension QuranPageQueryWhere
     });
   }
 
-  QueryBuilder<QuranPage, QuranPage, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<QuranPage, QuranPage, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -204,12 +206,14 @@ extension QuranPageQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -217,39 +221,22 @@ extension QuranPageQueryWhere
 extension QuranPageQueryFilter
     on QueryBuilder<QuranPage, QuranPage, QFilterCondition> {
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> ayahsLengthEqualTo(
-      int length) {
+    int length,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'ayahs',
-        length,
-        true,
-        length,
-        true,
-      );
+      return query.listLength(r'ayahs', length, true, length, true);
     });
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> ayahsIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'ayahs',
-        0,
-        true,
-        0,
-        true,
-      );
+      return query.listLength(r'ayahs', 0, true, 0, true);
     });
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> ayahsIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'ayahs',
-        0,
-        false,
-        999999,
-        true,
-      );
+      return query.listLength(r'ayahs', 0, false, 999999, true);
     });
   }
 
@@ -258,29 +245,14 @@ extension QuranPageQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'ayahs',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.listLength(r'ayahs', 0, true, length, include);
     });
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition>
-      ayahsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
+  ayahsLengthGreaterThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'ayahs',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.listLength(r'ayahs', length, include, 999999, true);
     });
   }
 
@@ -302,12 +274,12 @@ extension QuranPageQueryFilter
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> idEqualTo(
-      Id value) {
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -316,11 +288,13 @@ extension QuranPageQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -329,11 +303,13 @@ extension QuranPageQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -344,37 +320,38 @@ extension QuranPageQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> pageNumberEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'pageNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'pageNumber', value: value),
+      );
     });
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition>
-      pageNumberGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  pageNumberGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'pageNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'pageNumber',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -383,11 +360,13 @@ extension QuranPageQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'pageNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'pageNumber',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -398,23 +377,25 @@ extension QuranPageQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'pageNumber',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'pageNumber',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> savedEqualTo(
-      bool value) {
+    bool value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'saved',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'saved', value: value),
+      );
     });
   }
 }
@@ -422,7 +403,8 @@ extension QuranPageQueryFilter
 extension QuranPageQueryObject
     on QueryBuilder<QuranPage, QuranPage, QFilterCondition> {
   QueryBuilder<QuranPage, QuranPage, QAfterFilterCondition> ayahsElement(
-      FilterQuery<Ayah> q) {
+    FilterQuery<Ayah> q,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'ayahs');
     });
@@ -570,17 +552,10 @@ const AyahSchema = Schema(
       name: r'surahNumber',
       type: IsarType.long,
     ),
-    r'text': PropertySchema(
-      id: 4,
-      name: r'text',
-      type: IsarType.string,
-    ),
-    r'uniqueId': PropertySchema(
-      id: 5,
-      name: r'uniqueId',
-      type: IsarType.long,
-    )
+    r'text': PropertySchema(id: 4, name: r'text', type: IsarType.string),
+    r'uniqueId': PropertySchema(id: 5, name: r'uniqueId', type: IsarType.long),
   },
+
   estimateSize: _ayahEstimateSize,
   serialize: _ayahSerialize,
   deserialize: _ayahDeserialize,
@@ -658,11 +633,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ayaTextEmlaey',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'ayaTextEmlaey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -672,12 +649,14 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'ayaTextEmlaey',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'ayaTextEmlaey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -687,12 +666,14 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'ayaTextEmlaey',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'ayaTextEmlaey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -704,14 +685,16 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'ayaTextEmlaey',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'ayaTextEmlaey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -720,11 +703,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'ayaTextEmlaey',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'ayaTextEmlaey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -733,62 +718,67 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'ayaTextEmlaey',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'ayaTextEmlaey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'ayaTextEmlaey',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'ayaTextEmlaey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'ayaTextEmlaey',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'ayaTextEmlaey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ayaTextEmlaey',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'ayaTextEmlaey', value: ''),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayaTextEmlaeyIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'ayaTextEmlaey',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'ayaTextEmlaey', value: ''),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> ayahNumberEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ayahNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'ayahNumber', value: value),
+      );
     });
   }
 
@@ -797,11 +787,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'ayahNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'ayahNumber',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -810,11 +802,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'ayahNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'ayahNumber',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -825,13 +819,15 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'ayahNumber',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'ayahNumber',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -840,11 +836,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'surahName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'surahName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -854,12 +852,14 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'surahName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'surahName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -869,12 +869,14 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'surahName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'surahName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -886,14 +888,16 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'surahName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'surahName',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -902,11 +906,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'surahName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'surahName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -915,63 +921,69 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'surahName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'surahName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> surahNameContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'surahName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'surahName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> surahNameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'surahName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'surahName',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> surahNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'surahName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'surahName', value: ''),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> surahNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'surahName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'surahName', value: ''),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> surahNumberEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'surahNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'surahNumber', value: value),
+      );
     });
   }
 
@@ -980,11 +992,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'surahNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'surahNumber',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -993,11 +1007,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'surahNumber',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'surahNumber',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1008,13 +1024,15 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'surahNumber',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'surahNumber',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -1023,11 +1041,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1037,12 +1057,14 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1052,12 +1074,14 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1069,14 +1093,16 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'text',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'text',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1085,11 +1111,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1098,60 +1126,67 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'text',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'text',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'text',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'text', value: ''),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> textIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'text',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'text', value: ''),
+      );
     });
   }
 
   QueryBuilder<Ayah, Ayah, QAfterFilterCondition> uniqueIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'uniqueId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'uniqueId', value: value),
+      );
     });
   }
 
@@ -1160,11 +1195,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'uniqueId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'uniqueId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1173,11 +1210,13 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'uniqueId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'uniqueId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1188,13 +1227,15 @@ extension AyahQueryFilter on QueryBuilder<Ayah, Ayah, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'uniqueId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'uniqueId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }

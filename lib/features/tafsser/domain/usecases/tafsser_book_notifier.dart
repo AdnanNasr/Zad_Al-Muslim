@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/features/tafsser/data/models/tafsser_surah.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 
@@ -41,7 +42,7 @@ class TafsserBookNotifier extends StateNotifier<AsyncValue<EditionModel>> {
 
       if (getEdition != null) {
         state = AsyncValue.data(getEdition.edition!);
-        
+
         return true;
       }
     }

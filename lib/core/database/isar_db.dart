@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/features/adkar/data/models/adkar_model.dart';
 import 'package:zad_al_muslim/features/adkar/data/models/dhikr_state_model.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';

@@ -17,11 +17,7 @@ const UserAddressModelSchema = CollectionSchema(
   name: r'UserAddressModel',
   id: 2708721576613986976,
   properties: {
-    r'country': PropertySchema(
-      id: 0,
-      name: r'country',
-      type: IsarType.string,
-    ),
+    r'country': PropertySchema(id: 0, name: r'country', type: IsarType.string),
     r'countryCode': PropertySchema(
       id: 1,
       name: r'countryCode',
@@ -31,8 +27,9 @@ const UserAddressModelSchema = CollectionSchema(
       id: 2,
       name: r'locality',
       type: IsarType.string,
-    )
+    ),
   },
+
   estimateSize: _userAddressModelEstimateSize,
   serialize: _userAddressModelSerialize,
   deserialize: _userAddressModelDeserialize,
@@ -41,10 +38,11 @@ const UserAddressModelSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {},
+
   getId: _userAddressModelGetId,
   getLinks: _userAddressModelGetLinks,
   attach: _userAddressModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _userAddressModelEstimateSize(
@@ -127,7 +125,10 @@ List<IsarLinkBase<dynamic>> _userAddressModelGetLinks(UserAddressModel object) {
 }
 
 void _userAddressModelAttach(
-    IsarCollection<dynamic> col, Id id, UserAddressModel object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  UserAddressModel object,
+) {
   object.id = id;
 }
 
@@ -143,17 +144,15 @@ extension UserAddressModelQueryWhereSort
 extension UserAddressModelQueryWhere
     on QueryBuilder<UserAddressModel, UserAddressModel, QWhereClause> {
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterWhereClause> idEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+  idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -176,7 +175,7 @@ extension UserAddressModelQueryWhere
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+  idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -185,7 +184,7 @@ extension UserAddressModelQueryWhere
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
+  idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -200,12 +199,14 @@ extension UserAddressModelQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -213,71 +214,74 @@ extension UserAddressModelQueryWhere
 extension UserAddressModelQueryFilter
     on QueryBuilder<UserAddressModel, UserAddressModel, QFilterCondition> {
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryIsNull() {
+  countryIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'country',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'country'),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryIsNotNull() {
+  countryIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'country',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'country'),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+  countryEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'country',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'country',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryLessThan(
+  countryGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'country',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryBetween(
+  countryLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+  countryBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -285,153 +289,158 @@ extension UserAddressModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'country',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'country',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  countryStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'country',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  countryEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'country',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryContains(String value, {bool caseSensitive = true}) {
+  countryContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'country',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryMatches(String pattern, {bool caseSensitive = true}) {
+  countryMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'country',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'country',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryIsEmpty() {
+  countryIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'country',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'country', value: ''),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryIsNotEmpty() {
+  countryIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'country',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'country', value: ''),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeIsNull() {
+  countryCodeIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'countryCode',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'countryCode'),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeIsNotNull() {
+  countryCodeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'countryCode',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'countryCode'),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+  countryCodeEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'countryCode',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'countryCode',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'countryCode',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeLessThan(
+  countryCodeGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'countryCode',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'countryCode',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeBetween(
+  countryCodeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'countryCode',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+  countryCodeBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -439,209 +448,213 @@ extension UserAddressModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'countryCode',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'countryCode',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  countryCodeStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'countryCode',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'countryCode',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  countryCodeEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'countryCode',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'countryCode',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeContains(String value, {bool caseSensitive = true}) {
+  countryCodeContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'countryCode',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'countryCode',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeMatches(String pattern, {bool caseSensitive = true}) {
+  countryCodeMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'countryCode',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'countryCode',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeIsEmpty() {
+  countryCodeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'countryCode',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'countryCode', value: ''),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      countryCodeIsNotEmpty() {
+  countryCodeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'countryCode',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'countryCode', value: ''),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      idEqualTo(Id value) {
+  idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      idBetween(
+  idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityIsNull() {
+  localityIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'locality',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'locality'),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityIsNotNull() {
+  localityIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'locality',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'locality'),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+  localityEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'locality',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'locality',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'locality',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityLessThan(
+  localityGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'locality',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'locality',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityBetween(
+  localityLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'locality',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
+  localityBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -649,84 +662,86 @@ extension UserAddressModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'locality',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'locality',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  localityStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'locality',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'locality',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  localityEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'locality',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'locality',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityContains(String value, {bool caseSensitive = true}) {
+  localityContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'locality',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'locality',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityMatches(String pattern, {bool caseSensitive = true}) {
+  localityMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'locality',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'locality',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityIsEmpty() {
+  localityIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'locality',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'locality', value: ''),
+      );
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterFilterCondition>
-      localityIsNotEmpty() {
+  localityIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'locality',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'locality', value: ''),
+      );
     });
   }
 }
@@ -740,42 +755,42 @@ extension UserAddressModelQueryLinks
 extension UserAddressModelQuerySortBy
     on QueryBuilder<UserAddressModel, UserAddressModel, QSortBy> {
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      sortByCountry() {
+  sortByCountry() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'country', Sort.asc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      sortByCountryDesc() {
+  sortByCountryDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'country', Sort.desc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      sortByCountryCode() {
+  sortByCountryCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'countryCode', Sort.asc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      sortByCountryCodeDesc() {
+  sortByCountryCodeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'countryCode', Sort.desc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      sortByLocality() {
+  sortByLocality() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'locality', Sort.asc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      sortByLocalityDesc() {
+  sortByLocalityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'locality', Sort.desc);
     });
@@ -785,28 +800,28 @@ extension UserAddressModelQuerySortBy
 extension UserAddressModelQuerySortThenBy
     on QueryBuilder<UserAddressModel, UserAddressModel, QSortThenBy> {
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByCountry() {
+  thenByCountry() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'country', Sort.asc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByCountryDesc() {
+  thenByCountryDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'country', Sort.desc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByCountryCode() {
+  thenByCountryCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'countryCode', Sort.asc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByCountryCodeDesc() {
+  thenByCountryCodeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'countryCode', Sort.desc);
     });
@@ -819,21 +834,21 @@ extension UserAddressModelQuerySortThenBy
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByLocality() {
+  thenByLocality() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'locality', Sort.asc);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QAfterSortBy>
-      thenByLocalityDesc() {
+  thenByLocalityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'locality', Sort.desc);
     });
@@ -842,22 +857,22 @@ extension UserAddressModelQuerySortThenBy
 
 extension UserAddressModelQueryWhereDistinct
     on QueryBuilder<UserAddressModel, UserAddressModel, QDistinct> {
-  QueryBuilder<UserAddressModel, UserAddressModel, QDistinct> distinctByCountry(
-      {bool caseSensitive = true}) {
+  QueryBuilder<UserAddressModel, UserAddressModel, QDistinct>
+  distinctByCountry({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'country', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QDistinct>
-      distinctByCountryCode({bool caseSensitive = true}) {
+  distinctByCountryCode({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'countryCode', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<UserAddressModel, UserAddressModel, QDistinct>
-      distinctByLocality({bool caseSensitive = true}) {
+  distinctByLocality({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'locality', caseSensitive: caseSensitive);
     });
@@ -879,7 +894,7 @@ extension UserAddressModelQueryProperty
   }
 
   QueryBuilder<UserAddressModel, String?, QQueryOperations>
-      countryCodeProperty() {
+  countryCodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'countryCode');
     });

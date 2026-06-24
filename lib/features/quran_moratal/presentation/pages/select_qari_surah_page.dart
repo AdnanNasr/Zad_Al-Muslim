@@ -124,7 +124,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
 
     // جلب حالة تحميل جميع السور دفعةً واحدة (I/O واحد متوازٍ بدلاً من 114 طلب)
     final allStatusAsync = ref.watch(allSurahsDownloadStatusProvider(_qariId));
-    final allStatus = allStatusAsync.valueOrNull ?? {};
+    final allStatus = allStatusAsync.value ?? {};
 
     return Scaffold(
       appBar: CustomAppBar(

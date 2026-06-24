@@ -1,4 +1,5 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
+
 import '../../../../core/database/isar_db.dart';
 import '../models/ayah.dart';
 import '../models/tafsser_surah.dart';

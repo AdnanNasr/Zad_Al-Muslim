@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/quran_moratal/data/services/moratal_download_service.dart';
 
@@ -76,25 +77,19 @@ class SurahDownloadState {
   final SurahDownloadStatus status;
   final double progress;
 
-  const SurahDownloadState({
-    required this.status,
-    this.progress = 0.0,
-  });
+  const SurahDownloadState({required this.status, this.progress = 0.0});
 }
 
 // ---------------------------------------------------------------------------
 // Notifier للقارئ (يدير تحميل الكل أو جزء)
 // ---------------------------------------------------------------------------
 
-class MoratalDownloadNotifier
-    extends StateNotifier<QariDownloadState> {
+class MoratalDownloadNotifier extends StateNotifier<QariDownloadState> {
   final String _qariId;
   final String _serverUrl;
 
-  MoratalDownloadNotifier(
-    this._qariId,
-    this._serverUrl,
-  ) : super(const QariDownloadState(status: QariDownloadStatus.notDownloaded));
+  MoratalDownloadNotifier(this._qariId, this._serverUrl)
+    : super(const QariDownloadState(status: QariDownloadStatus.notDownloaded));
 
   MoratalDownloadService get _service => sl<MoratalDownloadService>();
 
@@ -104,26 +99,29 @@ class MoratalDownloadNotifier
     if (_service.isDownloading(_qariId)) {
       _service.updateCallbacks(
         qariId: _qariId,
-        onProgress: ({
-          required downloadedCount,
-          required totalCount,
-          required overallProgress,
-          required currentSurah,
-        }) {
-          if (mounted) {
-            final isDone = downloadedCount == totalCount;
-            state = state.copyWith(
-              status: isDone ? QariDownloadStatus.completed : QariDownloadStatus.inProgress,
-              downloadedCount: downloadedCount,
-              totalCount: totalCount,
-              overallProgress: overallProgress,
-              currentSurah: currentSurah,
-            );
-            if (isDone) {
-              _showGlobalCompletionSnackBar();
-            }
-          }
-        },
+        onProgress:
+            ({
+              required downloadedCount,
+              required totalCount,
+              required overallProgress,
+              required currentSurah,
+            }) {
+              if (mounted) {
+                final isDone = downloadedCount == totalCount;
+                state = state.copyWith(
+                  status: isDone
+                      ? QariDownloadStatus.completed
+                      : QariDownloadStatus.inProgress,
+                  downloadedCount: downloadedCount,
+                  totalCount: totalCount,
+                  overallProgress: overallProgress,
+                  currentSurah: currentSurah,
+                );
+                if (isDone) {
+                  _showGlobalCompletionSnackBar();
+                }
+              }
+            },
         onError: (errorMessage) {
           if (mounted) {
             state = state.copyWith(
@@ -136,9 +134,12 @@ class MoratalDownloadNotifier
 
       final currentProgress = _service.getCurrentProgress(_qariId);
       if (currentProgress != null && mounted) {
-        final isDone = currentProgress.downloadedCount == currentProgress.totalCount;
+        final isDone =
+            currentProgress.downloadedCount == currentProgress.totalCount;
         state = QariDownloadState(
-          status: isDone ? QariDownloadStatus.completed : QariDownloadStatus.inProgress,
+          status: isDone
+              ? QariDownloadStatus.completed
+              : QariDownloadStatus.inProgress,
           downloadedCount: currentProgress.downloadedCount,
           totalCount: currentProgress.totalCount,
           overallProgress: currentProgress.overallProgress,
@@ -181,7 +182,8 @@ class MoratalDownloadNotifier
           downloadedCount: downloadedCount,
           totalCount: 114,
           overallProgress: downloadedCount / 114,
-          errorMessage: 'تم تحميل $downloadedCount من 114 سورة. اضغط للاستكمال.',
+          errorMessage:
+              'تم تحميل $downloadedCount من 114 سورة. اضغط للاستكمال.',
         );
       }
     } else {
@@ -207,26 +209,29 @@ class MoratalDownloadNotifier
     final success = await _service.downloadAllSurahs(
       qariId: _qariId,
       serverUrl: _serverUrl,
-      onProgress: ({
-        required downloadedCount,
-        required totalCount,
-        required overallProgress,
-        required currentSurah,
-      }) {
-        if (mounted) {
-          final isDone = downloadedCount == totalCount;
-          state = state.copyWith(
-            status: isDone ? QariDownloadStatus.completed : QariDownloadStatus.inProgress,
-            downloadedCount: downloadedCount,
-            totalCount: totalCount,
-            overallProgress: overallProgress,
-            currentSurah: currentSurah,
-          );
-          if (isDone) {
-            _showGlobalCompletionSnackBar();
-          }
-        }
-      },
+      onProgress:
+          ({
+            required downloadedCount,
+            required totalCount,
+            required overallProgress,
+            required currentSurah,
+          }) {
+            if (mounted) {
+              final isDone = downloadedCount == totalCount;
+              state = state.copyWith(
+                status: isDone
+                    ? QariDownloadStatus.completed
+                    : QariDownloadStatus.inProgress,
+                downloadedCount: downloadedCount,
+                totalCount: totalCount,
+                overallProgress: overallProgress,
+                currentSurah: currentSurah,
+              );
+              if (isDone) {
+                _showGlobalCompletionSnackBar();
+              }
+            }
+          },
       onError: (errorMessage) {
         if (mounted) {
           state = state.copyWith(
@@ -276,9 +281,7 @@ class MoratalDownloadNotifier
     _service.cancelDownload(_qariId);
     await _service.deleteAllQariSurahs(_qariId);
     if (mounted) {
-      state = const QariDownloadState(
-        status: QariDownloadStatus.notDownloaded,
-      );
+      state = const QariDownloadState(status: QariDownloadStatus.notDownloaded);
     }
   }
 
@@ -294,35 +297,38 @@ class MoratalDownloadNotifier
 
 /// Provider رئيسي لحالة تحميل كل قارئ
 /// المفتاح: ({qariId, serverUrl})
-final moratalDownloadProvider = StateNotifierProvider.family<
-    MoratalDownloadNotifier,
-    QariDownloadState,
-    ({String qariId, String serverUrl})>(
-  (ref, params) => MoratalDownloadNotifier(
-    params.qariId,
-    params.serverUrl,
-  ),
-);
+final moratalDownloadProvider =
+    StateNotifierProvider.family<
+      MoratalDownloadNotifier,
+      QariDownloadState,
+      ({String qariId, String serverUrl})
+    >(
+      (ref, params) => MoratalDownloadNotifier(params.qariId, params.serverUrl),
+    );
 
 /// Provider للتحقق من حالة سورة واحدة
-final surahLocalStatusProvider = FutureProvider.family<
-    SurahDownloadState,
-    ({String qariId, int surahNumber})>(
-  (ref, params) async {
-    final service = sl<MoratalDownloadService>();
-    final isDownloaded =
-        await service.isSurahDownloaded(params.qariId, params.surahNumber);
-    return SurahDownloadState(
-      status: isDownloaded
-          ? SurahDownloadStatus.downloaded
-          : SurahDownloadStatus.notDownloaded,
-    );
-  },
-);
+final surahLocalStatusProvider =
+    FutureProvider.family<
+      SurahDownloadState,
+      ({String qariId, int surahNumber})
+    >((ref, params) async {
+      final service = sl<MoratalDownloadService>();
+      final isDownloaded = await service.isSurahDownloaded(
+        params.qariId,
+        params.surahNumber,
+      );
+      return SurahDownloadState(
+        status: isDownloaded
+            ? SurahDownloadStatus.downloaded
+            : SurahDownloadStatus.notDownloaded,
+      );
+    });
 
 /// Provider لحساب حجم الملفات المُحمَّلة لقارئ
-final qariDownloadedSizeMBProvider =
-    FutureProvider.family<double, String>((ref, qariId) async {
+final qariDownloadedSizeMBProvider = FutureProvider.family<double, String>((
+  ref,
+  qariId,
+) async {
   final service = sl<MoratalDownloadService>();
   return service.getDownloadedSizeMB(qariId);
 });
@@ -336,16 +342,18 @@ void Function(String qariId)? moratalDownloadCompletedCallback;
 
 /// Provider لحالة تحميل سورة واحدة (أثناء التحميل)
 /// المفتاح: ({qariId, serverUrl, surahNumber})
-final singleSurahDownloadProvider = StateNotifierProvider.family<
-    SingleSurahDownloadNotifier,
-    SurahDownloadState,
-    ({String qariId, String serverUrl, int surahNumber})>(
-  (ref, params) => SingleSurahDownloadNotifier(
-    params.qariId,
-    params.serverUrl,
-    params.surahNumber,
-  ),
-);
+final singleSurahDownloadProvider =
+    StateNotifierProvider.family<
+      SingleSurahDownloadNotifier,
+      SurahDownloadState,
+      ({String qariId, String serverUrl, int surahNumber})
+    >(
+      (ref, params) => SingleSurahDownloadNotifier(
+        params.qariId,
+        params.serverUrl,
+        params.surahNumber,
+      ),
+    );
 
 class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
   final String _qariId;
@@ -356,17 +364,18 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
   // مثلما يفعل MoratalDownloadNotifier في downloadAllSurahs
   int _lastProgressPercent = -1;
 
-  SingleSurahDownloadNotifier(
-    this._qariId,
-    this._serverUrl,
-    this._surahNumber,
-  ) : super(const SurahDownloadState(status: SurahDownloadStatus.notDownloaded));
+  SingleSurahDownloadNotifier(this._qariId, this._serverUrl, this._surahNumber)
+    : super(
+        const SurahDownloadState(status: SurahDownloadStatus.notDownloaded),
+      );
 
   MoratalDownloadService get _service => sl<MoratalDownloadService>();
 
   Future<void> initialize() async {
-    final isDownloaded =
-        await _service.isSurahDownloaded(_qariId, _surahNumber);
+    final isDownloaded = await _service.isSurahDownloaded(
+      _qariId,
+      _surahNumber,
+    );
     if (mounted) {
       state = SurahDownloadState(
         status: isDownloaded
@@ -446,10 +455,10 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
 /// النتيجة: Map of surahNumber to isDownloaded
 final allSurahsDownloadStatusProvider =
     FutureProvider.family<Map<int, bool>, String>((ref, qariId) async {
-  final service = sl<MoratalDownloadService>();
-  // تنفيذ 114 فحص بشكل متوازٍ (Future.wait) بدلاً من متسلسل
-  final results = await Future.wait(
-    List.generate(114, (i) => service.isSurahDownloaded(qariId, i + 1)),
-  );
-  return {for (int i = 0; i < 114; i++) i + 1: results[i]};
-});
+      final service = sl<MoratalDownloadService>();
+      // تنفيذ 114 فحص بشكل متوازٍ (Future.wait) بدلاً من متسلسل
+      final results = await Future.wait(
+        List.generate(114, (i) => service.isSurahDownloaded(qariId, i + 1)),
+      );
+      return {for (int i = 0; i < 114; i++) i + 1: results[i]};
+    });

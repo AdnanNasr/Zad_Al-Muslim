@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/schedule_adkar_notification.dart';

@@ -11,9 +11,9 @@ class SettingsContainer extends ConsumerWidget {
 
   // checkTheme -> return Color
   Color checkTheme({
-    required themeMode,
-    required lightColor,
-    required darkColor,
+    required ThemeMode themeMode,
+    required Color lightColor,
+    required Color darkColor,
   }) {
     return themeMode == ThemeMode.light ? lightColor : darkColor;
   }

@@ -16,33 +16,31 @@ dependencies:
   flutter_localizations: # to add a lot of languages
     sdk: flutter
   flex_color_scheme: ^8.3.0 # to make custom theme
-  flutter_riverpod: ^2.6.1 # to handle state
-  # badges: ^3.1.2 # to make numbers beside icons
-  isar: ^3.1.0+1 # database
-  isar_flutter_libs: ^3.1.0+1 # database ext
+  flutter_riverpod: ^3.3.1 # to handle state
+  isar_community: ^3.3.2 # database
+  isar_community_flutter_libs: ^3.3.2 # database ext
   intl: ^0.20.2 # to make multi language app
   path_provider: ^2.1.5 # to get paths of device
   flutter_svg: ^2.2.2
   shared_preferences: ^2.5.3
   logger: ^2.6.2
-  # device_preview: ^1.3.1
   flutter_screenutil: ^5.9.3
   flutter_launcher_icons: ^0.14.4
   dio: ^5.9.1
   geolocator: ^14.0.2 # to get user location for pray times and qepla
   adhan: ^2.0.0+1
-  riverpod_annotation: ^2.6.1
+  riverpod_annotation: ^4.0.2
   geocoding: ^4.0.0
-  flutter_local_notifications: ^20.1.0
-  timezone: ^0.10.1
+  flutter_local_notifications: ^22.0.1
+  timezone: ^0.11.0
   get_it: ^9.2.1
   dartz: ^0.10.1
   equatable: ^2.0.8
-  internet_connection_checker_plus: ^2.9.1+2
+  internet_connection_checker_plus: ^3.1.0
   connectivity_plus: ^7.0.0
   qcf_quran: ^0.0.5
   flutter_staggered_animations: ^1.1.1
-  share_plus: ^12.0.1
+  share_plus: ^13.1.0
   just_audio: ^0.10.5
   just_audio_background: ^0.0.1-beta.12
   audio_video_progress_bar: ^2.0.3
@@ -65,10 +63,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   build_runner: ^2.4.6
-  isar_generator: ^3.1.0+1
-  riverpod_generator: ^2.4.0
+  isar_community_generator: ^3.3.2
+  riverpod_generator: ^4.0.3
 
 flutter:
   uses-material-design: true

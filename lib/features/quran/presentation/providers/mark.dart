@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/core/database/isar_db.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
@@ -76,7 +77,7 @@ class MarksProvider extends StateNotifier<List<Mark>> {
         .ayahNumberEqualTo(ayahNumber)
         .findFirst();
 
-    return mark != null; 
+    return mark != null;
   }
 
   Future<void> loadMarks() async {
@@ -89,11 +90,7 @@ final marksProvder = StateNotifierProvider<MarksProvider, List<Mark>>((ref) {
   return MarksProvider();
 });
 
-
-  final markExistsProvider = FutureProvider.family<bool, int>((
-    ref,
-    page,
-  ) async {
-    final notifier = ref.read(marksProvder.notifier);
-    return notifier.exists(page);
-  });
+final markExistsProvider = FutureProvider.family<bool, int>((ref, page) async {
+  final notifier = ref.read(marksProvder.notifier);
+  return notifier.exists(page);
+});

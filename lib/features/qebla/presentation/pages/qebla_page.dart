@@ -85,7 +85,7 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
       body: SafeArea(
         child: compassSupport.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, __) => _buildNoSensorState(context),
+          error: (_, _) => _buildNoSensorState(context),
           data: (hasCompass) {
             if (!hasCompass) return _buildNoSensorState(context);
             if (position == null) return _buildNoLocationState(context);

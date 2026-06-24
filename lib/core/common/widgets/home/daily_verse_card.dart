@@ -23,7 +23,7 @@ class _DailyVerseCardState extends ConsumerState<DailyVerseCard> {
     return verseAsync.when(
       data: (verse) => _buildCard(context, verse),
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 

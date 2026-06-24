@@ -154,7 +154,7 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
                   ],
                 ),
                 loading: () => const CircularProgressIndicator(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
           ],

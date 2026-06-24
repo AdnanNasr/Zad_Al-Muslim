@@ -1,5 +1,5 @@
 class ArabicNumbers {
-  String convert(number) {
+  String convert(dynamic number) {
     if (number is int) {
       String replace1 = number.toString().replaceAll('0', '٠');
       String replace2 = replace1.replaceAll('1', '١');

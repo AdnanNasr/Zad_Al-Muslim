@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../../domain/repositories/i_prayer_repository.dart';

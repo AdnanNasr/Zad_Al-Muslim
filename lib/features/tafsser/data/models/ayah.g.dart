@@ -17,22 +17,15 @@ const AyahTafsserSchema = CollectionSchema(
   name: r'AyahTafsser',
   id: 7675602087250390918,
   properties: {
-    r'number': PropertySchema(
-      id: 0,
-      name: r'number',
-      type: IsarType.long,
-    ),
+    r'number': PropertySchema(id: 0, name: r'number', type: IsarType.long),
     r'numberInSurah': PropertySchema(
       id: 1,
       name: r'numberInSurah',
       type: IsarType.long,
     ),
-    r'text': PropertySchema(
-      id: 2,
-      name: r'text',
-      type: IsarType.string,
-    )
+    r'text': PropertySchema(id: 2, name: r'text', type: IsarType.string),
   },
+
   estimateSize: _ayahTafsserEstimateSize,
   serialize: _ayahTafsserSerialize,
   deserialize: _ayahTafsserDeserialize,
@@ -49,9 +42,9 @@ const AyahTafsserSchema = CollectionSchema(
           name: r'numberInSurah',
           type: IndexType.value,
           caseSensitive: false,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {
     r'surah': LinkSchema(
@@ -59,13 +52,14 @@ const AyahTafsserSchema = CollectionSchema(
       name: r'surah',
       target: r'TafsserSurah',
       single: true,
-    )
+    ),
   },
   embeddedSchemas: {},
+
   getId: _ayahTafsserGetId,
   getLinks: _ayahTafsserGetLinks,
   attach: _ayahTafsserAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _ayahTafsserEstimateSize(
@@ -130,7 +124,10 @@ List<IsarLinkBase<dynamic>> _ayahTafsserGetLinks(AyahTafsser object) {
 }
 
 void _ayahTafsserAttach(
-    IsarCollection<dynamic> col, Id id, AyahTafsser object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  AyahTafsser object,
+) {
   object.id = id;
   object.surah.attach(col, col.isar.collection<TafsserSurah>(), r'surah', id);
 }
@@ -156,15 +153,13 @@ extension AyahTafsserQueryWhere
     on QueryBuilder<AyahTafsser, AyahTafsser, QWhereClause> {
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause> idNotEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -186,8 +181,10 @@ extension AyahTafsserQueryWhere
     });
   }
 
-  QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -195,8 +192,10 @@ extension AyahTafsserQueryWhere
     });
   }
 
-  QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -211,105 +210,117 @@ extension AyahTafsserQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause>
-      numberInSurahEqualTo(int numberInSurah) {
+  numberInSurahEqualTo(int numberInSurah) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'numberInSurah',
-        value: [numberInSurah],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'numberInSurah',
+          value: [numberInSurah],
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause>
-      numberInSurahNotEqualTo(int numberInSurah) {
+  numberInSurahNotEqualTo(int numberInSurah) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'numberInSurah',
-              lower: [],
-              upper: [numberInSurah],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'numberInSurah',
-              lower: [numberInSurah],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'numberInSurah',
+                lower: [],
+                upper: [numberInSurah],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'numberInSurah',
+                lower: [numberInSurah],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'numberInSurah',
-              lower: [numberInSurah],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'numberInSurah',
-              lower: [],
-              upper: [numberInSurah],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'numberInSurah',
+                lower: [numberInSurah],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'numberInSurah',
+                lower: [],
+                upper: [numberInSurah],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause>
-      numberInSurahGreaterThan(
-    int numberInSurah, {
-    bool include = false,
-  }) {
+  numberInSurahGreaterThan(int numberInSurah, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'numberInSurah',
-        lower: [numberInSurah],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'numberInSurah',
+          lower: [numberInSurah],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause>
-      numberInSurahLessThan(
-    int numberInSurah, {
-    bool include = false,
-  }) {
+  numberInSurahLessThan(int numberInSurah, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'numberInSurah',
-        lower: [],
-        upper: [numberInSurah],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'numberInSurah',
+          lower: [],
+          upper: [numberInSurah],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterWhereClause>
-      numberInSurahBetween(
+  numberInSurahBetween(
     int lowerNumberInSurah,
     int upperNumberInSurah, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'numberInSurah',
-        lower: [lowerNumberInSurah],
-        includeLower: includeLower,
-        upper: [upperNumberInSurah],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'numberInSurah',
+          lower: [lowerNumberInSurah],
+          includeLower: includeLower,
+          upper: [upperNumberInSurah],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -317,12 +328,12 @@ extension AyahTafsserQueryWhere
 extension AyahTafsserQueryFilter
     on QueryBuilder<AyahTafsser, AyahTafsser, QFilterCondition> {
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition> idEqualTo(
-      Id value) {
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -331,11 +342,13 @@ extension AyahTafsserQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -344,11 +357,13 @@ extension AyahTafsserQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -359,37 +374,38 @@ extension AyahTafsserQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition> numberEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'number',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'number', value: value),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition>
-      numberGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  numberGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'number',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'number',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -398,11 +414,13 @@ extension AyahTafsserQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'number',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'number',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -413,69 +431,70 @@ extension AyahTafsserQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'number',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'number',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition>
-      numberInSurahEqualTo(int value) {
+  numberInSurahEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'numberInSurah',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'numberInSurah', value: value),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition>
-      numberInSurahGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  numberInSurahGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'numberInSurah',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'numberInSurah',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition>
-      numberInSurahLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  numberInSurahLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'numberInSurah',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'numberInSurah',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition>
-      numberInSurahBetween(
+  numberInSurahBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'numberInSurah',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'numberInSurah',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -484,11 +503,13 @@ extension AyahTafsserQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -498,12 +519,14 @@ extension AyahTafsserQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -513,12 +536,14 @@ extension AyahTafsserQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -530,14 +555,16 @@ extension AyahTafsserQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'text',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'text',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -546,11 +573,13 @@ extension AyahTafsserQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -559,54 +588,60 @@ extension AyahTafsserQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition> textContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'text',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'text',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition> textMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'text',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'text',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition> textIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'text',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'text', value: ''),
+      );
     });
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition>
-      textIsNotEmpty() {
+  textIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'text',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'text', value: ''),
+      );
     });
   }
 }
@@ -617,7 +652,8 @@ extension AyahTafsserQueryObject
 extension AyahTafsserQueryLinks
     on QueryBuilder<AyahTafsser, AyahTafsser, QFilterCondition> {
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterFilterCondition> surah(
-      FilterQuery<TafsserSurah> q) {
+    FilterQuery<TafsserSurah> q,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'surah');
     });
@@ -651,7 +687,7 @@ extension AyahTafsserQuerySortBy
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterSortBy>
-      sortByNumberInSurahDesc() {
+  sortByNumberInSurahDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'numberInSurah', Sort.desc);
     });
@@ -703,7 +739,7 @@ extension AyahTafsserQuerySortThenBy
   }
 
   QueryBuilder<AyahTafsser, AyahTafsser, QAfterSortBy>
-      thenByNumberInSurahDesc() {
+  thenByNumberInSurahDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'numberInSurah', Sort.desc);
     });
@@ -736,8 +772,9 @@ extension AyahTafsserQueryWhereDistinct
     });
   }
 
-  QueryBuilder<AyahTafsser, AyahTafsser, QDistinct> distinctByText(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AyahTafsser, AyahTafsser, QDistinct> distinctByText({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'text', caseSensitive: caseSensitive);
     });

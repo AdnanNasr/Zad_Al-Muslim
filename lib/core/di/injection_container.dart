@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';
 import 'package:zad_al_muslim/features/pray_time/data/datasources/user_address_local_data_source.dart';

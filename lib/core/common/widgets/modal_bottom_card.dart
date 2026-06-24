@@ -29,9 +29,9 @@ class ModalBottomCard extends StatelessWidget {
 
   // checkTheme
   Color checkTheme({
-    required themeMode,
-    required lightColor,
-    required darkColor,
+    required ThemeMode themeMode,
+    required Color lightColor,
+    required Color darkColor,
   }) {
     return themeMode == ThemeMode.light ? lightColor : darkColor;
   }

@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:zad_al_muslim/core/constants/enums/qrai_names_ayah_by_ayah.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/schedule_quran_reading_notification.dart';

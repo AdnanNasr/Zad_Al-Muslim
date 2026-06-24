@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/features/tafsser/data/models/ayah.dart';
 import 'package:zad_al_muslim/features/tafsser/data/repositories/insert_tafsser.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
@@ -42,7 +42,7 @@ class TafseerUtils {
 
       try {
         onStart();
-        
+
         response = await dio.get(
           url,
           onReceiveProgress: (received, total) {

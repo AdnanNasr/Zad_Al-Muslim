@@ -6,7 +6,7 @@ import 'package:zad_al_muslim/features/quran/domain/repositories/voice_ayah_by_a
 import 'package:zad_al_muslim/features/quran/domain/usecases/get_voice_ayah_by_ayah.dart';
 
 final voiceAyahByAyahProvider =
-    ProviderFamily<Either<Failure, String>, AyahVoiceParameter>((
+    Provider.family<Either<Failure, String>, AyahVoiceParameter>((
       ref,
       ayahVoiceParameter,
     ) {

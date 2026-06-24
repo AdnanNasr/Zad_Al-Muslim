@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';

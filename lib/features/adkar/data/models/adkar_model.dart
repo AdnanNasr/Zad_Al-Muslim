@@ -1,5 +1,5 @@
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
-import 'package:isar/isar.dart';
 
 part 'adkar_model.g.dart';
 

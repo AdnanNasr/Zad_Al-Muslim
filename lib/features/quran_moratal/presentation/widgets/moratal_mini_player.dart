@@ -358,7 +358,7 @@ class _MoratalFullPlayerSheetState
 
     return timingAsync.when(
       loading: () => _ayahPlaceholder(context, isLoading: true),
-      error: (_, __) => _ayahPlaceholder(context, isLoading: false),
+      error: (_, _) => _ayahPlaceholder(context, isLoading: false),
       data: (timings) {
         if (timings.isEmpty) {
           return _ayahPlaceholder(context, isLoading: false);

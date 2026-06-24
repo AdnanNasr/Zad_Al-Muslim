@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
 import 'package:zad_al_muslim/domain/entities/prayer_time.dart' as domain;
@@ -13,34 +14,34 @@ final selectedDateProvider = StateProvider<DateTime>((ref) {
 });
 
 /// موفر يعيد موديل مواقيت الصلاة لليوم الحالي حصراً (للاستخدام في الويدجتات الدائمة مثل Home).
-final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>(
-  (ref) async {
-    ref.keepAlive();
+final todayPrayerTimesProvider = FutureProvider.autoDispose<PrayerTimesEntity?>((
+  ref,
+) async {
+  ref.keepAlive();
 
-    // Remove the strict pos check so that cached prayer times can be loaded if they exist
-    // final pos = ref.watch(userPositionProvider);
-    // if (pos == null) {
-    //   AppLogger.logger.e("todayPrayerTimesProvider: الموقع (pos) غير متوفر.");
-    //   return null;
-    // }
+  // Remove the strict pos check so that cached prayer times can be loaded if they exist
+  // final pos = ref.watch(userPositionProvider);
+  // if (pos == null) {
+  //   AppLogger.logger.e("todayPrayerTimesProvider: الموقع (pos) غير متوفر.");
+  //   return null;
+  // }
 
-    final now = DateTime.now();
-    final todayDate = DateTime(now.year, now.month, now.day);
-    // AppLogger.logger.e(
-    //   "todayPrayerTimesProvider: جاري طلب مواقيت اليوم: $todayDate",
-    // );
+  final now = DateTime.now();
+  final todayDate = DateTime(now.year, now.month, now.day);
+  // AppLogger.logger.e(
+  //   "todayPrayerTimesProvider: جاري طلب مواقيت اليوم: $todayDate",
+  // );
 
-    final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
-    final adjustments = adjustmentsAsync.valueOrNull;
+  final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
+  final adjustments = adjustmentsAsync.value;
 
-    final repo = sl<IPrayerRepository>();
-    final prayers = await repo.getPrayersForDay(todayDate);
+  final repo = sl<IPrayerRepository>();
+  final prayers = await repo.getPrayersForDay(todayDate);
 
-    if (prayers.isEmpty) return null;
+  if (prayers.isEmpty) return null;
 
-    return _mapToUiEntity(prayers, todayDate, adjustments);
-  },
-);
+  return _mapToUiEntity(prayers, todayDate, adjustments);
+});
 
 /// موفر يعيد موديل مواقيت الصلاة للتاريخ المحدد (للاستخدام في صفحة أوقات الصلاة).
 final selectedDatePrayerTimesProvider =
@@ -54,7 +55,7 @@ final selectedDatePrayerTimesProvider =
       final selectedDate = ref.watch(selectedDateProvider);
 
       final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
-      final adjustments = adjustmentsAsync.valueOrNull;
+      final adjustments = adjustmentsAsync.value;
 
       final repo = sl<IPrayerRepository>();
       final prayers = await repo.getPrayersForDay(selectedDate);

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/pray_time/data/models/prayer_adjustments_model.dart';
 import 'package:zad_al_muslim/domain/usecases/schedule_notifications_usecase.dart';
@@ -22,7 +23,7 @@ class PrayerAdjustmentsNotifier
 
   /// تحديث الـ offset لصلاة معينة وحفظه في Isar
   Future<void> updateOffset(String prayerName, int newOffset) async {
-    final current = state.valueOrNull ?? PrayerAdjustmentsModel();
+    final current = state.value ?? PrayerAdjustmentsModel();
     final updated = current.copyWithOffset(prayerName, newOffset);
 
     // حفظ فوري في Isar

@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/features/pray_time/domain/entities/user_address_entity.dart';
 
 part 'user_address_model.g.dart';

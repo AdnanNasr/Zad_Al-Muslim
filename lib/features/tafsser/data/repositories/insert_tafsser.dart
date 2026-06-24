@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/core/database/isar_db.dart';
 import 'package:zad_al_muslim/features/tafsser/data/models/ayah.dart';
 import 'package:zad_al_muslim/features/tafsser/data/models/tafsser_surah.dart'; // تأكد من وجود موديل AyahModel هنا أو استيراده
@@ -22,26 +22,31 @@ Future<void> insertTafsserToIsar({
     final editionData =
         (jsonMap["data"]?["edition"] as Map<String, dynamic>? ?? {});
     final surahsData = (jsonMap['data']?['surahs'] as List?) ?? [];
-    
+
     // استخراج المعرف الفريد للتفسير (مثل ar.jalalayn)
     final String? currentIdentifier = editionData["identifier"];
 
     if (currentIdentifier == null || currentIdentifier.isEmpty) {
-      AppLogger.logger.e("فشل الإدخال: معرف التفسير (identifier) غير موجود في الـ JSON ❌");
+      AppLogger.logger.e(
+        "فشل الإدخال: معرف التفسير (identifier) غير موجود في الـ JSON ❌",
+      );
       return;
     }
 
-    AppLogger.logger.w("🚀 جاري تحضير قاعدة البيانات لإدخال تفسير: $currentIdentifier");
+    AppLogger.logger.w(
+      "🚀 جاري تحضير قاعدة البيانات لإدخال تفسير: $currentIdentifier",
+    );
 
     // بدء عملية Transaction واحدة لضمان السرعة وسلامة البيانات
     await isar.writeTxn(() async {
-      
       // --- تعديل الأمان: التنظيف الذاتي ---
       // حذف أي بيانات قديمة مرتبطة بهذا التفسير (في حال كان التحميل سابقاً غير مكتمل)
       // نبدأ بحذف الآيات أولاً ثم السور لتجنب البيانات اليتيمة
       await isar.ayahTafssers
           .filter()
-          .surah((q) => q.edition((e) => e.identifierEqualTo(currentIdentifier)))
+          .surah(
+            (q) => q.edition((e) => e.identifierEqualTo(currentIdentifier)),
+          )
           .deleteAll();
 
       await isar.tafsserSurahs
@@ -89,17 +94,19 @@ Future<void> insertTafsserToIsar({
 
           // 5. تحديث الـ Backlink في طرف السورة (IsarLinks)
           surahObj.ayahs.addAll(ayahObjs);
-          
+
           // 6. حفظ الروابط فعلياً في قاعدة البيانات
           await surahObj.ayahs.save();
         }
       }
     });
 
-    AppLogger.logger.i("🎊 تم الانتهاء من إدخال تفسير ($currentIdentifier) بنجاح!");
+    AppLogger.logger.i(
+      "🎊 تم الانتهاء من إدخال تفسير ($currentIdentifier) بنجاح!",
+    );
   } catch (e, stack) {
     AppLogger.logger.e("حدث خطأ غير متوقع أثناء إدخال البيانات: $e");
-    debugPrint(stack.toString()); 
+    debugPrint(stack.toString());
   }
 }
 
@@ -116,13 +123,13 @@ Future<void> loadTafsserFromAssest() async {
     // 2. إذا كان العدد أقل من 114، نقوم بالإدخال
     if (jalalaynCount < 114) {
       AppLogger.logger.i("تفسير الجلالين غير مكتمل، جاري التحميل من Assets...");
-      
+
       final content = await rootBundle.loadString(
         'assets/json/quran_ar_jalalayn.json',
       );
       final jsonMap = jsonDecode(content) as Map<String, dynamic>;
-      
-      // ملاحظة: تأكد أن دالة insertTafsserToIsar تحتوي على txn.deleteAll() 
+
+      // ملاحظة: تأكد أن دالة insertTafsserToIsar تحتوي على txn.deleteAll()
       // لنفس المعرف قبل البدء لتجنب أي تكرار للبيانات الناقصة
       await insertTafsserToIsar(jsonMap: jsonMap);
     } else {

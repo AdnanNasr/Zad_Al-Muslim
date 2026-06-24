@@ -368,7 +368,7 @@ class _DownloadButton extends ConsumerWidget {
         }
         break;
 
-      case QariDownloadStatus.error: // TODO
+      case QariDownloadStatus.error:
         // استكمال التحميل
         final confirm = await _showConfirmDialog(context, isResume: true);
 

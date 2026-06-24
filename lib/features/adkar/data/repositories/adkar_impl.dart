@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/errors/failures.dart';
 import 'package:zad_al_muslim/features/adkar/data/models/adkar_model.dart';

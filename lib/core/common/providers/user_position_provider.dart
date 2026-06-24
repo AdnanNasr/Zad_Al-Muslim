@@ -1,4 +1,4 @@
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_riverpod/legacy.dart";
 import "package:geolocator/geolocator.dart";
 import "package:zad_al_muslim/core/constants/shared_pref_keys.dart";
 

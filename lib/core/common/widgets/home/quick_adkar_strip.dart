@@ -58,7 +58,7 @@ class QuickAdkarStrip extends ConsumerWidget {
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(horizontal: 14.w),
                   itemCount: _quickItems.length,
-                  separatorBuilder: (_, __) => SizedBox(width: 10.w),
+                  separatorBuilder: (_, _) => SizedBox(width: 10.w),
                   itemBuilder: (context, index) {
                     final item = _quickItems[index];
                     final category = item['category'] as String;
@@ -133,7 +133,7 @@ class QuickAdkarStrip extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 

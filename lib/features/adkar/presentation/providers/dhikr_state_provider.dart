@@ -1,5 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:isar_community/isar.dart';
 import 'package:zad_al_muslim/core/database/isar_db.dart';
 import 'package:zad_al_muslim/features/adkar/data/models/dhikr_state_model.dart';
 
@@ -7,10 +7,7 @@ class DhikrStateParams {
   final String dhikrId;
   final int initialCount;
 
-  DhikrStateParams({
-    required this.dhikrId,
-    required this.initialCount,
-  });
+  DhikrStateParams({required this.dhikrId, required this.initialCount});
 
   @override
   bool operator ==(Object other) =>
@@ -24,11 +21,12 @@ class DhikrStateParams {
 }
 
 final dhikrStateProvider =
-    StateNotifierProvider.family<DhikrStateNotifier, int, DhikrStateParams>(
-  (ref, params) {
-    return DhikrStateNotifier(params);
-  },
-);
+    StateNotifierProvider.family<DhikrStateNotifier, int, DhikrStateParams>((
+      ref,
+      params,
+    ) {
+      return DhikrStateNotifier(params);
+    });
 
 class DhikrStateNotifier extends StateNotifier<int> {
   final DhikrStateParams params;

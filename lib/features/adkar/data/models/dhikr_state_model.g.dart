@@ -27,6 +27,7 @@ const DhikrStateModelSchema = CollectionSchema(
       type: IsarType.long,
     ),
   },
+
   estimateSize: _dhikrStateModelEstimateSize,
   serialize: _dhikrStateModelSerialize,
   deserialize: _dhikrStateModelDeserialize,
@@ -49,10 +50,11 @@ const DhikrStateModelSchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _dhikrStateModelGetId,
   getLinks: _dhikrStateModelGetLinks,
   attach: _dhikrStateModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _dhikrStateModelEstimateSize(

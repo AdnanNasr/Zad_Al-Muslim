@@ -38,6 +38,7 @@ const PrayerTimeEntitySchema = CollectionSchema(
     ),
     r'time': PropertySchema(id: 4, name: r'time', type: IsarType.dateTime),
   },
+
   estimateSize: _prayerTimeEntityEstimateSize,
   serialize: _prayerTimeEntitySerialize,
   deserialize: _prayerTimeEntityDeserialize,
@@ -60,10 +61,11 @@ const PrayerTimeEntitySchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _prayerTimeEntityGetId,
   getLinks: _prayerTimeEntityGetLinks,
   attach: _prayerTimeEntityAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _prayerTimeEntityEstimateSize(

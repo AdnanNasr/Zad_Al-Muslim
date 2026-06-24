@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import "package:zad_al_muslim/features/tafsser/data/models/ayah.dart";
 import '../../domain/entities/tafsser_entities.dart';
 
@@ -36,7 +36,7 @@ class EditionModel {
   String? language;
   String? name;
   String? englishName;
-  
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
