@@ -77,7 +77,7 @@ flutter:
     - assets/images/
     - assets/icons/
 
-  fonts: # custom app fonts
+  fonts:
     - family: Amiri
       fonts:
         - asset: assets/fonts/Amiri/Amiri-Regular.ttf
