@@ -83,11 +83,15 @@ class MoratalMiniPlayer extends ConsumerWidget {
                         color: context.color.primary.withValues(alpha: .15),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
-                      child: Icon(
-                        Icons.audiotrack_rounded,
-                        color: context.color.primary,
-                        size: 24.sp,
+                      child: Image.asset(
+                        "assets/icons/moon.png",
+                        color: context.color.primary.withValues(alpha: .4),
                       ),
+                      // Icon(
+                      //   Icons.audiotrack_rounded,
+                      //   color: context.color.primary,
+                      //   size: 24.sp,
+                      // ),
                     ),
                     SizedBox(width: 12.w),
 
