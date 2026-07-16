@@ -31,7 +31,7 @@ class MarksProvider extends StateNotifier<List<Mark>> {
 
     if (mark != null) {
       // update state
-      state = state.where((m) => m.pageNumber != pageNumber).toList();
+      state = state.where((m) => m.id != mark.id).toList();
 
       // delete from db
       await db?.writeTxn(() async {
