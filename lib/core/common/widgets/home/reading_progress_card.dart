@@ -26,7 +26,7 @@ class ReadingProgressCard extends ConsumerWidget {
         padding: EdgeInsets.all(20.r),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          color: context.color.surface,
+          // color: context.color.surface,
           border: Border.all(
             color: context.color.primary.withValues(alpha: 0.1),
           ),
@@ -38,7 +38,7 @@ class ReadingProgressCard extends ConsumerWidget {
               children: [
                 Icon(
                   Icons.auto_graph_rounded,
-                  color: Colors.orange,
+                  color: context.color.onSurface,
                   size: 22.sp,
                 ),
                 SizedBox(width: 8.w),
@@ -78,8 +78,8 @@ class ReadingProgressCard extends ConsumerWidget {
               "قرأت ${lastMark.pageNumber} صفحة من $totalPages صفحة",
               style: TextStyle(
                 fontSize: 13.sp,
-                fontFamily: "Cairo",
-                color: context.color.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w600,
+                color: context.color.primary,
               ),
             ),
           ],

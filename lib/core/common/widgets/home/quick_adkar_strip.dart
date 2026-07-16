@@ -29,7 +29,7 @@ class QuickAdkarStrip extends ConsumerWidget {
     return adkarAsync.when(
       data: (adkarList) {
         return Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.h),
+          padding: EdgeInsets.symmetric(vertical: 6.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -37,7 +37,11 @@ class QuickAdkarStrip extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 14.w),
                 child: Row(
                   children: [
-                    Icon(Icons.bolt_rounded, color: Colors.orange, size: 20.sp),
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: context.color.onSurface,
+                      size: 20.sp,
+                    ),
                     SizedBox(width: 6.w),
                     Text(
                       "اختصارات الأذكار",

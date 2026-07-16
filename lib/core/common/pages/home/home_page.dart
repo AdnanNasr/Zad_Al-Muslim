@@ -250,7 +250,7 @@ class BodyContent extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             child: Row(
               children: [
-                const Icon(Icons.bookmark_added, color: Colors.orange),
+                Icon(Icons.bookmark_added, color: context.color.onSurface),
                 SizedBox(width: 8.w),
                 Text(
                   AppLocalizations.of(context)!.last_reading_surah,
@@ -269,7 +269,6 @@ class BodyContent extends ConsumerWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.r),
-              color: context.color.primary.withValues(alpha: .08),
               border: Border.all(
                 color: context.color.primary.withValues(alpha: .2),
               ),
@@ -301,10 +300,12 @@ class BodyContent extends ConsumerWidget {
                             padding: EdgeInsets.all(12.r),
                             decoration: BoxDecoration(
                               color: context.color.primary.withValues(
-                                alpha: 0.2,
+                                alpha: 0.15,
                               ),
-                              shape: BoxShape.circle,
+                              borderRadius: BorderRadius.circular(20),
+                              shape: BoxShape.rectangle,
                             ),
+
                             child: Icon(
                               Icons.bookmark,
                               color: context.color.primary,
@@ -443,7 +444,10 @@ class PrimarySectionWidget extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 14.w),
                   child: Row(
                     children: [
-                      const Icon(Icons.widgets_rounded, color: Colors.orange),
+                      Icon(
+                        Icons.widgets_rounded,
+                        color: context.color.onSurface,
+                      ),
                       SizedBox(width: 8.w),
                       Text(
                         AppLocalizations.of(context)!.main_categories,
