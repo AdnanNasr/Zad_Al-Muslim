@@ -154,25 +154,20 @@ class QuickAdkarStrip extends ConsumerWidget {
     BuildContext context,
     bool isDark,
   ) {
-    Color baseColor;
-    if (category == "أذكار الصباح والمساء") {
-      baseColor = context.color.primary;
-    } else if (category == "أذكار النوم") {
-      baseColor = Colors.indigo;
-    } else if (category == "الأذكار بعد السلام من الصلاة") {
-      baseColor = Colors.teal;
-    } else if (category == "أذكار الاستيقاظ من النوم") {
-      baseColor = Colors.amber;
-    } else if (category == "دعاء الهم والحزن") {
-      baseColor = Colors.red;
-    } else if (category == "الاستغفار والتوبة") {
-      baseColor = Colors.deepPurple;
-    } else {
-      baseColor = context.color.primary;
-    }
+    final Color primary = context.color.primary;
+
+    final baseColor = /*primary.withValues(alpha: .1);*/ switch (category) {
+      "أذكار الصباح والمساء" => primary.withValues(alpha: .1),
+      "أذكار النوم" => primary.withValues(alpha: .2),
+      "الأذكار بعد السلام من الصلاة" => primary.withValues(alpha: .3),
+      "أذكار الاستيقاظ من النوم" => primary.withValues(alpha: .4),
+      "دعاء الهم والحزن" => primary.withValues(alpha: .5),
+      "الاستغفار والتوبة" => primary.withValues(alpha: .55),
+      _ => primary, // القيمة الافتراضية
+    };
 
     return {
-      "background": baseColor.withValues(alpha: isDark ? 0.2 : 0.08),
+      "background": baseColor,
       "icon": isDark
           ? (baseColor is MaterialColor
                 ? baseColor.shade200
