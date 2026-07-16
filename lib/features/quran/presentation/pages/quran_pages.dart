@@ -767,6 +767,8 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         ..ayahNumber = _verseNumber,
                     );
 
+                    // TODO
+
                     if (!context.mounted) return;
                     _highlightAyah = false;
                     setState(() {});
@@ -776,24 +778,30 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       ..showSnackBar(
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.all(16.r),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.r),
                           ),
                           backgroundColor: context.color.primary,
                           content: Row(
+                            crossAxisAlignment: CrossAxisAlignment
+                                .center, // لضمان محاذاة الأيقونة في المنتصف عمودياً
                             children: [
                               Icon(
                                 Icons.bookmark_added_rounded,
                                 color: context.color.onPrimary,
                               ),
                               SizedBox(width: 10.w),
-                              Text(
-                                "تم حفظ الآية!",
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontFamily: "Cairo",
-                                  fontWeight: FontWeight.bold,
-                                  color: context.color.onPrimary,
+                              Expanded(
+                                child: Text(
+                                  "تم حفظ الآية. يمكنك الوصول إليها سريعاً من خلال الصفحة الرئيسية.",
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontFamily: "Cairo",
+                                    fontWeight: FontWeight.bold,
+                                    color: context.color.onPrimary,
+                                    height: 1.4,
+                                  ),
                                 ),
                               ),
                             ],
@@ -811,6 +819,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                       ..hideCurrentSnackBar()
                       ..showSnackBar(
                         SnackBar(
+                          margin: EdgeInsets.all(16.r),
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.r),
