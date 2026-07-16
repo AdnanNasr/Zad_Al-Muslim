@@ -414,7 +414,9 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                                 builder: (context, ref, child) {
                                   final marks = ref.watch(marksProvder);
                                   final isMarked = marks.any(
-                                    (m) => m.pageNumber == _onPageChanged,
+                                    (m) =>
+                                        m.pageNumber == _onPageChanged &&
+                                        m.ayahNumber == null,
                                   );
                                   return IconButton(
                                     onPressed: () async {
