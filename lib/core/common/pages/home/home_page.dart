@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/today_duaa.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
@@ -150,7 +152,176 @@ class BodyContent extends ConsumerWidget {
                         padding: EdgeInsets.only(left: 10.w),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(24),
-                          onTap: () {},
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                    side: BorderSide(
+                                      color: themeMode.isDark
+                                          ? context.color.onSurface
+                                          : Colors.transparent,
+                                    ),
+                                  ),
+                                  elevation: 10,
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.surface,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // أيقونة علوية ترحيبية
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withValues(alpha: .1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.favorite_rounded,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                            size: 32,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+
+                                        // عنوان النافذة
+                                        Text(
+                                          "خلف كواليس التطبيق",
+                                          style: TextStyle(
+                                            fontFamily: 'Cairo',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 16),
+
+                                        Text(
+                                          "خلف هذه الشاشة البسيطة والسطور البرمجية المرتبة، تكمن رحلة طويلة من الشغف، السهر، والتعلم المستمر. أردت من خلال هذا المشروع أن أقدم لك رفيقاً إيمانياً يومياً، يجمع بين سهولة الاستخدام، جمال التصميم، والأداء السلس الخالي تماماً من أي إعلانات تشوش عليك خلوتك مع ذكر الله.",
+                                          style: TextStyle(
+                                            fontFamily: 'Tajawal',
+                                            fontSize: 15,
+                                            height: 1.6,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 24),
+
+                                        // أزرار التحكم
+                                        Row(
+                                          children: [
+                                            // زر مشاركة الأجر
+                                            Expanded(
+                                              flex: 2,
+                                              child: ElevatedButton.icon(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                  foregroundColor: Theme.of(
+                                                    context,
+                                                  ).colorScheme.onPrimary,
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 12,
+                                                      ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  elevation: 0,
+                                                ),
+                                                onPressed: () async {
+                                                  // كود مشاركة التطبيق
+                                                  final share =
+                                                      SharePlus.instance;
+                                                  await share.share(
+                                                    ShareParams(
+                                                      title: "شارك التطبيق",
+                                                      text:
+                                                          'أرشح لك تطبيق "زاد المسلم" رفيقك اليومي للأذكار والأدعية بدون إعلانات وبأداء سلس ومميز 🕋✨\n\nhttps://play.google.com/store/apps/details?id=com.zad_al_muslim.adnan',
+                                                    ),
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Icons.share_rounded,
+                                                  size: 18,
+                                                ),
+                                                label: const Text(
+                                                  "شارك الأجر",
+                                                  style: TextStyle(
+                                                    fontFamily: 'Tajawal',
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+
+                                            // زر الإغلاق
+                                            Expanded(
+                                              flex: 1,
+                                              child: OutlinedButton(
+                                                style: OutlinedButton.styleFrom(
+                                                  side: BorderSide(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .outlineVariant,
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 12,
+                                                      ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                ),
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(),
+                                                child: Text(
+                                                  "إغلاق",
+                                                  style: TextStyle(
+                                                    fontFamily: 'Tajawal',
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                           child: Image.asset(
                             "assets/images/icon-512.png",
                             width: 50.w,
