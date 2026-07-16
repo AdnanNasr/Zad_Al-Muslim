@@ -12,21 +12,25 @@ class MiniAudioPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /*
+    جميع التعليقات في الملف هذا تحل مشكلة ظهور مشغل القرآن المرتل في صفحة القرآن الكريم
+    */
     final currentAyah = ref.watch(currentPlayingAyahProvider);
-    final currentMoratal = ref.watch(currentMoratalSurahProvider);
+    // final currentMoratal = ref.watch(currentMoratalSurahProvider);
     final audioPlayer = ref.watch(audioPlayerProvider);
 
     // التحقق من وجود أي شيء قيد التشغيل
-    if (currentAyah == null && currentMoratal == null) {
+    if (currentAyah == null /*currentMoratal == null*/ ) {
       return const SizedBox.shrink();
     }
 
-    final String title = currentAyah != null
-        ? "سورة ${currentAyah.surahName}"
-        : "سورة ${currentMoratal!.surahName}";
-    final String subtitle = currentAyah != null
-        ? "الآية ${currentAyah.ayahNumber} - ${ref.watch(selectedQariProvider).name}"
-        : currentMoratal!.qariName;
+    final String title = /*currentAyah != null*/
+        /*?*/ "سورة ${currentAyah.surahName}";
+    // : "سورة ${currentMoratal!.surahName}";
+    final String subtitle = /*currentAyah != null
+        ?*/
+        "الآية ${currentAyah.ayahNumber} - ${ref.watch(selectedQariProvider).name}";
+    // : currentMoratal!.qariName;
 
     return GestureDetector(
       onTap: () {
@@ -97,12 +101,17 @@ class MiniAudioPlayer extends ConsumerWidget {
                         color: context.color.primary.withValues(alpha: .15),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
-                      child: Icon(
-                        Icons.audiotrack_rounded,
-                        color: context.color.primary,
-                        size: 24.sp,
+                      child: Image.asset(
+                        "assets/icons/moon.png",
+                        color: context.color.primary.withValues(alpha: .4),
                       ),
                     ),
+                    //   Icon(
+                    //     Icons.audiotrack_rounded, // TODO channge icon
+                    //     color: context.color.primary,
+                    //     size: 24.sp,
+                    //   ),
+                    // ),
                     SizedBox(width: 12.w),
 
                     // بيانات الآية (Surah & Ayah)
