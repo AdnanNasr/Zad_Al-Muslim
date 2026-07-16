@@ -41,9 +41,25 @@ class FontSizeDialog extends ConsumerWidget {
           style: TextStyle(fontSize: fontSize.sp, fontFamily: "Naskh"),
         ),
         SizedBox(height: 20.h),
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("تم", style: TextStyle(fontFamily: "Cairo")),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () {
+                ref.read(appSettingsProvider.notifier).setAdkarFontSize(24);
+              },
+              child: const Text(
+                "إعادة ضبط",
+                style: TextStyle(fontFamily: "Cairo"),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("تم", style: TextStyle(fontFamily: "Cairo")),
+            ),
+          ],
         ),
       ],
     );
