@@ -106,12 +106,6 @@ class MiniAudioPlayer extends ConsumerWidget {
                         color: context.color.primary.withValues(alpha: .4),
                       ),
                     ),
-                    //   Icon(
-                    //     Icons.audiotrack_rounded, // TODO channge icon
-                    //     color: context.color.primary,
-                    //     size: 24.sp,
-                    //   ),
-                    // ),
                     SizedBox(width: 12.w),
 
                     // بيانات الآية (Surah & Ayah)

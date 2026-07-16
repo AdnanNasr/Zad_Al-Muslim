@@ -215,7 +215,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(16.r),
-              onTap: () => _playSurah(surah), // TODO
+              onTap: () => _playSurah(surah),
               child: Padding(
                 padding: EdgeInsets.all(12.dg),
                 child: Row(
