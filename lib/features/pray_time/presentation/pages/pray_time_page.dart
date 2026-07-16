@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -145,8 +146,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final prayerTimesAsync = ref.watch(selectedDatePrayerTimesProvider);
     final selectedDate = ref.watch(selectedDateProvider);
     final adjustmentsAsync = ref.watch(prayerAdjustmentsProvider);
-    final adjustments =
-        adjustmentsAsync.value ?? PrayerAdjustmentsModel();
+    final adjustments = adjustmentsAsync.value ?? PrayerAdjustmentsModel();
 
     ref.listen<NetworkInfoState>(networkInfoProvider, (previous, next) {
       if (next == NetworkInfoState.connected) {
@@ -240,6 +240,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
                         // --- محتوى الصفحة ---
                         Expanded(
+                          // TODO
                           child: prayerTimesAsync.when(
                             data: (entity) {
                               if (entity != null) {
@@ -320,8 +321,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               child: InkWell(
                 borderRadius: BorderRadius.circular(12.r),
                 onTap: () {
-                  selectedDate = DateTime.now();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(selectedDate);
                 },
                 child: Padding(
                   padding: EdgeInsets.all(8.r),
@@ -497,16 +497,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             ),
             child: Column(
               children: [
-                // مقبض السحب
-                Container(
-                  margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: context.color.onSurface.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
+                // // مقبض السحب
+                // Container(
+                //   margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
+                //   width: 40.w,
+                //   height: 4.h,
+                //   decoration: BoxDecoration(
+                //     color: context.color.onSurface.withValues(alpha: 0.15),
+                //     borderRadius: BorderRadius.circular(2.r),
+                //   ),
+                // ),
+                const SizedBox(height: 20),
 
                 // عنوان القسم مع زر إعادة التعيين
                 Padding(

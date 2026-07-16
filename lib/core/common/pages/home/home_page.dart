@@ -10,6 +10,7 @@ import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
@@ -411,7 +412,7 @@ class BodyContent extends ConsumerWidget {
   }
 }
 
-class PrimarySectionWidget extends StatelessWidget {
+class PrimarySectionWidget extends ConsumerWidget {
   const PrimarySectionWidget({
     super.key,
     required this.colorScheme,
@@ -422,7 +423,7 @@ class PrimarySectionWidget extends StatelessWidget {
   final ThemeMode themeMode;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Color primaryColor = context.color.primary;
     return Material(
       surfaceTintColor: colorScheme.primary,
@@ -537,8 +538,16 @@ class PrimarySectionWidget extends StatelessWidget {
                     description: "أوقات الأذان",
                     iconImage: "assets/icons/mosque.png",
                     color: primaryColor,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed("/pray_time_page"),
+                    onTap: () async {
+                      final selectedDateTiem = await Navigator.of(
+                        context,
+                      ).pushNamed("/pray_time_page");
+                      await Future.delayed(const Duration(milliseconds: 250));
+                      if (selectedDateTiem != DateTime.now()) {
+                        ref.read(selectedDateProvider.notifier).state =
+                            DateTime.now();
+                      }
+                    },
                   ),
                   HomeButton(
                     text: AppLocalizations.of(context)!.qebla_direction,
