@@ -75,10 +75,15 @@ class QariNames {
     "name": "فارس عباد",
     "server": "https://server8.mp3quran.net/frs_a/",
   };
-  static const Map<String, String> islam = {
-    "id": "253",
-    "name": "إسلام صبحي",
-    "server": "https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/",
+  // static const Map<String, String> islam = {
+  //   "id": "253",
+  //   "name": "إسلام صبحي",
+  //   "server": "https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/",
+  // };
+  static const Map<String, String> abkr = {
+    "id": "12",
+    "name": "إدريس بكر",
+    "server": "https://server6.mp3quran.net/abkr/",
   };
 
   // قائمة مجمعة لاستخدامها في GridView.builder مباشرة إذا أردت
@@ -98,6 +103,7 @@ class QariNames {
     kurdi,
     frsA,
     wdee3,
-    islam,
+    // islam,
+    abkr,
   ];
 }
