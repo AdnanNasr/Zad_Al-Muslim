@@ -430,8 +430,7 @@ class PrimarySectionWidget extends StatelessWidget {
           ? colorScheme.surface
           : colorScheme.primary,
       elevation: 0,
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-      color: colorScheme.surface,
+      color: Colors.transparent,
       child: Column(
         children: [
           Padding(
