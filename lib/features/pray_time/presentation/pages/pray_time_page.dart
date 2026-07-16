@@ -108,20 +108,32 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       final locationLocator = sl<LocationLocatorImpl>();
       final pos = await locationLocator.determinePosition();
 
-      pos.fold(
-        (failure) {
+      await pos.fold(
+        (failure) async {
           ref.read(locationStatusProvider.notifier).setStatus({
             LocationMessage.error: failure.message,
           });
         },
-        (position) {
+        (position) async {
           ref.read(userPositionProvider.notifier).state = position;
           ref.read(locationStatusProvider.notifier).clearStatus();
+
+          final tz = (await FlutterTimezone.getLocalTimezone()).toString();
+          final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
+
+          await recalculateUseCase(
+            domain_loc.Location(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              timezone: tz,
+            ),
+          );
         },
       );
 
       ref.invalidate(selectedDatePrayerTimesProvider);
       ref.invalidate(todayPrayerTimesProvider);
+      ref.invalidate(userAddressProvider);
     }
   }
 
@@ -1782,19 +1794,32 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       final locationLocator = sl<LocationLocatorImpl>();
       final pos = await locationLocator.determinePosition();
 
-      pos.fold(
-        (failure) {
+      await pos.fold(
+        (failure) async {
           ref.read(locationStatusProvider.notifier).setStatus({
             LocationMessage.error: failure.message,
           });
         },
-        (position) {
+        (position) async {
           ref.read(userPositionProvider.notifier).state = position;
           ref.read(locationStatusProvider.notifier).clearStatus();
+
+          final tz = (await FlutterTimezone.getLocalTimezone()).toString();
+          final recalculateUseCase = sl<RecalculateAndScheduleUseCase>();
+
+          await recalculateUseCase(
+            domain_loc.Location(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              timezone: tz,
+            ),
+          );
         },
       );
 
       ref.invalidate(todayPrayerTimesProvider);
+      ref.invalidate(selectedDatePrayerTimesProvider);
+      ref.invalidate(userAddressProvider);
     }
   }
 
