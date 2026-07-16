@@ -148,9 +148,13 @@ class BodyContent extends ConsumerWidget {
                       ),
                       Padding(
                         padding: EdgeInsets.only(left: 10.w),
-                        child: Image.asset(
-                          "assets/images/icon-512.png",
-                          width: 50.w,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: () {},
+                          child: Image.asset(
+                            "assets/images/icon-512.png",
+                            width: 50.w,
+                          ),
                         ),
                       ),
                     ],
