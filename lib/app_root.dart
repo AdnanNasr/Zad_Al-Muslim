@@ -19,15 +19,16 @@ import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page
 import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/pages/tafseer_page.dart';
 import 'package:zad_al_muslim/main.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../core/common/providers/theme_provider.dart';
 import '../core/common/providers/language_provider.dart';
 import '../features/quran/presentation/providers/mark.dart';
-import '../features/splash/presentation/pages/splash_screen.dart';
 import '../core/l10n/app_localizations.dart';
 import '../core/common/widgets/custom_navigation_bar.dart';
 
 class AppRoot extends ConsumerStatefulWidget {
-  const AppRoot({super.key});
+  final bool hasSeenOnboarding;
+  const AppRoot({super.key, required this.hasSeenOnboarding});
 
   @override
   ConsumerState<AppRoot> createState() => _AppRootState();
@@ -37,6 +38,11 @@ class _AppRootState extends ConsumerState<AppRoot> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // إزالة شاشة البدء بعد الانتهاء من رسم أول إطار لواجهة التطبيق لضمان انتقال سلس
+      FlutterNativeSplash.remove();
+    });
 
     Future.microtask(() async {
       await ref.read(themeProvider.notifier).loadTheme();
@@ -118,10 +124,9 @@ class _AppRootState extends ConsumerState<AppRoot> {
         ).copyWith(primary: userColor, onPrimary: Colors.white),
       ),
 
-      initialRoute: "/splash_screen",
+      initialRoute: widget.hasSeenOnboarding ? "/custom_navigation_bar" : "/onboarding",
 
       routes: {
-        "/splash_screen": (_) => const SplashScreen(),
         "/home_page": (_) => const HomePage(),
         "/quran_pages": (_) => const QuranPages(),
         "/quran_moratal": (_) => const QuranMoratalPage(),

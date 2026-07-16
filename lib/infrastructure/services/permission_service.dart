@@ -11,20 +11,24 @@ class PermissionService {
   Future<void> requestAllPermissions() async {
     if (Platform.isAndroid) {
       final androidPlugin = _notificationsPlugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-      
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+
       if (androidPlugin != null) {
         // Request notification permission (Android 13+)
         await androidPlugin.requestNotificationsPermission();
-        
+
         // Request exact alarm permission (Android 12+)
         // This will open the system settings if the permission is not granted
         await androidPlugin.requestExactAlarmsPermission();
       }
     } else if (Platform.isIOS) {
       final iosPlugin = _notificationsPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
-      
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+
       await iosPlugin?.requestPermissions(
         alert: true,
         badge: true,
@@ -38,6 +42,6 @@ class PermissionService {
   Future<bool> isFullyGranted() async {
     // For this MVP, we return true if the plugin is initialized.
     // Real permission status checking usually requires 'permission_handler' package.
-    return true; 
+    return true;
   }
 }

@@ -29,6 +29,8 @@ sealed class DioErrorHandler {
 
       case DioExceptionType.unknown:
         return UnknownError();
+      case DioExceptionType.transformTimeout:
+        return DioErrorHandler.fromDioException(dioException);
     }
   }
 }
