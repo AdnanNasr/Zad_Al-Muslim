@@ -193,6 +193,12 @@ class QariNames {
     "server": "https://server11.mp3quran.net/kafi/",
   };
 
+  static const Map<String, String> aloosi = {
+    "id": "225",
+    "name": "عبدالرحمن العوسي",
+    "server": "https://server6.mp3quran.net/aloosi/",
+  };
+
   static const List<Map<String, String>> allQaris = [
     abdulBaset,
     masharyAlafassy,
@@ -227,5 +233,6 @@ class QariNames {
     zaml,
     mAlZubaidi,
     kafi,
+    aloosi,
   ];
 }
