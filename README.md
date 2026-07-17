@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/images/ic_launcher_foreground.png" alt="Zad Al-Muslim Logo" width="300"/>
+  <img src="assets/images/logo.png" alt="Zad Al-Muslim Logo" width="300"/>
 
   # Zad Al-Muslim (زاد المسلم)
   
