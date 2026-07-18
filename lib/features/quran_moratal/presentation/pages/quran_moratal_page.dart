@@ -43,7 +43,6 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
       appBar: CustomAppBar(
         title: 'القرآن مُرتل',
         center: false,
-        themeMode: false,
         actions: [
           Builder(
             builder: (context) {
@@ -105,9 +104,14 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                               onPressed: () {
                                 Scaffold.of(context).closeEndDrawer();
                               },
-                              icon: const Icon(Icons.close, color: Colors.white),
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
                               style: IconButton.styleFrom(
-                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.2,
+                                ),
                               ),
                             );
                           },
@@ -344,14 +348,12 @@ class _QariListTileDrawer extends ConsumerWidget {
           color: downloadState.status == QariDownloadStatus.completed
               ? Colors.green.withValues(alpha: 0.3)
               : downloadState.status == QariDownloadStatus.inProgress
-                  ? context.color.primary.withValues(alpha: 0.3)
-                  : context.color.primary.withValues(alpha: 0.15),
+              ? context.color.primary.withValues(alpha: 0.3)
+              : context.color.primary.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
-      color: isDark
-          ? context.color.surfaceContainerHigh
-          : Colors.white,
+      color: isDark ? context.color.surfaceContainerHigh : Colors.white,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -367,8 +369,8 @@ class _QariListTileDrawer extends ConsumerWidget {
                     color: downloadState.status == QariDownloadStatus.completed
                         ? Colors.green.withValues(alpha: isDark ? 0.25 : 0.1)
                         : isDark
-                            ? context.color.primary.withValues(alpha: 0.25)
-                            : context.color.primary.withValues(alpha: 0.08),
+                        ? context.color.primary.withValues(alpha: 0.25)
+                        : context.color.primary.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -376,7 +378,8 @@ class _QariListTileDrawer extends ConsumerWidget {
                       downloadState.status == QariDownloadStatus.completed
                           ? Icons.check_circle_outline_rounded
                           : Icons.person_rounded,
-                      color: downloadState.status == QariDownloadStatus.completed
+                      color:
+                          downloadState.status == QariDownloadStatus.completed
                           ? Colors.green
                           : context.color.primary,
                       size: 24.sp,
@@ -414,7 +417,9 @@ class _QariListTileDrawer extends ConsumerWidget {
                   data: (size) => size > 0
                       ? Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 8.w, vertical: 4.h),
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
                           decoration: BoxDecoration(
                             color: context.color.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8.r),
@@ -435,7 +440,7 @@ class _QariListTileDrawer extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             // Progress information or download state
             if (downloadState.status == QariDownloadStatus.inProgress) ...[
               SizedBox(height: 12.h),
@@ -467,9 +472,7 @@ class _QariListTileDrawer extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: downloadState.overallProgress,
                   minHeight: 6.h,
-                  backgroundColor: context.color.primary.withValues(
-                    alpha: .15,
-                  ),
+                  backgroundColor: context.color.primary.withValues(alpha: .15),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     context.color.primary,
                   ),
@@ -486,7 +489,8 @@ class _QariListTileDrawer extends ConsumerWidget {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => SelectQariSurahPage(qariData: qariData),
+                        builder: (context) =>
+                            SelectQariSurahPage(qariData: qariData),
                       ),
                     );
                   },
@@ -561,6 +565,7 @@ class _DownloadButton extends ConsumerWidget {
           color: _getButtonColor(context),
           shape: BoxShape.circle,
         ),
+        // TODO
         child: _buildButtonChild(context),
       ),
     );
@@ -573,13 +578,14 @@ class _DownloadButton extends ConsumerWidget {
       case QariDownloadStatus.error:
         return Colors.orange.withValues(alpha: isDark ? 0.8 : 0.15);
       case QariDownloadStatus.inProgress:
-        return context.color.primary.withValues(alpha: isDark ? 0.7 : 0.1);
+        return context.color.error.withValues(alpha: isDark ? 0.7 : 0.1);
       default:
         return context.color.primary.withValues(alpha: isDark ? 0.7 : 0.1);
     }
   }
 
   Widget _buildButtonChild(BuildContext context) {
+    // TODO
     switch (downloadState.status) {
       case QariDownloadStatus.completed:
         return Icon(
@@ -589,21 +595,7 @@ class _DownloadButton extends ConsumerWidget {
         );
 
       case QariDownloadStatus.inProgress:
-        return SizedBox(
-          width: 28.w,
-          height: 28.w,
-          child: Center(
-            child: Text(
-              '${downloadState.progressPercent}%',
-              style: TextStyle(
-                fontSize: 9.5.sp,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Cairo',
-                color: isDark ? context.color.onSurface : context.color.primary,
-              ),
-            ),
-          ),
-        );
+        return Icon(Icons.pause, color: Colors.red);
 
       case QariDownloadStatus.error:
         return Icon(

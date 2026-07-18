@@ -769,8 +769,6 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         ..ayahNumber = _verseNumber,
                     );
 
-                    // TODO
-
                     if (!context.mounted) return;
                     _highlightAyah = false;
                     setState(() {});

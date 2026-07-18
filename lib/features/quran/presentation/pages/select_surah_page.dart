@@ -44,7 +44,6 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         appBar: CustomAppBar(
           title: "فهرس المصحف",
           center: true,
-          themeMode: false,
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(70.h),
             child: Container(

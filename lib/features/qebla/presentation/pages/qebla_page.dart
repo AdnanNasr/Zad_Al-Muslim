@@ -77,11 +77,7 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
     });
 
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'اتجاه القبلة',
-        center: false,
-        themeMode: false,
-      ),
+      appBar: const CustomAppBar(title: 'اتجاه القبلة', center: false),
       body: SafeArea(
         child: compassSupport.when(
           loading: () => const Center(child: CircularProgressIndicator()),

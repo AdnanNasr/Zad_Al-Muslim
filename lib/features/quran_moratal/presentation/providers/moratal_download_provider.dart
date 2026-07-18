@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
@@ -363,6 +364,7 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
   // Throttle: نمنع الـ rebuild إلا عند تغيّر النسبة المئوية
   // مثلما يفعل MoratalDownloadNotifier في downloadAllSurahs
   int _lastProgressPercent = -1;
+  CancelToken? _cancelToken;
 
   SingleSurahDownloadNotifier(this._qariId, this._serverUrl, this._surahNumber)
     : super(
@@ -400,6 +402,7 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
   Future<void> startDownload() async {
     if (state.status == SurahDownloadStatus.downloading) return;
     _lastProgressPercent = -1;
+    _cancelToken = CancelToken();
     if (mounted) {
       state = const SurahDownloadState(
         status: SurahDownloadStatus.downloading,
@@ -411,6 +414,7 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
       qariId: _qariId,
       serverUrl: _serverUrl,
       surahNumber: _surahNumber,
+      cancelToken: _cancelToken,
       onProgress: (progress) {
         if (mounted) {
           // Throttle: نُحدّث الـ state فقط عند تغيّر النسبة المئوية
@@ -437,6 +441,8 @@ class SingleSurahDownloadNotifier extends StateNotifier<SurahDownloadState> {
   }
 
   Future<void> delete() async {
+    _cancelToken?.cancel('User cancelled');
+    _cancelToken = null;
     await _service.deleteSurah(_qariId, _surahNumber);
     if (mounted) {
       state = const SurahDownloadState(

@@ -37,7 +37,6 @@ class _AdkarPageState extends ConsumerState<AdkarPage> {
       appBar: const CustomAppBar(
         title: 'حصن المسلم',
         center: true,
-        themeMode: false,
         icon: Icons.arrow_back,
       ),
       body: adkarData.when(

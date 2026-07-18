@@ -16,11 +16,7 @@ class AdkarDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: adkarEntity.category,
-        center: true,
-        themeMode: false,
-      ),
+      appBar: CustomAppBar(title: adkarEntity.category, center: true),
       body: ListView.separated(
         padding: EdgeInsets.all(16.w),
         itemCount: adkarEntity.text.length,
@@ -166,10 +162,14 @@ class DhikrCard extends ConsumerWidget {
                   GestureDetector(
                     onTap: () {
                       if (remainingCount > 0) {
-                        if (ref.read(appSettingsProvider).hapticFeedbackEnabled) {
+                        if (ref
+                            .read(appSettingsProvider)
+                            .hapticFeedbackEnabled) {
                           HapticFeedback.lightImpact();
                         }
-                        ref.read(dhikrStateProvider(params).notifier).decrement();
+                        ref
+                            .read(dhikrStateProvider(params).notifier)
+                            .decrement();
                       }
                     },
                     child: AnimatedContainer(

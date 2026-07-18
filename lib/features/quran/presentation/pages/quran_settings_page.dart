@@ -54,11 +54,7 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
         )];
 
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "إعدادات القرآن الكريم",
-        center: false,
-        themeMode: false,
-      ),
+      appBar: const CustomAppBar(title: "إعدادات القرآن الكريم", center: false),
       body: Padding(
         padding: EdgeInsets.all(context.heightScreen * 0.015),
         child: SingleChildScrollView(
