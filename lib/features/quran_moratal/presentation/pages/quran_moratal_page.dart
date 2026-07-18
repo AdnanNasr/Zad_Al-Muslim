@@ -40,10 +40,120 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
     final bool isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         title: 'القرآن مُرتل',
         center: false,
         themeMode: false,
+        actions: [
+          Builder(
+            builder: (context) {
+              return IconButton(
+                tooltip: "تحميل السور",
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                icon: const Icon(Icons.download),
+              );
+            },
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        width: 360.w,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    context.color.primary,
+                    context.color.primary.withValues(alpha: 0.8),
+                  ],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(24.r),
+                  bottomRight: Radius.circular(24.r),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.color.primary.withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(
+                          Icons.download_for_offline_rounded,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                        Builder(
+                          builder: (context) {
+                            return IconButton(
+                              onPressed: () {
+                                Scaffold.of(context).closeEndDrawer();
+                              },
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
+                    const Text(
+                      "تحميل القرآن الكريم",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Cairo",
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    Text(
+                      "حمّل سور القرآن كاملة للاستماع إليها بدون اتصال بالإنترنت في أي وقت.",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: "Cairo",
+                        color: Colors.white.withValues(alpha: 0.85),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                itemCount: QariNames.allQaris.length,
+                itemBuilder: (context, index) {
+                  final Map<String, String> qariData =
+                      QariNames.allQaris[index];
+                  return _QariListTileDrawer(
+                    qariData: qariData,
+                    isDark: isDark,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       body: Stack(
         children: [
@@ -89,16 +199,23 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
 // بطاقة القارئ - Widget منفصل لتحسين الأداء وعزل حالة كل قارئ
 // ---------------------------------------------------------------------------
 
-class _QariListTile extends ConsumerWidget {
+class _QariListTile extends StatelessWidget {
   final Map<String, String> qariData;
   final bool isDark;
 
   const _QariListTile({required this.qariData, required this.isDark});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final params = (qariId: qariData['id']!, serverUrl: qariData['server']!);
-    final downloadState = ref.watch(moratalDownloadProvider(params));
+  Widget build(BuildContext context) {
+    final serverUrl = qariData['server'] ?? '';
+    final String narration;
+    if (serverUrl.contains('Warsh')) {
+      narration = 'رواية ورش عن نافع';
+    } else if (serverUrl.contains('AlDorai')) {
+      narration = 'رواية الدوري عن الكسائي';
+    } else {
+      narration = 'رواية حفص عن عاصم';
+    }
 
     return Material(
       color: Colors.transparent,
@@ -164,7 +281,7 @@ class _QariListTile extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'رواية حفص عن عاصم',
+                      narration,
                       style: TextStyle(
                         fontSize: 11.sp,
                         fontFamily: 'Cairo',
@@ -174,56 +291,19 @@ class _QariListTile extends ConsumerWidget {
                             : context.color.onSurface.withValues(alpha: .6),
                       ),
                     ),
-
-                    // شريط التقدم عند التحميل
-                    if (downloadState.status ==
-                        QariDownloadStatus.inProgress) ...[
-                      SizedBox(height: 6.h),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4.r),
-                        child: LinearProgressIndicator(
-                          value: downloadState.overallProgress,
-                          minHeight: 4.h,
-                          backgroundColor: context.color.primary.withValues(
-                            alpha: .15,
-                          ),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            context.color.primary,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
 
               SizedBox(width: 8.w),
 
-              // أزرار التحميل والحذف
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // زر التحميل التفاعلي
-                  _DownloadButton(
-                    qariData: qariData,
-                    downloadState: downloadState,
-                    isDark: isDark,
-                    params: params,
-                  ),
-
-                  // زر الحذف (يظهر فقط عند اكتمال التحميل أو وجود ملفات)
-                  if (downloadState.status == QariDownloadStatus.completed ||
-                      (downloadState.status == QariDownloadStatus.error &&
-                          downloadState.downloadedCount > 0)) ...[
-                    SizedBox(width: 8.w),
-                    _DeleteButton(
-                      qariData: qariData,
-                      downloadedCount: downloadState.downloadedCount,
-                      isDark: isDark,
-                      params: params,
-                    ),
-                  ],
-                ],
+              // أيقونة سهم الانتقال
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16.sp,
+                color: isDark
+                    ? context.color.onSurface.withValues(alpha: .6)
+                    : context.color.primary.withValues(alpha: .6),
               ),
             ],
           ),
@@ -233,8 +313,228 @@ class _QariListTile extends ConsumerWidget {
   }
 }
 
+class _QariListTileDrawer extends ConsumerWidget {
+  final Map<String, String> qariData;
+  final bool isDark;
+
+  const _QariListTileDrawer({required this.qariData, required this.isDark});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final params = (qariId: qariData['id']!, serverUrl: qariData['server']!);
+    final downloadState = ref.watch(moratalDownloadProvider(params));
+    final sizeAsync = ref.watch(qariDownloadedSizeMBProvider(params.qariId));
+
+    final serverUrl = qariData['server'] ?? '';
+    final String narration;
+    if (serverUrl.contains('Warsh')) {
+      narration = 'رواية ورش عن نافع';
+    } else if (serverUrl.contains('AlDorai')) {
+      narration = 'رواية الدوري عن الكسائي';
+    } else {
+      narration = 'رواية حفص عن عاصم';
+    }
+
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide(
+          color: downloadState.status == QariDownloadStatus.completed
+              ? Colors.green.withValues(alpha: 0.3)
+              : downloadState.status == QariDownloadStatus.inProgress
+                  ? context.color.primary.withValues(alpha: 0.3)
+                  : context.color.primary.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      color: isDark
+          ? context.color.surfaceContainerHigh
+          : Colors.white,
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Qari Avatar
+                Container(
+                  width: 48.w,
+                  height: 48.w,
+                  decoration: BoxDecoration(
+                    color: downloadState.status == QariDownloadStatus.completed
+                        ? Colors.green.withValues(alpha: isDark ? 0.25 : 0.1)
+                        : isDark
+                            ? context.color.primary.withValues(alpha: 0.25)
+                            : context.color.primary.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      downloadState.status == QariDownloadStatus.completed
+                          ? Icons.check_circle_outline_rounded
+                          : Icons.person_rounded,
+                      color: downloadState.status == QariDownloadStatus.completed
+                          ? Colors.green
+                          : context.color.primary,
+                      size: 24.sp,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                // Name & Narration
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        qariData['name'] ?? '',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                          color: context.color.onSurface,
+                        ),
+                      ),
+                      Text(
+                        narration,
+                        style: TextStyle(
+                          fontSize: 10.5.sp,
+                          fontFamily: 'Cairo',
+                          color: context.color.onSurface.withValues(alpha: .6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Size status
+                sizeAsync.when(
+                  data: (size) => size > 0
+                      ? Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: context.color.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Text(
+                            "${size.toStringAsFixed(1)} م.ب",
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.bold,
+                              color: context.color.primary,
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                  error: (e, s) => const SizedBox.shrink(),
+                  loading: () => const SizedBox.shrink(),
+                ),
+              ],
+            ),
+            
+            // Progress information or download state
+            if (downloadState.status == QariDownloadStatus.inProgress) ...[
+              SizedBox(height: 12.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "تحميل سورة ${downloadState.currentSurah} من 114",
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontFamily: 'Cairo',
+                      color: context.color.onSurface.withValues(alpha: .7),
+                    ),
+                  ),
+                  Text(
+                    "${downloadState.progressPercent}%",
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.bold,
+                      color: context.color.primary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 6.h),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4.r),
+                child: LinearProgressIndicator(
+                  value: downloadState.overallProgress,
+                  minHeight: 6.h,
+                  backgroundColor: context.color.primary.withValues(
+                    alpha: .15,
+                  ),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    context.color.primary,
+                  ),
+                ),
+              ),
+            ],
+
+            SizedBox(height: 12.h),
+            // Action Buttons Row
+            Row(
+              children: [
+                // View Surahs Button
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SelectQariSurahPage(qariData: qariData),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.menu_book_rounded, size: 16.sp),
+                  label: Text(
+                    "عرض السور",
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w),
+                    foregroundColor: context.color.primary,
+                  ),
+                ),
+                const Spacer(),
+                // Download Action Button
+                _DownloadButton(
+                  qariData: qariData,
+                  downloadState: downloadState,
+                  isDark: isDark,
+                  params: params,
+                ),
+                // Delete Action Button (visible if downloaded or error with files)
+                if (downloadState.status == QariDownloadStatus.completed ||
+                    (downloadState.status == QariDownloadStatus.error &&
+                        downloadState.downloadedCount > 0)) ...[
+                  SizedBox(width: 8.w),
+                  _DeleteButton(
+                    qariData: qariData,
+                    downloadedCount: downloadState.downloadedCount,
+                    isDark: isDark,
+                    params: params,
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
-// زر التحميل التفاعلي
+// ?زر التحميل التفاعلي
 // ---------------------------------------------------------------------------
 
 class _DownloadButton extends ConsumerWidget {
@@ -607,7 +907,7 @@ class _DownloadButton extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// زر الحذف
+// !زر الحذف
 // ---------------------------------------------------------------------------
 
 class _DeleteButton extends ConsumerWidget {

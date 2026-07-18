@@ -16,6 +16,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final void Function()? customVoid;
   final String? tooltip;
+  final List<Widget>? actions;
 
   const CustomAppBar({
     super.key,
@@ -30,6 +31,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.bottom,
     this.customVoid,
     this.tooltip,
+    this.actions,
   });
 
   @override
@@ -74,15 +76,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ),
             )
           : null,
-      actions: [
-        if (this.themeMode)
-          Switch(
-            value: themeMode == ThemeMode.dark,
-            onChanged: (value) async {
-              await ref.read(themeProvider.notifier).toggleTheme(themeMode);
-            },
-          ),
-      ],
+      actions: actions,
     );
   }
 
