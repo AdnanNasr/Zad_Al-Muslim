@@ -66,18 +66,15 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    context.color.primary,
-                    context.color.primary.withValues(alpha: 0.8),
-                  ],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
+                image: const DecorationImage(
+                  // TODO: chagne image
+                  image: AssetImage("assets/images/night_clouds.jpg"),
+                  fit: BoxFit.cover,
                 ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(24.r),
-                  bottomRight: Radius.circular(24.r),
-                ),
+                // borderRadius: BorderRadius.only(
+                //   bottomLeft: Radius.circular(24.r),
+                //   bottomRight: Radius.circular(24.r),
+                // ),
                 boxShadow: [
                   BoxShadow(
                     color: context.color.primary.withValues(alpha: 0.25),
@@ -94,11 +91,7 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(
-                          Icons.download_for_offline_rounded,
-                          color: Colors.white,
-                          size: 32,
-                        ),
+                        const Spacer(),
                         Builder(
                           builder: (context) {
                             return IconButton(
@@ -566,7 +559,6 @@ class _DownloadButton extends ConsumerWidget {
           color: _getButtonColor(context),
           shape: BoxShape.circle,
         ),
-        // TODO
         child: _buildButtonChild(context),
       ),
     );
@@ -586,7 +578,6 @@ class _DownloadButton extends ConsumerWidget {
   }
 
   Widget _buildButtonChild(BuildContext context) {
-    // TODO
     switch (downloadState.status) {
       case QariDownloadStatus.completed:
         return Icon(
