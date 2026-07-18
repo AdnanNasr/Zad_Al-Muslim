@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,7 +41,6 @@ class _AppRootState extends ConsumerState<AppRoot> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // إزالة شاشة البدء بعد الانتهاء من رسم أول إطار لواجهة التطبيق لضمان انتقال سلس
       FlutterNativeSplash.remove();
     });
 
@@ -51,42 +51,50 @@ class _AppRootState extends ConsumerState<AppRoot> {
       await ref.read(marksProvder.notifier).loadMarks();
     });
 
-    // تسجيل callback لإشعار اكتمال تحميل قارئ من أي صفحة
     moratalDownloadCompletedCallback = (qariId) {
-      scaffoldMessengerKey.currentState
-        ?..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 5),
+      BotToast.cleanAll();
+
+      BotToast.showCustomNotification(
+        duration: const Duration(seconds: 5),
+
+        align: const Alignment(0, 0.9),
+        toastBuilder: (cancelFunc) {
+          return Card(
             margin: EdgeInsets.all(16.w),
+
+            color: const Color(0xFF1B8A5A),
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14.r),
             ),
-            backgroundColor: const Color(0xFF1B8A5A),
-            content: Row(
-              children: [
-                const Icon(
-                  Icons.download_done_rounded,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                SizedBox(width: 10.w),
-                const Expanded(
-                  child: Text(
-                    'اكتمل التحميل! يمكنك الاستماع بدون إنترنت الآن. ✅',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 13,
+            elevation: 4,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.download_done_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                  SizedBox(width: 10.w),
+                  const Expanded(
+                    child: Text(
+                      'اكتمل التحميل! يمكنك الاستماع بدون إنترنت الآن. ✅',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        },
+      );
     };
   }
 
@@ -99,7 +107,8 @@ class _AppRootState extends ConsumerState<AppRoot> {
     return MaterialApp(
       navigatorKey: appNavigatorKey,
       scaffoldMessengerKey: scaffoldMessengerKey,
-
+      builder: BotToastInit(),
+      navigatorObservers: [BotToastNavigatorObserver()],
       debugShowCheckedModeBanner: false,
 
       locale: Locale(language.name),
@@ -124,7 +133,9 @@ class _AppRootState extends ConsumerState<AppRoot> {
         ).copyWith(primary: userColor, onPrimary: Colors.white),
       ),
 
-      initialRoute: widget.hasSeenOnboarding ? "/custom_navigation_bar" : "/onboarding",
+      initialRoute: widget.hasSeenOnboarding
+          ? "/custom_navigation_bar"
+          : "/onboarding",
 
       routes: {
         "/home_page": (_) => const HomePage(),

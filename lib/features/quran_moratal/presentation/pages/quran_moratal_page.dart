@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -595,7 +596,7 @@ class _DownloadButton extends ConsumerWidget {
         );
 
       case QariDownloadStatus.inProgress:
-        return Icon(Icons.pause, color: Colors.red);
+        return const Icon(Icons.pause, color: Colors.red);
 
       case QariDownloadStatus.error:
         return Icon(
@@ -619,44 +620,100 @@ class _DownloadButton extends ConsumerWidget {
     switch (downloadState.status) {
       case QariDownloadStatus.completed:
         // لا شيء - التحميل مكتمل
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.green.shade700,
+        BotToast.cleanAll();
+
+        BotToast.showCustomNotification(
+          duration: const Duration(seconds: 4),
+          align: const Alignment(0, 0.9), // ظهور في أسفل الشاشة
+          toastBuilder: (cancelFunc) {
+            return Card(
+              margin: EdgeInsets.all(16.w),
+              color: Colors.green.shade700, // نفس اللون الأخضر لنجاح العملية
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              content: Row(
-                children: [
-                  const Icon(
-                    Icons.offline_pin_rounded,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  SizedBox(width: 8.w),
-                  Text(
-                    'تم تحميل جميع السور. يمكنك الاستماع بدون إنترنت!',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12.sp,
+              elevation: 4,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons
+                          .offline_pin_rounded, // نفس أيقونة التأكيد المتوفرة أوفلاين
                       color: Colors.white,
+                      size: 18,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        'تم تحميل جميع السور. يمكنك الاستماع بدون إنترنت!',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          },
+        );
         break;
 
       case QariDownloadStatus.inProgress:
         // عرض Dialog إلغاء التحميل
         final cancel = await _showCancelDialog(context);
         if (cancel == true) {
+          BotToast.cleanAll();
+
+          BotToast.showCustomNotification(
+            duration: const Duration(seconds: 4),
+            align: const Alignment(0, 0.9), // ظهور في أسفل الشاشة
+            toastBuilder: (cancelFunc) {
+              return Card(
+                margin: EdgeInsets.all(16.w),
+                color: Colors.red.shade700, // نفس اللون الأخضر لنجاح العملية
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons
+                            .pause_sharp, // نفس أيقونة التأكيد المتوفرة أوفلاين
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          'تم إيقاف تحميل السور للقارئ ${qariData["name"]}',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
           notifier.cancelDownload();
           await WakelockPlus.disable();
+          if (!context.mounted) return;
         }
         break;
 
@@ -665,6 +722,50 @@ class _DownloadButton extends ConsumerWidget {
         final confirm = await _showConfirmDialog(context, isResume: true);
 
         if (confirm == true && context.mounted) {
+          BotToast.cleanAll();
+
+          BotToast.showCustomNotification(
+            duration: const Duration(seconds: 4),
+            align: const Alignment(0, 0.9), // ظهور في أسفل الشاشة
+            toastBuilder: (cancelFunc) {
+              return Card(
+                margin: EdgeInsets.all(16.w),
+                color: Colors.green.shade700, // نفس اللون الأخضر لنجاح العملية
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons
+                            .replay_outlined, // نفس أيقونة التأكيد المتوفرة أوفلاين
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          'جاري إستكمال تحميل السور للقارئ ${qariData["name"]}',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
           await WakelockPlus.enable();
           notifier.startDownloadAll().then((_) => WakelockPlus.disable());
         }
@@ -674,6 +775,49 @@ class _DownloadButton extends ConsumerWidget {
         // بدء تحميل جديد
         final confirm = await _showConfirmDialog(context, isResume: false);
         if (confirm == true && context.mounted) {
+          BotToast.cleanAll();
+
+          BotToast.showCustomNotification(
+            duration: const Duration(seconds: 4),
+            align: const Alignment(0, 0.9), // ظهور في أسفل الشاشة
+            toastBuilder: (cancelFunc) {
+              return Card(
+                margin: EdgeInsets.all(16.w),
+                color: Colors.green.shade700, // نفس اللون الأخضر لنجاح العملية
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.download, // نفس أيقونة التأكيد المتوفرة أوفلاين
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          'بدأت عميلة تحميل السور للقارئ ${qariData["name"]}',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
           await WakelockPlus.enable();
           notifier.startDownloadAll().then((_) => WakelockPlus.disable());
         }
@@ -944,26 +1088,46 @@ class _DeleteButton extends ConsumerWidget {
           .deleteAllDownloads();
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.red.shade700,
+        BotToast.cleanAll();
+
+        BotToast.showCustomNotification(
+          duration: const Duration(seconds: 4),
+          align: const Alignment(0, 0.9), // ظهور في أسفل الشاشة
+          toastBuilder: (cancelFunc) {
+            return Card(
+              margin: EdgeInsets.all(16.w),
+              color: Colors.red.shade700, // نفس اللون الأحمر المخصص للحذف
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              content: Text(
-                'تم حذف جميع سور $qariName من الجهاز.',
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12.sp,
-                  color: Colors.white,
+              elevation: 4,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.delete_sweep_rounded, // أيقونة معبرة عن حذف الكل
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Text(
+                        'تم حذف جميع سور $qariName من الجهاز.',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          );
+            );
+          },
+        );
       }
     }
   }
