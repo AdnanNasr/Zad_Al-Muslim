@@ -9,11 +9,7 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "مركز الإشعارات",
-        center: false,
-        themeMode: false,
-      ),
+      appBar: const CustomAppBar(title: "مركز الإشعارات", center: false),
       body: Center(
         child: Text(
           "لا يوجد إشعارات في الوقت الحالي",

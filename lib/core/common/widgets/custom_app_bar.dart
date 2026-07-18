@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final bool center;
   final IconData? icon;
-  final bool themeMode; //! only for dev
   final bool isFullscreen;
   final Color? backgroundColor;
   final Widget? flexibleSpace;
@@ -16,13 +14,13 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final void Function()? customVoid;
   final String? tooltip;
+  final List<Widget>? actions;
 
   const CustomAppBar({
     super.key,
     required this.title,
     required this.center,
     this.icon,
-    required this.themeMode,
     this.isFullscreen = false,
     this.backgroundColor,
     this.flexibleSpace,
@@ -30,11 +28,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.bottom,
     this.customVoid,
     this.tooltip,
+    this.actions,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ThemeMode themeMode = ref.watch(themeProvider);
     return AppBar(
       primary: true,
       // toolbarHeight: kToolbarHeight,
@@ -74,15 +72,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ),
             )
           : null,
-      actions: [
-        if (this.themeMode)
-          Switch(
-            value: themeMode == ThemeMode.dark,
-            onChanged: (value) async {
-              await ref.read(themeProvider.notifier).toggleTheme(themeMode);
-            },
-          ),
-      ],
+      actions: actions,
     );
   }
 

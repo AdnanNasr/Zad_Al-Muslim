@@ -44,11 +44,7 @@ class _TermsOfUsePageState extends State<TermsOfUsePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "اتفاقية الاستخدام",
-        center: false,
-        themeMode: false,
-      ),
+      appBar: const CustomAppBar(title: "اتفاقية الاستخدام", center: false),
       body: WebViewWidget(controller: webViewController),
     );
   }

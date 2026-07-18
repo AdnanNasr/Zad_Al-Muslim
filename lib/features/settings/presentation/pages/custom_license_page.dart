@@ -33,11 +33,7 @@ class _CustomLicensePageState extends State<CustomLicensePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "التراخيص",
-        center: false,
-        themeMode: false,
-      ),
+      appBar: const CustomAppBar(title: "التراخيص", center: false),
       body: FutureBuilder<Map<String, List<LicenseEntry>>>(
         future: _licensesFuture,
         builder: (context, snapshot) {
@@ -108,7 +104,7 @@ class PackageLicenseDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: packageName, center: false, themeMode: false),
+      appBar: CustomAppBar(title: packageName, center: false),
       body: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         itemCount: licenses.length,

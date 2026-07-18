@@ -30,11 +30,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
       backgroundColor: themeMode == ThemeMode.light
           ? context.color.onPrimary
           : context.color.scrim,
-      appBar: const CustomAppBar(
-        title: "كتب التفسير",
-        center: false,
-        themeMode: false,
-      ),
+      appBar: const CustomAppBar(title: "كتب التفسير", center: false),
       body: booksAsync.when(
         data: (books) {
           return ListView.builder(
@@ -65,7 +61,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
 
   Future<void> _handleDownload(TafsserBookEntity book) async {
     final downloadNotifier = ref.read(tafsserDownloadProvider.notifier);
-    
+
     // نظهر للمستخدم أن العملية بدأت (حتى لو أخذ فحص الإنترنت وقتاً)
     downloadNotifier.startDownload(book.id);
 

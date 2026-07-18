@@ -17,7 +17,6 @@ class AppInfo extends StatelessWidget {
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.app_information,
         center: false,
-        themeMode: false,
       ),
       body: Padding(
         padding: EdgeInsets.only(top: 8.0.h, right: 3.w, left: 3.w),

@@ -671,7 +671,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                         Navigator.pushNamed(context, Routes.selectSurahPage),
                   ),
                   HomeButton(
-                    text: "القرآن مُرتل",
+                    text: "القرآن المُرتل",
                     description: "استماع وتحميل",
                     iconImage: "assets/icons/voice.png",
                     color: primaryColor,
