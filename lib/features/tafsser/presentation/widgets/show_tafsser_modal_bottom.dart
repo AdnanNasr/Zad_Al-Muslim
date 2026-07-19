@@ -48,122 +48,156 @@ Future<dynamic> showTafsserModalBottom(
                 ),
               ],
             ),
-            child: DraggableScrollableSheet(
-              expand: false,
-              initialChildSize: 0.5,
-              maxChildSize: 0.9,
-              minChildSize: 0.4,
-              builder: (context, scrollController) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    children: [
-                      _buildHandle(isDarkMode),
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              child: DraggableScrollableSheet(
+                expand: false,
+                initialChildSize: 0.5,
+                maxChildSize: 0.9,
+                minChildSize: 0.4,
+                builder: (context, scrollController) {
+                  return CustomScrollView(
+                    controller: scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      // الهيدر الثابت (Pinned)
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _StickyHeaderDelegate(
+                          height: 110,
+                          child: Container(
+                            color: bgColor,
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: Column(
+                              // mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Center(child: _buildHandle(isDarkMode)),
 
-                      // الهيدر: العنوان واختيار الكتاب
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "تفسير الآية $verseNumber",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18.sp,
-                                fontFamily: 'Cairo',
-                                color: primaryColor,
-                              ),
-                            ),
-
-                            // اختيار التفسير
-                            MenuAnchor(
-                              key: ValueKey(booksAsync.value?.length ?? 0),
-                              builder: (context, controller, child) {
-                                return OutlinedButton.icon(
-                                  onPressed: () => controller.isOpen
-                                      ? controller.close()
-                                      : controller.open(),
-                                  label: Text(
-                                    selectedBook?.name ?? "اختار التفسير",
-                                    style: TextStyle(
-                                      fontSize: 13.sp,
-                                      fontFamily: 'Cairo',
-                                    ),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    size: 20,
-                                  ),
-                                  style: _buttonStyle(context, isDarkMode),
-                                );
-                              },
-                              menuChildren: booksAsync.when(
-                                data: (books) => books
-                                    .where((book) => book.isDownloaded)
-                                    .map(
-                                      (book) => MenuItemButton(
-                                        onPressed: () =>
-                                            ref
-                                                    .read(
-                                                      selectedTafsserBookProvider
-                                                          .notifier,
-                                                    )
-                                                    .state =
-                                                book,
-                                        child: Text(
-                                          book.name,
-                                          style: const TextStyle(
-                                            fontFamily: 'Cairo',
-                                          ),
+                                // الهيدر: العنوان واختيار الكتاب
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "تفسير الآية $verseNumber",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.sp,
+                                          fontFamily: 'Cairo',
+                                          color: primaryColor,
                                         ),
                                       ),
-                                    )
-                                    .toList(),
-                                loading: () => [
-                                  const LinearProgressIndicator(),
-                                ],
-                                error: (err, stack) => [
-                                  const Text("خطأ في التحميل"),
-                                ],
-                              ),
+
+                                      // اختيار التفسير
+                                      MenuAnchor(
+                                        key: ValueKey(
+                                          booksAsync.value?.length ?? 0,
+                                        ),
+                                        builder: (context, controller, child) {
+                                          return OutlinedButton.icon(
+                                            onPressed: () => controller.isOpen
+                                                ? controller.close()
+                                                : controller.open(),
+                                            label: Text(
+                                              selectedBook?.name ??
+                                                  "اختار التفسير",
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontFamily: 'Cairo',
+                                              ),
+                                            ),
+                                            icon: const Icon(
+                                              Icons.keyboard_arrow_down_rounded,
+                                              size: 20,
+                                            ),
+                                            style: _buttonStyle(
+                                              context,
+                                              isDarkMode,
+                                            ),
+                                          );
+                                        },
+                                        menuChildren: booksAsync.when(
+                                          data: (books) => books
+                                              .where(
+                                                (book) => book.isDownloaded,
+                                              )
+                                              .map(
+                                                (book) => MenuItemButton(
+                                                  onPressed: () =>
+                                                      ref
+                                                              .read(
+                                                                selectedTafsserBookProvider
+                                                                    .notifier,
+                                                              )
+                                                              .state =
+                                                          book,
+                                                  child: Text(
+                                                    book.name,
+                                                    style: const TextStyle(
+                                                      fontFamily: 'Cairo',
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                          loading: () => [
+                                            const LinearProgressIndicator(),
+                                          ],
+                                          error: (err, stack) => [
+                                            const Text("خطأ في التحميل"),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
 
-                      const Divider(thickness: 0.5),
-
+                      // فاصل تحت الهيدر الثابت
+                      const SliverToBoxAdapter(
+                        child: Divider(thickness: .5, height: .5),
+                      ),
                       // محتوى التفسير
-                      Expanded(
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            final currentBook = ref.watch(
-                              selectedTafsserBookProvider,
-                            );
-                            final finalBookId = currentBook?.id ?? bookId;
+                      SliverPadding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        sliver: SliverToBoxAdapter(
+                          child: Consumer(
+                            builder: (context, ref, child) {
+                              final currentBook = ref.watch(
+                                selectedTafsserBookProvider,
+                              );
+                              final finalBookId = currentBook?.id ?? bookId;
 
-                            final tafsserAsync = ref.watch(
-                              ayahTafsserProvider((
-                                tafsserId: finalBookId,
-                                surahNumber: surahNumber,
-                                ayahNumber: verseNumber,
-                              )),
-                            );
+                              final tafsserAsync = ref.watch(
+                                ayahTafsserProvider((
+                                  tafsserId: finalBookId,
+                                  surahNumber: surahNumber,
+                                  ayahNumber: verseNumber,
+                                )),
+                              );
 
-                            return tafsserAsync.when(
-                              data: (tafsser) {
-                                if (tafsser == null) {
-                                  return const Center(
-                                    child: Text("لا يوجد بيانات"),
-                                  );
-                                }
+                              return tafsserAsync.when(
+                                data: (tafsser) {
+                                  if (tafsser == null) {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 40,
+                                      ),
+                                      child: Center(
+                                        child: Text("لا يوجد بيانات"),
+                                      ),
+                                    );
+                                  }
 
-                                return ListView(
-                                  controller: scrollController,
-                                  physics: const BouncingScrollPhysics(),
-                                  children: [
-                                    Container(
+                                  return Padding(
+                                    padding: EdgeInsets.only(top: 16.h),
+                                    child: Container(
                                       width: double.infinity,
                                       padding: EdgeInsets.all(16.r),
                                       decoration: BoxDecoration(
@@ -190,25 +224,33 @@ Future<dynamic> showTafsserModalBottom(
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 30.h),
-                                  ],
-                                );
-                              },
-                              loading: () => Center(
-                                child: CircularProgressIndicator(
-                                  color: primaryColor,
+                                  );
+                                },
+                                loading: () => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 40,
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: primaryColor,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              error: (err, stack) =>
-                                  const Center(child: Text("حدث خطأ ما")),
-                            );
-                          },
+                                error: (err, stack) => const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 40),
+                                  child: Center(child: Text("حدث خطأ ما")),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
+
+                      SliverToBoxAdapter(child: SizedBox(height: 30.h)),
                     ],
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           );
         },
@@ -237,3 +279,31 @@ ButtonStyle _buttonStyle(BuildContext context, bool isDarkMode) =>
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
     );
+
+/// Delegate بسيط لهيدر ثابت (بدون Collapse/Shrink)، يبقى بنفس الارتفاع دوماً.
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double height;
+  final Widget child;
+
+  _StickyHeaderDelegate({required this.height, required this.child});
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant _StickyHeaderDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.child != child;
+  }
+}
