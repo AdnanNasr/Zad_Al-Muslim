@@ -130,6 +130,10 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(quranSettingsProvider);
+    final marks = ref.watch(marksProvder);
+    final ayahsMarks = marks
+        .where((a) => a.ayahNumber != null && a.surahNumber != null)
+        .toList();
     // التوجيه للصفحة العمودية إذا كان وضع العرض القابل للتكبير مفعلاً
     if (settings.quranViewType == QuranViewType.zoomable) {
       return QuranVerticalPage(
@@ -200,6 +204,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                 themeMode,
                 themeColor,
                 currentSelectedQariProvider,
+                ayahsMarks,
               ),
             ),
           ],
@@ -213,6 +218,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
     ThemeMode themeMode,
     Color themeColor,
     QariModel currentSelectedQariProvider,
+    List<Mark> ayahsMarks,
   ) {
     final settings = ref.watch(quranSettingsProvider);
     final isDark = themeMode == ThemeMode.dark;
@@ -330,12 +336,33 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
                         ? widget.pageNumber!
                         : 1,
                     verseBackgroundColor: (surahNumber, verseNumber) {
+                      /// في البداية يتم جلب جميع علامات الآيات التي تم حفظها في قاعدة البيانات
+                      /// يتم إضافة تظليل للآيات الموجودة في قاعدة البيانات بناءً على النموذج الخاص به
+                      /// النموذج [Mark] يحتوي على هيكيلة نظيفة حيث يعيد رقم السورة، رقم الآية ورقم الصفحة
+
+                      /// يتم الاعتماد على رقم السورة ورقم الآية في تظليل الآيات
+                      /// ويتم الاعتماد على نفس البيانات ايضاً لتمييز تظليل الآيات المُعلمة عن الآيات التي يتم قراءتها من خلال مشغل الصوت
+
+                      for (final ayah in ayahsMarks) {
+                        if (currentAyah != null) {
+                          if (ayah.ayahNumber == verseNumber &&
+                              currentAyah.ayahNumber == verseNumber &&
+                              ayah.surahNumber == surahNumber &&
+                              currentAyah.surahNumber == surahNumber) {
+                            return context.color.primary.withValues(alpha: .3);
+                          }
+                        }
+                        if (ayah.surahNumber == surahNumber &&
+                            ayah.ayahNumber == verseNumber) {
+                          return context.color.primary.withValues(alpha: .15);
+                        }
+                      }
                       // تظليل الآية التي يتم قراءتها حالياً
                       if (currentAyah != null &&
                           currentAyah.surahNumber == surahNumber &&
                           currentAyah.ayahNumber == verseNumber) {
                         return context.color.primary.withValues(
-                          alpha: 0.4,
+                          alpha: 0.3,
                         ); // لون أغمق للمقروءة
                       }
 
