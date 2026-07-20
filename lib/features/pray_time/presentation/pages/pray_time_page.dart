@@ -95,9 +95,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       final status = ref.read(locationStatusProvider);
       if (status.isEmpty) {
         await ref.read(locationStatusProvider.notifier).refreshStatus();
+        if (!mounted) return;
       }
 
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!mounted) return;
       if (!serviceEnabled) {
         ref.read(locationStatusProvider.notifier).setStatus({
           LocationMessage.locationDisabled: "الـ GPS معطل، يرجى تفعيله",
@@ -107,14 +109,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
       final locationLocator = sl<LocationLocatorImpl>();
       final pos = await locationLocator.determinePosition();
+      if (!mounted) return;
 
       await pos.fold(
         (failure) async {
+          if (!mounted) return;
           ref.read(locationStatusProvider.notifier).setStatus({
             LocationMessage.error: failure.message,
           });
         },
         (position) async {
+          if (!mounted) return;
           ref.read(userPositionProvider.notifier).state = position;
           ref.read(locationStatusProvider.notifier).clearStatus();
 
@@ -131,6 +136,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         },
       );
 
+      if (!mounted) return;
       ref.invalidate(selectedDatePrayerTimesProvider);
       ref.invalidate(todayPrayerTimesProvider);
       ref.invalidate(userAddressProvider);
@@ -1776,9 +1782,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         ref.invalidate(selectedDatePrayerTimesProvider);
         ref.invalidate(todayPrayerTimesProvider);
         await ref.read(locationStatusProvider.notifier).refreshStatus();
+        if (!mounted) return;
       }
 
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!mounted) return;
       if (!serviceEnabled) {
         ref.read(locationStatusProvider.notifier).setStatus({
           LocationMessage.locationDisabled: "الـ GPS معطل، يرجى تفعيله",
@@ -1792,14 +1800,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
       final locationLocator = sl<LocationLocatorImpl>();
       final pos = await locationLocator.determinePosition();
+      if (!mounted) return;
 
       await pos.fold(
         (failure) async {
+          if (!mounted) return;
           ref.read(locationStatusProvider.notifier).setStatus({
             LocationMessage.error: failure.message,
           });
         },
         (position) async {
+          if (!mounted) return;
           ref.read(userPositionProvider.notifier).state = position;
           ref.read(locationStatusProvider.notifier).clearStatus();
 
@@ -1816,6 +1827,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         },
       );
 
+      if (!mounted) return;
       ref.invalidate(todayPrayerTimesProvider);
       ref.invalidate(selectedDatePrayerTimesProvider);
       ref.invalidate(userAddressProvider);
@@ -1855,6 +1867,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
               final locationLocator = sl<LocationLocatorImpl>();
               final pos = await locationLocator.determinePosition();
+              if (!mounted) return;
 
               pos.fold(
                 (failure) {
@@ -1879,6 +1892,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                     ),
                   );
 
+                  if (!mounted) return;
                   ref.invalidate(todayPrayerTimesProvider);
                   ref.invalidate(selectedDatePrayerTimesProvider);
                   ref.invalidate(userAddressProvider);
