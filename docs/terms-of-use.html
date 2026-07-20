@@ -1,20 +1,17 @@
-```html
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Terms and Conditions for the Zad Al-Muslim mobile application.">
     <meta name="robots" content="index, follow">
     <title>Terms &amp; Conditions - Zad Al-Muslim</title>
-
     <style>
         * {
             box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
             color: #333;
             background-color: #f8f9fa;
@@ -29,6 +26,31 @@
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .lang-switcher {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 15px;
+        }
+
+        .lang-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: background 0.2s;
+        }
+
+        .lang-btn:hover {
+            background-color: #219150;
         }
 
         h1 {
@@ -65,6 +87,10 @@
             font-size: 0.9em;
         }
 
+        .lang-section {
+            display: none;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -72,120 +98,226 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
 
-        <h1>Terms &amp; Conditions</h1>
+        <div class="lang-switcher">
+            <button class="lang-btn" onclick="switchLanguage('ar')">العربية</button>
+            <button class="lang-btn" onclick="switchLanguage('en')">English</button>
+        </div>
 
-        <p>
-            These Terms and Conditions apply to the <strong>Zad Al-Muslim</strong> mobile application
-            (hereinafter referred to as the "<strong>Application</strong>"), developed by
-            <strong>Adnan Nasr</strong> (hereinafter referred to as the "<strong>Service Provider</strong>"),
-            and provided as a free service.
-        </p>
+        <!-- النسخة العربية -->
+        <div id="lang-ar" class="lang-section" dir="rtl">
+            <h1>الشروط والأحكام</h1>
 
-        <p>
-            By downloading or using the Application, you agree to be bound by these Terms and Conditions.
-            Please read them carefully before using the Application.
-        </p>
+            <p>
+                تنطبق هذه الشروط والأحكام على تطبيق <strong>زاد المسلم</strong> (المشار إليه هنا باسم "<strong>التطبيق</strong>") للأجهزة المحمولة، والذي تم إنشاؤه بواسطة <strong>عدنان نصر</strong> (المشار إليه هنا باسم "<strong>مزود الخدمة</strong>") كخدمة مجانية.
+            </p>
 
-        <p>
-            Unauthorized copying, modification, distribution, reverse engineering, or extraction of the
-            Application's source code is strictly prohibited. You may not translate the Application or create
-            derivative works based on it. All trademarks, copyrights, database rights, and other intellectual
-            property rights related to the Application remain the exclusive property of the Service Provider.
-        </p>
+            <p>
+                بتنزيل التطبيق أو استخدامه، فإنك توافق على الالتزام بهذه الشروط والأحكام. يرجى قراءتها بعناية قبل استخدام التطبيق.
+            </p>
 
-        <p>
-            The Service Provider reserves the right to modify the Application or charge for its services at any
-            time. Any applicable charges will always be clearly communicated before they take effect.
-        </p>
+            <p>
+                يُحظر تماماً النسخ غير المصرح به، أو التعديل، أو التوزيع، أو الهندسة العكسية، أو استخراج الكود البرمجي المصدري للتطبيق. لا يجوز لك ترجمة التطبيق أو إنشاء أعمال مشتقة منه. تظل جميع العلامات التجارية وحقوق الطبع والنشر وحقوق قواعد البيانات وحقوق الملكية الفكرية الأخرى المتعلقة بالتطبيق ملكاً حصرياً لمزود الخدمة.
+            </p>
 
-        <p>
-            The Application may store and process personal information that you provide in order to deliver its
-            services. You are responsible for maintaining the security of your device and access to the
-            Application.
-        </p>
+            <p>
+                يحتفظ مزود الخدمة بالحق في تعديل التطبيق أو فرض رسوم على خدماته في أي وقت. وسيتم دائماً توضيح أي رسوم تطبق بشكل صريح قبل أن تدخل قيد التنفيذ.
+            </p>
 
-        <p>
-            The Service Provider strongly <strong>advises</strong> against jailbreaking or rooting your device,
-            as doing so may compromise your device's security, expose it to malware or malicious software, and
-            affect the proper functioning of the Application.
-        </p>
+            <p>
+                قد يقوم التطبيق بتخزين ومعالجة المعلومات الشخصية التي تقدمها من أجل تقديم خدماته. أنت مسؤول عن الحفاظ على أمان جهازك والوصول إلى التطبيق.
+            </p>
 
-        <p>
-            Certain features of the Application require an active internet connection, which may be provided
-            through Wi-Fi or your mobile network. The Service Provider cannot be held responsible if the
-            Application is unavailable or does not function properly due to the lack of an internet connection
-            or insufficient mobile data.
-        </p>
+            <p>
+                ينصح مزود الخدمة بشدة <strong>بعدم</strong> كسر حماية الجهاز (Jailbreak) أو عمل جيلبريك/روت (Root) لجهازك، حيث قد يؤدي ذلك إلى تعريض أمان جهازك للبرمجيات الخبيثة والتهديدات، وقد يؤثر على الأداء الصحيح للتطبيق.
+            </p>
 
-        <p>
-            If you use the Application over a mobile network, your mobile network provider's terms and charges
-            will continue to apply. You are solely responsible for any data charges, roaming fees, or other
-            costs incurred while using the Application.
-        </p>
+            <p>
+                تتطلب بعض ميزات التطبيق اتصالاً نشطاً بالإنترنت (مثل البث الصوتي لتلاوات القرآن الكريم). لا يتحمل مزود الخدمة المسؤولية في حال عدم توفر التطبيق أو عدم عمله بالشكل المطلوب بسبب عدم توفر اتصال بالإنترنت أو عدم كفاية بيانات الهاتف.
+            </p>
 
-        <p>
-            It is also your responsibility to ensure that your device remains sufficiently charged. The Service
-            Provider cannot be held responsible if you are unable to use the Application because your device has
-            run out of battery.
-        </p>
+            <p>
+                إذا كنت تستخدم التطبيق عبر شبكة الهاتف المحمول، فستظل شروط ورسوم مزود شبكة المحمول الخاصة بك سارية. أنت المسؤول المباشر عن أي رسوم بيانات أو رسوم تجوال أو أي تكاليف أخرى أثناء استخدام التطبيق.
+            </p>
 
-        <p>
-            While every effort is made to keep the Application accurate, reliable, and up to date, the Service
-            Provider relies on third-party services and information. Therefore, the Service Provider accepts no
-            liability for any direct or indirect loss resulting from reliance on the Application or its content.
-        </p>
+            <p>
+                تقع على عاتقك أيضاً مسؤولية التأكد من بقاء جهازك مشحوناً بدرجة كافية. لا يتحمل مزود الخدمة المسؤولية إذا تعذر عليك استخدام التطبيق بسبب نفاد بطارية جهازك.
+            </p>
 
-        <p>
-            The Service Provider may release updates to improve functionality, security, or compatibility.
-            Continued use of the Application may require installing these updates. The Service Provider does not
-            guarantee that the Application will always be compatible with every operating system version or
-            device.
-        </p>
+            <p>
+                على الرغم من بذل كل الجهود للحفاظ على دقة التطبيق وموثوقيته وتحديثه، يستعين مزود الخدمة بشبكات ومصادر خارجية لبعض الميزات. لذلك، لا يقبل مزود الخدمة أي مسؤولية عن أي خسارة مباشرة أو غير مباشرة ناتجة عن الاعتماد الكامل على التطبيق أو محتواه.
+            </p>
 
-        <p>
-            The Service Provider also reserves the right to discontinue the Application or terminate access to
-            it at any time without prior notice. Upon termination, all rights granted to you under these Terms
-            will immediately cease, and you must stop using the Application and remove it from your device if
-            applicable.
-        </p>
+            <p>
+                قد يصدر مزود الخدمة تحديثات لتحسين الأداء أو الأمان أو التوافق. قد يتطلب الاستمرار في استخدام التطبيق تثبيت هذه التحديثات. لا يضمن مزود الخدمة أن التطبيق سيكون متوافقاً دائماً مع كل إصدار لنظام التشغيل أو مع جميع الأجهزة.
+            </p>
 
-        <h2>Privacy Policy</h2>
+            <p>
+                يحتفظ مزود الخدمة أيضاً بالحق في إيقاف التطبيق أو إنهاء الوصول إليه في أي وقت دون إشعار مسبق. عند الإنهاء، تنتهي فوراً جميع الحقوق الممنوحة لك بموجب هذه الشروط، ويجب عليك التوقف عن استخدام التطبيق وإزالته من جهازك.
+            </p>
 
-        <p>
-            Your privacy is important to us. Please review our Privacy Policy to understand how your personal
-            information is collected, used, and protected.
-        </p>
+            <h2>سياسة الخصوصية</h2>
 
-        <!-- Replace the URL below with your actual Privacy Policy page -->
-        <p>
-            <a href="privacy-policy.html">View Privacy Policy</a>
-        </p>
+            <p>
+                خصوصيتك مهمة بالنسبة لنا. يرجى مراجعة سياسة الخصوصية الخاصة بنا لفهم كيفية جمع معلوماتك الشخصية واستخدامها وحمايتها.
+            </p>
 
-        <h2>Changes to These Terms and Conditions</h2>
+            <p>
+                <a href="privacy-policy.html">عرض سياسة الخصوصية</a>
+            </p>
 
-        <p>
-            The Service Provider may update these Terms and Conditions from time to time. Any changes will be
-            published on this page. Continued use of the Application after changes become effective constitutes
-            your acceptance of the updated Terms and Conditions.
-        </p>
+            <h2>التغييرات على هذه الشروط والأحكام</h2>
 
-        <p class="effective-date">
-            Effective Date: April 19, 2026
-        </p>
+            <p>
+                قد يقوم مزود الخدمة بتحديث هذه الشروط والأحكام من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة. يعتبر استمرارك في استخدام التطبيق بعد سريان التغييرات قبولاً منك للشروط والأحكام المعدلة.
+            </p>
 
-        <h2>Contact Us</h2>
+            <p class="effective-date">
+                تاريخ السريان: 19 أبريل 2026
+            </p>
 
-        <p>
-            If you have any questions or suggestions regarding these Terms and Conditions, please contact the
-            Service Provider at
-            <a href="mailto:adnzed00@gmail.com">adnzed00@gmail.com</a>.
-        </p>
+            <h2>اتصل بنا</h2>
+
+            <p>
+                إذا كانت لديك أي أسئلة أو اقتراحات بشأن هذه الشروط والأحكام، يرجى التواصل مع مزود الخدمة عبر البريد الإلكتروني:
+                <a href="mailto:adnzed00@gmail.com">adnzed00@gmail.com</a>.
+            </p>
+        </div>
+
+        <!-- English Version -->
+        <div id="lang-en" class="lang-section" dir="ltr">
+            <h1>Terms &amp; Conditions</h1>
+
+            <p>
+                These Terms and Conditions apply to the <strong>Zad Al-Muslim</strong> mobile application
+                (hereinafter referred to as the "<strong>Application</strong>"), developed by
+                <strong>Adnan Nasr</strong> (hereinafter referred to as the "<strong>Service Provider</strong>"),
+                and provided as a free service.
+            </p>
+
+            <p>
+                By downloading or using the Application, you agree to be bound by these Terms and Conditions.
+                Please read them carefully before using the Application.
+            </p>
+
+            <p>
+                Unauthorized copying, modification, distribution, reverse engineering, or extraction of the
+                Application's source code is strictly prohibited. You may not translate the Application or create
+                derivative works based on it. All trademarks, copyrights, database rights, and other intellectual
+                property rights related to the Application remain the exclusive property of the Service Provider.
+            </p>
+
+            <p>
+                The Service Provider reserves the right to modify the Application or charge for its services at any
+                time. Any applicable charges will always be clearly communicated before they take effect.
+            </p>
+
+            <p>
+                The Application may store and process personal information that you provide in order to deliver its
+                services. You are responsible for maintaining the security of your device and access to the
+                Application.
+            </p>
+
+            <p>
+                The Service Provider strongly <strong>advises</strong> against jailbreaking or rooting your device,
+                as doing so may compromise your device's security, expose it to malware or malicious software, and
+                affect the proper functioning of the Application.
+            </p>
+
+            <p>
+                Certain features of the Application require an active internet connection. The Service Provider cannot be held responsible if the
+                Application is unavailable or does not function properly due to the lack of an internet connection
+                or insufficient mobile data.
+            </p>
+
+            <p>
+                If you use the Application over a mobile network, your mobile network provider's terms and charges
+                will continue to apply. You are solely responsible for any data charges, roaming fees, or other
+                costs incurred while using the Application.
+            </p>
+
+            <p>
+                It is also your responsibility to ensure that your device remains sufficiently charged. The Service
+                Provider cannot be held responsible if you are unable to use the Application because your device has
+                run out of battery.
+            </p>
+
+            <p>
+                While every effort is made to keep the Application accurate, reliable, and up to date, the Service
+                Provider relies on third-party services and information. Therefore, the Service Provider accepts no
+                liability for any direct or indirect loss resulting from reliance on the Application or its content.
+            </p>
+
+            <p>
+                The Service Provider may release updates to improve functionality, security, or compatibility.
+                Continued use of the Application may require installing these updates. The Service Provider does not
+                guarantee that the Application will always be compatible with every operating system version or
+                device.
+            </p>
+
+            <p>
+                The Service Provider also reserves the right to discontinue the Application or terminate access to
+                it at any time without prior notice. Upon termination, all rights granted to you under these Terms
+                will immediately cease, and you must stop using the Application and remove it from your device if
+                applicable.
+            </p>
+
+            <h2>Privacy Policy</h2>
+
+            <p>
+                Your privacy is important to us. Please review our Privacy Policy to understand how your personal
+                information is collected, used, and protected.
+            </p>
+
+            <p>
+                <a href="privacy-policy.html">View Privacy Policy</a>
+            </p>
+
+            <h2>Changes to These Terms and Conditions</h2>
+
+            <p>
+                The Service Provider may update these Terms and Conditions from time to time. Any changes will be
+                published on this page. Continued use of the Application after changes become effective constitutes
+                your acceptance of the updated Terms and Conditions.
+            </p>
+
+            <p class="effective-date">
+                Effective Date: April 19, 2026
+            </p>
+
+            <h2>Contact Us</h2>
+
+            <p>
+                If you have any questions or suggestions regarding these Terms and Conditions, please contact the
+                Service Provider at
+                <a href="mailto:adnzed00@gmail.com">adnzed00@gmail.com</a>.
+            </p>
+        </div>
 
     </div>
+
+    <script>
+        function switchLanguage(lang) {
+            document.getElementById('lang-ar').style.display = 'none';
+            document.getElementById('lang-en').style.display = 'none';
+            
+            if (lang === 'ar') {
+                document.getElementById('lang-ar').style.display = 'block';
+            } else {
+                document.getElementById('lang-en').style.display = 'block';
+            }
+        }
+
+        window.onload = function() {
+            var userLang = navigator.language || navigator.userLanguage; 
+            if (userLang.startsWith('ar')) {
+                switchLanguage('ar');
+            } else {
+                switchLanguage('en');
+            }
+        }
+    </script>
 </body>
 </html>
-```
