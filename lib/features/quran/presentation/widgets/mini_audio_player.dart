@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,35 +7,31 @@ import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/full_audio_player_page.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/quran_menu.dart';
+import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
 
 class MiniAudioPlayer extends ConsumerWidget {
   const MiniAudioPlayer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    /*
-    جميع التعليقات في الملف هذا تحل مشكلة ظهور مشغل القرآن المرتل في صفحة القرآن الكريم
-    */
     final currentAyah = ref.watch(currentPlayingAyahProvider);
-    // final currentMoratal = ref.watch(currentMoratalSurahProvider);
+    final autoScrollWithAudio = ref
+        .watch(quranSettingsProvider)
+        .autoScrollWithAudio;
     final audioPlayer = ref.watch(audioPlayerProvider);
 
-    // التحقق من وجود أي شيء قيد التشغيل
-    if (currentAyah == null /*currentMoratal == null*/ ) {
+    if (currentAyah == null) {
       return const SizedBox.shrink();
     }
 
-    final String title = /*currentAyah != null*/
-        /*?*/ "سورة ${currentAyah.surahName}";
-    // : "سورة ${currentMoratal!.surahName}";
-    final String subtitle = /*currentAyah != null
-        ?*/
+    final String title = "سورة ${currentAyah.surahName}";
+
+    final String subtitle =
         "الآية ${currentAyah.ayahNumber} - ${ref.watch(selectedQariProvider).name}";
-    // : currentMoratal!.qariName;
 
     return GestureDetector(
       onTap: () {
-        // فتح المشغل الكامل كـ BottomSheet بحجم كامل الشاشة
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -59,7 +56,6 @@ class MiniAudioPlayer extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            // شريط التقدم الخطي البسيط في الأعلى
             StreamBuilder<PositionData>(
               stream: ref.watch(audioPositionStreamProvider),
               builder: (context, snapshot) {
@@ -93,7 +89,6 @@ class MiniAudioPlayer extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 12.w),
                 child: Row(
                   children: [
-                    // صورة تعبيرية (Iconography)
                     Container(
                       height: 40.h,
                       width: 40.w,
@@ -108,7 +103,6 @@ class MiniAudioPlayer extends ConsumerWidget {
                     ),
                     SizedBox(width: 12.w),
 
-                    // بيانات الآية (Surah & Ayah)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +133,76 @@ class MiniAudioPlayer extends ConsumerWidget {
                       ),
                     ),
 
-                    // زر التشغيل والإيقاف المصغر
+                    IconButton(
+                      tooltip: autoScrollWithAudio
+                          ? "الغاء التمرير التلقائي"
+                          : "تفعيل التمرير التلقائي",
+                      onPressed: () {
+                        final notifier = ref.read(
+                          quranSettingsProvider.notifier,
+                        );
+                        notifier.toggleAutoScrollWithAudio();
+
+                        BotToast.cleanAll();
+                        BotToast.showCustomNotification(
+                          duration: const Duration(seconds: 4),
+                          align: Alignment.topCenter,
+                          toastBuilder: (cancelFunc) {
+                            return Card(
+                              margin: EdgeInsets.all(16.w),
+
+                              color: autoScrollWithAudio
+                                  ? const Color(0xFF424242)
+                                  : const Color(0xFF1B8A5A),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14.r),
+                              ),
+                              elevation: 4,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                  vertical: 14.h,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      autoScrollWithAudio
+                                          ? Icons.info_outline_rounded
+                                          : Icons.check_circle_outline_rounded,
+                                      color: Colors.white,
+                                      size: 22.r,
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Expanded(
+                                      child: Text(
+                                        autoScrollWithAudio
+                                            ? "تم إلغاء تفعيل التمرير التلقائي للآيات"
+                                            : "تم تفعيل التمرير التلقائي للآيات",
+                                        style: TextStyle(
+                                          fontFamily: 'Cairo',
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          fontSize: 13.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+
+                      icon: Icon(
+                        Icons.auto_awesome_motion_rounded,
+                        size: 24.sp,
+                        color: autoScrollWithAudio
+                            ? context.color.primary
+                            : null,
+                      ),
+                    ),
+
                     StreamBuilder<PlayerState>(
                       stream: audioPlayer.playerStateStream,
                       builder: (context, snapshot) {
@@ -147,7 +210,6 @@ class MiniAudioPlayer extends ConsumerWidget {
                         final processingState = playerState?.processingState;
                         final playing = playerState?.playing;
 
-                        // إظهار تحميل إذا كان قيد المعالجة
                         if (processingState == ProcessingState.loading ||
                             processingState == ProcessingState.buffering) {
                           return Container(
@@ -161,9 +223,9 @@ class MiniAudioPlayer extends ConsumerWidget {
                           );
                         }
 
-                        // إظهار زر الإيقاف إذا كان يعمل
                         if (playing != true) {
                           return IconButton(
+                            tooltip: "تشغيل",
                             icon: Icon(Icons.play_arrow_rounded, size: 28.sp),
                             color: context.color.primary,
                             onPressed: audioPlayer.play,
@@ -171,12 +233,12 @@ class MiniAudioPlayer extends ConsumerWidget {
                         } else if (processingState !=
                             ProcessingState.completed) {
                           return IconButton(
+                            tooltip: "إيقاف",
                             icon: Icon(Icons.pause_rounded, size: 28.sp),
                             color: context.color.primary,
                             onPressed: audioPlayer.pause,
                           );
                         } else {
-                          // إظهار زر التخطي أو إعادة التشغيل عند الانتهاء
                           return IconButton(
                             icon: Icon(Icons.replay_rounded, size: 24.sp),
                             color: context.color.primary,
@@ -186,11 +248,11 @@ class MiniAudioPlayer extends ConsumerWidget {
                       },
                     ),
 
-                    // زر الإغلاق
                     IconButton(
+                      tooltip: "إغلاق",
                       icon: Icon(Icons.close_rounded, size: 24.sp),
                       color: context.color.onSurface.withValues(alpha: .5),
-                      padding: EdgeInsets.zero,
+                      // padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () async {
                         await audioPlayer.stop();
