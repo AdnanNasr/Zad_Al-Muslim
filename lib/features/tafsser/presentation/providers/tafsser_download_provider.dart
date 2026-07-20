@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book.dart';
 
 class TafseerDownloadState {
   final double progress;
@@ -47,7 +47,7 @@ class TafseerDownloadNotifier
     state = newState;
 
     // Invalidate the books provider to refresh download status
-    ref.invalidate(tafsserBooksProvider);
+    ref.invalidate(tafsserBookProvider);
   }
 }
 

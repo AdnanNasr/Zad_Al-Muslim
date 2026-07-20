@@ -19,27 +19,32 @@ class TafsserRepositoryImpl implements TafsserRepository {
     TafsserBookEntity(
       name: "تفسير الجلالين",
       id: "ar.jalalayn",
-      description: "أشهر التفاسير المختصرة؛ يقدم شرحاً وجيزاً للآيات بأسلوب يسهل فهمه للمبتدئين.",
+      description:
+          "أشهر التفاسير المختصرة؛ يقدم شرحاً وجيزاً للآيات بأسلوب يسهل فهمه للمبتدئين.",
     ),
     TafsserBookEntity(
       name: "تفسير القرطبي",
       id: "ar.qurtubi",
-      description: "مرجع جامع لأحكام القرآن؛ يركز على استنباط الأحكام الفقهية والمسائل الشرعية.",
+      description:
+          "مرجع جامع لأحكام القرآن؛ يركز على استنباط الأحكام الفقهية والمسائل الشرعية.",
     ),
     TafsserBookEntity(
       name: "تفسير البغوي",
       id: "ar.baghawi",
-      description: "يُعرف بـ 'تفسير أهل السنة'؛ يعتمد على النقل الصحيح عن السلف والصحابة.",
+      description:
+          "يُعرف بـ 'تفسير أهل السنة'؛ يعتمد على النقل الصحيح عن السلف والصحابة.",
     ),
     TafsserBookEntity(
       name: "التفسير الميسر",
       id: "ar.muyassar",
-      description: "تفسير معاصر أعدته نخبة من العلماء؛ يتميز بعبارات سهلة ومنقحة ومناسبة جداً.",
+      description:
+          "تفسير معاصر أعدته نخبة من العلماء؛ يتميز بعبارات سهلة ومنقحة ومناسبة جداً.",
     ),
     TafsserBookEntity(
       name: "التفسير الوسيط",
       id: "ar.waseet",
-      description: "تفسير يجمع بين التحليل اللفظي والبيان البلاغي؛ يتميز بأسلوبه الأدبي الرصين.",
+      description:
+          "تفسير يجمع بين التحليل اللفظي والبيان البلاغي؛ يتميز بأسلوبه الأدبي الرصين.",
     ),
   ];
 
@@ -71,12 +76,14 @@ class TafsserRepositoryImpl implements TafsserRepository {
       List<TafsserBookEntity> books = [];
       for (var book in _predefinedTafseerList) {
         final isDownloaded = await localDataSource.isTafsserDownloaded(book.id);
-        books.add(TafsserBookEntity(
-          id: book.id,
-          name: book.name,
-          description: book.description,
-          isDownloaded: isDownloaded,
-        ));
+        books.add(
+          TafsserBookEntity(
+            id: book.id,
+            name: book.name,
+            description: book.description,
+            isDownloaded: isDownloaded,
+          ),
+        );
       }
       return Right(books);
     } catch (e) {
@@ -85,7 +92,10 @@ class TafsserRepositoryImpl implements TafsserRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> downloadTafsser(String tafsserId, String url) async {
+  Future<Either<Failure, Unit>> downloadTafsser(
+    String tafsserId,
+    String url,
+  ) async {
     try {
       final jsonMap = await remoteDataSource.downloadTafsserJson(
         url,

@@ -191,6 +191,7 @@ extension PrayerTimeEntityByIndex on IsarCollection<PrayerTimeEntity> {
     List<int> deterministicIdValues,
   ) {
     final values = deterministicIdValues.map((e) => [e]).toList();
+    // ignore: experimental_member_use
     return getAllByIndex(r'deterministicId', values);
   }
 
