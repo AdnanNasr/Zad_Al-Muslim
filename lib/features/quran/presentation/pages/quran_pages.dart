@@ -28,7 +28,7 @@ import 'package:zad_al_muslim/features/quran/presentation/widgets/qurah_page_bot
 import 'package:zad_al_muslim/features/quran/presentation/widgets/quran_page_app_bar.dart';
 import 'package:zad_al_muslim/core/constants/surah_names.dart';
 import 'package:flutter/services.dart';
-import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/selected_book.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
 import 'package:share_plus/share_plus.dart';
@@ -881,17 +881,7 @@ class _QuranPagesState extends ConsumerState<QuranPages> {
             icon: Icons.menu_book_rounded,
             label: 'تفسير',
             onTap: () {
-              final books = ref.read(tafsserBooksProvider).value;
-              String defaultBookId = 'ar.jalalayn';
-
-              if (books != null && books.isNotEmpty) {
-                final defaultBook = books.firstWhere(
-                  (b) => b.isDownloaded,
-                  orElse: () => books.first,
-                );
-                defaultBookId = defaultBook.id;
-              }
-
+              final defaultBookId = ref.read(selectedBookProvider).id;
               showTafsserModalBottom(
                 context,
                 ref,

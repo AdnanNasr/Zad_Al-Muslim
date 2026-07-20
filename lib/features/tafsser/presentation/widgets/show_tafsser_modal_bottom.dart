@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/selected_book.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_provider.dart';
 
 Future<dynamic> showTafsserModalBottom(
@@ -33,8 +35,8 @@ Future<dynamic> showTafsserModalBottom(
     builder: (context) {
       return Consumer(
         builder: (context, ref, child) {
-          final selectedBook = ref.watch(selectedTafsserBookProvider);
-          final booksAsync = ref.watch(tafsserBooksProvider);
+          final selectedBook = ref.watch(selectedBookProvider);
+          final booksAsync = ref.watch(tafsserBookProvider);
 
           return Container(
             decoration: BoxDecoration(
@@ -95,17 +97,32 @@ Future<dynamic> showTafsserModalBottom(
                                         key: ValueKey(
                                           booksAsync.value?.length ?? 0,
                                         ),
+                                        style: MenuStyle(
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                                isDarkMode
+                                                    ? const Color(0xFF2C2C2C)
+                                                    : Colors.white,
+                                              ),
+                                          shape: WidgetStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(14.r),
+                                            ),
+                                          ),
+                                          elevation: WidgetStateProperty.all(4),
+                                        ),
                                         builder: (context, controller, child) {
                                           return OutlinedButton.icon(
                                             onPressed: () => controller.isOpen
                                                 ? controller.close()
                                                 : controller.open(),
                                             label: Text(
-                                              selectedBook?.name ??
-                                                  "اختار التفسير",
+                                              selectedBook.name,
                                               style: TextStyle(
                                                 fontSize: 13.sp,
                                                 fontFamily: 'Cairo',
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                             icon: const Icon(
@@ -119,34 +136,118 @@ Future<dynamic> showTafsserModalBottom(
                                           );
                                         },
                                         menuChildren: booksAsync.when(
-                                          data: (books) => books
-                                              .where(
-                                                (book) => book.isDownloaded,
-                                              )
-                                              .map(
-                                                (book) => MenuItemButton(
-                                                  onPressed: () =>
-                                                      ref
-                                                              .read(
-                                                                selectedTafsserBookProvider
-                                                                    .notifier,
-                                                              )
-                                                              .state =
-                                                          book,
-                                                  child: Text(
-                                                    book.name,
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Cairo',
-                                                    ),
+                                          data: (booksOrFailure) => booksOrFailure.fold(
+                                            (failure) => [
+                                              Padding(
+                                                padding: EdgeInsets.all(12.r),
+                                                child: Text(
+                                                  failure.message,
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Cairo',
+                                                    color: Colors.red,
                                                   ),
                                                 ),
-                                              )
-                                              .toList(),
+                                              ),
+                                            ],
+                                            (books) {
+                                              //  تصفية الكتب المحملة فقط
+                                              final downloadedBooks = books
+                                                  .where(
+                                                    (book) => book.isDownloaded,
+                                                  )
+                                                  .toList();
+
+                                              return [
+                                                //  عرض الكتب المحملة مع فواصل بينها
+                                                for (final (index, book)
+                                                    in downloadedBooks
+                                                        .indexed) ...[
+                                                  MenuItemButton(
+                                                    onPressed: () => ref
+                                                        .read(
+                                                          selectedBookProvider
+                                                              .notifier,
+                                                        )
+                                                        .updateSelectedBook(
+                                                          book,
+                                                        ),
+                                                    child: Text(
+                                                      book.name,
+                                                      style: TextStyle(
+                                                        fontFamily: 'Cairo',
+                                                        fontSize: 14.sp,
+                                                        color:
+                                                            selectedBook.id ==
+                                                                book.id
+                                                            ? primaryColor
+                                                            : null,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  //  فاصل فقط إذا لم يكن هذا هو الكتاب الأخير في القائمة
+                                                  if (index <
+                                                      downloadedBooks.length -
+                                                          1)
+                                                    const Divider(
+                                                      height: 1,
+                                                      thickness: 0.5,
+                                                    ),
+                                                ],
+
+                                                //  خيار التحميل إذا كان عدد الكتب أقل من 5
+                                                if (downloadedBooks.length <
+                                                    5) ...[
+                                                  // خط فاصل عريض قليلاً ليفصل قسم الكتب عن زر الإجراء
+                                                  const Divider(
+                                                    height: 8,
+                                                    thickness: 1,
+                                                  ),
+                                                  MenuItemButton(
+                                                    onPressed: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pushNamed(
+                                                        Routes.tafseerPage,
+                                                      );
+                                                    },
+                                                    leadingIcon: Icon(
+                                                      Icons
+                                                          .cloud_download_outlined,
+                                                      size: 18.w,
+                                                      color: primaryColor,
+                                                    ),
+                                                    child: Text(
+                                                      "تحميل تفسير",
+                                                      style: TextStyle(
+                                                        fontFamily: 'Cairo',
+                                                        fontSize: 13.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: primaryColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ];
+                                            },
+                                          ),
                                           loading: () => [
-                                            const LinearProgressIndicator(),
+                                            SizedBox(
+                                              width: 150.w,
+                                              child:
+                                                  const LinearProgressIndicator(),
+                                            ),
                                           ],
                                           error: (err, stack) => [
-                                            const Text("خطأ في التحميل"),
+                                            Padding(
+                                              padding: EdgeInsets.all(12.r),
+                                              child: const Text(
+                                                "خطأ في التحميل",
+                                                style: TextStyle(
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -170,9 +271,9 @@ Future<dynamic> showTafsserModalBottom(
                           child: Consumer(
                             builder: (context, ref, child) {
                               final currentBook = ref.watch(
-                                selectedTafsserBookProvider,
+                                selectedBookProvider,
                               );
-                              final finalBookId = currentBook?.id ?? bookId;
+                              final finalBookId = currentBook.id;
 
                               final tafsserAsync = ref.watch(
                                 ayahTafsserProvider((

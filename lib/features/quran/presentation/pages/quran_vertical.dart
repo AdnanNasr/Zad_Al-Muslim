@@ -23,7 +23,7 @@ import 'package:zad_al_muslim/features/quran/presentation/widgets/index_surah_me
 import 'package:zad_al_muslim/features/quran/presentation/widgets/mini_audio_player.dart';
 import 'package:zad_al_muslim/features/quran/presentation/widgets/qurah_page_bottom_navigation_bar.dart';
 import 'package:zad_al_muslim/features/quran/presentation/widgets/quran_page_app_bar.dart';
-import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/selected_book.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/show_tafsser_modal_bottom.dart';
 import 'package:qcf_quran/qcf_quran.dart' hide ScreenType;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -752,16 +752,7 @@ class _AyahActionMenu extends ConsumerWidget {
             icon: Icons.menu_book_rounded,
             label: 'تفسير',
             onTap: () {
-              final books = ref.read(tafsserBooksProvider).value;
-              String bookId = 'ar.jalalayn';
-              if (books != null && books.isNotEmpty) {
-                bookId = books
-                    .firstWhere(
-                      (b) => b.isDownloaded,
-                      orElse: () => books.first,
-                    )
-                    .id;
-              }
+              final bookId = ref.read(selectedBookProvider).id;
               showTafsserModalBottom(
                 context,
                 ref,

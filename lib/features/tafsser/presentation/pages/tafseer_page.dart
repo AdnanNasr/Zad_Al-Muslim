@@ -7,7 +7,7 @@ import 'package:zad_al_muslim/core/extensions/theme_ext.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/features/tafsser/domain/entities/tafsser_entities.dart';
-import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book_provider.dart';
+import 'package:zad_al_muslim/features/tafsser/presentation/providers/tafsser_book.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/tafseer_dialog.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/widgets/tafsser_buttons.dart';
 import 'package:zad_al_muslim/features/tafsser/domain/usecases/tafseer_utils.dart';
@@ -24,7 +24,7 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
   @override
   Widget build(BuildContext context) {
     final themeMode = context.themeMode(ref);
-    final booksAsync = ref.watch(tafsserBooksProvider);
+    final booksAsync = ref.watch(tafsserBookProvider);
 
     return Scaffold(
       backgroundColor: themeMode == ThemeMode.light
@@ -32,12 +32,14 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
           : context.color.scrim,
       appBar: const CustomAppBar(title: "كتب التفسير", center: false),
       body: booksAsync.when(
-        data: (books) {
-          return ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 8.h),
-            itemCount: books.length,
-            itemBuilder: (context, index) {
-              final book = books[index];
+        data: (booksEither) {
+          return booksEither.fold(
+            (failure) => Center(child: Text(failure.message)),
+            (books) => ListView.builder(
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                final book = books[index];
 
               return TafsserItem(
                 info: book,
@@ -47,10 +49,14 @@ class _TafseerPageState extends ConsumerState<TafseerPage> {
                 },
                 onTap: () => showDialog(
                   context: context,
-                  builder: (context) => TafseerDialog(tafsserInfo: book),
+                  builder: (context) => TafseerDialog(
+                    tafsserInfo: book,
+                    isDownloaded: book.isDownloaded,
+                  ),
                 ),
               );
             },
+          ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
