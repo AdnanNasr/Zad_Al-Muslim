@@ -26,6 +26,8 @@ extension LocationMessageExtension on LocationMessage {
   }
 }
 
+enum HeaderDateAccent { primary, secondary }
+
 // Hadith book names
 enum SahihBukhariBook {
   revelation(1, "الوحي"),

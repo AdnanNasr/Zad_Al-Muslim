@@ -7,7 +7,6 @@ import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/full_audio_player_page.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/quran_menu.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
 
 class MiniAudioPlayer extends ConsumerWidget {

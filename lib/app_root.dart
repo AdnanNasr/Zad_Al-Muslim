@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
 import 'package:zad_al_muslim/core/common/pages/notifications_page.dart';
+import 'package:zad_al_muslim/core/themes/app_theme.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_page.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/pages/hadith_page.dart';
@@ -117,22 +118,8 @@ class _AppRootState extends ConsumerState<AppRoot> {
 
       themeMode: themeMode,
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E2E2E),
-          brightness: Brightness.light,
-        ).copyWith(primary: userColor),
-      ),
-
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E2E2E),
-          brightness: Brightness.dark,
-        ).copyWith(primary: userColor, onPrimary: Colors.white),
-      ),
-
+      theme: AppTheme.light(userColor),
+      darkTheme: AppTheme.dark(userColor),
       initialRoute: widget.hasSeenOnboarding
           ? "/custom_navigation_bar"
           : "/onboarding",
