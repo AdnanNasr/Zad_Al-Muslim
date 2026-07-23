@@ -648,6 +648,7 @@ class _AyahCard extends ConsumerWidget {
                       );
                   },
                   icon: Icon(
+                    color: Colors.blue,
                     isReadingPositionSaved ? Icons.save : Icons.save_outlined,
                     size: 18.sp,
                   ),
