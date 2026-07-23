@@ -222,20 +222,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                                 onPressed: () {
                                   final surahNum = search['surahNumber'] as int;
                                   final verseNum = search['ayahNumber'] as int;
-                                  Navigator.pop(context);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => QuranPages(
-                                        pageNumber: qcf.getPageNumber(
-                                          surahNum,
-                                          verseNum,
-                                        ),
-                                        highlightSurah: surahNum,
-                                        highlightVerse: verseNum,
-                                      ),
-                                    ),
-                                  );
+                                  _replaceWithAyah(surahNum, verseNum);
                                 },
                               );
                             }).toList(),
@@ -313,17 +300,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
           }
         });
 
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => QuranPages(
-              pageNumber: qcf.getPageNumber(surahNumber, verseNumber),
-              highlightSurah: surahNumber,
-              highlightVerse: verseNumber,
-            ),
-          ),
-        );
+        _replaceWithAyah(surahNumber, verseNumber);
       },
       borderRadius: BorderRadius.circular(16.r),
       child: Container(
@@ -383,6 +360,22 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _replaceWithAyah(int surahNumber, int verseNumber) async {
+    final navigator = Navigator.of(context);
+    await navigator.maybePop();
+    if (!navigator.mounted) return;
+
+    await navigator.pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => QuranPages(
+          pageNumber: qcf.getPageNumber(surahNumber, verseNumber),
+          highlightSurah: surahNumber,
+          highlightVerse: verseNumber,
         ),
       ),
     );

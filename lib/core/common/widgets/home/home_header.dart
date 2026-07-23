@@ -12,6 +12,7 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final now = ref.watch(homeClockProvider).value ?? DateTime.now();
 
     return SafeArea(
@@ -20,6 +21,8 @@ class HomeHeader extends ConsumerWidget {
         padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 6.h),
         child: Material(
           color: colorScheme.surface,
+          elevation: isDark ? 0 : 3,
+          shadowColor: Colors.black.withValues(alpha: .18),
           borderRadius: BorderRadius.circular(26.r),
           clipBehavior: Clip.antiAlias,
           child: Ink(
@@ -27,7 +30,9 @@ class HomeHeader extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(26.r),
               border: Border.all(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.45)
+                    : colorScheme.outline.withValues(alpha: 0.34),
               ),
             ),
             child: Column(

@@ -24,6 +24,7 @@ class ServiceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Semantics(
       button: true,
@@ -32,6 +33,8 @@ class ServiceTile extends StatelessWidget {
         width: width,
         child: Material(
           color: scheme.surface,
+          elevation: isDark ? 0 : 2.5,
+          shadowColor: Colors.black.withValues(alpha: .16),
           borderRadius: BorderRadius.circular(18.r),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -40,7 +43,11 @@ class ServiceTile extends StatelessWidget {
               padding: EdgeInsets.all(14.r),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18.r),
-                border: Border.all(color: accentColor.withValues(alpha: 0.16)),
+                border: Border.all(
+                  color: isDark
+                      ? accentColor.withValues(alpha: 0.16)
+                      : scheme.outline.withValues(alpha: 0.32),
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

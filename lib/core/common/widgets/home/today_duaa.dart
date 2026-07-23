@@ -29,18 +29,23 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
   Widget build(BuildContext context) {
     final duaaAsync = ref.watch(dailyDuaaProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
       child: Material(
         color: colorScheme.surface,
+        elevation: isDark ? 0 : 3,
+        shadowColor: Colors.black.withValues(alpha: .18),
         borderRadius: BorderRadius.circular(24.r),
         clipBehavior: Clip.antiAlias,
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24.r),
             border: Border.all(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+              color: isDark
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.45)
+                  : colorScheme.outline.withValues(alpha: 0.34),
             ),
           ),
           child: duaaAsync.when(

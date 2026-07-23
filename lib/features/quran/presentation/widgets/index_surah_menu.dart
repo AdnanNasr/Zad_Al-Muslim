@@ -204,7 +204,7 @@ class _SurahList extends StatelessWidget {
               englishName: surah.englishName,
               primaryColor: color,
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
@@ -271,7 +271,7 @@ class _JuzList extends StatelessWidget {
               pageNumber: surahNumber,
               primaryColor: primaryColor,
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => QuranPages(

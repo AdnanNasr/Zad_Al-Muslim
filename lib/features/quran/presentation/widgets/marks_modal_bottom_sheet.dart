@@ -241,12 +241,13 @@ class _MarkListView extends ConsumerWidget {
                 }
               },
             ),
-            onTap: () {
-              Navigator.pop(context); // Close the bottom sheet
-              Navigator.pushReplacement(
-                context,
+            onTap: () async {
+              final navigator = Navigator.of(context);
+              await navigator.maybePop();
+              if (!navigator.mounted) return;
+              await navigator.pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => QuranPages(
+                  builder: (_) => QuranPages(
                     pageNumber: mark.pageNumber,
                     highlightSurah: mark.surahNumber,
                     highlightVerse: mark.ayahNumber,

@@ -26,6 +26,7 @@ class _ReadingProgressCardState extends ConsumerState<ReadingProgressCard> {
   Widget build(BuildContext context) {
     final mark = ref.watch(latestReadingMarkProvider);
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentPage = mark?.pageNumber.clamp(
       1,
       ReadingProgressCard.totalPages,
@@ -42,6 +43,8 @@ class _ReadingProgressCardState extends ConsumerState<ReadingProgressCard> {
         curve: Curves.easeOutCubic,
         child: Material(
           color: scheme.surface,
+          elevation: isDark ? 0 : 3,
+          shadowColor: Colors.black.withValues(alpha: .18),
           borderRadius: BorderRadius.circular(22.r),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -58,7 +61,9 @@ class _ReadingProgressCardState extends ConsumerState<ReadingProgressCard> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22.r),
                 border: Border.all(
-                  color: scheme.primary.withValues(alpha: 0.18),
+                  color: isDark
+                      ? scheme.primary.withValues(alpha: 0.18)
+                      : scheme.outline.withValues(alpha: 0.34),
                 ),
                 gradient: LinearGradient(
                   begin: AlignmentDirectional.topStart,
@@ -146,7 +151,9 @@ class _Header extends StatelessWidget {
               Text(
                 mark == null
                     ? 'رحلتك مع كتاب الله تبدأ من هنا'
-                    : 'سورة ${SurahNames.getFormattedName(surahNumber)} • الصفحة ${mark!.pageNumber}',
+                    : 'سورة ${SurahNames.getFormattedName(surahNumber)}'
+                          '${mark!.ayahNumber == null ? '' : ' • الآية ${mark!.ayahNumber}'}'
+                          ' • الصفحة ${mark!.pageNumber}',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -219,7 +226,9 @@ class _ReadingDetails extends StatelessWidget {
       children: [
         _Detail(
           icon: Icons.bookmark_rounded,
-          text: 'موضعك: الصفحة ${mark.pageNumber}',
+          text: mark.ayahNumber == null
+              ? 'موضعك: الصفحة ${mark.pageNumber}'
+              : 'موضعك: الآية ${mark.ayahNumber} • الصفحة ${mark.pageNumber}',
           color: scheme.primary,
         ),
         _Detail(

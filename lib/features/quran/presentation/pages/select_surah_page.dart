@@ -114,6 +114,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
                 ),
                 child: TabBar(
                   indicatorSize: TabBarIndicatorSize.tab,
+                  splashBorderRadius: BorderRadius.circular(14.r),
                   dividerColor: Colors.transparent,
                   indicator: BoxDecoration(
                     color: context.color.surface,

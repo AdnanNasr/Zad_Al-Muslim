@@ -53,6 +53,7 @@ class _PrayerCardContentState extends State<_PrayerCardContent> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final nextPrayer = widget.nextPrayer;
 
     final accentColor = nextPrayer.isVeryClose
@@ -67,6 +68,8 @@ class _PrayerCardContentState extends State<_PrayerCardContent> {
         curve: Curves.easeOut,
         child: Material(
           color: colorScheme.surface,
+          elevation: isDark ? 0 : 3,
+          shadowColor: Colors.black.withValues(alpha: .18),
           borderRadius: BorderRadius.circular(24.r),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -90,7 +93,9 @@ class _PrayerCardContentState extends State<_PrayerCardContent> {
                 border: Border.all(
                   color: nextPrayer.isVeryClose
                       ? accentColor.withValues(alpha: 0.28)
-                      : colorScheme.outlineVariant.withValues(alpha: 0.48),
+                      : isDark
+                      ? colorScheme.outlineVariant.withValues(alpha: 0.48)
+                      : colorScheme.outline.withValues(alpha: 0.34),
                 ),
               ),
               child: Column(
