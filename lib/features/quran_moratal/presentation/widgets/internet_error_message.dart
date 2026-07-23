@@ -10,10 +10,14 @@ class InternetErrorMessage {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
         ),
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: Theme.of(context).colorScheme.errorContainer,
         content: Row(
           children: [
-            const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
+            Icon(
+              Icons.wifi_off_rounded,
+              color: Theme.of(context).colorScheme.onErrorContainer,
+              size: 18,
+            ),
             SizedBox(width: 8.w),
             Expanded(
               child: Text(
@@ -22,7 +26,7 @@ class InternetErrorMessage {
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.bold,
                   fontSize: 12.sp,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
               ),
             ),

@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:dartz/dartz.dart' show Either;
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/errors/failures.dart';
 import 'package:zad_al_muslim/features/quran/data/models/juzz_model.dart';
@@ -22,6 +20,66 @@ class SelectSurahPage extends ConsumerStatefulWidget {
   ConsumerState<SelectSurahPage> createState() => _SelectSurahPageState();
 }
 
+class _QuranIndexHeader extends StatelessWidget {
+  const _QuranIndexHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+      child: Row(
+        children: [
+          IconButton.filledTonal(
+            tooltip: 'العودة',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_rounded),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            width: 46.r,
+            height: 46.r,
+            decoration: BoxDecoration(
+              color: scheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Icon(
+              Icons.menu_book_rounded,
+              color: scheme.onTertiaryContainer,
+              size: 24.sp,
+            ),
+          ),
+          SizedBox(width: 11.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'فهرس المصحف',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'اختر سورة أو جزءاً لبدء القراءة',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 10.5.sp,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   final ScrollController _surahsScrollController = ScrollController();
   final ScrollController _juzzScrollController = ScrollController();
@@ -36,64 +94,54 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsMetaProvider);
     final juzzData = ref.watch(allJuzzProvider);
-    final ThemeMode themeMode = ref.watch(themeProvider);
-    final bool isDark = themeMode == ThemeMode.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: CustomAppBar(
-          title: "فهرس المصحف",
-          center: true,
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(70.h),
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                color: context.color.primary.withValues(alpha: .08),
-                borderRadius: BorderRadius.circular(25.r),
-              ),
-              child: TabBar(
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.transparent,
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25.r),
-                  color: context.color.onPrimary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.color.primary.withValues(alpha: .3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
+        backgroundColor: context.color.surfaceContainerLowest,
+        body: SafeArea(
+          child: Column(
+            children: [
+              const _QuranIndexHeader(),
+              Container(
+                height: 48.h,
+                margin: EdgeInsets.fromLTRB(14.w, 8.h, 14.w, 4.h),
+                padding: EdgeInsets.all(4.r),
+                decoration: BoxDecoration(
+                  color: context.color.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(18.r),
+                  border: Border.all(color: context.color.outlineVariant),
+                ),
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  indicator: BoxDecoration(
+                    color: context.color.surface,
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                  labelColor: context.color.primary,
+                  unselectedLabelColor: context.color.onSurfaceVariant,
+                  labelStyle: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Cairo',
+                  ),
+                  tabs: const [
+                    Tab(text: 'السور'),
+                    Tab(text: 'الأجزاء'),
                   ],
                 ),
-                labelColor: context.color.primary,
-                unselectedLabelColor: context.color.onPrimary,
-                labelStyle: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Cairo",
-                ),
-                unselectedLabelStyle: TextStyle(
-                  fontFamily: "Cairo",
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                tabs: const [
-                  Tab(text: "السور"),
-                  Tab(text: "الأجزاء"),
-                ],
               ),
-            ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _buildSurahTab(surahsMeta, isDark),
+                    _buildJuzTab(juzzData, surahsMeta, isDark),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-        body: TabBarView(
-          children: [
-            // التبويب الأول: قائمة السور
-            _buildSurahTab(surahsMeta, isDark),
-
-            // التبويب الثاني: قائمة الأجزاء (تم تعديلها لتشبه السور)
-            _buildJuzTab(juzzData, surahsMeta, isDark),
-          ],
         ),
       ),
     );
@@ -113,12 +161,10 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
       ),
       (surahs) => AnimationLimiter(
         child: Padding(
-          padding: EdgeInsets.only(left: 4.w, top: 20.h, bottom: 20.h),
+          padding: EdgeInsets.only(top: 12.h, bottom: 20.h),
           child: Scrollbar(
             controller: _surahsScrollController,
-            thumbVisibility: true,
-            trackVisibility: true,
-            interactive: true,
+            thumbVisibility: false,
             thickness: 5,
             radius: Radius.circular(24.r),
             child: ListView.separated(
@@ -229,17 +275,18 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           (surahsMeta) {
             return AnimationLimiter(
               child: Padding(
-                padding: EdgeInsets.only(left: 8.w, top: 20.h),
+                padding: EdgeInsets.only(top: 12.h),
                 child: Scrollbar(
                   controller: _juzzScrollController,
-                  thumbVisibility: true,
-                  trackVisibility: true,
-                  interactive: true,
+                  thumbVisibility: false,
                   thickness: 5,
                   radius: Radius.circular(24.r),
                   child: ListView.separated(
                     controller: _juzzScrollController,
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 18.h,
+                    ),
                     itemCount: data.length,
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 12.h),
@@ -361,13 +408,11 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
         Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(
-              color: context.color.primary.withValues(alpha: .2),
-            ),
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(color: context.color.outlineVariant),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .03),
+                color: context.color.shadow.withValues(alpha: .05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -376,7 +421,7 @@ class _SelectSurahPageState extends ConsumerState<SelectSurahPage> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(20.r),
               onTap: onTap,
               child: Padding(
                 padding: EdgeInsets.all(12.dg),

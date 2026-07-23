@@ -138,7 +138,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: context.color.surface,
+        color: context.color.surfaceContainerLowest,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
       ),
       height: MediaQuery.of(context).size.height * 0.9,
@@ -150,7 +150,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
             height: 5.h,
             width: 50.w,
             decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: .3),
+              color: context.color.outlineVariant,
               borderRadius: BorderRadius.circular(10.r),
             ),
           ),
@@ -175,12 +175,13 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
             height: 260.w, // صورة مربعة
             width: 260.w,
             decoration: BoxDecoration(
-              color: context.color.primary.withValues(alpha: .05),
+              color: context.color.tertiaryContainer,
               borderRadius: BorderRadius.circular(30.r),
+              border: Border.all(color: context.color.outlineVariant),
             ),
             child: Image.asset(
               "assets/icons/moon.png",
-              color: context.color.primary.withValues(alpha: .4),
+              color: context.color.onTertiaryContainer,
               fit: BoxFit.fitHeight,
             ),
           ),

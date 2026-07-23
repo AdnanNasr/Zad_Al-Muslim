@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
@@ -54,176 +53,253 @@ class _QuranSettingsPageState extends ConsumerState<QuranSettingsPage> {
         )];
 
     return Scaffold(
-      appBar: const CustomAppBar(title: "إعدادات القرآن الكريم", center: false),
-      body: Padding(
-        padding: EdgeInsets.all(context.heightScreen * 0.015),
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SettingsContainer(
-                title: "تخصيص القراءة والشكل",
-                settingsCards: [
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.palette_rounded),
-                    text: "لون خلفية القراءة",
-                    widget: Container(
-                      width: 24.w,
-                      height: 24.w,
-                      decoration: BoxDecoration(
-                        color: selectedColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: context.color.onSurface.withValues(alpha: 0.4),
-                          width: 1.5,
-                        ),
+      backgroundColor: context.color.surfaceContainerLowest,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const _QuranSettingsHeader(),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(context.heightScreen * 0.015),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SettingsContainer(
+                        title: "تخصيص القراءة والشكل",
+                        settingsCards: [
+                          SettingCards(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(9),
+                            ),
+                            icon: const Right(Icons.palette_rounded),
+                            text: "لون خلفية القراءة",
+                            widget: Container(
+                              width: 24.w,
+                              height: 24.w,
+                              decoration: BoxDecoration(
+                                color: selectedColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: context.color.onSurface.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) =>
+                                    const ReadingColorsDialog(),
+                              );
+                            },
+                          ),
+                          SettingCards(
+                            icon: const Right(Icons.swipe_vertical_rounded),
+                            text: "شكل صفحات القرآن الكريم",
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const QuranViewTypeDialog(),
+                              );
+                            },
+                          ),
+                          SettingCards(
+                            icon: const Right(
+                              Icons.screen_lock_rotation_rounded,
+                            ),
+                            text: "بقاء الشاشة مضيئة أثناء القراءة",
+                            toggle: true,
+                            switchValue: settings.keepScreenAwake,
+                            onChanged: (_) {
+                              ref
+                                  .read(quranSettingsProvider.notifier)
+                                  .toggleKeepScreenAwake();
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => const ReadingColorsDialog(),
-                      );
-                    },
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.swipe_vertical_rounded),
-                    text: "شكل صفحات القرآن الكريم",
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const QuranViewTypeDialog(),
-                      );
-                    },
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.screen_lock_rotation_rounded),
-                    text: "بقاء الشاشة مضيئة أثناء القراءة",
-                    toggle: true,
-                    switchValue: settings.keepScreenAwake,
-                    onChanged: (_) {
-                      ref
-                          .read(quranSettingsProvider.notifier)
-                          .toggleKeepScreenAwake();
-                    },
-                  ),
-                ],
-              ),
 
-              SizedBox(height: 16.h),
-              SettingsContainer(
-                title: "الاستماع والتحفيظ",
-                settingsCards: [
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    hero: true,
-                    heroId: "qari_icon",
-                    icon: const Right(Icons.spatial_audio_off),
-                    text: "اختيار صوت القارئ",
-                    subText: currentSelectedQariProvider.name,
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const SelectQariDialog();
-                        },
-                      );
-                    },
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.timer_rounded),
-                    text: "الفاصل الزمني بين الآيات",
-                    subText: settings.ayahDelaySeconds == 0
-                        ? 'بدون توقف'
-                        : '${settings.ayahDelaySeconds} ثوانٍ',
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const AyahDelayDialog(),
-                      );
-                    },
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.auto_awesome_motion_rounded),
-                    text: "التمرير التلقائي مع صوت القارئ",
-                    toggle: true,
-                    switchValue: settings.autoScrollWithAudio,
-                    onChanged: (_) {
-                      ref
-                          .read(quranSettingsProvider.notifier)
-                          .toggleAutoScrollWithAudio();
-                    },
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16.h),
-
-              SettingsContainer(
-                title: "الإعدادات العامة",
-                settingsCards: [
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.library_books_rounded),
-                    text: "تحميل التفاسير",
-                    onTap: () {
-                      Navigator.of(context).pushNamed(Routes.tafseerPage);
-                    },
-                    trallingIcon: Icons.download,
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.notifications_active_rounded),
-                    text: "تنبيهات ورد القراءة اليومي",
-                    subText: settings.isDailyReminderEnabled
-                        ? (settings.dailyReminderTime != null
-                              ? "الوقت: ${settings.dailyReminderTime}"
-                              : "الوقت: بعد الفجر")
-                        : "اضغط هنا لتحديد وقت التذكير",
-                    toggle: true,
-                    switchValue: settings.isDailyReminderEnabled,
-                    onChanged: (_) {
-                      ref
-                          .read(quranSettingsProvider.notifier)
-                          .toggleDailyReminder();
-                    },
-                    onTap: settings.isDailyReminderEnabled
-                        ? () async {
-                            final time = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                              helpText:
-                                  'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
-                            );
-                            if (time != null) {
-                              final formattedTime =
-                                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                      SizedBox(height: 16.h),
+                      SettingsContainer(
+                        title: "الاستماع والتحفيظ",
+                        settingsCards: [
+                          SettingCards(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(9),
+                            ),
+                            hero: true,
+                            heroId: "qari_icon",
+                            icon: const Right(Icons.spatial_audio_off),
+                            text: "اختيار صوت القارئ",
+                            subText: currentSelectedQariProvider.name,
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const SelectQariDialog();
+                                },
+                              );
+                            },
+                          ),
+                          SettingCards(
+                            icon: const Right(Icons.timer_rounded),
+                            text: "الفاصل الزمني بين الآيات",
+                            subText: settings.ayahDelaySeconds == 0
+                                ? 'بدون توقف'
+                                : '${settings.ayahDelaySeconds} ثوانٍ',
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => const AyahDelayDialog(),
+                              );
+                            },
+                          ),
+                          SettingCards(
+                            icon: const Right(
+                              Icons.auto_awesome_motion_rounded,
+                            ),
+                            text: "التمرير التلقائي مع صوت القارئ",
+                            toggle: true,
+                            switchValue: settings.autoScrollWithAudio,
+                            onChanged: (_) {
                               ref
                                   .read(quranSettingsProvider.notifier)
-                                  .setDailyReminderTime(formattedTime);
-                            } else {
+                                  .toggleAutoScrollWithAudio();
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 16.h),
+
+                      SettingsContainer(
+                        title: "الإعدادات العامة",
+                        settingsCards: [
+                          SettingCards(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(9),
+                            ),
+                            icon: const Right(Icons.library_books_rounded),
+                            text: "تحميل التفاسير",
+                            onTap: () {
+                              Navigator.of(
+                                context,
+                              ).pushNamed(Routes.tafseerPage);
+                            },
+                            trallingIcon: Icons.download,
+                          ),
+                          SettingCards(
+                            icon: const Right(
+                              Icons.notifications_active_rounded,
+                            ),
+                            text: "تنبيهات ورد القراءة اليومي",
+                            subText: settings.isDailyReminderEnabled
+                                ? (settings.dailyReminderTime != null
+                                      ? "الوقت: ${settings.dailyReminderTime}"
+                                      : "الوقت: بعد الفجر")
+                                : "اضغط هنا لتحديد وقت التذكير",
+                            toggle: true,
+                            switchValue: settings.isDailyReminderEnabled,
+                            onChanged: (_) {
                               ref
                                   .read(quranSettingsProvider.notifier)
-                                  .setDailyReminderTime(null);
-                            }
-                          }
-                        : null,
-                  ),
-                ],
-              ),
+                                  .toggleDailyReminder();
+                            },
+                            onTap: settings.isDailyReminderEnabled
+                                ? () async {
+                                    final time = await showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.now(),
+                                      helpText:
+                                          'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
+                                    );
+                                    if (time != null) {
+                                      final formattedTime =
+                                          '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                                      ref
+                                          .read(quranSettingsProvider.notifier)
+                                          .setDailyReminderTime(formattedTime);
+                                    } else {
+                                      ref
+                                          .read(quranSettingsProvider.notifier)
+                                          .setDailyReminderTime(null);
+                                    }
+                                  }
+                                : null,
+                          ),
+                        ],
+                      ),
 
-              SizedBox(height: 30.h),
-            ],
-          ),
+                      SizedBox(height: 30.h),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuranSettingsHeader extends StatelessWidget {
+  const _QuranSettingsHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+      child: Row(
+        children: [
+          IconButton.filledTonal(
+            tooltip: 'العودة',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_forward_ios_rounded),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            width: 46.r,
+            height: 46.r,
+            decoration: BoxDecoration(
+              color: scheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Icon(Icons.tune_rounded, color: scheme.onTertiaryContainer),
+          ),
+          SizedBox(width: 11.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'إعدادات القرآن',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'خصص تجربة القراءة والاستماع',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 10.5.sp,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

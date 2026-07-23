@@ -78,7 +78,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
     return Container(
       height: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: context.color.surfaceContainerLowest,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
         boxShadow: [
           BoxShadow(
@@ -96,7 +96,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
             width: 40.w,
             height: 4.h,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: context.color.outlineVariant,
               borderRadius: BorderRadius.circular(10.r),
             ),
           ),
@@ -110,24 +110,19 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                   child: Container(
                     padding: EdgeInsets.only(left: 0, right: 15.w),
                     decoration: BoxDecoration(
-                      color: context.color.primary.withValues(alpha: .05),
-                      borderRadius: BorderRadius.horizontal(
-                        right: Radius.circular(15.r),
-                        left: Radius.circular(8.r),
-                      ),
-                      border: Border.all(
-                        color: context.color.primary.withValues(alpha: .1),
-                      ),
+                      color: context.color.surface,
+                      borderRadius: BorderRadius.circular(18.r),
+                      border: Border.all(color: context.color.outlineVariant),
                     ),
                     child: TextField(
                       controller: _searchController,
                       style: TextStyle(fontFamily: 'Naskh', fontSize: 16.sp),
                       decoration: InputDecoration(
                         hintText: 'ابحث عن سورة أو آية...',
-                        fillColor: context.color.primary.withValues(alpha: .05),
+                        fillColor: Colors.transparent,
                         hintStyle: TextStyle(
                           fontFamily: 'Cairo',
-                          color: Colors.grey[400],
+                          color: context.color.onSurfaceVariant,
                           fontSize: 14.sp,
                         ),
                         border: InputBorder.none,
@@ -166,6 +161,27 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
               padding: EdgeInsets.symmetric(horizontal: 18.w),
               child: CustomScrollView(
                 slivers: [
+                  if (_searchController.text.trim().isEmpty &&
+                      _recentSearches.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _SearchEmptyState(
+                        icon: Icons.travel_explore_rounded,
+                        title: 'ابحث في آيات القرآن',
+                        subtitle:
+                            'اكتب كلمة أو جزءاً من آية للوصول إليها بسرعة.',
+                      ),
+                    ),
+                  if (_searchController.text.trim().isNotEmpty &&
+                      _searchResults.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _SearchEmptyState(
+                        icon: Icons.search_off_rounded,
+                        title: 'لا توجد نتائج',
+                        subtitle: 'تحقق من الكتابة أو جرّب عبارة أقصر.',
+                      ),
+                    ),
                   if (_recentSearches.isNotEmpty)
                     SliverToBoxAdapter(
                       child: Column(
@@ -177,7 +193,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                               fontFamily: 'Cairo',
                               fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey[600],
+                              color: context.color.onSurfaceVariant,
                             ),
                           ),
                           SizedBox(height: 12.h),
@@ -195,9 +211,11 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                                     color: context.color.primary,
                                   ),
                                 ),
-                                backgroundColor: context.color.primary
-                                    .withValues(alpha: .05),
-                                side: BorderSide.none,
+                                backgroundColor:
+                                    context.color.surfaceContainerLow,
+                                side: BorderSide(
+                                  color: context.color.outlineVariant,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.r),
                                 ),
@@ -239,7 +257,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                                 fontFamily: 'Cairo',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
+                                color: context.color.onSurfaceVariant,
                               ),
                             ),
                             SizedBox(height: 12.h),
@@ -249,7 +267,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                                 fontFamily: 'Cairo',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
+                                color: context.color.onSurfaceVariant,
                               ),
                             ),
                             SizedBox(height: 12.h),
@@ -314,9 +332,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: context.color.primary.withValues(alpha: .3),
-          ),
+          border: Border.all(color: context.color.outlineVariant),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,7 +364,7 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
                   style: TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 11.sp,
-                    color: Colors.grey[500],
+                    color: context.color.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -368,6 +384,57 @@ class _QuranSearchSheetState extends State<QuranSearchSheet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SearchEmptyState extends StatelessWidget {
+  const _SearchEmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: EdgeInsets.all(20.r),
+            decoration: BoxDecoration(
+              color: scheme.tertiaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 40.sp, color: scheme.onTertiaryContainer),
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w800,
+              color: scheme.onSurface,
+            ),
+          ),
+          SizedBox(height: 5.h),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 12.sp,
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

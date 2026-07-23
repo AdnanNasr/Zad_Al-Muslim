@@ -16,13 +16,11 @@ class SelectedBook extends _$SelectedBook {
     final prefs = sl<SharedPreferences>();
     final bookId = prefs.getString(_prefId) ?? "ar.jalalayn";
     final bookName = prefs.getString(_prefName) ?? "تفسير الجلالين";
-    final bookDesc = prefs.getString(_prefDesc) ?? "أشهر التفاسير المختصرة؛ يقدم شرحاً وجيزاً للآيات بأسلوب يسهل فهمه للمبتدئين.";
+    final bookDesc =
+        prefs.getString(_prefDesc) ??
+        "أشهر التفاسير المختصرة؛ يقدم شرحاً وجيزاً للآيات بأسلوب يسهل فهمه للمبتدئين.";
 
-    return TafsserBookEntity(
-      name: bookName,
-      id: bookId,
-      description: bookDesc,
-    );
+    return TafsserBookEntity(name: bookName, id: bookId, description: bookDesc);
   }
 
   void updateSelectedBook(TafsserBookEntity book) {

@@ -24,31 +24,28 @@ class HadithCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-
-    // تحسين الألوان: في الفاتح نستخدم لون خفيف جداً، وفي الداكن نستخدم درجة أفتح من الخلفية الأساسية
-    final cardBackground = isDark
-        ? colorScheme.surfaceContainerHigh
-        : colorScheme.primary.withValues(alpha: 0.05);
-
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+      margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        color: cardBackground,
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(
-          color: colorScheme.primary.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(22.r),
+        border: Border.all(color: colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: .05),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24.r),
+          borderRadius: BorderRadius.circular(22.r),
           splashColor: context.color.primary.withValues(alpha: .1),
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.all(16.r),
+            padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 16.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,36 +53,39 @@ class HadithCard extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildDecorativeNumber(context, index + 1),
+                    _buildDecorativeNumber(context, hadith.reference.hadith),
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 12.w),
                         child: Text(
-                          "كتاب ${hadith.bookName} • ${hadith.reference.hadith}",
+                          'كتاب ${hadith.bookName}',
                           style: TextStyle(
                             fontFamily: "Cairo",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurface,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.rtl,
                         ),
                       ),
                     ),
-                    IconButton(
+                    IconButton.filledTonal(
+                      tooltip: hadith.isFavorite
+                          ? 'إزالة من المفضلة'
+                          : 'إضافة إلى المفضلة',
                       onPressed: onToggleFavorite,
                       icon: Icon(
                         hadith.isFavorite
                             ? Icons.star_rounded
-                            : Icons.star_outline_rounded,
-                        color: Colors.amber.shade600,
-                        size: 26.sp,
+                            : Icons.star_border_rounded,
+                        color: colorScheme.secondary,
+                        size: 22.sp,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12.h),
+                Divider(height: 22.h, color: colorScheme.outlineVariant),
 
                 // Hadith Text with Highlight support
                 Consumer(
@@ -99,16 +99,34 @@ class HadithCard extends ConsumerWidget {
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 20.sp,
-                        height: 1.8,
+                        fontSize: 19.sp,
+                        height: 1.75,
                         fontWeight: FontWeight.w500,
                         fontFamily: "Naskh",
-                        color: colorScheme.onSurface.withValues(alpha: 0.9),
+                        color: colorScheme.onSurface,
                       ),
                     );
                   },
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 12.h),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.touch_app_rounded,
+                      size: 15.sp,
+                      color: colorScheme.primary,
+                    ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      'اضغط لقراءة الحديث كاملاً',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 10.5.sp,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -119,24 +137,23 @@ class HadithCard extends ConsumerWidget {
 
   Widget _buildDecorativeNumber(BuildContext context, int number) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Icon(
-          Icons.brightness_7_rounded,
-          size: 42.sp,
-          color: colorScheme.primary.withValues(alpha: 0.15),
+    return Container(
+      constraints: BoxConstraints(minWidth: 42.w),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 7.h),
+      decoration: BoxDecoration(
+        color: colorScheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Text(
+        "$number",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onTertiaryContainer,
+          fontFamily: "Cairo",
         ),
-        Text(
-          "$number",
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.bold,
-            color: colorScheme.primary,
-            fontFamily: "Cairo",
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

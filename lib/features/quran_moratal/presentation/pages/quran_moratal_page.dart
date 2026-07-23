@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/constants/enums/qari_names_moratal.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';
@@ -37,27 +35,11 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeProvider);
-    final bool isDark = themeMode == ThemeMode.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'القرآن مُرتل',
-        center: false,
-        actions: [
-          Builder(
-            builder: (context) {
-              return IconButton(
-                tooltip: "تحميل السور",
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-                icon: const Icon(Icons.download),
-              );
-            },
-          ),
-        ],
-      ),
+      backgroundColor: scheme.surfaceContainerLowest,
       endDrawer: Drawer(
         width: 360.w,
         child: Column(
@@ -66,22 +48,10 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
               decoration: BoxDecoration(
-                image: const DecorationImage(
-                  // TODO: chagne image
-                  image: AssetImage("assets/images/night_clouds.jpg"),
-                  fit: BoxFit.cover,
+                color: scheme.surfaceContainerLow,
+                border: Border(
+                  bottom: BorderSide(color: scheme.outlineVariant),
                 ),
-                // borderRadius: BorderRadius.only(
-                //   bottomLeft: Radius.circular(24.r),
-                //   bottomRight: Radius.circular(24.r),
-                // ),
-                boxShadow: [
-                  BoxShadow(
-                    color: context.color.primary.withValues(alpha: 0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
               ),
               child: SafeArea(
                 bottom: false,
@@ -98,14 +68,9 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                               onPressed: () {
                                 Scaffold.of(context).closeEndDrawer();
                               },
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                              ),
+                              icon: Icon(Icons.close, color: scheme.onSurface),
                               style: IconButton.styleFrom(
-                                backgroundColor: Colors.white.withValues(
-                                  alpha: 0.2,
-                                ),
+                                backgroundColor: scheme.surfaceContainerHigh,
                               ),
                             );
                           },
@@ -113,13 +78,13 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                       ],
                     ),
                     SizedBox(height: 16.h),
-                    const Text(
+                    Text(
                       "تحميل القرآن الكريم",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         fontFamily: "Cairo",
-                        color: Colors.white,
+                        color: scheme.onSurface,
                       ),
                     ),
                     SizedBox(height: 6.h),
@@ -128,7 +93,7 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                       style: TextStyle(
                         fontSize: 12,
                         fontFamily: "Cairo",
-                        color: Colors.white.withValues(alpha: 0.85),
+                        color: scheme.onSurfaceVariant,
                         height: 1.4,
                       ),
                     ),
@@ -153,39 +118,124 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
           ],
         ),
       ),
-      body: Stack(
-        children: [
-          AnimationLimiter(
-            child: ListView.separated(
-              padding: EdgeInsets.only(
-                left: 16.w,
-                right: 16.w,
-                top: 20.h,
-                bottom: 100.h,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Builder(
+              builder: (context) => _MoratalHeader(
+                onOpenDownloads: () => Scaffold.of(context).openEndDrawer(),
               ),
-              itemCount: QariNames.allQaris.length,
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
-              itemBuilder: (context, index) {
-                final Map<String, String> qariData = QariNames.allQaris[index];
-                return AnimationConfiguration.staggeredList(
-                  duration: const Duration(milliseconds: 700),
-                  position: index,
-                  child: SlideAnimation(
-                    curve: Curves.linear,
-                    verticalOffset: 50,
-                    child: FadeInAnimation(
-                      child: _QariListTile(qariData: qariData, isDark: isDark),
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  AnimationLimiter(
+                    child: ListView.separated(
+                      padding: EdgeInsets.only(
+                        left: 16.w,
+                        right: 16.w,
+                        top: 8.h,
+                        bottom: 100.h,
+                      ),
+                      itemCount: QariNames.allQaris.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 12.h),
+                      itemBuilder: (context, index) {
+                        final Map<String, String> qariData =
+                            QariNames.allQaris[index];
+                        return AnimationConfiguration.staggeredList(
+                          duration: const Duration(milliseconds: 700),
+                          position: index,
+                          child: SlideAnimation(
+                            curve: Curves.linear,
+                            verticalOffset: 50,
+                            child: FadeInAnimation(
+                              child: _QariListTile(
+                                qariData: qariData,
+                                isDark: isDark,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
+                  Positioned(
+                    bottom: 10.h,
+                    left: 0,
+                    right: 0,
+                    child: const MoratalMiniPlayer(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MoratalHeader extends StatelessWidget {
+  const _MoratalHeader({required this.onOpenDownloads});
+
+  final VoidCallback onOpenDownloads;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+      child: Row(
+        children: [
+          IconButton.filledTonal(
+            tooltip: 'العودة',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_rounded),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            width: 46.r,
+            height: 46.r,
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Icon(
+              Icons.graphic_eq_rounded,
+              color: scheme.onPrimaryContainer,
+              size: 24.sp,
             ),
           ),
-          Positioned(
-            bottom: 10.h,
-            left: 0,
-            right: 0,
-            child: const MoratalMiniPlayer(),
+          SizedBox(width: 11.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'القرآن المُرتل',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'اختر قارئك المفضل واستمع بخشوع',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 10.5.sp,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton.filledTonal(
+            tooltip: 'إدارة التنزيلات',
+            onPressed: onOpenDownloads,
+            icon: const Icon(Icons.download_for_offline_outlined),
           ),
         ],
       ),
@@ -215,8 +265,11 @@ class _QariListTile extends StatelessWidget {
       narration = 'رواية حفص عن عاصم';
     }
 
+    final scheme = Theme.of(context).colorScheme;
     return Material(
-      color: Colors.transparent,
+      color: scheme.surface,
+      borderRadius: BorderRadius.circular(20.r),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
           Navigator.of(context).push(
@@ -225,21 +278,12 @@ class _QariListTile extends StatelessWidget {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(20.r),
         child: Ink(
-          padding: EdgeInsets.all(12.w),
+          padding: EdgeInsets.all(14.r),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: context.color.primary.withValues(alpha: .3),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(color: scheme.outlineVariant),
           ),
           child: Row(
             children: [
@@ -248,17 +292,13 @@ class _QariListTile extends StatelessWidget {
                 width: 55.w,
                 height: 55.w,
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? context.color.primary.withValues(alpha: .7)
-                      : context.color.primary.withValues(alpha: .1),
-                  shape: BoxShape.circle,
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(17.r),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.spatial_audio_off_rounded,
-                    color: isDark
-                        ? context.color.onSurface
-                        : context.color.primary,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
               ),
@@ -284,9 +324,7 @@ class _QariListTile extends StatelessWidget {
                         fontSize: 11.sp,
                         fontFamily: 'Cairo',
                         fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? context.color.onSurface.withValues(alpha: .8)
-                            : context.color.onSurface.withValues(alpha: .6),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -297,11 +335,9 @@ class _QariListTile extends StatelessWidget {
 
               // أيقونة سهم الانتقال
               Icon(
-                Icons.arrow_forward_ios_rounded,
+                Icons.arrow_forward_ios,
                 size: 16.sp,
-                color: isDark
-                    ? context.color.onSurface.withValues(alpha: .6)
-                    : context.color.primary.withValues(alpha: .6),
+                color: scheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -340,14 +376,14 @@ class _QariListTileDrawer extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16.r),
         side: BorderSide(
           color: downloadState.status == QariDownloadStatus.completed
-              ? Colors.green.withValues(alpha: 0.3)
+              ? context.color.tertiary.withValues(alpha: 0.35)
               : downloadState.status == QariDownloadStatus.inProgress
               ? context.color.primary.withValues(alpha: 0.3)
               : context.color.primary.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
-      color: isDark ? context.color.surfaceContainerHigh : Colors.white,
+      color: context.color.surface,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -361,7 +397,7 @@ class _QariListTileDrawer extends ConsumerWidget {
                   height: 48.w,
                   decoration: BoxDecoration(
                     color: downloadState.status == QariDownloadStatus.completed
-                        ? Colors.green.withValues(alpha: isDark ? 0.25 : 0.1)
+                        ? context.color.tertiaryContainer
                         : isDark
                         ? context.color.primary.withValues(alpha: 0.25)
                         : context.color.primary.withValues(alpha: 0.08),
@@ -374,7 +410,7 @@ class _QariListTileDrawer extends ConsumerWidget {
                           : Icons.person_rounded,
                       color:
                           downloadState.status == QariDownloadStatus.completed
-                          ? Colors.green
+                          ? context.color.onTertiaryContainer
                           : context.color.primary,
                       size: 24.sp,
                     ),
@@ -567,13 +603,13 @@ class _DownloadButton extends ConsumerWidget {
   Color _getButtonColor(BuildContext context) {
     switch (downloadState.status) {
       case QariDownloadStatus.completed:
-        return Colors.green.withValues(alpha: isDark ? 0.8 : 0.15);
+        return context.color.tertiaryContainer;
       case QariDownloadStatus.error:
-        return Colors.orange.withValues(alpha: isDark ? 0.8 : 0.15);
+        return context.color.errorContainer;
       case QariDownloadStatus.inProgress:
-        return context.color.error.withValues(alpha: isDark ? 0.7 : 0.1);
+        return context.color.secondaryContainer;
       default:
-        return context.color.primary.withValues(alpha: isDark ? 0.7 : 0.1);
+        return context.color.primaryContainer;
     }
   }
 
@@ -582,24 +618,24 @@ class _DownloadButton extends ConsumerWidget {
       case QariDownloadStatus.completed:
         return Icon(
           Icons.download_done_rounded,
-          color: isDark ? Colors.green.shade100 : Colors.green.shade600,
+          color: context.color.onTertiaryContainer,
           size: 24.sp,
         );
 
       case QariDownloadStatus.inProgress:
-        return const Icon(Icons.pause, color: Colors.red);
+        return Icon(Icons.pause, color: context.color.onSecondaryContainer);
 
       case QariDownloadStatus.error:
         return Icon(
           Icons.refresh_rounded,
-          color: isDark ? Colors.orange.shade100 : Colors.orange.shade600,
+          color: context.color.onErrorContainer,
           size: 24.sp,
         );
 
       default:
         return Icon(
           Icons.download_rounded,
-          color: isDark ? context.color.onSurface : context.color.primary,
+          color: context.color.onPrimaryContainer,
           size: 24.sp,
         );
     }

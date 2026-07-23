@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,24 +15,103 @@ class AdkarDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: CustomAppBar(title: adkarEntity.category, center: true),
-      body: ListView.separated(
-        padding: EdgeInsets.all(16.w),
-        itemCount: adkarEntity.text.length,
-        separatorBuilder: (context, index) => SizedBox(height: 16.h),
-        itemBuilder: (context, index) {
-          return DhikrCard(
-            category: adkarEntity.category,
-            text: adkarEntity.text[index],
-            footnote: index < adkarEntity.footnote.length
-                ? adkarEntity.footnote[index]
-                : '',
-            index: index + 1,
-            initialCount: index < adkarEntity.counts.length
-                ? adkarEntity.counts[index]
-                : 1,
-          );
-        },
+      backgroundColor: context.color.surfaceContainerLowest,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _DetailsHeader(
+              title: adkarEntity.category,
+              count: adkarEntity.text.length,
+            ),
+            Expanded(
+              child: ListView.separated(
+                padding: EdgeInsets.fromLTRB(14.w, 8.h, 14.w, 28.h),
+                itemCount: adkarEntity.text.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  return DhikrCard(
+                    category: adkarEntity.category,
+                    text: adkarEntity.text[index],
+                    footnote: index < adkarEntity.footnote.length
+                        ? adkarEntity.footnote[index]
+                        : '',
+                    index: index + 1,
+                    initialCount: index < adkarEntity.counts.length
+                        ? adkarEntity.counts[index]
+                        : 1,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailsHeader extends StatelessWidget {
+  const _DetailsHeader({required this.title, required this.count});
+
+  final String title;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+      child: Row(
+        children: [
+          IconButton.filledTonal(
+            tooltip: 'العودة',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_forward_ios_rounded),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            width: 46.r,
+            height: 46.r,
+            decoration: BoxDecoration(
+              color: scheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Icon(
+              Icons.auto_stories_rounded,
+              color: scheme.onTertiaryContainer,
+              size: 23.sp,
+            ),
+          ),
+          SizedBox(width: 11.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                    height: 1.35,
+                  ),
+                ),
+                SizedBox(height: 1.h),
+                Text(
+                  '$count من الأذكار والأدعية',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 10.5.sp,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -65,6 +143,7 @@ class DhikrCard extends ConsumerWidget {
     final remainingCount = ref.watch(dhikrStateProvider(params));
     bool isFinished = remainingCount == 0;
 
+    final scheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -72,14 +151,13 @@ class DhikrCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24.r),
         side: BorderSide(
           color: isFinished
-              ? Colors.green.withValues(alpha: 0.3)
-              : context.color.primary.withValues(alpha: 0.3),
-          width: 1.5,
+              ? scheme.tertiary.withValues(alpha: 0.38)
+              : scheme.outlineVariant,
         ),
       ),
       color: isFinished
-          ? context.color.primary.withValues(alpha: 0.02)
-          : context.color.surface,
+          ? scheme.tertiaryContainer.withValues(alpha: 0.32)
+          : scheme.surface,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _showDetailsDialog(context, ref),
@@ -98,13 +176,13 @@ class DhikrCard extends ConsumerWidget {
                       vertical: 6.h,
                     ),
                     decoration: BoxDecoration(
-                      color: context.color.primary.withValues(alpha: 0.1),
+                      color: scheme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(15.r),
                     ),
                     child: Text(
                       'ذكر رقم $index',
                       style: TextStyle(
-                        color: context.color.primary,
+                        color: scheme.onTertiaryContainer,
                         fontFamily: 'Cairo',
                         fontSize: 12.sp,
                         fontWeight: FontWeight.bold,
@@ -115,12 +193,12 @@ class DhikrCard extends ConsumerWidget {
                     Container(
                       padding: EdgeInsets.all(6.w),
                       decoration: BoxDecoration(
-                        color: context.color.primary.withValues(alpha: 0.1),
+                        color: scheme.surfaceContainerHigh,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.info_outline_rounded,
-                        color: context.color.primary,
+                        color: scheme.tertiary,
                         size: 18.sp,
                       ),
                     ),
@@ -147,65 +225,73 @@ class DhikrCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Reset button
-                  IconButton(
+                  IconButton.filledTonal(
                     onPressed: () {
                       ref.read(dhikrStateProvider(params).notifier).reset();
                     },
                     icon: Icon(
                       Icons.refresh_rounded,
-                      color: context.color.onSurface.withValues(alpha: 0.3),
+                      color: scheme.onSurfaceVariant,
                     ),
                     tooltip: 'إعادة',
                   ),
 
                   // Tasbeeh Button
-                  GestureDetector(
-                    onTap: () {
-                      if (remainingCount > 0) {
-                        if (ref
-                            .read(appSettingsProvider)
-                            .hapticFeedbackEnabled) {
-                          HapticFeedback.lightImpact();
+                  Semantics(
+                    button: true,
+                    label: isFinished
+                        ? 'اكتمل الذكر'
+                        : 'متبقي $remainingCount تكرار',
+                    child: GestureDetector(
+                      onTap: () {
+                        if (remainingCount > 0) {
+                          if (ref
+                              .read(appSettingsProvider)
+                              .hapticFeedbackEnabled) {
+                            HapticFeedback.lightImpact();
+                          }
+                          ref
+                              .read(dhikrStateProvider(params).notifier)
+                              .decrement();
                         }
-                        ref
-                            .read(dhikrStateProvider(params).notifier)
-                            .decrement();
-                      }
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 32.w,
-                        vertical: 12.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isFinished
-                            ? Colors.green.shade800
-                            : context.color.primary,
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isFinished
-                                ? Icons.check_circle_rounded
-                                : Icons.touch_app_rounded,
-                            color: Colors.white,
-                            size: 20.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            isFinished ? 'اكتمل' : '$remainingCount',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Cairo',
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 32.w,
+                          vertical: 12.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isFinished ? scheme.tertiary : scheme.primary,
+                          borderRadius: BorderRadius.circular(30.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isFinished
+                                  ? Icons.check_circle_rounded
+                                  : Icons.touch_app_rounded,
+                              color: isFinished
+                                  ? scheme.onTertiary
+                                  : scheme.onPrimary,
+                              size: 20.sp,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 8.w),
+                            Text(
+                              isFinished ? 'اكتمل' : '$remainingCount',
+                              style: TextStyle(
+                                color: isFinished
+                                    ? scheme.onTertiary
+                                    : scheme.onPrimary,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Cairo',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -238,7 +324,7 @@ class DhikrCard extends ConsumerWidget {
                 onTap: () {},
                 child: Container(
                   decoration: BoxDecoration(
-                    color: context.color.surface,
+                    color: context.color.surfaceContainerLow,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(30.r),
                     ),
@@ -261,13 +347,11 @@ class DhikrCard extends ConsumerWidget {
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.bold,
                           fontSize: 18.sp,
-                          color: context.color.primary,
+                          color: context.color.tertiary,
                         ),
                       ),
                       SizedBox(height: 10.h),
-                      Divider(
-                        color: context.color.primary.withValues(alpha: 0.05),
-                      ),
+                      Divider(color: context.color.outlineVariant),
                       Expanded(
                         child: ListView(
                           controller: scrollController,
@@ -293,13 +377,12 @@ class DhikrCard extends ConsumerWidget {
                               Container(
                                 padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
-                                  color: context.color.primary.withValues(
-                                    alpha: 0.05,
-                                  ),
+                                  color: context.color.tertiaryContainer
+                                      .withValues(alpha: 0.35),
                                   borderRadius: BorderRadius.circular(15.r),
                                   border: Border.all(
-                                    color: context.color.primary.withValues(
-                                      alpha: 0.1,
+                                    color: context.color.tertiary.withValues(
+                                      alpha: 0.22,
                                     ),
                                   ),
                                 ),
@@ -311,7 +394,7 @@ class DhikrCard extends ConsumerWidget {
                                       children: [
                                         Icon(
                                           Icons.info_outline_rounded,
-                                          color: context.color.primary,
+                                          color: context.color.tertiary,
                                           size: 20.sp,
                                         ),
                                         SizedBox(width: 8.w),
@@ -321,7 +404,9 @@ class DhikrCard extends ConsumerWidget {
                                             fontFamily: 'Cairo',
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.sp,
-                                            color: context.color.primary,
+                                            color: context
+                                                .color
+                                                .onTertiaryContainer,
                                           ),
                                         ),
                                       ],

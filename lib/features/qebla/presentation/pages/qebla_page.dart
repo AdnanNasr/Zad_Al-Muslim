@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/qebla/presentation/providers/qibla_provider.dart';
@@ -77,22 +76,31 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
     });
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'اتجاه القبلة', center: false),
+      backgroundColor: context.color.surfaceContainerLowest,
       body: SafeArea(
-        child: compassSupport.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => _buildNoSensorState(context),
-          data: (hasCompass) {
-            if (!hasCompass) return _buildNoSensorState(context);
-            if (position == null) return _buildNoLocationState(context);
-            if (qiblaEntity == null) return _buildNoLocationState(context);
+        child: Column(
+          children: [
+            const _QiblaHeader(),
+            Expanded(
+              child: compassSupport.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, _) => _buildNoSensorState(context),
+                data: (hasCompass) {
+                  if (!hasCompass) return _buildNoSensorState(context);
+                  if (position == null) return _buildNoLocationState(context);
+                  if (qiblaEntity == null) {
+                    return _buildNoLocationState(context);
+                  }
 
-            return _buildCompassBody(
-              context,
-              qiblaEntity.qiblaAngle,
-              qiblaEntity.distanceKm,
-            );
-          },
+                  return _buildCompassBody(
+                    context,
+                    qiblaEntity.qiblaAngle,
+                    qiblaEntity.distanceKm,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -107,40 +115,46 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
     double qiblaAngle,
     double distanceKm,
   ) {
-    return Column(
-      children: [
-        // -- رسالة التحذير المغناطيسي --
-        _buildMagneticWarning(context),
-
-        const Spacer(),
-
-        // -- البوصلة --
-        // -- البوصلة --
-        Consumer(
-          builder: (context, ref, _) {
-            final compassAsync = ref.watch(compassStreamProvider);
-            final heading = compassAsync.value;
-
-            if (heading == null) {
-              return _buildCompassPlaceholder(context);
-            }
-
-            return _CompassWidget(
-              needleAngleRad: qiblaAngle * (math.pi / 180.0),
-              qiblaAngle: qiblaAngle,
-              heading: heading,
-              isAligned: _isAligned,
-            );
-          },
-        ),
-
-        const Spacer(),
-
-        // -- بيانات إضافية: زاوية القبلة والمسافة --
-        _buildInfoRow(context, qiblaAngle, distanceKm),
-
-        SizedBox(height: 32.h),
-      ],
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 28.h),
+      child: Column(
+        children: [
+          _buildMagneticWarning(context),
+          SizedBox(height: 16.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(16.w, 18.h, 16.w, 20.h),
+            decoration: BoxDecoration(
+              color: context.color.surface,
+              borderRadius: BorderRadius.circular(28.r),
+              border: Border.all(color: context.color.outlineVariant),
+              boxShadow: [
+                BoxShadow(
+                  color: context.color.shadow.withValues(alpha: .06),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Consumer(
+              builder: (context, ref, _) {
+                final heading = ref.watch(compassStreamProvider).value;
+                if (heading == null) return _buildCompassPlaceholder(context);
+                return _CompassWidget(
+                  needleAngleRad: qiblaAngle * (math.pi / 180.0),
+                  qiblaAngle: qiblaAngle,
+                  heading: heading,
+                  isAligned: _isAligned,
+                );
+              },
+            ),
+          ),
+          SizedBox(height: 16.h),
+          _buildInfoRow(context, qiblaAngle, distanceKm),
+          SizedBox(height: 16.h),
+          _buildCalibrationTip(context),
+        ],
+      ),
     );
   }
 
@@ -150,26 +164,32 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
 
   Widget _buildMagneticWarning(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: context.color.primary.withValues(alpha: .03),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: context.color.primary.withValues(alpha: .4)),
+        color: context.color.secondaryContainer.withValues(alpha: .55),
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(
+          color: context.color.secondary.withValues(alpha: .28),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             Icons.warning_amber_rounded,
-            color: context.color.primary,
+            color: context.color.onSecondaryContainer,
             size: 25.sp,
           ),
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
-              "للحصول على أعلى دقة، يرجى الأبتعاد عن الأجهزة الكهربائية والمجالات الكهرومغناطيسية.",
-              style: TextStyle(fontSize: 15.sp, color: context.color.onSurface),
+              'لأعلى دقة، ابتعد عن الأجهزة الكهربائية والأجسام المعدنية.',
+              style: TextStyle(
+                fontSize: 13.sp,
+                height: 1.6,
+                fontWeight: FontWeight.w600,
+                color: context.color.onSecondaryContainer,
+              ),
             ),
           ),
         ],
@@ -186,30 +206,26 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
     double qiblaAngle,
     double distanceKm,
   ) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildInfoChip(
+    return Row(
+      children: [
+        Expanded(
+          child: _buildInfoChip(
             context,
-            icon: Icons.explore_outlined,
-            label: 'الزاوية',
+            icon: Icons.explore_rounded,
+            label: 'زاوية القبلة',
             value: '${qiblaAngle.toStringAsFixed(1)}°',
           ),
-          Container(
-            width: 1,
-            height: 40.h,
-            color: context.color.onSurface.withValues(alpha: .1),
-          ),
-          _buildInfoChip(
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: _buildInfoChip(
             context,
-            icon: Icons.straighten_outlined,
-            label: 'المسافة للكعبة',
-            value: '${(distanceKm / 1000).toStringAsFixed(0)} ألف كم',
+            icon: Icons.route_rounded,
+            label: 'المسافة إلى الكعبة',
+            value: '${distanceKm.toStringAsFixed(0)} كم',
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -219,29 +235,75 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
     required String label,
     required String value,
   }) {
-    return Column(
-      children: [
-        Icon(icon, color: context.color.primary, size: 22.sp),
-        SizedBox(height: 4.h),
-        Text(
-          value,
-          style: TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            color: context.color.onSurface,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: context.color.surface,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: context.color.outlineVariant),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.r),
+            decoration: BoxDecoration(
+              color: context.color.secondaryContainer,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Icon(
+              icon,
+              color: context.color.onSecondaryContainer,
+              size: 20.sp,
+            ),
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 12.sp,
-            fontWeight: FontWeight.bold,
-            color: context.color.onSurface.withValues(alpha: .7),
+          SizedBox(height: 4.h),
+          Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+              color: context.color.onSurface,
+            ),
           ),
-        ),
-      ],
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 12.sp,
+              fontWeight: FontWeight.bold,
+              color: context.color.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalibrationTip(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: context.color.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.screen_rotation_alt_rounded, color: context.color.primary),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Text(
+              'حرّك الهاتف على شكل الرقم 8 إذا لاحظت أن اتجاه البوصلة غير مستقر.',
+              style: TextStyle(
+                fontSize: 13.sp,
+                height: 1.6,
+                color: context.color.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -374,6 +436,67 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
   }
 }
 
+class _QiblaHeader extends StatelessWidget {
+  const _QiblaHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+      child: Row(
+        children: [
+          IconButton.filledTonal(
+            tooltip: 'العودة',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_forward_ios_rounded),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            width: 46.r,
+            height: 46.r,
+            decoration: BoxDecoration(
+              color: scheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Icon(
+              Icons.explore_rounded,
+              color: scheme.onSecondaryContainer,
+              size: 25.sp,
+            ),
+          ),
+          SizedBox(width: 11.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'اتجاه القبلة',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'اعثر على اتجاه الكعبة بدقة',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 10.5.sp,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // ويدجت البوصلة الداخلي
 // ──────────────────────────────────────────────────────────────────────────────
@@ -393,22 +516,34 @@ class _CompassWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final qiblaColor = isAligned ? Colors.amber : context.color.primary;
+    final qiblaColor = isAligned
+        ? context.color.primary
+        : context.color.secondary;
     final ringColor = Theme.of(context).colorScheme.onSurface;
     final labelColor = Theme.of(context).colorScheme.onSurface;
 
     return Column(
       children: [
         // -- مؤشر الاتجاه النصي --
-        Text(
-          _headingLabel(heading),
-          style: TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: .6),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
+          decoration: BoxDecoration(
+            color: isAligned
+                ? context.color.primaryContainer
+                : context.color.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Text(
+            isAligned ? 'أنت باتجاه القبلة' : _headingLabel(heading),
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+              color: isAligned
+                  ? context.color.onPrimaryContainer
+                  : context.color.onSurfaceVariant,
+            ),
           ),
         ),
 
@@ -437,18 +572,14 @@ class _CompassWidget extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
           decoration: BoxDecoration(
-            color: context.color.primary.withValues(alpha: .12),
+            color: context.color.secondaryContainer,
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(color: qiblaColor.withValues(alpha: .35)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.mosque_outlined,
-                color: context.color.primary,
-                size: 18.sp,
-              ),
+              Icon(Icons.mosque_rounded, color: qiblaColor, size: 18.sp),
               SizedBox(width: 6.w),
               Text(
                 'اتجاه القبلة',
@@ -456,7 +587,7 @@ class _CompassWidget extends StatelessWidget {
                   fontFamily: 'Cairo',
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
-                  color: context.color.primary,
+                  color: context.color.onSecondaryContainer,
                 ),
               ),
             ],

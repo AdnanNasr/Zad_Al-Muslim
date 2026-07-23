@@ -32,13 +32,47 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
     final bool isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      backgroundColor: context.color.primary.withValues(alpha: .02),
+      backgroundColor: context.color.surfaceContainerLowest,
       body: SafeArea(
         child: DefaultTabController(
           length: 2,
           child: Column(
             children: [
-              const SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10.r),
+                      decoration: BoxDecoration(
+                        color: context.color.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      child: Icon(
+                        Icons.collections_bookmark,
+                        color: context.color.onTertiaryContainer,
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Text(
+                        'فهرس المصحف',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w900,
+                          color: context.color.onSurface,
+                        ),
+                      ),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: 'إغلاق',
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+              ),
               _IndexMenuTabBar(primaryColor: color),
               const SizedBox(height: 10),
               Expanded(
@@ -101,26 +135,27 @@ class _IndexMenuTabBar extends StatelessWidget {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-          color: context.color.surface,
-          borderRadius: BorderRadius.circular(8.dg),
+          color: context.color.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(16.dg),
+          border: Border.all(color: context.color.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .05),
+              color: context.color.shadow.withValues(alpha: .05),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
           ],
         ),
         child: TabBar(
-          splashBorderRadius: BorderRadius.circular(8.dg),
+          splashBorderRadius: BorderRadius.circular(25),
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
           indicator: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: primaryColor,
+            borderRadius: BorderRadius.circular(25),
+            color: context.color.surface,
           ),
-          labelColor: Colors.white,
-          unselectedLabelColor: context.color.onSurface,
+          labelColor: primaryColor,
+          unselectedLabelColor: context.color.onSurfaceVariant,
           unselectedLabelStyle: TextStyle(
             fontSize: 14.sp,
             fontFamily: "Cairo",
@@ -209,7 +244,12 @@ class _JuzList extends StatelessWidget {
         surahs,
       ) {
         return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.only(
+            left: 18,
+            right: 18,
+            top: 8,
+            bottom: 18,
+          ),
           itemCount: data.length,
           itemBuilder: (context, index) {
             final currentJuz = data[index];
