@@ -173,3 +173,4 @@ This project was developed with a focus on long-term maintainability. It heavily
   <sub>Developed with standard software engineering practices.</sub><br>
   <b>© 2026 Adnan Nasr</b>
 </div>
+.
