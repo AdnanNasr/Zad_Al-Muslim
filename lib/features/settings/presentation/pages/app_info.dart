@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/common/pages/notifications_page.dart';
 import 'package:zad_al_muslim/core/common/widgets/page_header.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
@@ -60,26 +59,6 @@ class AppInfo extends StatelessWidget {
                     SettingCards(
                       icon: const Right(Icons.numbers),
                       text: AppLocalizations.of(context)!.version,
-                      widget: Text(
-                        "1.0.0",
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "Cairo",
-                        ),
-                      ),
-                    ),
-                    SettingCards(
-                      icon: const Right(Icons.notifications),
-                      text: AppLocalizations.of(context)!.version,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NotificationsPage(),
-                          ),
-                        );
-                      },
                       widget: Text(
                         "1.0.0",
                         style: TextStyle(
