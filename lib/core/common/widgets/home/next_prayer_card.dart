@@ -455,7 +455,7 @@ class _OpenPrayerTimesAction extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: Icon(
-            Icons.arrow_back_rounded,
+            Icons.arrow_forward_rounded,
             size: 17.sp,
             color: accentColor,
           ),

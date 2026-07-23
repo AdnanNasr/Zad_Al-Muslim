@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Color kDefaultScheme = const Color.fromARGB(255, 19, 116, 129);
+const Color kDefaultScheme = Color(0xFF176B70);
 
 class ThemeNotifier extends StateNotifier<Color> {
   ThemeNotifier() : super(kDefaultScheme);

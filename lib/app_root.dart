@@ -120,6 +120,8 @@ class _AppRootState extends ConsumerState<AppRoot> {
 
       theme: AppTheme.light(userColor),
       darkTheme: AppTheme.dark(userColor),
+      themeAnimationDuration: const Duration(milliseconds: 320),
+      themeAnimationCurve: Curves.easeOutCubic,
       initialRoute: widget.hasSeenOnboarding
           ? "/custom_navigation_bar"
           : "/onboarding",

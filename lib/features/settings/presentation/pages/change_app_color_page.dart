@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
+import 'package:zad_al_muslim/core/themes/app_theme.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 
 class ChangeAppColorPage extends ConsumerStatefulWidget {
@@ -13,21 +14,13 @@ class ChangeAppColorPage extends ConsumerStatefulWidget {
 }
 
 class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
-  // قائمة الألوان المقترحة للتطبيق
-  final Map<String, Color> appColors = {
-    "الافتراضي": const Color.fromARGB(
-      255,
-      19,
-      116,
-      129,
-    ), // ازرق هادئ: اللون الافتراضي
-    "فيروزي ": Colors.teal, // ازرق هادئ
-    "ازرق": Colors.blue.shade700, // أزرق براند
-    "أخضر": Colors.green.shade700, // أخضر إسلامي
-    "أحمر": Colors.red.shade900, // أحمر
-    "بنفسجي": Colors.purple.shade700, // بنفسجي
-    "وردي": Colors.pink.shade700, // وردي
-    "برتقالي": Colors.orange.shade700, // برتقالي
+  static const Map<String, Color> appColors = {
+    'فيروزي (الافتراضي)': AppTheme.defaultPrimary,
+    'أخضر زيتوني': Color(0xFF4F6F52),
+    'أزرق ليلي': Color(0xFF345995),
+    'بنفسجي هادئ': Color(0xFF695783),
+    'عنابي': Color(0xFF8A3F4D),
+    'بني رملي': Color(0xFF8A6543),
   };
 
   @override
@@ -42,17 +35,6 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle العلوي للسحب
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 12.h),
-            width: 40.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: Theme.of(context).dividerColor.withValues(alpha: .2),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-          ),
-
           // العنوان
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -68,17 +50,11 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
                 ),
                 const Spacer(),
                 IconButton.filledTonal(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                      context.color.primary,
-                    ),
-                  ),
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(
                     Icons.close,
                     size: 18.sp,
                     fontWeight: FontWeight.bold,
-                    color: context.color.onPrimary,
                   ),
                 ),
               ],
@@ -98,14 +74,11 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
               ),
               itemCount: appColors.length,
               itemBuilder: (context, index) {
-                final color = appColors.values.toList()[index];
+                final entry = appColors.entries.elementAt(index);
+                final color = entry.value;
                 final isSelected = currentAppColor == color;
 
-                return _buildColorCard(
-                  color,
-                  isSelected,
-                  appColors.keys.toList()[index],
-                );
+                return _buildColorCard(color, isSelected, entry.key);
               },
             ),
           ),
@@ -118,40 +91,60 @@ class _ChangeAppColorPageState extends ConsumerState<ChangeAppColorPage> {
     return GestureDetector(
       onTap: () => ref.read(userThemeProvider.notifier).setScheme(color),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
         padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: isSelected
+              ? color.withValues(alpha: 0.08)
+              : context.color.surfaceContainerLow,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: isSelected ? color : Colors.transparent,
-            width: 2.5,
+            color: isSelected ? color : context.color.outlineVariant,
+            width: isSelected ? 2 : 1,
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              colorName,
-              style: TextStyle(
-                fontSize: 18.sp,
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
             Container(
-              width: 35.w,
-              height: 35.h,
+              width: 40.r,
+              height: 40.r,
+              padding: EdgeInsets.all(5.r),
               decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 1,
+                color: color.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
             ),
-            if (isSelected) Icon(Icons.check_circle, size: 22.sp, color: color),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Text(
+                colorName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: context.color.onSurface,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 180),
+              child: isSelected
+                  ? Icon(
+                      Icons.check_circle_rounded,
+                      key: ValueKey(color),
+                      size: 22.sp,
+                      color: color,
+                    )
+                  : SizedBox(width: 22.w),
+            ),
           ],
         ),
       ),

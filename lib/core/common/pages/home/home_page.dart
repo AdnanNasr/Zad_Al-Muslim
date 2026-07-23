@@ -1,50 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zad_al_muslim/core/common/widgets/home/dashboard_card.dart';
+import 'package:zad_al_muslim/core/common/providers/home_clock_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/home_header.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/today_duaa.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
-import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/next_prayer_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/reading_progress_card.dart';
-import 'package:zad_al_muslim/core/constants/surah_names.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final marks = ref.watch(marksProvder);
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
 
-    final Mark? lastReadingPosition = marks.isNotEmpty ? marks.last : null;
+class _HomePageState extends ConsumerState<HomePage>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(homeClockProvider);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final sections = <Widget>[
-      const RepaintBoundary(child: HomeHeader()),
-      const RepaintBoundary(child: NextPrayerCard()),
-      const RepaintBoundary(child: QuickAdkarStrip()),
-      RepaintBoundary(
-        child: PrimarySectionWidget(lastReadingPosition: lastReadingPosition),
-      ),
-      const RepaintBoundary(child: ReadingProgressCard()),
+      const HomeHeader(),
+      const NextPrayerCard(),
+      ReadingProgressCard(onTap: (mark) => _openQuran(context, mark)),
+      const PrimarySectionWidget(),
+      const QuickAdkarStrip(),
       SizedBox(height: 8.h),
-      const RepaintBoundary(child: TodayDuaa()),
+      const TodayDuaa(),
       SizedBox(height: MediaQuery.paddingOf(context).bottom + 90.h),
     ];
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       body: CustomScrollView(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverList.builder(
             itemCount: sections.length,
@@ -56,129 +68,8 @@ class HomePage extends ConsumerWidget {
       ),
     );
   }
-}
 
-class PrimarySectionWidget extends ConsumerWidget {
-  const PrimarySectionWidget({super.key, required this.lastReadingPosition});
-
-  final Mark? lastReadingPosition;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final localizations = AppLocalizations.of(context)!;
-
-    final hasLastReading = lastReadingPosition != null;
-
-    final quranLabel = hasLastReading ? 'آخر قراءة' : 'ابدأ رحلتك';
-
-    final quranValue = hasLastReading
-        ? 'سورة ${SurahNames.getFormattedName(lastReadingPosition!.surahNumber ?? 1)} • الصفحة ${lastReadingPosition!.pageNumber}'
-        : 'ابدأ رحلتك مع القرآن الكريم';
-
-    final quranFooter = hasLastReading ? 'متابعة القراءة' : 'ابدأ القراءة';
-
-    final adkarContent = _getAdkarContent();
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(14.w, 16.h, 14.w, 10.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader(context),
-
-          SizedBox(height: 14.h),
-
-          DashboardCard(
-            title: localizations.quran_kareem,
-            label: quranLabel,
-            value: quranValue,
-            footer: quranFooter,
-            iconImage: 'assets/icons/quran.png',
-            accentColor: colorScheme.primary,
-            size: DashboardCardSize.large,
-            onTap: () => _openQuran(context),
-          ),
-
-          SizedBox(height: 12.h),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: DashboardCard(
-                  title: 'القرآن المُرتل',
-                  label: 'استماع وتحميل',
-                  value: 'اختر قارئك المفضل',
-                  footer: 'فتح المشغل',
-                  iconImage: 'assets/icons/voice.png',
-                  accentColor: colorScheme.tertiary,
-                  onTap: () => _openQuranMoratal(context),
-                ),
-              ),
-
-              SizedBox(width: 12.w),
-
-              Expanded(
-                child: DashboardCard(
-                  title: localizations.adkar_adia,
-                  label: adkarContent.label,
-                  value: adkarContent.value,
-                  footer: 'فتح الأذكار',
-                  iconImage: 'assets/icons/prayer.png',
-                  accentColor: colorScheme.secondary,
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/adkar_page');
-                  },
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 12.h),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: DashboardCard(
-                  title: localizations.qebla_direction,
-                  label: 'تحديد الاتجاه',
-                  value: 'البوصلة جاهزة',
-                  footer: 'فتح القبلة',
-                  iconImage: 'assets/icons/kaaba.png',
-                  accentColor: colorScheme.tertiary,
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/qebla_page');
-                  },
-                ),
-              ),
-
-              SizedBox(width: 12.w),
-
-              Expanded(
-                child: DashboardCard(
-                  title: localizations.sunah,
-                  label: 'السنة النبوية',
-                  value: 'أحاديث وهدي نبوي',
-                  footer: 'استكشف السنة',
-                  iconImage: 'assets/icons/quran2.png',
-                  accentColor: colorScheme.primary,
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.sunnahPage);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _openQuran(BuildContext context) {
-    final position = lastReadingPosition;
-
+  void _openQuran(BuildContext context, Mark? position) {
     if (position == null) {
       Navigator.of(context).pushNamed(Routes.selectSurahPage);
       return;
@@ -194,32 +85,99 @@ class PrimarySectionWidget extends ConsumerWidget {
       ),
     );
   }
+}
 
-  _AdkarCardContent _getAdkarContent() {
-    final hour = DateTime.now().hour;
+class PrimarySectionWidget extends ConsumerWidget {
+  const PrimarySectionWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final localizations = AppLocalizations.of(context)!;
+    final now = ref.watch(homeClockProvider).value ?? DateTime.now();
+    final adkarContent = _getAdkarContent(now);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 16.h, 14.w, 10.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(context),
+
+          SizedBox(height: 14.h),
+
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tileWidth = (constraints.maxWidth - 12.w) / 2;
+              return Wrap(
+                spacing: 12.w,
+                runSpacing: 12.h,
+                children: [
+                  _ServiceTile(
+                    width: tileWidth,
+                    title: 'القرآن المُرتل',
+                    subtitle: 'استماع وتحميل',
+                    iconImage: 'assets/icons/voice.png',
+                    accentColor: colorScheme.primary,
+                    onTap: () => _openQuranMoratal(context),
+                  ),
+                  _ServiceTile(
+                    width: tileWidth,
+                    title: localizations.adkar_adia,
+                    subtitle: adkarContent.value,
+                    iconImage: 'assets/icons/prayer.png',
+                    accentColor: colorScheme.tertiary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/adkar_page');
+                    },
+                  ),
+                  _ServiceTile(
+                    width: tileWidth,
+                    title: localizations.qebla_direction,
+                    subtitle: 'تحديد الاتجاه',
+                    iconImage: 'assets/icons/kaaba.png',
+                    accentColor: colorScheme.secondary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/qebla_page');
+                    },
+                  ),
+                  _ServiceTile(
+                    width: tileWidth,
+                    title: localizations.sunah,
+                    subtitle: 'أحاديث وهدي نبوي',
+                    iconImage: 'assets/icons/quran2.png',
+                    accentColor: colorScheme.primary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.sunnahPage);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  _AdkarCardContent _getAdkarContent(DateTime now) {
+    final hour = now.hour;
 
     if (hour >= 4 && hour < 12) {
-      return const _AdkarCardContent(
-        label: 'ورد الصباح',
-        value: 'أذكار الصباح',
-      );
+      return const _AdkarCardContent('أذكار الصباح');
     }
 
     if (hour >= 12 && hour < 18) {
-      return const _AdkarCardContent(
-        label: 'وردك اليومي',
-        value: 'الأذكار اليومية',
-      );
+      return const _AdkarCardContent('الأذكار اليومية');
     }
 
-    return const _AdkarCardContent(label: 'ورد المساء', value: 'أذكار المساء');
+    return const _AdkarCardContent('أذكار المساء');
   }
 }
 
 class _AdkarCardContent {
-  const _AdkarCardContent({required this.label, required this.value});
+  const _AdkarCardContent(this.value);
 
-  final String label;
   final String value;
 }
 
@@ -279,38 +237,107 @@ Widget _buildSectionHeader(BuildContext context) {
 }
 
 Future<void> _openQuranMoratal(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-
-  final permissionShownCount =
-      prefs.getInt(SharedPrefKeys.batteryPermissionKey) ?? 0;
-
-  final status = await Permission.ignoreBatteryOptimizations.status;
-
-  if (!status.isDenied) {
-    await prefs.remove(SharedPrefKeys.batteryPermissionKey);
-  }
-
-  if (permissionShownCount < 2 && status.isDenied) {
-    if (!context.mounted) return;
-
-    await Permission.ignoreBatteryOptimizations.request();
-
-    await prefs.setInt(
-      SharedPrefKeys.batteryPermissionKey,
-      permissionShownCount + 1,
-    );
-  }
-
-  if (!context.mounted) return;
-
-  Navigator.pushNamed(context, Routes.quranMoratal);
+  await Navigator.pushNamed(context, Routes.quranMoratal);
 }
 
-class ComingPrayWidget extends StatelessWidget {
-  const ComingPrayWidget({super.key});
+class _ServiceTile extends StatelessWidget {
+  const _ServiceTile({
+    required this.width,
+    required this.title,
+    required this.subtitle,
+    required this.iconImage,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  final double width;
+  final String title;
+  final String subtitle;
+  final String iconImage;
+  final Color accentColor;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return const NextPrayerCard();
+    final scheme = Theme.of(context).colorScheme;
+
+    return Semantics(
+      button: true,
+      label: '$title، $subtitle',
+      child: SizedBox(
+        width: width,
+        child: Material(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(18.r),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Ink(
+              padding: EdgeInsets.all(14.r),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18.r),
+                border: Border.all(color: accentColor.withValues(alpha: 0.16)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 42.r,
+                    height: 42.r,
+                    padding: EdgeInsets.all(8.r),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.11),
+                      borderRadius: BorderRadius.circular(13.r),
+                    ),
+                    child: Image.asset(
+                      iconImage,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, _, _) => Icon(
+                        Icons.widgets_rounded,
+                        color: accentColor,
+                        size: 22.sp,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 11.h),
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w800,
+                      color: scheme.onSurface,
+                      height: 1.45,
+                    ),
+                  ),
+                  SizedBox(height: 3.h),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
+                      color: scheme.onSurfaceVariant,
+                      height: 1.5,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Icon(
+                    Icons.arrow_back_rounded,
+                    size: 18.sp,
+                    color: accentColor,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:zad_al_muslim/core/common/providers/home_clock_provider.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final now = ref.watch(homeClockProvider).value ?? DateTime.now();
 
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 8.h),
+        padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 6.h),
         child: Material(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(26.r),
           clipBehavior: Clip.antiAlias,
           child: Ink(
-            padding: EdgeInsets.all(18.r),
+            padding: EdgeInsets.all(15.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(26.r),
               border: Border.all(
@@ -33,7 +36,7 @@ class HomeHeader extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(child: _HeaderContent()),
+                    Expanded(child: _HeaderContent(now: now)),
 
                     SizedBox(width: 14.w),
 
@@ -41,9 +44,9 @@ class HomeHeader extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 18.h),
+                SizedBox(height: 12.h),
 
-                const _DatesRow(),
+                _DatesRow(now: now),
               ],
             ),
           ),
@@ -54,7 +57,9 @@ class HomeHeader extends StatelessWidget {
 }
 
 class _HeaderContent extends StatelessWidget {
-  const _HeaderContent();
+  const _HeaderContent({required this.now});
+
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +83,7 @@ class _HeaderContent extends StatelessWidget {
 
             Flexible(
               child: Text(
-                _getGreeting(),
+                _getGreeting(now),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -101,7 +106,7 @@ class _HeaderContent extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 24.sp,
+            fontSize: 22.sp,
             fontWeight: FontWeight.w900,
             color: colorScheme.onSurface,
             height: 1.25,
@@ -111,12 +116,12 @@ class _HeaderContent extends StatelessWidget {
         SizedBox(height: 4.h),
 
         Text(
-          _getDailyMessage(),
+          _getDailyMessage(now),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: 'Tajawal',
-            fontSize: 12.5.sp,
+            fontSize: 12.sp,
             fontWeight: FontWeight.w500,
             color: colorScheme.onSurfaceVariant,
             height: 1.5,
@@ -136,40 +141,47 @@ class _AppLogoButton extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return Material(
-      color: colorScheme.primaryContainer.withValues(alpha: 0.40),
-      borderRadius: BorderRadius.circular(18.r),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          _showBehindScenesDialog(context);
-        },
-        borderRadius: BorderRadius.circular(18.r),
-        splashColor: colorScheme.primary.withValues(alpha: 0.10),
-        highlightColor: colorScheme.primary.withValues(alpha: 0.05),
-        child: Container(
-          width: 56.r,
-          height: 56.r,
-          padding: EdgeInsets.all(8.r),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18.r),
-            border: Border.all(
-              color: colorScheme.primary.withValues(
-                alpha: isDark ? 0.24 : 0.15,
+    return Semantics(
+      button: true,
+      label: 'عن تطبيق زاد المسلم ومشاركته',
+      child: Tooltip(
+        message: 'عن التطبيق',
+        child: Material(
+          color: colorScheme.primaryContainer.withValues(alpha: 0.40),
+          borderRadius: BorderRadius.circular(16.r),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              _showBehindScenesDialog(context);
+            },
+            borderRadius: BorderRadius.circular(16.r),
+            splashColor: colorScheme.primary.withValues(alpha: 0.10),
+            highlightColor: colorScheme.primary.withValues(alpha: 0.05),
+            child: Container(
+              width: 50.r,
+              height: 50.r,
+              padding: EdgeInsets.all(8.r),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: colorScheme.primary.withValues(
+                    alpha: isDark ? 0.24 : 0.15,
+                  ),
+                ),
+              ),
+              child: Image.asset(
+                'assets/images/icon-512.png',
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) {
+                  return Icon(
+                    Icons.menu_book_rounded,
+                    size: 26.sp,
+                    color: colorScheme.primary,
+                  );
+                },
               ),
             ),
-          ),
-          child: Image.asset(
-            'assets/images/icon-512.png',
-            fit: BoxFit.contain,
-            errorBuilder: (_, _, _) {
-              return Icon(
-                Icons.menu_book_rounded,
-                size: 28.sp,
-                color: colorScheme.primary,
-              );
-            },
           ),
         ),
       ),
@@ -178,7 +190,9 @@ class _AppLogoButton extends StatelessWidget {
 }
 
 class _DatesRow extends StatelessWidget {
-  const _DatesRow();
+  const _DatesRow({required this.now});
+
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +206,7 @@ class _DatesRow extends StatelessWidget {
               _DateItem(
                 icon: Icons.dark_mode_outlined,
                 label: 'التاريخ الهجري',
-                text: _getFormattedHijriDate(),
+                text: _getFormattedHijriDate(now),
                 accent: _HeaderDateAccent.primary,
               ),
 
@@ -201,7 +215,7 @@ class _DatesRow extends StatelessWidget {
               _DateItem(
                 icon: Icons.calendar_today_rounded,
                 label: 'التاريخ الميلادي',
-                text: _getFormattedGregorianDate(),
+                text: _getFormattedGregorianDate(now),
                 accent: _HeaderDateAccent.secondary,
               ),
             ],
@@ -214,7 +228,7 @@ class _DatesRow extends StatelessWidget {
               child: _DateItem(
                 icon: Icons.dark_mode_outlined,
                 label: 'الهجري',
-                text: _getFormattedHijriDate(),
+                text: _getFormattedHijriDate(now),
                 accent: _HeaderDateAccent.primary,
               ),
             ),
@@ -225,7 +239,7 @@ class _DatesRow extends StatelessWidget {
               child: _DateItem(
                 icon: Icons.calendar_today_rounded,
                 label: 'الميلادي',
-                text: _getFormattedGregorianDate(),
+                text: _getFormattedGregorianDate(now),
                 accent: _HeaderDateAccent.secondary,
               ),
             ),
@@ -259,8 +273,8 @@ class _DateItem extends StatelessWidget {
     };
 
     return Container(
-      constraints: BoxConstraints(minHeight: 56.h),
-      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 9.h),
+      constraints: BoxConstraints(minHeight: 48.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
       decoration: BoxDecoration(
         color: accentColor.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(16.r),
@@ -269,13 +283,13 @@ class _DateItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 34.r,
-            height: 34.r,
+            width: 30.r,
+            height: 30.r,
             decoration: BoxDecoration(
               color: accentColor.withValues(alpha: 0.11),
               borderRadius: BorderRadius.circular(11.r),
             ),
-            child: Icon(icon, size: 17.sp, color: accentColor),
+            child: Icon(icon, size: 16.sp, color: accentColor),
           ),
 
           SizedBox(width: 9.w),
@@ -291,7 +305,7 @@ class _DateItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 8.5.sp,
+                    fontSize: 10.sp,
                     fontWeight: FontWeight.w600,
                     color: colorScheme.onSurfaceVariant,
                     height: 1.3,
@@ -306,7 +320,7 @@ class _DateItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 10.5.sp,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.w800,
                     color: colorScheme.onSurface,
                     height: 1.4,
@@ -323,8 +337,8 @@ class _DateItem extends StatelessWidget {
 
 enum _HeaderDateAccent { primary, secondary }
 
-String _getGreeting() {
-  final hour = DateTime.now().hour;
+String _getGreeting(DateTime now) {
+  final hour = now.hour;
 
   if (hour >= 4 && hour < 12) {
     return 'صباح مبارك';
@@ -341,8 +355,8 @@ String _getGreeting() {
   return 'السلام عليكم ورحمة الله';
 }
 
-String _getDailyMessage() {
-  final hour = DateTime.now().hour;
+String _getDailyMessage(DateTime now) {
+  final hour = now.hour;
 
   if (hour >= 4 && hour < 10) {
     return 'ابدأ يومك بذكر الله وتلاوة كتابه';
@@ -359,9 +373,7 @@ String _getDailyMessage() {
   return 'اجعل ذكر الله آخر ما تختم به يومك';
 }
 
-String _getFormattedGregorianDate() {
-  final now = DateTime.now();
-
+String _getFormattedGregorianDate(DateTime now) {
   const dayNames = [
     'الإثنين',
     'الثلاثاء',
@@ -393,10 +405,10 @@ String _getFormattedGregorianDate() {
   return '$dayName، ${now.day} $month ${now.year}';
 }
 
-String _getFormattedHijriDate() {
+String _getFormattedHijriDate(DateTime now) {
   HijriCalendar.setLocal('ar');
 
-  final hijriDate = HijriCalendar.now();
+  final hijriDate = HijriCalendar.fromDate(now);
 
   return '${hijriDate.hDay} '
       '${hijriDate.longMonthName} '

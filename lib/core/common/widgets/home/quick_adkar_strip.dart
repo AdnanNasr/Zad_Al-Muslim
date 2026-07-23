@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/common/providers/home_clock_provider.dart';
 import 'package:zad_al_muslim/features/adkar/domain/entities/adkar_entity.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_details_page.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/providers/adkar_provider.dart';
@@ -50,6 +51,7 @@ class QuickAdkarStrip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final adkarAsync = ref.watch(allAdkarProvider);
+    final now = ref.watch(homeClockProvider).value ?? DateTime.now();
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -65,7 +67,7 @@ class QuickAdkarStrip extends ConsumerWidget {
 
           adkarAsync.when(
             data: (adkarList) {
-              final orderedItems = _getTimeAwareItems();
+              final orderedItems = _getTimeAwareItems(now);
 
               return SizedBox(
                 height: 78.h,
@@ -126,9 +128,9 @@ class QuickAdkarStrip extends ConsumerWidget {
     return null;
   }
 
-  List<_QuickAdkarItem> _getTimeAwareItems() {
+  List<_QuickAdkarItem> _getTimeAwareItems(DateTime now) {
     final items = List<_QuickAdkarItem>.from(_quickItems);
-    final hour = DateTime.now().hour;
+    final hour = now.hour;
 
     String preferredCategory;
 
@@ -194,7 +196,7 @@ class _SectionHeader extends StatelessWidget {
                 'وصول سريع إلى أذكارك اليومية',
                 style: TextStyle(
                   fontFamily: 'Cairo',
-                  fontSize: 10.sp,
+                  fontSize: 11.sp,
                   fontWeight: FontWeight.w500,
                   color: colorScheme.onSurfaceVariant,
                   height: 1.4,
@@ -327,7 +329,7 @@ class _QuickAdkarCardState extends State<_QuickAdkarCard> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontFamily: 'Cairo',
-                          fontSize: 9.sp,
+                          fontSize: 11.sp,
                           fontWeight: FontWeight.w500,
                           color: widget.isAvailable
                               ? widget.isRecommended

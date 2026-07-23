@@ -17,6 +17,7 @@ class TodayDuaa extends ConsumerStatefulWidget {
 class _TodayDuaaState extends ConsumerState<TodayDuaa> {
   Timer? _copiedMessageTimer;
   bool _showCopiedMessage = false;
+  bool _isExpanded = false;
 
   @override
   void dispose() {
@@ -47,6 +48,10 @@ class _TodayDuaaState extends ConsumerState<TodayDuaa> {
               return _DuaaContent(
                 duaaText: duaaText,
                 showCopiedMessage: _showCopiedMessage,
+                isExpanded: _isExpanded,
+                onToggleExpanded: () {
+                  setState(() => _isExpanded = !_isExpanded);
+                },
                 onCopy: () => _copyDuaa(duaaText),
                 onShare: () => _shareDuaa(duaaText),
               );
@@ -98,12 +103,16 @@ class _DuaaContent extends StatelessWidget {
   const _DuaaContent({
     required this.duaaText,
     required this.showCopiedMessage,
+    required this.isExpanded,
+    required this.onToggleExpanded,
     required this.onCopy,
     required this.onShare,
   });
 
   final String duaaText;
   final bool showCopiedMessage;
+  final bool isExpanded;
+  final VoidCallback onToggleExpanded;
   final VoidCallback onCopy;
   final VoidCallback onShare;
 
@@ -142,6 +151,8 @@ class _DuaaContent extends StatelessWidget {
                   child: Text(
                     duaaText,
                     textAlign: TextAlign.center,
+                    maxLines: isExpanded ? null : 5,
+                    overflow: isExpanded ? null : TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Tajawal',
                       fontSize: 17.sp,
@@ -151,6 +162,19 @@ class _DuaaContent extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                if (duaaText.length > 150) ...[
+                  SizedBox(height: 6.h),
+                  TextButton.icon(
+                    onPressed: onToggleExpanded,
+                    icon: Icon(
+                      isExpanded
+                          ? Icons.expand_less_rounded
+                          : Icons.expand_more_rounded,
+                    ),
+                    label: Text(isExpanded ? 'عرض أقل' : 'عرض الدعاء كاملًا'),
+                  ),
+                ],
               ],
             ),
           ),
@@ -164,7 +188,7 @@ class _DuaaContent extends StatelessWidget {
                 opacity: animation,
                 child: SizeTransition(
                   sizeFactor: animation,
-                  axisAlignment: -1,
+                  alignment: Alignment.topCenter,
                   child: child,
                 ),
               );
@@ -280,7 +304,7 @@ class _DuaaHeader extends StatelessWidget {
 }
 
 class _CopiedMessage extends StatelessWidget {
-  const _CopiedMessage({super.key = const ValueKey('visible-copy-message')});
+  const _CopiedMessage() : super(key: const ValueKey('visible-copy-message'));
 
   @override
   Widget build(BuildContext context) {
