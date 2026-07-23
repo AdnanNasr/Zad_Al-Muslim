@@ -1,27 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:hijri/hijri_calendar.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zad_al_muslim/core/common/providers/home_clock_provider.dart';
+import 'package:zad_al_muslim/core/common/widgets/home/home_header.dart';
+import 'package:zad_al_muslim/core/common/widgets/home/service_tile.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/today_duaa.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
-import 'package:zad_al_muslim/core/constants/shared_pref_keys.dart';
-import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
-import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/quran_pages.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/mark.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
-import 'package:zad_al_muslim/core/common/widgets/home/home_button.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/next_prayer_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/quick_adkar_strip.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/reading_progress_card.dart';
-import 'package:zad_al_muslim/core/constants/surah_names.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -31,733 +21,226 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage>
-    with SingleTickerProviderStateMixin {
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
-  bool showCopiedMessage = false;
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(homeClockProvider);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final themeMode = ref.watch(themeProvider);
-    final marksProvider = ref.watch(marksProvder);
-
-    Mark? lastReadingPostion;
-    if (marksProvider.isNotEmpty) {
-      lastReadingPostion = marksProvider.last;
-    }
+    final sections = <Widget>[
+      const HomeHeader(),
+      const NextPrayerCard(),
+      ReadingProgressCard(onTap: (mark) => _openQuran(context, mark)),
+      const PrimarySectionWidget(),
+      const QuickAdkarStrip(),
+      SizedBox(height: 8.h),
+      const TodayDuaa(),
+      SizedBox(height: MediaQuery.paddingOf(context).bottom + 90.h),
+    ];
 
     return Scaffold(
-      backgroundColor: context.color.primary.withValues(alpha: .07),
-      body: SingleChildScrollView(
-        child: BodyContent(
-          colorScheme: colorScheme,
-          themeMode: themeMode,
-          lastReadingPostion: lastReadingPostion,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+      body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverList.builder(
+            itemCount: sections.length,
+            itemBuilder: (context, index) {
+              return sections[index];
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openQuran(BuildContext context, Mark? position) {
+    if (position == null) {
+      Navigator.of(context).pushNamed(Routes.selectSurahPage);
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => QuranPages(
+          highlightVerse: position.ayahNumber,
+          highlightSurah: position.surahNumber,
+          pageNumber: position.pageNumber,
         ),
       ),
     );
   }
 }
 
-class BodyContent extends ConsumerWidget {
-  const BodyContent({
-    super.key,
-    required this.colorScheme,
-    required this.themeMode,
-    required this.lastReadingPostion,
-  });
-
-  final ColorScheme colorScheme;
-  final ThemeMode themeMode;
-  final Mark? lastReadingPostion;
+class PrimarySectionWidget extends ConsumerWidget {
+  const PrimarySectionWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final children = [
-      headerWidget(context, themeMode),
+    final colorScheme = Theme.of(context).colorScheme;
+    final localizations = AppLocalizations.of(context)!;
+    final now = ref.watch(homeClockProvider).value ?? DateTime.now();
+    final adkarContent = _getAdkarContent(now);
 
-      const ComingPrayWidget(),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 16.h, 14.w, 10.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(context),
 
-      const QuickAdkarStrip(),
+          SizedBox(height: 14.h),
 
-      PrimarySectionWidget(colorScheme: colorScheme, themeMode: themeMode),
-
-      SizedBox(height: 8.h),
-      if (lastReadingPostion != null)
-        _buildLastReadingWidget(
-          context,
-          colorScheme,
-          themeMode,
-          lastReadingPostion!,
-        ),
-
-      const ReadingProgressCard(),
-
-      SizedBox(height: 8.h),
-
-      TodayDuaa(colorScheme: colorScheme, themeMode: themeMode),
-      SizedBox(height: 100.h),
-    ];
-
-    return Column(children: children);
-  }
-
-  Widget headerWidget(BuildContext context, ThemeMode themeMode) {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: 16.h,
-          bottom: 10.h,
-          right: 14.w,
-          left: 14.w,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tileWidth = (constraints.maxWidth - 12.w) / 2;
+              return Wrap(
+                spacing: 12.w,
+                runSpacing: 12.h,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getGreeting(),
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontFamily: "Cairo",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            "زاد المسلم",
-                            style: TextStyle(
-                              fontSize: 23.sp,
-                              fontFamily: "Cairo",
-                              fontWeight: FontWeight.bold,
-                              color: context.color.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.w),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                    side: BorderSide(
-                                      color: themeMode.isDark
-                                          ? context.color.onSurface
-                                          : Colors.transparent,
-                                    ),
-                                  ),
-                                  elevation: 10,
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.surface,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // أيقونة علوية ترحيبية
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary
-                                                .withValues(alpha: .1),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.favorite_rounded,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                            size: 32,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-
-                                        // عنوان النافذة
-                                        Text(
-                                          "خلف كواليس التطبيق",
-                                          style: TextStyle(
-                                            fontFamily: 'Cairo',
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onSurface,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 16),
-
-                                        Text(
-                                          "خلف هذه الشاشة البسيطة والسطور البرمجية المرتبة، تكمن رحلة طويلة من الشغف، السهر، والتعلم المستمر. أردت من خلال هذا المشروع أن أقدم لك رفيقاً إيمانياً يومياً، يجمع بين سهولة الاستخدام، جمال التصميم، والأداء السلس الخالي تماماً من أي إعلانات تشوش عليك خلوتك مع ذكر الله.",
-                                          style: TextStyle(
-                                            fontFamily: 'Tajawal',
-                                            fontSize: 15,
-                                            height: 1.6,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onSurfaceVariant,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 24),
-
-                                        // أزرار التحكم
-                                        Row(
-                                          children: [
-                                            // زر مشاركة الأجر
-                                            Expanded(
-                                              flex: 2,
-                                              child: ElevatedButton.icon(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Theme.of(
-                                                    context,
-                                                  ).colorScheme.primary,
-                                                  foregroundColor: Theme.of(
-                                                    context,
-                                                  ).colorScheme.onPrimary,
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        vertical: 12,
-                                                      ),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  elevation: 0,
-                                                ),
-                                                onPressed: () async {
-                                                  // كود مشاركة التطبيق
-                                                  final share =
-                                                      SharePlus.instance;
-                                                  await share.share(
-                                                    ShareParams(
-                                                      title: "شارك التطبيق",
-                                                      text:
-                                                          'أرشح لك تطبيق "زاد المسلم" رفيقك اليومي للأذكار والأدعية بدون إعلانات وبأداء سلس ومميز 🕋✨\n\nhttps://play.google.com/store/apps/details?id=com.zad_al_muslim.adnan',
-                                                    ),
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.share_rounded,
-                                                  size: 18,
-                                                ),
-                                                label: const Text(
-                                                  "شارك الأجر",
-                                                  style: TextStyle(
-                                                    fontFamily: 'Tajawal',
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-
-                                            // زر الإغلاق
-                                            Expanded(
-                                              flex: 1,
-                                              child: OutlinedButton(
-                                                style: OutlinedButton.styleFrom(
-                                                  side: BorderSide(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .outlineVariant,
-                                                  ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        vertical: 12,
-                                                      ),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                ),
-                                                onPressed: () =>
-                                                    Navigator.of(context).pop(),
-                                                child: Text(
-                                                  "إغلاق",
-                                                  style: TextStyle(
-                                                    fontFamily: 'Tajawal',
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurfaceVariant,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: Image.asset(
-                            "assets/images/icon-512.png",
-                            width: 50.w,
-                          ),
-                        ),
-                      ),
-                    ],
+                  ServiceTile(
+                    width: tileWidth,
+                    title: 'القرآن المُرتل',
+                    subtitle: 'استماع وتحميل',
+                    actionName: "استمع الآن",
+                    iconImage: 'assets/icons/voice.png',
+                    accentColor: colorScheme.primary,
+                    onTap: () => _openQuranMoratal(context),
                   ),
-                  SizedBox(height: 16.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 12.h,
-                      horizontal: 16.w,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.color.primary.withValues(alpha: .08),
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: context.color.outlineVariant,
-                        width: 1,
-                      ),
-                    ),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.brightness_2_outlined,
-                                size: 16.sp,
-                                color: context.color.primary,
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                _getFormattedDateHijri(),
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontFamily: "Cairo",
-                                  fontWeight: FontWeight.w700,
-                                  color: context.color.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          VerticalDivider(
-                            color: context.color.outlineVariant,
-                            thickness: 1,
-                            width: 24.w,
-                            indent: 2,
-                            endIndent: 2,
-                          ),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: 15.sp,
-                                color: context.color.primary,
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                _getFormattedDate(),
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontFamily: "Cairo",
-                                  fontWeight: FontWeight.w700,
-                                  color: context.color.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  ServiceTile(
+                    width: tileWidth,
+                    title: localizations.adkar_adia,
+                    subtitle: adkarContent.value,
+                    actionName: "طمأن قلبك بذكر الله",
+                    iconImage: 'assets/icons/prayer.png',
+                    accentColor: colorScheme.tertiary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/adkar_page');
+                    },
+                  ),
+                  ServiceTile(
+                    width: tileWidth,
+                    title: localizations.qebla_direction,
+                    subtitle: 'تحديد الاتجاه',
+                    actionName: "البوصلة جاهزة",
+                    iconImage: 'assets/icons/kaaba.png',
+                    accentColor: colorScheme.secondary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/qebla_page');
+                    },
+                  ),
+                  ServiceTile(
+                    width: tileWidth,
+                    title: localizations.sunah,
+                    subtitle: 'أحاديث وهدي نبوي',
+                    actionName: "تصفح الأحاديث",
+                    iconImage: 'assets/icons/quran2.png',
+                    accentColor: colorScheme.primary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.sunnahPage);
+                    },
                   ),
                 ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  _AdkarCardContent _getAdkarContent(DateTime now) {
+    final hour = now.hour;
+
+    if (hour >= 4 && hour < 12) {
+      return const _AdkarCardContent('أذكار الصباح');
+    }
+
+    if (hour >= 12 && hour < 18) {
+      return const _AdkarCardContent('الأذكار اليومية');
+    }
+
+    return const _AdkarCardContent('أذكار المساء');
+  }
+}
+
+class _AdkarCardContent {
+  const _AdkarCardContent(this.value);
+
+  final String value;
+}
+
+Widget _buildSectionHeader(BuildContext context) {
+  final colorScheme = Theme.of(context).colorScheme;
+
+  return Row(
+    children: [
+      Container(
+        width: 38.r,
+        height: 38.r,
+        decoration: BoxDecoration(
+          color: colorScheme.primaryContainer.withValues(alpha: 0.65),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Icon(
+          Icons.dashboard_customize_rounded,
+          size: 20.sp,
+          color: colorScheme.onPrimaryContainer,
+        ),
+      ),
+
+      SizedBox(width: 10.w),
+
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'خدماتك اليومية',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w800,
+                color: colorScheme.onSurface,
+                height: 1.3,
+              ),
+            ),
+
+            SizedBox(height: 1.h),
+
+            Text(
+              'القرآن والأذكار والسنة بين يديك',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w500,
+                color: colorScheme.onSurfaceVariant,
+                height: 1.4,
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildLastReadingWidget(
-    BuildContext context,
-    ColorScheme colorScheme,
-    ThemeMode themeMode,
-    Mark lastReadingPostion,
-  ) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.r, vertical: 8.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14.w),
-            child: Row(
-              children: [
-                Icon(Icons.bookmark_added, color: context.color.onSurface),
-                SizedBox(width: 8.w),
-                Text(
-                  AppLocalizations.of(context)!.last_reading_surah,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontFamily: "Cairo",
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 12.h),
-
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.r),
-              border: Border.all(
-                color: context.color.primary.withValues(alpha: .2),
-              ),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20.r),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => QuranPages(
-                      highlightVerse: lastReadingPostion.ayahNumber,
-                      highlightSurah: lastReadingPostion.surahNumber,
-                      pageNumber: lastReadingPostion.pageNumber,
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 20.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12.r),
-                            decoration: BoxDecoration(
-                              color: context.color.primary.withValues(
-                                alpha: 0.15,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              shape: BoxShape.rectangle,
-                            ),
-
-                            child: Icon(
-                              Icons.bookmark,
-                              color: context.color.primary,
-                            ),
-                          ),
-                          SizedBox(width: 16.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "سورة ${SurahNames.getFormattedName(lastReadingPostion.surahNumber ?? 1)}",
-                                style: TextStyle(
-                                  fontSize: 22.sp,
-                                  fontFamily: "Amiri",
-                                  fontWeight: FontWeight.bold,
-                                  color: themeMode == ThemeMode.dark
-                                      ? context.color.onSurface
-                                      : context.color.scrim,
-                                  height: 1.2,
-                                ),
-                              ),
-                              SizedBox(height: 6.h),
-                              Text(
-                                "${AppLocalizations.of(context)!.page_number} ${lastReadingPostion.pageNumber}",
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-
-                                  fontWeight: FontWeight.w600,
-                                  color: context.color.secondary.withValues(
-                                    alpha: 0.9,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.r),
-                        decoration: BoxDecoration(
-                          color: context.color.primary.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          color: context.color.primary,
-                          size: 16.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return "صباح الخير ☀️";
-    if (hour < 18) return "مساء النور ✨";
-    return "مساء الخير 🌙";
-  }
-
-  String _getFormattedDate() {
-    final now = DateTime.now();
-
-    final dayNames = [
-      'الإثنين',
-      'الثلاثاء',
-      'الأربعاء',
-      'الخميس',
-      'الجمعة',
-      'السبت',
-      'الأحد',
-    ];
-
-    final months = [
-      'يناير',
-      'فبراير',
-      'مارس',
-      'أبريل',
-      'مايو',
-      'يونيو',
-      'يوليو',
-      'أغسطس',
-      'سبتمبر',
-      'أكتوبر',
-      'نوفمبر',
-      'ديسمبر',
-    ];
-    final dayName = dayNames[now.weekday - 1];
-    final month = months[now.month - 1];
-    return "$dayName، ${now.day} $month ${now.year}";
-  }
-
-  String _getFormattedDateHijri() {
-    HijriCalendar.setLocal("ar");
-    final hijriDate = HijriCalendar.now();
-    return "${hijriDate.hDay} ${hijriDate.longMonthName} ${hijriDate.hYear}";
-  }
+    ],
+  );
 }
 
-class PrimarySectionWidget extends ConsumerWidget {
-  const PrimarySectionWidget({
-    super.key,
-    required this.colorScheme,
-    required this.themeMode,
-  });
-
-  final ColorScheme colorScheme;
-  final ThemeMode themeMode;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final Color primaryColor = context.color.primary;
-    return Material(
-      surfaceTintColor: colorScheme.primary,
-      shadowColor: themeMode == ThemeMode.light
-          ? colorScheme.surface
-          : colorScheme.primary,
-      elevation: 0,
-      color: Colors.transparent,
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 16.0.h),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                SizedBox(width: 6.w),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.widgets_rounded,
-                        color: context.color.onSurface,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        AppLocalizations.of(context)!.main_categories,
-                        style: TextStyle(
-                          height: 1.h,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Cairo",
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 8.0.r, right: 8.r),
-                    child: Divider(color: colorScheme.primary, thickness: 2),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 24.h),
-          Padding(
-            padding: EdgeInsets.only(bottom: 10.r, right: 10.r, left: 10.r),
-            child: AlignedGridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                final List<Widget> buttons = [
-                  HomeButton(
-                    text: AppLocalizations.of(context)!.quran_kareem,
-                    description: "قراءة وتلاوة",
-                    iconImage: "assets/icons/quran.png",
-                    color: primaryColor,
-                    onTap: () =>
-                        Navigator.pushNamed(context, Routes.selectSurahPage),
-                  ),
-                  HomeButton(
-                    text: "القرآن المُرتل",
-                    description: "استماع وتحميل",
-                    iconImage: "assets/icons/voice.png",
-                    color: primaryColor,
-                    onTap: () async {
-                      final prefs = await SharedPreferences.getInstance();
-
-                      final int permissionShownCount =
-                          prefs.getInt(SharedPrefKeys.batteryPermissionKey) ??
-                          0;
-
-                      var status =
-                          await Permission.ignoreBatteryOptimizations.status;
-
-                      if (!status.isDenied) {
-                        await prefs.remove(SharedPrefKeys.batteryPermissionKey);
-                      }
-
-                      if (permissionShownCount < 2 && status.isDenied) {
-                        if (context.mounted) {
-                          await Permission.ignoreBatteryOptimizations.request();
-                          await prefs.setInt(
-                            SharedPrefKeys.batteryPermissionKey,
-                            permissionShownCount + 1,
-                          );
-                        }
-                      }
-
-                      if (!context.mounted) return;
-                      Navigator.pushNamed(context, Routes.quranMoratal);
-                    },
-                  ),
-                  HomeButton(
-                    text: AppLocalizations.of(context)!.sunah,
-                    description: "أحاديث شريفة",
-                    iconImage: "assets/icons/quran2.png",
-                    color: primaryColor,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed(Routes.sunnahPage),
-                  ),
-                  HomeButton(
-                    text: AppLocalizations.of(context)!.pray_times,
-                    description: "أوقات الأذان",
-                    iconImage: "assets/icons/mosque.png",
-                    color: primaryColor,
-                    onTap: () async {
-                      final selectedDateTiem = await Navigator.of(
-                        context,
-                      ).pushNamed("/pray_time_page");
-                      await Future.delayed(const Duration(milliseconds: 250));
-                      if (selectedDateTiem != DateTime.now()) {
-                        ref.read(selectedDateProvider.notifier).state =
-                            DateTime.now();
-                      }
-                    },
-                  ),
-                  HomeButton(
-                    text: AppLocalizations.of(context)!.qebla_direction,
-                    description: "بوصلة دقيقة",
-                    iconImage: "assets/icons/kaaba.png",
-                    color: primaryColor,
-                    onTap: () => Navigator.of(context).pushNamed("/qebla_page"),
-                  ),
-                  HomeButton(
-                    text: AppLocalizations.of(context)!.adkar_adia,
-                    description: "حصن المسلم",
-                    iconImage: "assets/icons/prayer.png",
-                    color: primaryColor,
-                    onTap: () => Navigator.of(context).pushNamed("/adkar_page"),
-                  ),
-                ];
-
-                return buttons[index];
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ComingPrayWidget extends StatelessWidget {
-  const ComingPrayWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const NextPrayerCard();
-  }
+Future<void> _openQuranMoratal(BuildContext context) async {
+  await Navigator.pushNamed(context, Routes.quranMoratal);
 }

@@ -71,7 +71,7 @@ class ReadingColorsDialog extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
-        color: context.color.primary,
+        color: context.color.surfaceContainerLowest,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24.r),
           topRight: Radius.circular(24.r),
@@ -86,7 +86,7 @@ class ReadingColorsDialog extends ConsumerWidget {
               fontFamily: "Cairo",
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onPrimary,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           SizedBox(height: 24.h),
@@ -118,8 +118,8 @@ class ReadingColorsDialog extends ConsumerWidget {
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: isSelected
-                                ? theme.colorScheme.primaryFixed
-                                : Colors.grey.withValues(alpha: .3),
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.outlineVariant,
                             width: isSelected ? 3 : 1,
                           ),
                           boxShadow: [
@@ -146,7 +146,7 @@ class ReadingColorsDialog extends ConsumerWidget {
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.normal,
-                          color: theme.colorScheme.onPrimary,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adhan/adhan.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
@@ -183,120 +182,84 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     final userAddress = ref.watch(userAddressProvider);
     final isCurrentDay = isToday(selectedDate);
 
-    final themeMode = ref.watch(themeProvider);
+    return Scaffold(
+      backgroundColor: context.color.surfaceContainerLowest,
+      body: SafeArea(
+        child: RefreshIndicator(
+          color: context.color.secondary,
+          backgroundColor: context.color.surface,
+          onRefresh: () async {
+            ref.invalidate(selectedDatePrayerTimesProvider);
+            await ref.read(userAddressProvider.notifier).refresh();
+          },
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: constraints.maxHeight,
+                  width: constraints.maxWidth,
+                  child: Column(
+                    children: [
+                      // --- شريط علوي ---
+                      _buildTopBar(
+                        context,
+                        userAddress,
+                        isCurrentDay,
+                        selectedDate,
+                      ),
 
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: const AssetImage("assets/images/pray_times_cover.jpg"),
-          alignment: AlignmentGeometry.centerRight,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withValues(alpha: .6),
-            BlendMode.darken,
-          ),
-          fit: BoxFit.cover,
-        ),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            context.color.primary,
-            context.color.primary.withValues(alpha: 0.85),
-            HSLColor.fromColor(context.color.primary)
-                .withLightness(
-                  (HSLColor.fromColor(context.color.primary).lightness -
-                          (themeMode == ThemeMode.light ? 0.02 : 0.35))
-                      .clamp(0.0, 1.0),
-                )
-                .toColor(),
-          ],
-          stops: const [0.0, 0.0, 0.0],
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: RefreshIndicator(
-            color: context.color.primary,
-            backgroundColor: Colors.white,
-            onRefresh: () async {
-              ref.invalidate(selectedDatePrayerTimesProvider);
-              await ref.read(userAddressProvider.notifier).refresh();
-            },
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: SizedBox(
-                    height: constraints.maxHeight,
-                    width: constraints.maxWidth,
-                    child: Column(
-                      children: [
-                        // --- شريط علوي ---
-                        Container(
-                          decoration: const BoxDecoration(),
-                          child: _buildTopBar(
-                            context,
-                            userAddress,
-                            isCurrentDay,
-                            selectedDate,
-                          ),
-                        ),
+                      // --- محتوى الصفحة ---
+                      Expanded(
+                        child: prayerTimesAsync.when(
+                          data: (entity) {
+                            if (entity != null) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (mounted) {
+                                  ref
+                                      .read(locationStatusProvider.notifier)
+                                      .clearStatus();
+                                }
+                              });
+                            }
 
-                        // --- محتوى الصفحة ---
-                        Expanded(
-                          child: prayerTimesAsync.when(
-                            data: (entity) {
-                              if (entity != null) {
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  if (mounted) {
-                                    ref
-                                        .read(locationStatusProvider.notifier)
-                                        .clearStatus();
-                                  }
-                                });
-                              }
-
-                              if (entity == null) {
-                                return _buildErrorState(
-                                  error: "تعذر الحصول على مواقيت الصلاة",
-                                  context: context,
-                                  status: locationStatusMessage,
-                                  networkState: networkState,
-                                );
-                              }
-
-                              return SlideTransition(
-                                position: _slideAnimation,
-                                child: _buildPrayerContent(
-                                  context,
-                                  entity,
-                                  adjustments,
-                                  use24format,
-                                  isCurrentDay,
-                                ),
+                            if (entity == null) {
+                              return _buildErrorState(
+                                error: "تعذر الحصول على مواقيت الصلاة",
+                                context: context,
+                                status: locationStatusMessage,
+                                networkState: networkState,
                               );
-                            },
-                            loading: () => _buildLoadingState(
-                              context,
-                              locationStatusMessage,
-                            ),
-                            error: (err, _) => _buildErrorState(
-                              error: err.toString(),
-                              context: context,
-                              status: locationStatusMessage,
-                              networkState: networkState,
-                            ),
+                            }
+
+                            return SlideTransition(
+                              position: _slideAnimation,
+                              child: _buildPrayerContent(
+                                context,
+                                entity,
+                                adjustments,
+                                use24format,
+                                isCurrentDay,
+                              ),
+                            );
+                          },
+                          loading: () => _buildLoadingState(
+                            context,
+                            locationStatusMessage,
+                          ),
+                          error: (err, _) => _buildErrorState(
+                            error: err.toString(),
+                            context: context,
+                            status: locationStatusMessage,
+                            networkState: networkState,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -312,16 +275,17 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     bool isCurrentDay,
     DateTime selectedDate,
   ) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 10.h),
       child: Row(
         children: [
           // زر الرجوع
           Tooltip(
             message: "الصفحة الرئيسية",
             child: Material(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12.r),
+              color: scheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(14.r),
               child: InkWell(
                 borderRadius: BorderRadius.circular(12.r),
                 onTap: () {
@@ -330,8 +294,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 child: Padding(
                   padding: EdgeInsets.all(8.r),
                   child: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
+                    Icons.arrow_back_ios_rounded,
+                    color: scheme.onSurface,
                     size: 20.sp,
                   ),
                 ),
@@ -341,98 +305,93 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           SizedBox(width: 12.w),
           // العنوان والموقع
           Expanded(
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "أوقات الصلاة",
+                Text(
+                  "أوقات الصلاة",
+                  style: TextStyle(
+                    color: scheme.onSurface,
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: "Cairo",
+                  ),
+                ),
+                userAddress.when(
+                  data: (data) {
+                    if (data != null) {
+                      return Text(
+                        "${data.country} • ${data.locality}",
+                        style: TextStyle(
+                          color: scheme.onSurfaceVariant,
+                          fontSize: 11.5.sp,
+                          fontFamily: "Cairo",
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                  error: (_, _) => const SizedBox.shrink(),
+                  loading: () => Skeletonizer(
+                    enabled: true,
+                    effect: ShimmerEffect(
+                      baseColor: scheme.surfaceContainerHighest,
+                      highlightColor: scheme.surfaceContainerLow,
+                    ),
+                    child: Text(
+                      "جاري تحميل الموقع...",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
+                        color: scheme.onSurfaceVariant,
+                        fontSize: 12.sp,
                         fontFamily: "Cairo",
                       ),
                     ),
-                    userAddress.when(
-                      data: (data) {
-                        if (data != null) {
-                          return Text(
-                            "${data.country} • ${data.locality}",
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: 12.sp,
-                              fontFamily: "Cairo",
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                      error: (_, _) => const SizedBox.shrink(),
-                      loading: () => Skeletonizer(
-                        enabled: true,
-                        effect: ShimmerEffect(
-                          baseColor: context.color.primary.withValues(
-                            alpha: 0.2,
-                          ),
-                          highlightColor: context.color.primary.withValues(
-                            alpha: 0.1,
-                          ),
-                        ),
-                        child: Text(
-                          "جاري تحميل الموقع...",
-                          style: TextStyle(
-                            color: context.color.primary.withValues(alpha: 0.8),
-                            fontSize: 12.sp,
-                            fontFamily: "Cairo",
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
           // مؤشر اليوم الحالي
           if (!isCurrentDay)
-            GestureDetector(
-              onTap: () {
-                final now = DateTime.now();
-                ref.read(selectedDateProvider.notifier).state = DateTime(
-                  now.year,
-                  now.month,
-                  now.day,
-                );
-                _animationController.reset();
-                _animationController.forward();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(color: Colors.white38),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.today_rounded,
-                      color: Colors.white70,
-                      size: 14.sp,
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      "اليوم",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.sp,
-                        fontFamily: "Cairo",
+            Material(
+              color: scheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(20.r),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20.r),
+                onTap: () {
+                  final now = DateTime.now();
+                  ref.read(selectedDateProvider.notifier).state = DateTime(
+                    now.year,
+                    now.month,
+                    now.day,
+                  );
+                  _animationController.reset();
+                  _animationController.forward();
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 5.h,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.today_rounded,
+                        color: scheme.onSecondaryContainer,
+                        size: 14.sp,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 4.w),
+                      Text(
+                        "اليوم",
+                        style: TextStyle(
+                          color: scheme.onSecondaryContainer,
+                          fontSize: 12.sp,
+                          fontFamily: "Cairo",
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -478,26 +437,21 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         // --- شريط التنقل بين الأيام ---
         _buildDateNavigationBar(context),
 
-        SizedBox(height: 16.h),
+        SizedBox(height: 12.h),
 
         // --- بطاقة الصلاة القادمة (فقط لليوم الحالي) ---
         if (isCurrentDay) _buildNextPrayerCard(context, entity),
 
-        if (isCurrentDay) SizedBox(height: 16.h),
+        if (isCurrentDay) SizedBox(height: 12.h),
 
         // --- قائمة المواقيت (القسم الأسفل) ---
         Expanded(
           child: Container(
+            margin: EdgeInsets.fromLTRB(14.w, 0, 14.w, 10.h),
             decoration: BoxDecoration(
               color: context.color.surface,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, -4),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(22.r),
+              border: Border.all(color: context.color.outlineVariant),
             ),
             child: Column(
               children: [
@@ -511,7 +465,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 //     borderRadius: BorderRadius.circular(2.r),
                 //   ),
                 // ),
-                const SizedBox(height: 20),
+                SizedBox(height: 10.h),
 
                 // عنوان القسم مع زر إعادة التعيين
                 Padding(
@@ -540,10 +494,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                               vertical: 4.h,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withValues(alpha: 0.12),
+                              color: context.color.secondaryContainer,
                               borderRadius: BorderRadius.circular(20.r),
                               border: Border.all(
-                                color: Colors.orange.withValues(alpha: 0.4),
+                                color: context.color.secondary.withValues(
+                                  alpha: 0.35,
+                                ),
                               ),
                             ),
                             child: Row(
@@ -551,14 +507,14 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                               children: [
                                 Icon(
                                   Icons.refresh_rounded,
-                                  color: Colors.orange,
+                                  color: context.color.onSecondaryContainer,
                                   size: 14.sp,
                                 ),
                                 SizedBox(width: 4.w),
                                 Text(
                                   "إعادة تعيين",
                                   style: TextStyle(
-                                    color: Colors.orange,
+                                    color: context.color.onSecondaryContainer,
                                     fontSize: 12.sp,
                                     fontFamily: "Cairo",
                                     fontWeight: FontWeight.w600,
@@ -579,7 +535,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                       horizontal: 8.w,
                       vertical: 4.h,
                     ),
-                    physics: const BouncingScrollPhysics(),
+                    physics: const ClampingScrollPhysics(),
                     itemCount: prayerList.length,
                     itemBuilder: (context, index) {
                       final item = prayerList[index];
@@ -621,30 +577,30 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   // هيكل التحميل الشبحي (Skeleton Loading)
   // ==========================================
   Widget _buildSkeletonPrayerContent(BuildContext context) {
-    final primaryColor = context.color.primary;
+    final scheme = Theme.of(context).colorScheme;
 
     return Skeletonizer(
       enabled: true,
       effect: ShimmerEffect(
-        baseColor: primaryColor.withValues(alpha: 0.2),
-        highlightColor: primaryColor.withValues(alpha: 0.1),
+        baseColor: scheme.surfaceContainerHighest,
+        highlightColor: scheme.surfaceContainerLow,
       ),
       child: Column(
         children: [
           // شريط التاريخ الوهمي
           _buildDateNavigationBar(context),
 
-          SizedBox(height: 16.h),
+          SizedBox(height: 12.h),
 
           // بطاقة الصلاة القادمة الوهمية
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.w),
-            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 24.w),
-            height: 110.h,
+            margin: EdgeInsets.symmetric(horizontal: 14.w),
+            padding: EdgeInsets.symmetric(vertical: 17.h, horizontal: 18.w),
+            height: 96.h,
             decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.2),
+              color: scheme.secondaryContainer,
               borderRadius: BorderRadius.circular(24.r),
-              border: Border.all(color: primaryColor.withValues(alpha: 0.1)),
+              border: Border.all(color: scheme.outlineVariant),
             ),
             child: Row(
               children: [
@@ -652,7 +608,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   width: 50.w,
                   height: 50.w,
                   decoration: BoxDecoration(
-                    color: primaryColor.withValues(alpha: 0.2),
+                    color: scheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -665,13 +621,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                       Container(
                         height: 10.h,
                         width: 60.w,
-                        color: primaryColor.withValues(alpha: 0.2),
+                        color: scheme.surfaceContainerHighest,
                       ),
                       SizedBox(height: 8.h),
                       Container(
                         height: 20.h,
                         width: 100.w,
-                        color: primaryColor.withValues(alpha: 0.2),
+                        color: scheme.surfaceContainerHighest,
                       ),
                     ],
                   ),
@@ -680,14 +636,16 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             ),
           ),
 
-          SizedBox(height: 16.h),
+          SizedBox(height: 12.h),
 
           // قائمة الصلوات الوهمية
           Expanded(
             child: Container(
+              margin: EdgeInsets.fromLTRB(14.w, 0, 14.w, 10.h),
               decoration: BoxDecoration(
-                color: context.color.surface,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+                color: scheme.surface,
+                borderRadius: BorderRadius.circular(22.r),
+                border: Border.all(color: scheme.outlineVariant),
               ),
               child: Column(
                 children: [
@@ -697,7 +655,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                     width: 40.w,
                     height: 4.h,
                     decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.1),
+                      color: scheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(2.r),
                     ),
                   ),
@@ -710,7 +668,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                           margin: EdgeInsets.symmetric(vertical: 6.h),
                           height: 70.h,
                           decoration: BoxDecoration(
-                            color: primaryColor.withValues(alpha: 0.04),
+                            color: scheme.surfaceContainerLow,
                             borderRadius: BorderRadius.circular(16.r),
                           ),
                         );
@@ -758,13 +716,14 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       }
     }
 
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+      margin: EdgeInsets.symmetric(horizontal: 14.w),
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: Colors.white24, width: 1),
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -792,7 +751,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   Text(
                     dateLabel,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: scheme.onSurface,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       fontFamily: "Cairo",
@@ -801,7 +760,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   Text(
                     DateFormat('d MMMM yyyy', 'ar').format(selectedDate),
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: scheme.onSurfaceVariant,
                       fontSize: 11.sp,
                       fontFamily: "Cairo",
                     ),
@@ -835,22 +794,24 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required VoidCallback onTap,
     required String message,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return Tooltip(
       message: message,
-      child: GestureDetector(
+      child: InkWell(
         onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(13.r),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: EdgeInsets.all(8.r),
           decoration: BoxDecoration(
-            color: enabled
-                ? Colors.white.withValues(alpha: 0.2)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(14.r),
+            color: enabled ? scheme.secondaryContainer : Colors.transparent,
+            borderRadius: BorderRadius.circular(13.r),
           ),
           child: Icon(
             icon,
-            color: enabled ? Colors.white : Colors.white30,
+            color: enabled
+                ? scheme.onSecondaryContainer
+                : scheme.onSurfaceVariant.withValues(alpha: 0.35),
             size: 22.sp,
           ),
         ),
@@ -872,7 +833,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(
               context,
-            ).colorScheme.copyWith(primary: context.color.primary),
+            ).colorScheme.copyWith(primary: context.color.secondary),
           ),
           child: child!,
         );
@@ -908,20 +869,21 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
 
     final prayerName = _translatePrayer(next);
 
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 24.w),
+      margin: EdgeInsets.symmetric(horizontal: 14.w),
+      padding: EdgeInsets.symmetric(vertical: 17.h, horizontal: 18.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withValues(alpha: 0.22),
-            Colors.white.withValues(alpha: 0.10),
+            scheme.secondaryContainer.withValues(alpha: 0.90),
+            scheme.secondaryContainer.withValues(alpha: 0.48),
           ],
         ),
         borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: Colors.white30, width: 1.5),
+        border: Border.all(color: scheme.secondary.withValues(alpha: 0.28)),
       ),
       child: Row(
         children: [
@@ -929,12 +891,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           Container(
             padding: EdgeInsets.all(12.r),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
+              color: scheme.secondary.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(15.r),
             ),
             child: Icon(
               Icons.access_time_rounded,
-              color: Colors.white,
+              color: scheme.onSecondaryContainer,
               size: 24.sp,
             ),
           ),
@@ -947,7 +909,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 Text(
                   "الصلاة القادمة",
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: scheme.onSecondaryContainer.withValues(alpha: 0.72),
                     fontSize: 12.sp,
                     fontFamily: "Cairo",
                   ),
@@ -955,7 +917,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 Text(
                   prayerName,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: scheme.onSecondaryContainer,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                     fontFamily: "Cairo",
@@ -973,7 +935,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 "${minutes.toString().padLeft(2, '0')}:"
                 "${seconds.toString().padLeft(2, '0')}",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: scheme.onSecondaryContainer,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
@@ -983,7 +945,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               Text(
                 "متبقي على الأذان",
                 style: TextStyle(
-                  color: Colors.white60,
+                  color: scheme.onSecondaryContainer.withValues(alpha: 0.68),
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w600,
                   fontFamily: "Cairo",
@@ -1010,10 +972,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required PrayerAdjustmentsModel adjustments,
     required WidgetRef ref,
   }) {
-    final primaryColor = context.color.primary;
+    final accentColor = context.color.secondary;
     final surfaceColor = context.color.onSurface;
-    final themeMode = ref.watch(themeProvider);
-    final bool isDark = themeMode == ThemeMode.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final prayerIconColor = _prayerIconColorResolver(
+      name: name,
+      scheme: scheme,
+    );
 
     final appSettings = ref.watch(appSettingsProvider);
     bool isNotificationEnabled = false;
@@ -1044,14 +1009,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       margin: EdgeInsets.symmetric(vertical: 5.h),
       decoration: BoxDecoration(
         color: isCurrent
-            ? primaryColor.withValues(alpha: 0.08)
+            ? context.color.secondaryContainer.withValues(alpha: 0.62)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(16.r),
         border: isCurrent
-            ? Border.all(
-                color: primaryColor.withValues(alpha: 0.25),
-                width: 1.2,
-              )
+            ? Border.all(color: accentColor.withValues(alpha: 0.32), width: 1.2)
             : null,
       ),
       child: ListTile(
@@ -1061,18 +1023,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           height: 33.w,
           decoration: BoxDecoration(
             color: isCurrent
-                ? primaryColor.withValues(alpha: 0.12)
-                : _prayerIconColorResolver(
-                    name: name,
-                    isDark: isDark,
-                  ).withValues(alpha: 0.1),
+                ? accentColor.withValues(alpha: 0.16)
+                : prayerIconColor.withValues(alpha: 0.14),
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Icon(
             icon,
-            color: isCurrent
-                ? primaryColor
-                : _prayerIconColorResolver(name: name, isDark: isDark),
+            color: isCurrent ? accentColor : prayerIconColor,
             size: 20.sp,
           ),
         ),
@@ -1083,7 +1040,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
-                color: isCurrent ? primaryColor : surfaceColor,
+                color: isCurrent ? accentColor : surfaceColor,
                 fontFamily: "Cairo",
               ),
             ),
@@ -1095,10 +1052,10 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.12),
+                    color: context.color.secondaryContainer,
                     borderRadius: BorderRadius.circular(8.r),
                     border: Border.all(
-                      color: Colors.orange.withValues(alpha: 0.4),
+                      color: accentColor.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Row(
@@ -1107,13 +1064,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                       Icon(
                         Icons.edit_rounded,
                         size: 10.sp,
-                        color: Colors.orange,
+                        color: context.color.onSecondaryContainer,
                       ),
                       SizedBox(width: 3.w),
                       Text(
                         offset > 0 ? '+$offset' : '$offset',
                         style: TextStyle(
-                          color: Colors.orange,
+                          color: context.color.onSecondaryContainer,
                           fontSize: 10.sp,
                           fontFamily: "Cairo",
                           fontWeight: FontWeight.w600,
@@ -1134,7 +1091,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
-                color: isCurrent ? primaryColor : surfaceColor,
+                color: isCurrent ? accentColor : surfaceColor,
                 fontFamily: "Cairo",
               ),
             ),
@@ -1146,25 +1103,29 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   : Icons.notifications_off_rounded,
               size: 16.sp,
               color: isNotificationEnabled
-                  ? primaryColor.withValues(alpha: 0.8)
+                  ? accentColor
                   : surfaceColor.withValues(alpha: 0.3),
             ),
             SizedBox(width: 8.w),
             // زر الإعدادات
-            GestureDetector(
-              onTap: () => _showAdjustmentDialog(context, name, offset),
-              child: Container(
-                padding: EdgeInsets.all(6.r),
-                decoration: BoxDecoration(
-                  color: surfaceColor.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Icon(
-                  Icons.tune_rounded,
-                  size: 16.sp,
-                  color: isModified
-                      ? Colors.orange
-                      : surfaceColor.withValues(alpha: 0.4),
+            Tooltip(
+              message: 'ضبط وقت $name',
+              child: Material(
+                color: surfaceColor.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(9.r),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(9.r),
+                  onTap: () => _showAdjustmentDialog(context, name, offset),
+                  child: Padding(
+                    padding: EdgeInsets.all(7.r),
+                    child: Icon(
+                      Icons.tune_rounded,
+                      size: 16.sp,
+                      color: isModified
+                          ? accentColor
+                          : surfaceColor.withValues(alpha: 0.4),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1224,12 +1185,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                     Container(
                       padding: EdgeInsets.all(10.r),
                       decoration: BoxDecoration(
-                        color: context.color.primary.withValues(alpha: 0.1),
+                        color: context.color.secondary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Icon(
                         Icons.tune_rounded,
-                        color: context.color.primary,
+                        color: context.color.secondary,
                         size: 22.sp,
                       ),
                     ),
@@ -1273,12 +1234,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   decoration: BoxDecoration(
                     color: tempOffset == 0
                         ? context.color.onSurface.withValues(alpha: 0.04)
-                        : Colors.orange.withValues(alpha: 0.08),
+                        : context.color.secondaryContainer,
                     borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
                       color: tempOffset == 0
                           ? context.color.onSurface.withValues(alpha: 0.1)
-                          : Colors.orange.withValues(alpha: 0.3),
+                          : context.color.secondary.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Row(
@@ -1290,7 +1251,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                             : Icons.remove_circle_outline,
                         color: tempOffset == 0
                             ? context.color.onSurface.withValues(alpha: 0.4)
-                            : Colors.orange,
+                            : context.color.onSecondaryContainer,
                         size: 20.sp,
                       ),
                       SizedBox(width: 8.w),
@@ -1305,7 +1266,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                           fontWeight: FontWeight.bold,
                           color: tempOffset == 0
                               ? context.color.onSurface.withValues(alpha: 0.4)
-                              : Colors.orange,
+                              : context.color.onSecondaryContainer,
                           fontFamily: "Cairo",
                         ),
                       ),
@@ -1323,11 +1284,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                       min: -60,
                       max: 60,
                       divisions: 120,
-                      activeColor: context.color.primary,
+                      activeColor: context.color.secondary,
                       inactiveColor: context.color.onSurface.withValues(
                         alpha: 0.12,
                       ),
-                      thumbColor: context.color.primary,
+                      thumbColor: context.color.secondary,
                       onChanged: (val) {
                         setModalState(() => tempOffset = val.round());
                       },
@@ -1387,12 +1348,12 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? context.color.primary
+                              ? context.color.secondary
                               : context.color.onSurface.withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(20.r),
                           border: Border.all(
                             color: isSelected
-                                ? context.color.primary
+                                ? context.color.secondary
                                 : context.color.onSurface.withValues(
                                     alpha: 0.15,
                                   ),
@@ -1459,8 +1420,8 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                           ref.invalidate(todayPrayerTimesProvider);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: context.color.primary,
-                          foregroundColor: context.color.onPrimary,
+                          backgroundColor: context.color.secondary,
+                          foregroundColor: context.color.onSecondary,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.r),
@@ -1520,16 +1481,16 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               ),
             ),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () {
               Navigator.pop(ctx);
               ref.read(prayerAdjustmentsProvider.notifier).resetAllOffsets();
               ref.invalidate(selectedDatePrayerTimesProvider);
               ref.invalidate(todayPrayerTimesProvider);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+            style: FilledButton.styleFrom(
+              backgroundColor: context.color.secondary,
+              foregroundColor: context.color.onSecondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
@@ -1609,12 +1570,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         margin: EdgeInsets.symmetric(horizontal: 40.w),
         padding: EdgeInsets.all(30.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.color.surface,
           borderRadius: BorderRadius.circular(24.r),
+          border: Border.all(color: context.color.outlineVariant),
           boxShadow: [
             BoxShadow(
               blurRadius: 20,
-              color: Colors.black.withValues(alpha: 0.15),
+              color: context.color.shadow.withValues(alpha: 0.08),
             ),
           ],
         ),
@@ -1670,7 +1632,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               Icon(
                 _getErrorIcon(messageType),
                 size: 80.r,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: context.color.error,
               ),
               SizedBox(height: 24.h),
               Text(
@@ -1684,7 +1646,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 style: TextStyle(
                   fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: context.color.onSurface,
                   fontFamily: "Cairo",
                 ),
               ),
@@ -1692,7 +1654,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               Container(
                 padding: EdgeInsets.all(16.r),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: context.color.errorContainer.withValues(alpha: 0.48),
                   borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: Text(
@@ -1702,7 +1664,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.sp,
-                    color: Colors.white70,
+                    color: context.color.onSurfaceVariant,
                     fontFamily: "Cairo",
                   ),
                 ),
@@ -1734,13 +1696,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   ) {
     final messageType = status.keys.first;
     return messageType == LocationMessage.locationNotAllowedEver
-        ? ElevatedButton.icon(
+        ? FilledButton.icon(
             onPressed: () async => await Geolocator.openAppSettings(),
             icon: const Icon(Icons.settings),
             label: const Text("فتح الإعدادات"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+            style: FilledButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
@@ -1751,7 +1711,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             "سيتم التحديث تلقائياً عند تفعيل الـ GPS",
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white70,
+              color: context.color.onSurfaceVariant,
               fontSize: 14.sp,
               fontFamily: "Cairo",
             ),
@@ -1856,7 +1816,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               ),
             ),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
               sl<SharedPreferences>().setBool('is_location_deleted', false);
@@ -1899,13 +1859,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
                 },
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.color.primary,
-            ),
-            child: const Text(
-              "تحديث الموقع",
-              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
-            ),
+            child: const Text("تحديث الموقع"),
           ),
         ],
       ),
@@ -1982,28 +1936,31 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     }
   }
 
-  Color _prayerIconColorResolver({required String name, required bool isDark}) {
+  Color _prayerIconColorResolver({
+    required String name,
+    required ColorScheme scheme,
+  }) {
     switch (name) {
       case "الفجر":
-        return isDark ? Colors.amber : Colors.orange;
+        return scheme.primary;
 
       case "الشروق":
-        return isDark ? Colors.yellow.shade600 : Colors.yellow.shade900;
+        return scheme.secondary;
 
       case "الظهر":
-        return isDark ? Colors.amber.shade300 : Colors.amber.shade900;
+        return Color.lerp(scheme.secondary, scheme.primary, 0.18)!;
 
       case "العصر":
-        return isDark ? Colors.cyan.shade300 : Colors.cyan;
+        return scheme.tertiary;
 
       case "المغرب":
-        return isDark ? Colors.indigo.shade300 : Colors.purple.shade900;
+        return Color.lerp(scheme.tertiary, scheme.secondary, 0.38)!;
 
       case "العشاء":
-        return isDark ? Colors.indigo.shade400 : Colors.indigo.shade900;
+        return Color.lerp(scheme.primary, scheme.tertiary, 0.32)!;
 
       default:
-        return isDark ? Colors.grey.shade400 : Colors.grey;
+        return scheme.onSurfaceVariant;
     }
   }
 }

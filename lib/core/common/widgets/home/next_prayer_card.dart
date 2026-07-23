@@ -1,179 +1,147 @@
-import 'dart:ui';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
-import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/features/pray_time/domain/entities/prayer_times_entity.dart';
+import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 
-class NextPrayerCard extends ConsumerStatefulWidget {
+class NextPrayerCard extends ConsumerWidget {
   const NextPrayerCard({super.key});
 
   @override
-  ConsumerState<NextPrayerCard> createState() => _NextPrayerCardState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nextPrayerAsync = ref.watch(nextPrayerProvider);
+
+    return nextPrayerAsync.when(
+      data: (nextPrayer) {
+        if (nextPrayer == null) {
+          return _PrayerCardError(
+            message: 'لم يتم العثور على مواقيت الصلاة',
+            onRetry: () {
+              ref.invalidate(todayPrayerTimesProvider);
+            },
+          );
+        }
+
+        return _PrayerCardContent(nextPrayer: nextPrayer);
+      },
+      loading: () => const _PrayerCardLoading(),
+      error: (_, _) {
+        return _PrayerCardError(
+          message: 'تعذر تحميل مواقيت الصلاة',
+          onRetry: () {
+            ref.invalidate(todayPrayerTimesProvider);
+          },
+        );
+      },
+    );
+  }
 }
 
-class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
-  Timer? _timer;
+class _PrayerCardContent extends StatefulWidget {
+  const _PrayerCardContent({required this.nextPrayer});
+
+  final NextPrayerInfo nextPrayer;
 
   @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
-    });
-  }
+  State<_PrayerCardContent> createState() => _PrayerCardContentState();
+}
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
+class _PrayerCardContentState extends State<_PrayerCardContent> {
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    final prayerAsync = ref.watch(todayPrayerTimesProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nextPrayer = widget.nextPrayer;
 
-    return prayerAsync.when(
-      data: (model) {
-        if (model == null) return const SizedBox.shrink();
-        return _buildCard(context, model);
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, _) => const SizedBox.shrink(),
-    );
-  }
-
-  Widget _buildCard(BuildContext context, PrayerTimesEntity model) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final nextInfo = _getNextPrayer(model);
-    final name = nextInfo['name'] as String;
-    final icon = nextInfo['icon'] as IconData;
-    final remaining = nextInfo['remaining'] as Duration;
-
-    final Color lightModeColor = context.color.scrim.withValues(alpha: .9);
-    final Color darkModeColor = context.color.onPrimary.withValues(alpha: .8);
-
-    final hours = remaining.inHours;
-    final minutes = remaining.inMinutes.remainder(60);
-    final seconds = remaining.inSeconds.remainder(60);
+    final accentColor = nextPrayer.isVeryClose
+        ? colorScheme.tertiary
+        : colorScheme.primary;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 14.w),
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.r)),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20.r),
-                onTap: () =>
-                    Navigator.of(context).pushNamed(Routes.prayTimePage),
-                child: Ink(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.985 : 1,
+        duration: const Duration(milliseconds: 130),
+        curve: Curves.easeOut,
+        child: Material(
+          color: colorScheme.surface,
+          elevation: isDark ? 0 : 3,
+          shadowColor: Colors.black.withValues(alpha: .18),
+          borderRadius: BorderRadius.circular(24.r),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).pushNamed(Routes.prayTimePage);
+            },
+            onHighlightChanged: (value) {
+              if (_isPressed == value) return;
+
+              setState(() {
+                _isPressed = value;
+              });
+            },
+            borderRadius: BorderRadius.circular(24.r),
+            splashColor: accentColor.withValues(alpha: 0.08),
+            highlightColor: accentColor.withValues(alpha: 0.04),
+            child: Ink(
+              padding: EdgeInsets.all(17.r),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24.r),
+                border: Border.all(
+                  color: nextPrayer.isVeryClose
+                      ? accentColor.withValues(alpha: 0.28)
+                      : isDark
+                      ? colorScheme.outlineVariant.withValues(alpha: 0.48)
+                      : colorScheme.outline.withValues(alpha: 0.34),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PrayerCardHeader(
+                    accentColor: accentColor,
+                    isVeryClose: nextPrayer.isVeryClose,
                   ),
-                  decoration: BoxDecoration(
-                    color: context.color.primary.withValues(alpha: .08),
-                    borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : context.color.primary.withValues(alpha: 0.2),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Row(
+
+                  SizedBox(height: 18.h),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(10.r),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? context.color.primary.withValues(alpha: 0.1)
-                              : context.color.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(14.r),
-                          border: Border.all(
-                            color: context.color.primary.withValues(alpha: 0.1),
-                          ),
-                        ),
-                        child: Icon(
-                          icon,
-                          size: 24.sp,
-                          color: isDark ? darkModeColor : lightModeColor,
-                        ),
+                      _PrayerIcon(
+                        icon: nextPrayer.icon,
+                        accentColor: accentColor,
                       ),
-                      SizedBox(width: 14.w),
-                      // تفاصيل الصلاة القادمة
+
+                      SizedBox(width: 13.w),
+
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "الصلاة القادمة",
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Cairo",
-                                color: isDark ? darkModeColor : lightModeColor,
-                              ),
-                            ),
-                            Text(
-                              name,
-                              style: TextStyle(
-                                fontSize: 20.sp,
-                                fontFamily: "Cairo",
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? darkModeColor : lightModeColor,
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
+                        child: _PrayerMainInformation(
+                          nextPrayer: nextPrayer,
+                          accentColor: accentColor,
                         ),
                       ),
-                      // عداد الوقت التنازلي
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 14.w,
-                          vertical: 10.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: context.color.primary.withValues(alpha: .1),
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(
-                            color: context.color.primary.withValues(alpha: 0.1),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.timer_outlined,
-                              size: 14.sp,
-                              color: isDark ? darkModeColor : lightModeColor,
-                            ),
-                            SizedBox(width: 6.w),
-                            Text(
-                              "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? darkModeColor : lightModeColor,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+
+                      SizedBox(width: 10.w),
+
+                      _PrayerTime(time: nextPrayer.formattedTime),
                     ],
                   ),
-                ),
+
+                  SizedBox(height: 17.h),
+
+                  _CountdownSection(
+                    nextPrayer: nextPrayer,
+                    accentColor: accentColor,
+                  ),
+
+                  SizedBox(height: 14.h),
+
+                  _OpenPrayerTimesAction(accentColor: accentColor),
+                ],
               ),
             ),
           ),
@@ -181,41 +149,464 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
       ),
     );
   }
+}
 
-  Map<String, dynamic> _getNextPrayer(PrayerTimesEntity model) {
-    final now = DateTime.now();
+class _PrayerCardHeader extends StatelessWidget {
+  const _PrayerCardHeader({
+    required this.accentColor,
+    required this.isVeryClose,
+  });
 
-    final prayers = [
-      {'name': 'الفجر', 'time': model.fajr, 'icon': Icons.wb_twilight},
-      {
-        'name': 'الشروق',
-        'time': model.sunrise,
-        'icon': Icons.wb_sunny_outlined,
-      },
-      {'name': 'الظهر', 'time': model.dhuhr, 'icon': Icons.wb_sunny},
-      {'name': 'العصر', 'time': model.asr, 'icon': Icons.wb_cloudy_outlined},
-      {'name': 'المغرب', 'time': model.maghrib, 'icon': Icons.nightlight_round},
-      {'name': 'العشاء', 'time': model.isha, 'icon': Icons.bedtime},
-    ];
+  final Color accentColor;
+  final bool isVeryClose;
 
-    for (final prayer in prayers) {
-      final time = (prayer['time'] as DateTime);
-      if (now.isBefore(time)) {
-        return {
-          'name': prayer['name'],
-          'icon': prayer['icon'],
-          'remaining': time.difference(now),
-        };
-      }
-    }
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
 
-    // بعد العشاء → ننتظر فجر الغد
-    final tomorrowFajr = model.fajr.add(const Duration(days: 1));
-    return {
-      'name': 'الفجر',
-      'icon': Icons.wb_twilight,
-      "color": Colors.amber,
-      'remaining': tomorrowFajr.difference(now),
-    };
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
+          decoration: BoxDecoration(
+            color: accentColor.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.mosque_rounded, size: 14.sp, color: accentColor),
+              SizedBox(width: 5.w),
+              Text(
+                'الصلاة القادمة',
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontSize: 9.5.sp,
+                  fontWeight: FontWeight.w700,
+                  color: accentColor,
+                  height: 1.3,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const Spacer(),
+
+        if (isVeryClose)
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: colorScheme.tertiaryContainer.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: Text(
+              'اقترب الموعد',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 8.5.sp,
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onTertiaryContainer,
+              ),
+            ),
+          )
+        else
+          Text(
+            'مواقيت اليوم',
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 9.5.sp,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _PrayerIcon extends StatelessWidget {
+  const _PrayerIcon({required this.icon, required this.accentColor});
+
+  final IconData icon;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 54.r,
+      height: 54.r,
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      child: Icon(icon, size: 28.sp, color: accentColor),
+    );
+  }
+}
+
+class _PrayerMainInformation extends StatelessWidget {
+  const _PrayerMainInformation({
+    required this.nextPrayer,
+    required this.accentColor,
+  });
+
+  final NextPrayerInfo nextPrayer;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          nextPrayer.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontFamily: 'Cairo',
+            fontSize: 21.sp,
+            fontWeight: FontWeight.w900,
+            color: colorScheme.onSurface,
+            height: 1.25,
+          ),
+        ),
+
+        SizedBox(height: 3.h),
+
+        Text(
+          nextPrayer.statusMessage,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontFamily: 'Tajawal',
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w600,
+            color: nextPrayer.isVeryClose
+                ? accentColor
+                : colorScheme.onSurfaceVariant,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PrayerTime extends StatelessWidget {
+  const _PrayerTime({required this.time});
+
+  final String time;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          'وقت الصلاة',
+          style: TextStyle(
+            fontFamily: 'Cairo',
+            fontSize: 8.5.sp,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+
+        SizedBox(height: 2.h),
+
+        Text(
+          time,
+          textDirection: TextDirection.ltr,
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w900,
+            color: colorScheme.onSurface,
+            letterSpacing: 0.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CountdownSection extends StatelessWidget {
+  const _CountdownSection({
+    required this.nextPrayer,
+    required this.accentColor,
+  });
+
+  final NextPrayerInfo nextPrayer;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(17.r),
+        border: Border.all(color: accentColor.withValues(alpha: 0.10)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 34.r,
+            height: 34.r,
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.11),
+              borderRadius: BorderRadius.circular(11.r),
+            ),
+            child: Icon(
+              nextPrayer.isImminent
+                  ? Icons.notifications_active_rounded
+                  : Icons.timer_outlined,
+              size: 18.sp,
+              color: accentColor,
+            ),
+          ),
+
+          SizedBox(width: 10.w),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nextPrayer.isImminent ? 'موعد الصلاة' : 'متبقي على الصلاة',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 9.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+
+                SizedBox(height: 2.h),
+
+                Text(
+                  nextPrayer.compactRemaining,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w700,
+                    color: accentColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Text(
+            nextPrayer.digitalRemaining,
+            textDirection: TextDirection.ltr,
+            style: TextStyle(
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w900,
+              color: accentColor,
+              letterSpacing: 0.7,
+              height: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OpenPrayerTimesAction extends StatelessWidget {
+  const _OpenPrayerTimesAction({required this.accentColor});
+
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Icon(
+          Icons.calendar_month_outlined,
+          size: 17.sp,
+          color: colorScheme.onSurfaceVariant,
+        ),
+
+        SizedBox(width: 7.w),
+
+        Text(
+          'عرض جميع مواقيت الصلاة',
+          style: TextStyle(
+            fontFamily: 'Cairo',
+            fontSize: 10.5.sp,
+            fontWeight: FontWeight.w700,
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+
+        const Spacer(),
+
+        Container(
+          width: 30.r,
+          height: 30.r,
+          decoration: BoxDecoration(
+            color: accentColor.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Icon(
+            Icons.arrow_forward_rounded,
+            size: 17.sp,
+            color: accentColor,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PrayerCardLoading extends StatelessWidget {
+  const _PrayerCardLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(17.r),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(24.r),
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.40),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _LoadingBox(width: 95.w, height: 23.h, radius: 20.r),
+
+            SizedBox(height: 18.h),
+
+            Row(
+              children: [
+                _LoadingBox(width: 54.r, height: 54.r, radius: 18.r),
+
+                SizedBox(width: 13.w),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _LoadingBox(width: 60.w, height: 19.h),
+                      SizedBox(height: 8.h),
+                      _LoadingBox(width: 105.w, height: 10.h),
+                    ],
+                  ),
+                ),
+
+                _LoadingBox(width: 48.w, height: 20.h),
+              ],
+            ),
+
+            SizedBox(height: 17.h),
+
+            _LoadingBox(width: double.infinity, height: 58.h, radius: 17.r),
+
+            SizedBox(height: 14.h),
+
+            _LoadingBox(width: double.infinity, height: 30.h, radius: 10.r),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingBox extends StatelessWidget {
+  const _LoadingBox({required this.width, required this.height, this.radius});
+
+  final double width;
+  final double height;
+  final double? radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(radius ?? 20.r),
+      ),
+    );
+  }
+}
+
+class _PrayerCardError extends StatelessWidget {
+  const _PrayerCardError({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(15.r),
+        decoration: BoxDecoration(
+          color: colorScheme.errorContainer.withValues(alpha: 0.40),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: colorScheme.error.withValues(alpha: 0.15)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40.r,
+              height: 40.r,
+              decoration: BoxDecoration(
+                color: colorScheme.error.withValues(alpha: 0.09),
+                borderRadius: BorderRadius.circular(13.r),
+              ),
+              child: Icon(
+                Icons.location_off_outlined,
+                size: 21.sp,
+                color: colorScheme.error,
+              ),
+            ),
+
+            SizedBox(width: 11.w),
+
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontSize: 10.5.sp,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+
+            TextButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
+          ],
+        ),
+      ),
+    );
   }
 }

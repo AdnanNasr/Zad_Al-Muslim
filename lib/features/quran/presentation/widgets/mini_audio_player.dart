@@ -7,7 +7,6 @@ import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/quran/presentation/pages/full_audio_player_page.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/audio_player_provider.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/player_state_provider.dart';
-import 'package:zad_al_muslim/features/quran/presentation/providers/quran_menu.dart';
 import 'package:zad_al_muslim/features/quran/presentation/providers/quran_settings_provider.dart';
 
 class MiniAudioPlayer extends ConsumerWidget {
@@ -41,14 +40,15 @@ class MiniAudioPlayer extends ConsumerWidget {
         );
       },
       child: Container(
-        height: 65.h,
-        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+        height: 68.h,
+        margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
         decoration: BoxDecoration(
           color: context.color.surface,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: context.color.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .1),
+              color: context.color.shadow.withValues(alpha: .09),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -70,7 +70,7 @@ class MiniAudioPlayer extends ConsumerWidget {
 
                 return ClipRRect(
                   borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(12.r),
+                    top: Radius.circular(20.r),
                   ),
                   child: LinearProgressIndicator(
                     value: progress.clamp(0.0, 1.0),
@@ -93,12 +93,12 @@ class MiniAudioPlayer extends ConsumerWidget {
                       height: 40.h,
                       width: 40.w,
                       decoration: BoxDecoration(
-                        color: context.color.primary.withValues(alpha: .15),
-                        borderRadius: BorderRadius.circular(8.r),
+                        color: context.color.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Image.asset(
                         "assets/icons/moon.png",
-                        color: context.color.primary.withValues(alpha: .4),
+                        color: context.color.onTertiaryContainer,
                       ),
                     ),
                     SizedBox(width: 12.w),
@@ -122,9 +122,7 @@ class MiniAudioPlayer extends ConsumerWidget {
                             style: TextStyle(
                               fontFamily: "Cairo",
                               fontSize: 11.sp,
-                              color: context.color.onSurface.withValues(
-                                alpha: .6,
-                              ),
+                              color: context.color.onSurfaceVariant,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

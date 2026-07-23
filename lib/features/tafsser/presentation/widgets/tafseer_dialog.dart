@@ -53,7 +53,9 @@ class TafseerDialog extends ConsumerWidget {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text("تم تعيين ${tafsserInfo.name} كتفسير افتراضي"),
+                        content: Text(
+                          "تم تعيين ${tafsserInfo.name} كتفسير افتراضي",
+                        ),
                         backgroundColor: Colors.green,
                         behavior: SnackBarBehavior.floating,
                       ),

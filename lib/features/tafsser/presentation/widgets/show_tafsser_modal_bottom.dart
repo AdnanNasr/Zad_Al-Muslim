@@ -14,17 +14,10 @@ Future<dynamic> showTafsserModalBottom(
   int verseNumber,
   String bookId,
 ) async {
-  // تحديد الألوان بناءً على حالة الثيم
   final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-  final Color bgColor = isDarkMode
-      ? const Color(0xFF1E1E1E)
-      : const Color(0xFFF5E6D3);
-  final Color surfaceContainer = isDarkMode
-      ? const Color(0xFF2C2C2C)
-      : Colors.white.withValues(alpha: 0.6);
-  final Color textColor = isDarkMode
-      ? const Color(0xFFE0E0E0)
-      : const Color(0xFF3E2723);
+  final Color bgColor = context.color.surfaceContainerLowest;
+  final Color surfaceContainer = context.color.surface;
+  final Color textColor = context.color.onSurface;
   final Color primaryColor = context.color.primary;
 
   return showModalBottomSheet(
@@ -41,10 +34,10 @@ Future<dynamic> showTafsserModalBottom(
           return Container(
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: context.color.shadow.withValues(alpha: 0.14),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),

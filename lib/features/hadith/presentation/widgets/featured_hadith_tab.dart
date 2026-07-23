@@ -21,11 +21,45 @@ class FeaturedHadithsTab extends ConsumerWidget {
       data: (featuredHadiths) {
         if (featuredHadiths.isEmpty) {
           return Center(
-            child: Text(
-              "لا توجد أحاديث مفضلة حالياً",
-              style: TextStyle(
-                fontSize: 20,
-                color: context.color.outline.withValues(alpha: .9),
+            child: Padding(
+              padding: EdgeInsets.all(28.r),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(20.r),
+                    decoration: BoxDecoration(
+                      color: context.color.secondaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.star_border_rounded,
+                      size: 42.sp,
+                      color: context.color.onSecondaryContainer,
+                    ),
+                  ),
+                  SizedBox(height: 18.h),
+                  Text(
+                    'مفضلتك بانتظارك',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w800,
+                      color: context.color.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    'اضغط على النجمة بجانب أي حديث لحفظه والعودة إليه بسهولة.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 12.sp,
+                      height: 1.6,
+                      color: context.color.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -33,7 +67,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
 
         return AnimationLimiter(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 8.h),
+            padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 24.h),
             itemCount: featuredHadiths.length,
             itemBuilder: (context, index) {
               final hadith = featuredHadiths[index];
@@ -54,6 +88,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
                           showDragHandle: true,
                           useSafeArea: true,
                           isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
                           builder: (context) =>
                               HadithModalBottom(hadith: hadith),
                         );

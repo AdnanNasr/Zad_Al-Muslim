@@ -21,10 +21,12 @@ class TafsserItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final downloadState = ref.watch(tafsserDownloadProvider.select((map) => map[info.id]));
+    final downloadState = ref.watch(
+      tafsserDownloadProvider.select((map) => map[info.id]),
+    );
     final isDownloading = downloadState?.isDownloading ?? false;
     final downloadProgress = downloadState?.progress ?? 0.0;
-    
+
     return Material(
       color: Colors.transparent,
       child: Tooltip(
@@ -79,7 +81,12 @@ class TafsserItem extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(width: 10.w),
-                _buildDownloadButton(context, isDownloaded, isDownloading, downloadProgress),
+                _buildDownloadButton(
+                  context,
+                  isDownloaded,
+                  isDownloading,
+                  downloadProgress,
+                ),
               ],
             ),
           ),
@@ -89,9 +96,9 @@ class TafsserItem extends ConsumerWidget {
   }
 
   Widget _buildDownloadButton(
-    BuildContext context, 
-    bool actualDownloaded, 
-    bool isDownloading, 
+    BuildContext context,
+    bool actualDownloaded,
+    bool isDownloading,
     double downloadProgress,
   ) {
     if (actualDownloaded) {

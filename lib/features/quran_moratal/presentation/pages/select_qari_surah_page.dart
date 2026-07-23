@@ -5,8 +5,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qcf_quran/qcf_quran.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/utils/network/network_info.dart';
@@ -78,39 +76,7 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
 
     // ٣. لا ملف ولا إنترنت
     if (mounted) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            backgroundColor: Colors.red.shade700,
-            content: Row(
-              children: [
-                const Icon(
-                  Icons.wifi_off_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    'لا يوجد اتصال بالإنترنت. حمّل السورة أولاً للاستماع بدون إنترنت.',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12.sp,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+      InternetErrorMessage.showMessage(context: context);
     }
   }
 
@@ -121,69 +87,77 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
   @override
   Widget build(BuildContext context) {
     final surahsMeta = ref.watch(surahsNamesMoratalProvider);
-    final ThemeMode themeMode = ref.watch(themeProvider);
-    final bool isDark = themeMode == ThemeMode.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     // جلب حالة تحميل جميع السور دفعةً واحدة (I/O واحد متوازٍ بدلاً من 114 طلب)
     final allStatusAsync = ref.watch(allSurahsDownloadStatusProvider(_qariId));
     final allStatus = allStatusAsync.value ?? {};
 
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'سور القرآن - ${widget.qariData['name']}',
-        center: true,
-      ),
-      body: Stack(
-        children: [
-          AnimationLimiter(
-            child: Padding(
-              padding: EdgeInsets.only(left: 4, top: 20.h),
-              child: Scrollbar(
-                controller: _scrollController,
-                thumbVisibility: true,
-                trackVisibility: true,
-                interactive: true,
-                thickness: 5,
-                radius: const Radius.circular(24),
-                child: ListView.separated(
-                  controller: _scrollController,
-                  padding: EdgeInsets.only(
-                    left: 16.w,
-                    right: 16.w,
-                    bottom: 100.h,
-                  ),
-                  itemCount: surahsMeta.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 700),
-                      child: SlideAnimation(
-                        verticalOffset: 50,
-                        child: FadeInAnimation(
-                          child: _buildSurahItem(
-                            context: context,
-                            surah: surahsMeta[index],
-                            isDark: isDark,
-                            isAlreadyDownloaded:
-                                allStatus[surahsMeta[index].surahNumber] ??
-                                false,
+      backgroundColor: scheme.surfaceContainerLowest,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _SurahPageHeader(qariName: _qariName),
+            Expanded(
+              child: Stack(
+                children: [
+                  AnimationLimiter(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 4, top: 8.h),
+                      child: Scrollbar(
+                        controller: _scrollController,
+                        thumbVisibility: true,
+                        trackVisibility: true,
+                        interactive: true,
+                        thickness: 5,
+                        radius: const Radius.circular(24),
+                        child: ListView.separated(
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(
+                            left: 16.w,
+                            right: 16.w,
+                            bottom: 100.h,
                           ),
+                          itemCount: surahsMeta.length,
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 12.h),
+                          itemBuilder: (context, index) {
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 700),
+                              child: SlideAnimation(
+                                verticalOffset: 50,
+                                child: FadeInAnimation(
+                                  child: _buildSurahItem(
+                                    context: context,
+                                    surah: surahsMeta[index],
+                                    isDark: isDark,
+                                    isAlreadyDownloaded:
+                                        allStatus[surahsMeta[index]
+                                            .surahNumber] ??
+                                        false,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10.h,
+                    left: 0,
+                    right: 0,
+                    child: const MoratalMiniPlayer(),
+                  ),
+                ],
               ),
             ),
-          ),
-          Positioned(
-            bottom: 10.h,
-            left: 0,
-            right: 0,
-            child: const MoratalMiniPlayer(),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -194,121 +168,108 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     required bool isDark,
     required bool isAlreadyDownloaded,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Stack(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: context.color.primary.withValues(alpha: .2),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+            Material(
+              color: scheme.surface,
+              borderRadius: BorderRadius.circular(20.r),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20.r),
+                onTap: () => _playSurah(surah),
+                child: Ink(
+                  padding: EdgeInsets.all(14.r),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: scheme.outlineVariant),
                   ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16.r),
-                  onTap: () => _playSurah(surah),
-                  child: Padding(
-                    padding: EdgeInsets.all(12.dg),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _buildNumberIndicator(
-                          context: context,
-                          number: surah.surahNumber,
-                          isDark: isDark,
-                        ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'surah${surah.surahNumber.toString().padLeft(3, '0')}',
-                                style: TextStyle(
-                                  fontFamily: 'surahname',
-                                  package: 'qcf_quran',
-                                  fontSize: 38.sp,
-                                  color: context.color.onSurface.withValues(
-                                    alpha: .8,
-                                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildNumberIndicator(
+                        context: context,
+                        number: surah.surahNumber,
+                        isDark: isDark,
+                      ),
+                      SizedBox(width: 14.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'surah${surah.surahNumber.toString().padLeft(3, '0')}',
+                              style: TextStyle(
+                                fontFamily: 'surahname',
+                                package: 'qcf_quran',
+                                fontSize: 34.sp,
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                            Text(
+                              surah.englishName,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Cairo',
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                            SizedBox(height: 7.h),
+                            Wrap(
+                              spacing: 10.w,
+                              runSpacing: 5.h,
+                              children: [
+                                _buildInfoChip(
+                                  Icons.menu_book_rounded,
+                                  surah.verseCount >= 10
+                                      ? '${surah.verseCount} آية'
+                                      : '${surah.verseCount} آيات',
+                                  context,
                                 ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    surah.englishName,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Naskh',
-                                      color: context.color.onSurface.withValues(
-                                        alpha: .7,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 6.h),
-                                  Row(
-                                    children: [
-                                      _buildInfoChip(
-                                        Icons.menu_book_rounded,
-                                        surah.verseCount >= 10
-                                            ? '${surah.verseCount} آية'
-                                            : '${surah.verseCount} آيات',
-                                        context,
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      _buildInfoChip(
-                                        Icons.grid_view_rounded,
-                                        'الجزء ${surah.juzzNumber}',
-                                        context,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                _buildInfoChip(
+                                  Icons.grid_view_rounded,
+                                  'الجزء ${surah.juzzNumber}',
+                                  context,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-
-                        // أيقونة التشغيل
-                        Icon(
-                          Icons.play_circle_outline_rounded,
-                          size: 32.sp,
-                          color: context.color.primary.withValues(alpha: .8),
+                      ),
+                      Container(
+                        width: 38.r,
+                        height: 38.r,
+                        decoration: BoxDecoration(
+                          color: scheme.primaryContainer,
+                          shape: BoxShape.circle,
                         ),
-
-                        // قائمة الخيارات (٣ نقاط)
-                        if (surah.surahNumber > 0)
-                          _SurahOptionsMenu(
-                            qariId: _qariId,
-                            serverUrl: _serverUrl,
-                            surahNumber: surah.surahNumber,
-                            isDark: isDark,
-                            initiallyDownloaded: isAlreadyDownloaded,
-                          ),
-                      ],
-                    ),
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          size: 24.sp,
+                          color: scheme.onPrimaryContainer,
+                        ),
+                      ),
+                      if (surah.surahNumber > 0)
+                        _SurahOptionsMenu(
+                          qariId: _qariId,
+                          serverUrl: _serverUrl,
+                          surahNumber: surah.surahNumber,
+                          isDark: isDark,
+                          initiallyDownloaded: isAlreadyDownloaded,
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
             if (surah.surahNumber > 0)
               PositionedDirectional(
-                top: 12.h,
-                end: 12.w,
+                top: 9.h,
+                end: 9.w,
                 child: _SurahDownloadIndicator(
                   qariId: _qariId,
                   serverUrl: _serverUrl,
@@ -327,49 +288,112 @@ class _SelectQariSurahPageState extends ConsumerState<SelectQariSurahPage> {
     required int number,
     required bool isDark,
   }) {
-    return Stack(
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: 42.r,
+      height: 42.r,
       alignment: Alignment.center,
-      children: [
-        Transform.rotate(
-          angle: 0.8,
-          child: Container(
-            width: 35.w,
-            height: 35.w,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? context.color.primary.withValues(alpha: .8)
-                  : context.color.primary.withValues(alpha: .25),
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-          ),
+      decoration: BoxDecoration(
+        color: scheme.primaryContainer,
+        borderRadius: BorderRadius.circular(14.r),
+      ),
+      child: Text(
+        number.toString(),
+        style: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w800,
+          color: scheme.onPrimaryContainer,
         ),
-        Text(
-          number.toString(),
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.bold,
-            color: isDark ? context.color.onSurface : context.color.primary,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _buildInfoChip(IconData icon, String label, BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 13.sp, color: context.color.primary),
-        SizedBox(width: 4.w),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11.5.sp,
-            color: context.color.onSurface,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Cairo',
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13.sp, color: scheme.primary),
+          SizedBox(width: 4.w),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10.5.sp,
+              color: scheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Cairo',
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SurahPageHeader extends StatelessWidget {
+  const _SurahPageHeader({required this.qariName});
+  final String qariName;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 8.h),
+      child: Row(
+        children: [
+          IconButton.filledTonal(
+            tooltip: 'العودة',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_rounded),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            width: 46.r,
+            height: 46.r,
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Icon(
+              Icons.menu_book_rounded,
+              color: scheme.onPrimaryContainer,
+            ),
+          ),
+          SizedBox(width: 11.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'سور القرآن الكريم',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                Text(
+                  qariName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 11.sp,
+                    color: scheme.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -468,7 +492,7 @@ class _SurahOptionsMenuState extends ConsumerState<_SurahOptionsMenu> {
             value: 'delete',
             icon: Icons.delete_outline_rounded,
             label: 'حذف السورة',
-            color: Colors.red.shade600,
+            color: context.color.error,
             context: context,
           ),
         ];
@@ -480,7 +504,7 @@ class _SurahOptionsMenuState extends ConsumerState<_SurahOptionsMenu> {
             value: 'cancel',
             icon: Icons.cancel_outlined,
             label: 'إلغاء التحميل',
-            color: Colors.red.shade600,
+            color: context.color.error,
             context: context,
           ),
         ];

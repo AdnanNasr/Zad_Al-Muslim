@@ -22,20 +22,49 @@ class HadithModalBottom extends ConsumerWidget {
         bottom: MediaQuery.of(context).padding.bottom + 20.h,
       ),
       decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
+        color: colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const _InfoItem(
-                icon: Icons.person,
-                title: "المصدر",
-                value: "صحيح البخاري",
+              Container(
+                padding: EdgeInsets.all(9.r),
+                decoration: BoxDecoration(
+                  color: colorScheme.tertiaryContainer,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Icon(
+                  Icons.auto_stories_rounded,
+                  color: colorScheme.onTertiaryContainer,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'نص الحديث',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w800,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      'صحيح البخاري',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 11.sp,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -68,7 +97,7 @@ class HadithModalBottom extends ConsumerWidget {
               ),
             ],
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 16.h),
 
           // Hadith Content
           Flexible(
@@ -82,12 +111,10 @@ class HadithModalBottom extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(24.r),
-                      border: Border.all(
-                        color: colorScheme.primary.withValues(alpha: 0.4),
-                      ),
+                      border: Border.all(color: colorScheme.outlineVariant),
                       boxShadow: [
                         BoxShadow(
-                          color: colorScheme.primary.withValues(alpha: 0.05),
+                          color: colorScheme.shadow.withValues(alpha: 0.06),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -97,14 +124,14 @@ class HadithModalBottom extends ConsumerWidget {
                       hadith.text,
                       textAlign: TextAlign.justify,
                       style: TextStyle(
-                        fontSize: 22.5.sp,
-                        height: 1.5.h,
+                        fontSize: 21.sp,
+                        height: 1.75,
                         fontFamily: "Naskh",
                         color: colorScheme.onSurface,
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 18.h),
 
                   // Info Section
                   _InfoItem(
@@ -116,6 +143,11 @@ class HadithModalBottom extends ConsumerWidget {
                     icon: Icons.numbers_rounded,
                     title: "رقم الحديث",
                     value: hadith.reference.hadith.toString(),
+                  ),
+                  const _InfoItem(
+                    icon: Icons.verified_rounded,
+                    title: 'المصدر',
+                    value: 'صحيح البخاري',
                   ),
                 ],
               ),
@@ -197,10 +229,10 @@ class _ActionButtonState extends State<_ActionButton> {
           child: Container(
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.1),
+              color: colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(widget.icon, size: 22.sp, color: colorScheme.primary),
+            child: Icon(widget.icon, size: 21.sp, color: colorScheme.primary),
           ),
         ),
       ],
@@ -230,33 +262,39 @@ class _InfoItem extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
-              color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              color: colorScheme.tertiaryContainer,
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(icon, size: 20.sp, color: colorScheme.primary),
+            child: Icon(
+              icon,
+              size: 20.sp,
+              color: colorScheme.onTertiaryContainer,
+            ),
           ),
           SizedBox(width: 12.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: colorScheme.onSurfaceVariant,
-                  fontFamily: "Cairo",
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colorScheme.onSurfaceVariant,
+                    fontFamily: "Cairo",
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface,
-                  fontFamily: "Cairo",
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                    fontFamily: "Cairo",
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

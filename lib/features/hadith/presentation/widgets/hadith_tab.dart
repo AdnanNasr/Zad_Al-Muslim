@@ -59,16 +59,16 @@ class _HadithTabState extends ConsumerState<HadithTab> {
     ];
 
     return Padding(
-      padding: EdgeInsets.all(8.0.r),
+      padding: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Search Bar
           HadithSearchBar(key: _searchBarKey),
-          SizedBox(height: 8.h),
+          SizedBox(height: 2.h),
           // Smart Tags
           ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 40.h),
+            constraints: BoxConstraints(maxHeight: 38.h),
             child: AnimationLimiter(
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
@@ -85,8 +85,12 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                       curve: Curves.ease,
                       child: FadeInAnimation(
                         child: ChoiceChip(
-                          selectedColor: context.color.primary.withValues(
-                            alpha: .9,
+                          backgroundColor: context.color.surface,
+                          selectedColor: context.color.tertiaryContainer,
+                          side: BorderSide(
+                            color: isSelected
+                                ? context.color.tertiary
+                                : context.color.outlineVariant,
                           ),
                           label: Text(
                             tag.arabicName,
@@ -94,11 +98,11 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                               fontFamily: "Cairo",
                               fontSize: 13.sp,
                               color: isSelected
-                                  ? Colors.white
-                                  : context.color.onSurface,
+                                  ? context.color.onTertiaryContainer
+                                  : context.color.onSurfaceVariant,
                             ),
                           ),
-                          checkmarkColor: Colors.white,
+                          checkmarkColor: context.color.onTertiaryContainer,
                           selected: isSelected,
                           onSelected: (selected) {
                             ref
@@ -113,7 +117,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
               ),
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 10.h),
 
           // Filters and Search (Future)
           Row(
@@ -129,9 +133,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
             ],
           ),
 
-          const SizedBox(height: 8),
-          Divider(color: Theme.of(context).dividerColor, thickness: 2),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
 
           Expanded(
             child: hadithState.when(
@@ -144,29 +146,18 @@ class _HadithTabState extends ConsumerState<HadithTab> {
               ),
               data: (hadiths) {
                 if (hadiths.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "لا توجد أحاديث مطابقة للفلاتر",
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontFamily: "Cairo",
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  );
+                  return const _EmptyHadiths();
                 }
 
                 return Scrollbar(
                   controller: _scrollController,
-                  thumbVisibility: true,
-                  trackVisibility: true,
-                  interactive: true,
+                  thumbVisibility: false,
                   radius: const Radius.circular(24),
 
                   child: AnimationLimiter(
                     child: ListView.builder(
                       controller: _scrollController,
-                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      padding: EdgeInsets.only(top: 6.h, bottom: 24.h),
                       itemCount: hadiths.length + (notifier.hasMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == hadiths.length) {
@@ -196,9 +187,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                                     showDragHandle: true,
                                     useSafeArea: true,
                                     isScrollControlled: true,
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).scaffoldBackgroundColor,
+                                    backgroundColor: Colors.transparent,
                                     builder: (context) =>
                                         HadithModalBottom(hadith: hadith),
                                   );
@@ -267,6 +256,57 @@ class _HadithTabState extends ConsumerState<HadithTab> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyHadiths extends StatelessWidget {
+  const _EmptyHadiths();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(28.r),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(18.r),
+              decoration: BoxDecoration(
+                color: scheme.tertiaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.search_off_rounded,
+                size: 38.sp,
+                color: scheme.onTertiaryContainer,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'لا توجد نتائج مطابقة',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w800,
+                color: scheme.onSurface,
+              ),
+            ),
+            SizedBox(height: 5.h),
+            Text(
+              'جرّب تغيير عبارة البحث أو إزالة بعض الفلاتر.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 12.sp,
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );

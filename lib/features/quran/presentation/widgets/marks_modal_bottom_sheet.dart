@@ -20,8 +20,8 @@ class MarksModalBottomSheet extends ConsumerWidget {
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
-        color: context.color.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        color: context.color.surfaceContainerLowest,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
       ),
       child: DefaultTabController(
         length: 2,
@@ -33,7 +33,7 @@ class MarksModalBottomSheet extends ConsumerWidget {
               height: 4.h,
               width: 40.w,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: .3),
+                color: context.color.outlineVariant,
                 borderRadius: BorderRadius.circular(10.r),
               ),
             ),
@@ -44,7 +44,7 @@ class MarksModalBottomSheet extends ConsumerWidget {
                 fontSize: 18.sp,
                 fontFamily: "Cairo",
                 fontWeight: FontWeight.bold,
-                color: primaryColor,
+                color: context.color.onSurface,
               ),
             ),
             SizedBox(height: 10.h),
@@ -55,21 +55,20 @@ class MarksModalBottomSheet extends ConsumerWidget {
               child: Container(
                 height: 45.h,
                 decoration: BoxDecoration(
-                  color: context.color.primaryContainer.withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(12.r),
+                  color: context.color.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: context.color.outlineVariant),
                 ),
                 child: TabBar(
                   splashBorderRadius: BorderRadius.circular(12.r),
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
                   indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(13.r),
+                    color: context.color.surface,
                   ),
-                  labelColor: context.color.onPrimary,
-                  unselectedLabelColor: context.color.onSurface.withValues(
-                    alpha: 0.6,
-                  ),
+                  labelColor: primaryColor,
+                  unselectedLabelColor: context.color.onSurfaceVariant,
                   unselectedLabelStyle: TextStyle(
                     fontSize: 14.sp,
                     fontFamily: "Cairo",
@@ -134,7 +133,7 @@ class _MarkListView extends ConsumerWidget {
             Icon(
               Icons.bookmark_outline_rounded,
               size: 60.sp,
-              color: Colors.grey.withValues(alpha: .4),
+              color: context.color.onTertiaryContainer,
             ),
             SizedBox(height: 10.h),
             Text(
@@ -142,7 +141,7 @@ class _MarkListView extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontFamily: "Cairo",
-                color: Colors.grey,
+                color: context.color.onSurfaceVariant,
               ),
             ),
           ],
@@ -163,11 +162,11 @@ class _MarkListView extends ConsumerWidget {
           margin: EdgeInsets.only(bottom: 12.h),
           decoration: BoxDecoration(
             color: context.color.surface,
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.grey.withValues(alpha: .15)),
+            borderRadius: BorderRadius.circular(18.r),
+            border: Border.all(color: context.color.outlineVariant),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .02),
+                color: context.color.shadow.withValues(alpha: .04),
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),
@@ -179,13 +178,13 @@ class _MarkListView extends ConsumerWidget {
               vertical: 8.h,
             ),
             leading: CircleAvatar(
-              backgroundColor: primaryColor.withValues(alpha: .1),
+              backgroundColor: context.color.tertiaryContainer,
               radius: 22.r,
               child: Icon(
                 isAyahList
                     ? Icons.menu_book_rounded
                     : Icons.my_library_books_rounded,
-                color: primaryColor,
+                color: context.color.onTertiaryContainer,
                 size: 20.sp,
               ),
             ),
@@ -219,13 +218,17 @@ class _MarkListView extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 11.sp,
                     fontFamily: "Cairo",
-                    color: Colors.grey,
+                    color: context.color.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
             trailing: IconButton(
-              icon: Icon(Icons.delete_outline_rounded, color: Colors.red[300]),
+              tooltip: 'حذف العلامة',
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: context.color.error,
+              ),
               onPressed: () async {
                 final notifier = ref.read(marksProvder.notifier);
                 if (isAyahList) {
@@ -238,12 +241,13 @@ class _MarkListView extends ConsumerWidget {
                 }
               },
             ),
-            onTap: () {
-              Navigator.pop(context); // Close the bottom sheet
-              Navigator.pushReplacement(
-                context,
+            onTap: () async {
+              final navigator = Navigator.of(context);
+              await navigator.maybePop();
+              if (!navigator.mounted) return;
+              await navigator.pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => QuranPages(
+                  builder: (_) => QuranPages(
                     pageNumber: mark.pageNumber,
                     highlightSurah: mark.surahNumber,
                     highlightVerse: mark.ayahNumber,

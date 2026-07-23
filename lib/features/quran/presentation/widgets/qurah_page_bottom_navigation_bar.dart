@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/extensions/screen_util_sizes.dart';
@@ -55,23 +54,19 @@ class _QurahPageBottomNavigationBarState
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.read(themeProvider);
     return SlideTransition(
       position: _offsetAnimation,
       child: Padding(
-        padding: EdgeInsets.only(bottom: 20.h, left: 24.w, right: 24.w),
+        padding: EdgeInsets.only(bottom: 16.h, left: 18.w, right: 18.w),
         child: Container(
           height: 65.h,
           decoration: BoxDecoration(
-            color: context.color.primary,
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: context.color.onPrimary.withValues(alpha: .1),
-              width: 1,
-            ),
+            color: context.color.surface.withValues(alpha: .97),
+            borderRadius: BorderRadius.circular(22.r),
+            border: Border.all(color: context.color.outlineVariant),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .15),
+                color: context.color.shadow.withValues(alpha: .12),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -84,7 +79,7 @@ class _QurahPageBottomNavigationBarState
                 if (widget.onIndexPressed != null) {
                   widget.onIndexPressed!();
                 }
-              }, themeMode),
+              }),
               _buildDivider(context),
               _buildNavItem(context, Icons.search_rounded, "بحث", () {
                 showModalBottomSheet(
@@ -101,7 +96,7 @@ class _QurahPageBottomNavigationBarState
                     return const QuranSearchSheet();
                   },
                 );
-              }, themeMode),
+              }),
               _buildDivider(context),
               _buildNavItem(context, Icons.bookmarks_rounded, "العلامات", () {
                 showModalBottomSheet(
@@ -116,11 +111,11 @@ class _QurahPageBottomNavigationBarState
                     return const MarksModalBottomSheet();
                   },
                 );
-              }, themeMode),
+              }),
               _buildDivider(context),
               _buildNavItem(context, Icons.settings_rounded, "الإعدادات", () {
                 Navigator.of(context).pushNamed(Routes.quranSettingsPage);
-              }, themeMode),
+              }),
             ],
           ),
         ),
@@ -134,7 +129,6 @@ class _QurahPageBottomNavigationBarState
     IconData icon,
     String label,
     VoidCallback onTap,
-    ThemeMode themeMode,
   ) {
     return Material(
       color: Colors.transparent,
@@ -146,20 +140,12 @@ class _QurahPageBottomNavigationBarState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                color: themeMode == ThemeMode.light
-                    ? context.color.surface
-                    : context.color.onPrimary,
-                size: 24.sp,
-              ),
+              Icon(icon, color: context.color.primary, size: 24.sp),
               SizedBox(height: 2.h),
               Text(
                 label,
                 style: TextStyle(
-                  color: themeMode == ThemeMode.light
-                      ? context.color.onPrimary
-                      : context.color.onPrimary,
+                  color: context.color.onSurfaceVariant,
                   fontSize: context.tiny ? 10.2.sp : 12.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo",
@@ -177,7 +163,7 @@ class _QurahPageBottomNavigationBarState
     return Container(
       height: 25.h,
       width: 1,
-      color: context.color.onPrimary.withValues(alpha: .2),
+      color: context.color.outlineVariant,
     );
   }
 }

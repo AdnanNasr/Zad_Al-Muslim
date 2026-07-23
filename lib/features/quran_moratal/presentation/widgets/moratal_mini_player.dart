@@ -35,11 +35,19 @@ class MoratalMiniPlayer extends ConsumerWidget {
         );
       },
       child: Container(
-        height: 65.h,
-        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+        height: 72.h,
+        margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
         decoration: BoxDecoration(
           color: context.color.surface,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: context.color.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: context.color.shadow.withValues(alpha: 0.12),
+              blurRadius: 18,
+              offset: const Offset(0, 7),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -56,7 +64,7 @@ class MoratalMiniPlayer extends ConsumerWidget {
 
                 return ClipRRect(
                   borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(12.r),
+                    top: Radius.circular(20.r),
                   ),
                   child: LinearProgressIndicator(
                     value: progress,
@@ -64,7 +72,7 @@ class MoratalMiniPlayer extends ConsumerWidget {
                       alpha: .2,
                     ),
                     valueColor: AlwaysStoppedAnimation(context.color.primary),
-                    minHeight: 2.h,
+                    minHeight: 3.h,
                   ),
                 );
               },
@@ -77,21 +85,17 @@ class MoratalMiniPlayer extends ConsumerWidget {
                   children: [
                     // icon
                     Container(
-                      height: 40.h,
-                      width: 40.w,
+                      height: 42.r,
+                      width: 42.r,
                       decoration: BoxDecoration(
-                        color: context.color.primary.withValues(alpha: .15),
-                        borderRadius: BorderRadius.circular(8.r),
+                        color: context.color.primaryContainer,
+                        borderRadius: BorderRadius.circular(14.r),
                       ),
-                      child: Image.asset(
-                        "assets/icons/moon.png",
-                        color: context.color.primary.withValues(alpha: .4),
+                      child: Icon(
+                        Icons.graphic_eq_rounded,
+                        color: context.color.onPrimaryContainer,
+                        size: 23.sp,
                       ),
-                      // Icon(
-                      //   Icons.audiotrack_rounded,
-                      //   color: context.color.primary,
-                      //   size: 24.sp,
-                      // ),
                     ),
                     SizedBox(width: 12.w),
 
@@ -115,9 +119,7 @@ class MoratalMiniPlayer extends ConsumerWidget {
                             style: TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 11.sp,
-                              color: context.color.onSurface.withValues(
-                                alpha: .6,
-                              ),
+                              color: context.color.onSurfaceVariant,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -149,21 +151,18 @@ class MoratalMiniPlayer extends ConsumerWidget {
                           );
                         }
                         if (playing != true) {
-                          return IconButton(
-                            icon: Icon(Icons.play_arrow_rounded, size: 28.sp),
-                            color: context.color.primary,
+                          return IconButton.filledTonal(
+                            icon: Icon(Icons.play_arrow_rounded, size: 26.sp),
                             onPressed: audioPlayer.play,
                           );
                         } else if (processing != ProcessingState.completed) {
-                          return IconButton(
-                            icon: Icon(Icons.pause_rounded, size: 28.sp),
-                            color: context.color.primary,
+                          return IconButton.filledTonal(
+                            icon: Icon(Icons.pause_rounded, size: 26.sp),
                             onPressed: audioPlayer.pause,
                           );
                         } else {
-                          return IconButton(
+                          return IconButton.filledTonal(
                             icon: Icon(Icons.replay_rounded, size: 24.sp),
-                            color: context.color.primary,
                             onPressed: () {
                               audioPlayer.seek(Duration.zero);
                               audioPlayer.play();
@@ -275,7 +274,7 @@ class _MoratalFullPlayerSheetState
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: BoxDecoration(
-        color: context.color.surface,
+        color: context.color.surfaceContainerLowest,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
       ),
       child: Column(
@@ -327,7 +326,7 @@ class _MoratalFullPlayerSheetState
       height: 5.h,
       width: 50.w,
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: .3),
+        color: context.color.outlineVariant,
         borderRadius: BorderRadius.circular(10.r),
       ),
     );
@@ -369,15 +368,21 @@ class _MoratalFullPlayerSheetState
         }
 
         // Static background layer that NEVER rebuilds on position changes
+        final scheme = Theme.of(context).colorScheme;
         return Container(
           width: double.infinity,
-          // margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/night_clouds.jpg"),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+          margin: EdgeInsets.symmetric(horizontal: 14.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24.r),
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Color.lerp(scheme.primary, Colors.black, 0.35)!,
+                Color.lerp(scheme.tertiary, Colors.black, 0.48)!,
+              ],
             ),
+            border: Border.all(color: scheme.primary.withValues(alpha: 0.35)),
           ),
           child: StreamBuilder<PositionData>(
             stream: ref.watch(audioPositionStreamProvider),
@@ -435,7 +440,7 @@ class _MoratalFullPlayerSheetState
                               width: 280.w,
                               height: 18.h,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: .2),
+                                color: context.color.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(4.r),
                               ),
                             ),
@@ -444,7 +449,7 @@ class _MoratalFullPlayerSheetState
                               width: 220.w,
                               height: 18.h,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: .2),
+                                color: context.color.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(4.r),
                               ),
                             ),
@@ -453,7 +458,7 @@ class _MoratalFullPlayerSheetState
                               width: 140.w,
                               height: 18.h,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: .2),
+                                color: context.color.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(4.r),
                               ),
                             ),
@@ -468,7 +473,7 @@ class _MoratalFullPlayerSheetState
                         height: 28.h,
                         margin: EdgeInsets.only(bottom: 16.h),
                         decoration: BoxDecoration(
-                          color: Colors.white24,
+                          color: context.color.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                       ),
@@ -476,18 +481,10 @@ class _MoratalFullPlayerSheetState
                   ),
                 ),
               )
-            : Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/night_clouds.jpg"),
-                    fit: BoxFit.fill,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black26,
-                      BlendMode.darken,
-                    ),
-                  ),
-                ),
+            : Icon(
+                Icons.menu_book_rounded,
+                size: 54.sp,
+                color: context.color.onSurfaceVariant,
               ),
       ),
     );

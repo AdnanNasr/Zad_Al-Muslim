@@ -21,43 +21,43 @@ class HighlightedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (highlight == null || highlight!.trim().isEmpty) {
-      return Text(
-        text,
-        style: style,
-        maxLines: maxLines,
-        overflow: overflow,
-      );
+      return Text(text, style: style, maxLines: maxLines, overflow: overflow);
     }
 
     final String query = highlight!.trim();
     // إزالة التشكيل من كلمة البحث أولاً
     final String cleanQuery = query.replaceAll(RegExp(r'[\u064B-\u065F]'), '');
-    
+
     if (cleanQuery.isEmpty) {
-      return Text(
-        text,
-        style: style,
-        maxLines: maxLines,
-        overflow: overflow,
-      );
+      return Text(text, style: style, maxLines: maxLines, overflow: overflow);
     }
 
     // تقسيم البحث إلى كلمات متفرقة
-    final words = cleanQuery.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    final words = cleanQuery
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
     if (words.isEmpty) {
       return Text(text, style: style, maxLines: maxLines, overflow: overflow);
     }
 
     // بناء تعبير نمطي (Regex) لكل كلمة بحيث يسمح بوجود تشكيل بين الحروف ويدعم التشكيلات العربية
-    final regexPatterns = words.map((word) {
-      final patternChars = word.split('').map((char) {
-        if (char == 'ا' || char == 'أ' || char == 'إ' || char == 'آ') return '[اأإآ]';
-        if (char == 'ه' || char == 'ة') return '[هة]';
-        if (char == 'ي' || char == 'ى') return '[يى]';
-        return RegExp.escape(char);
-      }).join(r'[\u064B-\u065F]*');
-      return '($patternChars[\\u064B-\\u065F]*)';
-    }).join('|');
+    final regexPatterns = words
+        .map((word) {
+          final patternChars = word
+              .split('')
+              .map((char) {
+                if (char == 'ا' || char == 'أ' || char == 'إ' || char == 'آ') {
+                  return '[اأإآ]';
+                }
+                if (char == 'ه' || char == 'ة') return '[هة]';
+                if (char == 'ي' || char == 'ى') return '[يى]';
+                return RegExp.escape(char);
+              })
+              .join(r'[\u064B-\u065F]*');
+          return '($patternChars[\\u064B-\\u065F]*)';
+        })
+        .join('|');
 
     final regex = RegExp(regexPatterns, caseSensitive: false);
     final matches = regex.allMatches(text);
@@ -76,7 +76,8 @@ class HighlightedText extends StatelessWidget {
       spans.add(
         TextSpan(
           text: text.substring(match.start, match.end),
-          style: highlightStyle ??
+          style:
+              highlightStyle ??
               TextStyle(
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -102,4 +103,3 @@ class HighlightedText extends StatelessWidget {
     );
   }
 }
-

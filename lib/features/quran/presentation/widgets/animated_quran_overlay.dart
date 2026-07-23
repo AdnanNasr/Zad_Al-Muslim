@@ -17,7 +17,8 @@ class AnimatedQuranOverlay extends StatefulWidget {
   AnimatedQuranOverlayState createState() => AnimatedQuranOverlayState();
 }
 
-class AnimatedQuranOverlayState extends State<AnimatedQuranOverlay> with SingleTickerProviderStateMixin {
+class AnimatedQuranOverlayState extends State<AnimatedQuranOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
 
@@ -31,13 +32,16 @@ class AnimatedQuranOverlayState extends State<AnimatedQuranOverlay> with SingleT
     );
 
     // 2. تحديد حركة الانزلاق (من الأسفل إلى الموضع الأصلي)
-    _animation = Tween<Offset>(
-      begin: const Offset(0.0, 1.0), // تبدأ من الأسفل (خارج الشاشة)
-      end: Offset.zero, // تنتهي في موضعها الأصلي
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.fastOutSlowIn, // منحنى سلس للظهور
-    ));
+    _animation =
+        Tween<Offset>(
+          begin: const Offset(0.0, 1.0), // تبدأ من الأسفل (خارج الشاشة)
+          end: Offset.zero, // تنتهي في موضعها الأصلي
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.fastOutSlowIn, // منحنى سلس للظهور
+          ),
+        );
 
     // تشغيل الرسوم المتحركة للظهور
     _controller.forward();
@@ -61,9 +65,6 @@ class AnimatedQuranOverlayState extends State<AnimatedQuranOverlay> with SingleT
   @override
   Widget build(BuildContext context) {
     // نستخدم SlideTransition لتطبيق حركة الانزلاق
-    return SlideTransition(
-      position: _animation,
-      child: widget.child,
-    );
+    return SlideTransition(position: _animation, child: widget.child);
   }
 }

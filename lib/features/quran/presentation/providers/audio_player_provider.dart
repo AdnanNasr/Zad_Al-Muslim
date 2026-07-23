@@ -107,8 +107,11 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
         final newSurahNumber = int.tryParse(parts.last);
         if (newSurahNumber != null) {
           final currentMoratal = ref.read(currentMoratalSurahProvider);
-          if (currentMoratal != null && currentMoratal.surahNumber != newSurahNumber) {
-            ref.read(currentMoratalSurahProvider.notifier).state = currentMoratal.copyWith(
+          if (currentMoratal != null &&
+              currentMoratal.surahNumber != newSurahNumber) {
+            ref
+                .read(currentMoratalSurahProvider.notifier)
+                .state = currentMoratal.copyWith(
               surahNumber: newSurahNumber,
               surahName: SurahNames.getFormattedName(newSurahNumber),
             );
@@ -209,7 +212,10 @@ final playMoratalSurahActionProvider = Provider((ref) {
       final results = await Future.wait([
         networkInfo.hasValidConnection(),
         Future.wait(
-          List.generate(114, (i) => downloadService.isSurahDownloaded(surah.qariId, i + 1)),
+          List.generate(
+            114,
+            (i) => downloadService.isSurahDownloaded(surah.qariId, i + 1),
+          ),
         ),
       ]);
 
@@ -232,7 +238,8 @@ final playMoratalSurahActionProvider = Provider((ref) {
           }
         }
       } else {
-        if (sequence.length == downloadedSurahs.length && downloadedSurahs.isNotEmpty) {
+        if (sequence.length == downloadedSurahs.length &&
+            downloadedSurahs.isNotEmpty) {
           final firstSource = sequence.first;
           final tag = firstSource.tag;
           if (tag is MediaItem && tag.id.startsWith('${surah.qariId}_')) {
@@ -275,7 +282,8 @@ final playMoratalSurahActionProvider = Provider((ref) {
               if (isLocalAvailable) {
                 return AudioSource.file(localPath, tag: mediaItem);
               } else {
-                final remoteUrl = '${surah.serverUrl}${surahNumber.toString().padLeft(3, "0")}.mp3';
+                final remoteUrl =
+                    '${surah.serverUrl}${surahNumber.toString().padLeft(3, "0")}.mp3';
                 return AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem);
               }
             }),

@@ -90,6 +90,24 @@ final marksProvder = StateNotifierProvider<MarksProvider, List<Mark>>((ref) {
   return MarksProvider();
 });
 
+/// مصدر الحقيقة الوحيد لموضع متابعة القراءة في الصفحة الرئيسية.
+/// تقبل علامة الصفحة أو الآية حتى يعمل التقدم في نمطي القراءة.
+final latestReadingMarkProvider = Provider<Mark?>((ref) {
+  final marks = ref.watch(marksProvder);
+  Mark? latest;
+
+  for (final mark in marks) {
+    final isValidPage = mark.pageNumber >= 1 && mark.pageNumber <= 604;
+    if (!isValidPage) continue;
+
+    if (latest == null || mark.date.isAfter(latest.date)) {
+      latest = mark;
+    }
+  }
+
+  return latest;
+});
+
 final markExistsProvider = FutureProvider.family<bool, int>((ref, page) async {
   final notifier = ref.read(marksProvder.notifier);
   return notifier.exists(page);

@@ -200,5 +200,8 @@ class QiblaCompassPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(QiblaCompassPainter oldDelegate) =>
-      oldDelegate.needleAngleRad != needleAngleRad;
+      oldDelegate.needleAngleRad != needleAngleRad ||
+      oldDelegate.qiblaColor != qiblaColor ||
+      oldDelegate.ringColor != ringColor ||
+      oldDelegate.labelColor != labelColor;
 }

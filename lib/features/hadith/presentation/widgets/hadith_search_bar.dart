@@ -55,16 +55,17 @@ class HadithSearchBarState extends ConsumerState<HadithSearchBar> {
     }
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+      margin: EdgeInsets.only(bottom: 10.h),
       decoration: BoxDecoration(
-        color: context.color.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16.r),
+        color: context.color.surface,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: context.color.outlineVariant),
       ),
       child: TextField(
         controller: _controller,
         onChanged: onSearchChanged,
         style: TextStyle(
-          fontSize: 16.sp,
+          fontSize: 14.sp,
           fontFamily: "Cairo",
           color: context.color.onSurface,
         ),
@@ -91,7 +92,21 @@ class HadithSearchBarState extends ConsumerState<HadithSearchBar> {
                   ),
                 )
               : const Icon(Icons.search_outlined),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r)),
+          prefixIconColor: context.color.primary,
+          filled: true,
+          fillColor: Colors.transparent,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18.r),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18.r),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18.r),
+            borderSide: BorderSide(color: context.color.primary, width: 1.4),
+          ),
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16.w,
             vertical: 12.h,

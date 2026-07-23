@@ -5,13 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/constants/env.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/core/extensions/sizes_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
+import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 
 import 'package:zad_al_muslim/features/settings/presentation/widgets/prayer_notification_selection_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
@@ -36,8 +35,6 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
-  double currentValue = 50;
-
   // this varibale belong to clean space
   // bool _isClearingCache = false;
   bool _isUpdatingLocation = false;
@@ -64,13 +61,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text(
-              "حذف",
-              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
             ),
+            child: const Text('حذف'),
           ),
         ],
       ),
@@ -87,24 +84,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
+          SnackBar(
+            content: const Text(
               "تم حذف بيانات الموقع بنجاح",
               style: TextStyle(fontFamily: 'Cairo'),
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: context.color.tertiary,
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
+          SnackBar(
+            content: const Text(
               "حدث خطأ أثناء حذف البيانات",
               style: TextStyle(fontFamily: 'Cairo'),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.color.error,
           ),
         );
       }
@@ -133,15 +130,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.color.primary,
-            ),
-            child: const Text(
-              "موافق",
-              style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
-            ),
+            child: const Text('موافق'),
           ),
         ],
       ),
@@ -164,7 +155,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   failure.message,
                   style: const TextStyle(fontFamily: 'Cairo'),
                 ),
-                backgroundColor: Colors.red,
+                backgroundColor: context.color.error,
               ),
             );
           }
@@ -189,12 +180,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
+              SnackBar(
+                content: const Text(
                   "تم تحديث بيانات الموقع بنجاح",
                   style: TextStyle(fontFamily: 'Cairo'),
                 ),
-                backgroundColor: Colors.green,
+                backgroundColor: context.color.tertiary,
               ),
             );
           }
@@ -203,12 +194,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
+          SnackBar(
+            content: const Text(
               "حدث خطأ أثناء تحديث الموقع",
               style: TextStyle(fontFamily: 'Cairo'),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.color.error,
           ),
         );
       }
@@ -355,371 +346,336 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
     final appSettingsNotifier = ref.read(appSettingsProvider.notifier);
-    final primarycolor = context.color.primary;
-    final bool isDark = themeMode == ThemeMode.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final selectedColor = ref.watch(userThemeProvider);
     return Scaffold(
-      appBar: CustomAppBar(
-        title: AppLocalizations.of(context)!.settings,
-        center: false,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(context.heightScreen * 0.015),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // --- 1. إعدادات التطبيق ---
-              SettingsContainer(
-                title: AppLocalizations.of(context)!.app_settings,
-                settingsCards: [
-                  SettingCards(
-                    icon: const Right(Icons.dark_mode),
-                    text: AppLocalizations.of(context)!.dark_mode,
-                    forgroundColor: primarycolor,
-                    toggle: true,
-                    switchValue: themeMode == ThemeMode.dark,
-                    onChanged: (value) async {
-                      await ref
+      backgroundColor: scheme.surfaceContainerLowest,
+      body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          const SliverToBoxAdapter(
+            child: SafeArea(bottom: false, child: _SettingsHeader()),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 120.h),
+            sliver: SliverList.list(
+              children: [
+                SettingsContainer(
+                  title: 'المظهر والقراءة',
+                  subtitle: 'خصص شكل التطبيق وتجربة القراءة',
+                  icon: Icons.palette_outlined,
+                  accentColor: scheme.primary,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.dark_mode),
+                      text: AppLocalizations.of(context)!.dark_mode,
+                      subText: themeMode == ThemeMode.dark
+                          ? 'الوضع الداكن مفعّل'
+                          : 'الوضع الفاتح مفعّل',
+                      forgroundColor: scheme.primary,
+                      toggle: true,
+                      switchValue: themeMode == ThemeMode.dark,
+                      onChanged: (_) => ref
                           .read(themeProvider.notifier)
-                          .toggleTheme(themeMode);
-                    },
-                  ),
-                  // SettingCards(
-                  //   borderRadius: const BorderRadius.vertical(
-                  //     top: Radius.circular(9),
-                  //   ),
-                  //   icon: const Right(Icons.language),
-                  //   text: AppLocalizations.of(context)!.app_language,
-                  //   widget: Text(
-                  //     "قريباً...",
-                  //     style: TextStyle(
-                  //       fontSize: 16.sp,
-                  //       fontWeight: FontWeight.w400,
-                  //       fontFamily: "Cairo",
-                  //     ),
-                  //   ),
-                  //   onTap: () {
-                  //     showDialog(
-                  //       context: context,
-                  //       builder: (context) => const LanguageDialog(),
-                  //     );
-                  //   },
-                  // ),
-                  SettingCards(
-                    icon: const Right(Icons.color_lens),
-                    text: AppLocalizations.of(context)!.app_color,
-                    onTap: () => showModalBottomSheet(
-                      isScrollControlled: true,
-                      isDismissible: true,
-                      context: context,
-                      builder: (context) => const ChangeAppColorPage(),
+                          .toggleTheme(themeMode),
                     ),
-                  ),
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.format_size),
-                    text: "حجم خط الأذكار",
-                    forgroundColor: primarycolor,
-                    onTap: () {
-                      showDialog(
+                    SettingCards(
+                      icon: const Right(Icons.color_lens),
+                      text: AppLocalizations.of(context)!.app_color,
+                      subText: 'لون الأزرار والعناصر البارزة',
+                      valueText: _getColorName(selectedColor),
+                      forgroundColor: selectedColor,
+                      onTap: () => showModalBottomSheet(
+                        isScrollControlled: true,
+                        isDismissible: true,
+                        useSafeArea: true,
                         context: context,
-                        builder: (context) => const FontSizeDialog(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16.h),
-
-              // --- 2. إعدادات الصلاة ---
-              SettingsContainer(
-                title: "إعدادات مواقيت الصلاة",
-                settingsCards: [
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.calculate_rounded),
-                    text: "طريقة حساب المواقيت",
-                    forgroundColor: primarycolor,
-                    subText: _getCalculationMethodName(
-                      appSettings.calculationMethodIndex,
-                    ),
-                    onTap: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => const CalculationMethodDialog(),
-                      );
-                      ref.invalidate(todayPrayerTimesProvider);
-                      ref.invalidate(selectedDatePrayerTimesProvider);
-                    },
-                  ),
-                  SettingCards(
-                    icon: Left(
-                      Hero(
-                        tag: "mosque",
-                        child: Icon(
-                          Icons.mosque_rounded,
-                          size: context.witdthScreen * 0.08,
-                          color: isDark
-                              ? context.color.onSurface.withValues(alpha: .95)
-                              : context.color.scrim.withValues(alpha: .8),
-                        ),
+                        builder: (context) => const ChangeAppColorPage(),
                       ),
                     ),
-                    text: "المذهب (صلاة العصر)",
-                    forgroundColor: primarycolor,
-                    subText: appSettings.madhabIndex == 0
-                        ? "تلقائي (شافعي، مالكي، حنبلي)"
-                        : "حنفي",
-                    onTap: () async {
-                      await Navigator.of(context).push(
-                        PageRouteBuilder(
-                          opaque: false,
-                          barrierDismissible: true,
-                          barrierColor: Colors.black45,
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const MadhabDialog(),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                        ),
-                      );
-                      ref.invalidate(todayPrayerTimesProvider);
-                      ref.invalidate(selectedDatePrayerTimesProvider);
-                    },
-                  ),
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(9),
-                    ),
-                    icon: const Right(Icons.access_time_filled_outlined),
-                    text: "تنسيق الوقت (24 ساعة)",
-                    forgroundColor: primarycolor,
-                    toggle: true,
-                    switchValue: appSettings.use24HourFormat,
-                    onChanged: (value) async {
-                      await appSettingsNotifier.toggle24HourFormat();
-                    },
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16.h),
-
-              // --- 3. الإشعارات والتنبيهات ---
-              SettingsContainer(
-                title: "الإشعارات والتنبيهات",
-                settingsCards: [
-                  SettingCards(
-                    icon: const Right(Icons.notifications_active_rounded),
-                    text: "إشعارات الصلاة",
-                    forgroundColor: primarycolor,
-                    toggle: true,
-                    switchValue: appSettings.prayerNotificationsEnabled,
-                    onChanged: (value) async {
-                      await appSettingsNotifier.togglePrayerNotifications();
-                      ref.invalidate(todayPrayerTimesProvider);
-                      ref.invalidate(selectedDatePrayerTimesProvider);
-                    },
-                  ),
-                  if (appSettings.prayerNotificationsEnabled)
                     SettingCards(
-                      icon: const Right(Icons.tune_rounded),
-                      text: "تخصيص أوقات الإشعارات",
-                      forgroundColor: primarycolor,
-                      subText: "اختر الصلوات لتلقي إشعاراتها",
+                      icon: const Right(Icons.format_size),
+                      text: 'حجم خط الأذكار',
+                      subText: 'حجم النص داخل صفحات الأذكار',
+                      valueText: '${appSettings.adkarFontSize.round()}',
+                      forgroundColor: scheme.primary,
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (context) =>
-                              const PrayerNotificationSelectionDialog(),
+                          builder: (context) => const FontSizeDialog(),
                         );
                       },
                     ),
-                  // SettingCards(
-                  //   icon: const Right(Icons.multitrack_audio_sharp),
-                  //   text: "صوت الأذان",
-                  //   forgroundColor: primarycolor,
-                  //   subText: "الافتراضي",
-                  //   onTap: () {
-                  //     showDialog(
-                  //       context: context,
-                  //       builder: (context) => const AdahnDialog(),
-                  //     );
-                  //   },
-                  // ),
-                  SettingCards(
-                    icon: const Right(Icons.wb_sunny_rounded),
-                    text: "تنبيه أذكار الصباح",
-                    subText: appSettings.morningAdkarReminder
-                        ? (appSettings.morningAdkarTime != null
-                              ? "الوقت: ${appSettings.morningAdkarTime}"
-                              : "الوقت: وقت الفجر")
-                        : "اضغط هنا لتحديد وقت التذكير",
-                    forgroundColor: primarycolor,
-                    toggle: true,
-                    switchValue: appSettings.morningAdkarReminder,
-                    onChanged: (value) async {
-                      await appSettingsNotifier.toggleMorningAdkarReminder();
-                    },
-                    onTap: appSettings.morningAdkarReminder
-                        ? () async {
-                            final time = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                              helpText:
-                                  'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
-                            );
-                            if (time != null) {
-                              final formattedTime =
-                                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-                              await appSettingsNotifier.setMorningAdkarTime(
-                                formattedTime,
-                              );
-                            } else {
-                              await appSettingsNotifier.setMorningAdkarTime(
-                                null,
-                              );
-                            }
-                          }
-                        : null,
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.nightlight_round),
-                    text: "تنبيه أذكار المساء",
-                    subText: appSettings.eveningAdkarReminder
-                        ? (appSettings.eveningAdkarTime != null
-                              ? "الوقت: ${appSettings.eveningAdkarTime}"
-                              : "الوقت: وقت المغرب")
-                        : "اضغط هنا لتحديد وقت التذكير",
-                    forgroundColor: primarycolor,
-                    toggle: true,
-                    switchValue: appSettings.eveningAdkarReminder,
-                    onChanged: (value) async {
-                      await appSettingsNotifier.toggleEveningAdkarReminder();
-                    },
-                    onTap: appSettings.eveningAdkarReminder
-                        ? () async {
-                            final time = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                              helpText:
-                                  'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
-                            );
-                            if (time != null) {
-                              final formattedTime =
-                                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-                              await appSettingsNotifier.setEveningAdkarTime(
-                                formattedTime,
-                              );
-                            } else {
-                              await appSettingsNotifier.setEveningAdkarTime(
-                                null,
-                              );
-                            }
-                          }
-                        : null,
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              SizedBox(height: 16.h),
+                SizedBox(height: 22.h),
 
-              // --- 4. إعدادات عامة ---
-              SettingsContainer(
-                title: "إعدادات عامة",
-                settingsCards: [
-                  // SettingCards(
-                  //   icon: Right(Icons.vibration),
-                  //   text: "اهتزاز التسبيح (Haptic)",
-                  //   toggle: true,
-                  //   switchValue: appSettings.hapticFeedbackEnabled,
-                  //   onChanged: (value) async {
-                  //     await appSettingsNotifier.toggleHapticFeedback();
-                  //   },
-                  // ),
-                  SettingCards(
-                    icon: const Right(Icons.my_location_rounded),
-                    text: "تحديث بيانات الموقع",
-                    widget: _isUpdatingLocation
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : null,
-                    onTap: _isUpdatingLocation
-                        ? null
-                        : () => _updateLocationData(context),
-                  ),
-                  SettingCards(
-                    icon: const Right(Icons.location_off_rounded),
-                    text: "حذف بيانات الموقع",
-                    onTap: () => _deleteLocationData(context),
-                  ),
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(9),
+                SettingsContainer(
+                  title: 'مواقيت الصلاة',
+                  subtitle: 'الحساب والمذهب وطريقة عرض الوقت',
+                  icon: Icons.mosque_rounded,
+                  accentColor: scheme.secondary,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.calculate_rounded),
+                      text: 'طريقة حساب المواقيت',
+                      subText: _getCalculationMethodName(
+                        appSettings.calculationMethodIndex,
+                      ),
+                      forgroundColor: scheme.secondary,
+                      onTap: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) => const CalculationMethodDialog(),
+                        );
+                        ref.invalidate(todayPrayerTimesProvider);
+                        ref.invalidate(selectedDatePrayerTimesProvider);
+                      },
                     ),
-                    icon: const Right(Icons.restart_alt_rounded),
-                    text: "إعادة ضبط الإعدادات",
-                    onTap: () {
-                      resetSettingsDialog(context, appSettingsNotifier);
-                    },
-                  ),
-                  // TODO Later: add clean space feautre
-                  // SettingCards(
-                  //   icon: const Right(Icons.delete),
-                  //   text: "تنظيف المساحة",
-                  //   widget: _isClearingCache
-                  //       ? const SizedBox(
-                  //           width: 20,
-                  //           height: 20,
-                  //           child: CircularProgressIndicator(strokeWidth: 2),
-                  //         )
-                  //       : null,
-                  //   onTap: _isClearingCache
-                  //       ? null
-                  //       : () => _clearAudioCache(context),
-                  // ),
-                  SettingCards(
-                    icon: const Right(Icons.app_settings_alt),
-                    text: AppLocalizations.of(context)!.app_information,
-                    forgroundColor: primarycolor,
-                    onTap: () => Navigator.of(context).pushNamed("/app_info"),
-                  ),
-                  SettingCards(
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(9),
+                    SettingCards(
+                      icon: const Right(Icons.account_balance_rounded),
+                      text: 'المذهب (صلاة العصر)',
+                      valueText: appSettings.madhabIndex == 0
+                          ? 'الجمهور'
+                          : 'حنفي',
+                      subText: appSettings.madhabIndex == 0
+                          ? 'شافعي، مالكي، حنبلي'
+                          : null,
+                      forgroundColor: scheme.secondary,
+                      onTap: () async {
+                        await showDialog<void>(
+                          context: context,
+                          builder: (context) => const MadhabDialog(),
+                        );
+                        ref.invalidate(todayPrayerTimesProvider);
+                        ref.invalidate(selectedDatePrayerTimesProvider);
+                      },
                     ),
-                    icon: const Right(Icons.share),
-                    text: "نشر التطبيق (صدقة جارية)",
-                    forgroundColor: primarycolor,
-                    onTap: () {
-                      SharePlus.instance.share(
-                        ShareParams(
-                          text: Platform.isAndroid
-                              ? Env.androidAppLink
-                              : Env.iOSAppLink,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 100.h),
-            ],
+                    SettingCards(
+                      icon: const Right(Icons.access_time_filled_outlined),
+                      text: 'تنسيق 24 ساعة',
+                      subText: appSettings.use24HourFormat
+                          ? 'مثال: 18:30'
+                          : 'مثال: 6:30 م',
+                      forgroundColor: scheme.secondary,
+                      toggle: true,
+                      switchValue: appSettings.use24HourFormat,
+                      onChanged: (value) async {
+                        await appSettingsNotifier.toggle24HourFormat();
+                      },
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 22.h),
+
+                SettingsContainer(
+                  title: 'الإشعارات والتنبيهات',
+                  subtitle: 'تنبيهات الصلاة وأذكار الصباح والمساء',
+                  icon: Icons.notifications_active_outlined,
+                  accentColor: scheme.tertiary,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.notifications_active_rounded),
+                      text: 'إشعارات الصلاة',
+                      subText: appSettings.prayerNotificationsEnabled
+                          ? 'التنبيهات مفعّلة'
+                          : 'التنبيهات متوقفة',
+                      forgroundColor: scheme.tertiary,
+                      toggle: true,
+                      switchValue: appSettings.prayerNotificationsEnabled,
+                      onChanged: (value) async {
+                        await appSettingsNotifier.togglePrayerNotifications();
+                        ref.invalidate(todayPrayerTimesProvider);
+                        ref.invalidate(selectedDatePrayerTimesProvider);
+                      },
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOutCubic,
+                      child: appSettings.prayerNotificationsEnabled
+                          ? SettingCards(
+                              icon: const Right(Icons.tune_rounded),
+                              text: 'تخصيص الصلوات',
+                              forgroundColor: scheme.tertiary,
+                              subText: 'اختر الصلوات التي تريد تنبيهاتها',
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      const PrayerNotificationSelectionDialog(),
+                                );
+                              },
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    SettingCards(
+                      icon: const Right(Icons.wb_sunny_rounded),
+                      text: 'أذكار الصباح',
+                      subText: appSettings.morningAdkarReminder
+                          ? 'اضغط على الصف لتعديل وقت التنبيه'
+                          : 'التنبيه متوقف',
+                      valueText: appSettings.morningAdkarReminder
+                          ? (appSettings.morningAdkarTime ?? 'وقت الفجر')
+                          : null,
+                      forgroundColor: scheme.tertiary,
+                      toggle: true,
+                      switchValue: appSettings.morningAdkarReminder,
+                      onChanged: (value) async {
+                        await appSettingsNotifier.toggleMorningAdkarReminder();
+                      },
+                      onTap: appSettings.morningAdkarReminder
+                          ? () async {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                                helpText:
+                                    'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
+                              );
+                              if (time != null) {
+                                final formattedTime =
+                                    '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                                await appSettingsNotifier.setMorningAdkarTime(
+                                  formattedTime,
+                                );
+                              } else {
+                                await appSettingsNotifier.setMorningAdkarTime(
+                                  null,
+                                );
+                              }
+                            }
+                          : null,
+                    ),
+                    SettingCards(
+                      icon: const Right(Icons.nightlight_round),
+                      text: 'أذكار المساء',
+                      subText: appSettings.eveningAdkarReminder
+                          ? 'اضغط على الصف لتعديل وقت التنبيه'
+                          : 'التنبيه متوقف',
+                      valueText: appSettings.eveningAdkarReminder
+                          ? (appSettings.eveningAdkarTime ?? 'وقت المغرب')
+                          : null,
+                      forgroundColor: scheme.tertiary,
+                      toggle: true,
+                      switchValue: appSettings.eveningAdkarReminder,
+                      onChanged: (value) async {
+                        await appSettingsNotifier.toggleEveningAdkarReminder();
+                      },
+                      onTap: appSettings.eveningAdkarReminder
+                          ? () async {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                                helpText:
+                                    'اختر وقت التنبيه (أو إلغاء للرجوع للمقترح)',
+                              );
+                              if (time != null) {
+                                final formattedTime =
+                                    '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                                await appSettingsNotifier.setEveningAdkarTime(
+                                  formattedTime,
+                                );
+                              } else {
+                                await appSettingsNotifier.setEveningAdkarTime(
+                                  null,
+                                );
+                              }
+                            }
+                          : null,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 22.h),
+
+                SettingsContainer(
+                  title: 'الموقع والخصوصية',
+                  subtitle: 'البيانات المستخدمة للصلاة واتجاه القبلة',
+                  icon: Icons.location_on_outlined,
+                  accentColor: scheme.secondary,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.my_location_rounded),
+                      text: 'تحديث بيانات الموقع',
+                      subText: 'إعادة تحديد موقعك وحساب المواقيت',
+                      forgroundColor: scheme.secondary,
+                      widget: _isUpdatingLocation
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : null,
+                      onTap: _isUpdatingLocation
+                          ? null
+                          : () => _updateLocationData(context),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 22.h),
+
+                SettingsContainer(
+                  title: 'حول التطبيق',
+                  subtitle: 'معلومات زاد المسلم ومشاركته',
+                  icon: Icons.info_outline_rounded,
+                  accentColor: scheme.primary,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.app_settings_alt),
+                      text: AppLocalizations.of(context)!.app_information,
+                      subText: 'الإصدار والتراخيص وسياسة الاستخدام',
+                      forgroundColor: scheme.primary,
+                      onTap: () => Navigator.of(context).pushNamed("/app_info"),
+                    ),
+                    SettingCards(
+                      icon: const Right(Icons.share),
+                      text: 'مشاركة التطبيق',
+                      subText: 'شارك زاد المسلم مع من تحب',
+                      forgroundColor: scheme.primary,
+                      onTap: () {
+                        SharePlus.instance.share(
+                          ShareParams(
+                            text: Platform.isAndroid
+                                ? Env.androidAppLink
+                                : Env.iOSAppLink,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 22.h),
+
+                SettingsContainer(
+                  title: 'إجراءات حساسة',
+                  subtitle: 'هذه الإجراءات تحتاج إلى تأكيد',
+                  icon: Icons.warning_amber_rounded,
+                  accentColor: scheme.error,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.location_off_rounded),
+                      text: 'حذف بيانات الموقع',
+                      subText: 'سيؤثر في الصلاة والقبلة حتى تحديث الموقع',
+                      destructive: true,
+                      onTap: () => _deleteLocationData(context),
+                    ),
+                    SettingCards(
+                      icon: const Right(Icons.restart_alt_rounded),
+                      text: 'إعادة ضبط الإعدادات',
+                      subText: 'استعادة جميع الإعدادات الافتراضية',
+                      destructive: true,
+                      onTap: () =>
+                          resetSettingsDialog(context, appSettingsNotifier),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -731,10 +687,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("تأكيد", style: TextStyle(fontFamily: "Cairo")),
+        icon: Icon(
+          Icons.warning_amber_rounded,
+          color: context.color.error,
+          size: 32,
+        ),
+        title: const Text('إعادة ضبط الإعدادات'),
         content: const Text(
-          "هل أنت متأكد من إعادة ضبط جميع الإعدادات العامة؟",
-          style: TextStyle(fontFamily: "Cairo"),
+          'ستعود إعدادات القراءة والصلاة والتنبيهات إلى قيمها الافتراضية. هل تريد المتابعة؟',
+          textAlign: TextAlign.center,
         ),
         actions: [
           TextButton(
@@ -746,9 +707,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             onPressed: () => Navigator.pop(context),
             child: const Text("إلغاء", style: TextStyle(fontFamily: "Cairo")),
           ),
-          TextButton(
-            style: const ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll<Color>(Colors.red),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: context.color.error,
+              foregroundColor: context.color.onError,
             ),
             onPressed: () async {
               await appSettingsNotifier.resetSettings();
@@ -756,14 +718,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 Navigator.pop(context);
               }
             },
-            child: const Text(
-              "إعادة ضبط",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontFamily: "Cairo",
-              ),
-            ),
+            child: const Text('إعادة ضبط'),
           ),
         ],
       ),
@@ -788,4 +743,74 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     ];
     return index < methods.length ? methods[index] : methods[0];
   }
+}
+
+class _SettingsHeader extends StatelessWidget {
+  const _SettingsHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 12.h),
+      child: Row(
+        children: [
+          Container(
+            width: 50.r,
+            height: 50.r,
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Icon(
+              Icons.tune_rounded,
+              size: 25.sp,
+              color: scheme.onPrimaryContainer,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'الإعدادات',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w900,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  'خصص تجربتك بما يناسب احتياجاتك',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 11.5.sp,
+                    fontWeight: FontWeight.w500,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _getColorName(Color color) {
+  const colors = <int, String>{
+    0xFF176B70: 'فيروزي',
+    0xFF4F6F52: 'زيتوني',
+    0xFF345995: 'أزرق ليلي',
+    0xFF695783: 'بنفسجي',
+    0xFF8A3F4D: 'عنابي',
+    0xFF8A6543: 'رملي',
+  };
+
+  return colors[color.toARGB32()] ?? 'مخصص';
 }
