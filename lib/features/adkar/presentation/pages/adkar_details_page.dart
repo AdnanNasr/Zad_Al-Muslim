@@ -66,7 +66,7 @@ class _DetailsHeader extends StatelessWidget {
           IconButton.filledTonal(
             tooltip: 'العودة',
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_forward_ios_rounded),
+            icon: const Icon(Icons.arrow_back_ios_rounded),
           ),
           SizedBox(width: 10.w),
           Container(
