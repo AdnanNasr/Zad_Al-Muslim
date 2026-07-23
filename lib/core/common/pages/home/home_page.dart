@@ -117,6 +117,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                     width: tileWidth,
                     title: 'القرآن المُرتل',
                     subtitle: 'استماع وتحميل',
+                    actionName: "استمع الآن",
                     iconImage: 'assets/icons/voice.png',
                     accentColor: colorScheme.primary,
                     onTap: () => _openQuranMoratal(context),
@@ -125,6 +126,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                     width: tileWidth,
                     title: localizations.adkar_adia,
                     subtitle: adkarContent.value,
+                    actionName: "طمأن قلبك بذكر الله",
                     iconImage: 'assets/icons/prayer.png',
                     accentColor: colorScheme.tertiary,
                     onTap: () {
@@ -135,6 +137,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                     width: tileWidth,
                     title: localizations.qebla_direction,
                     subtitle: 'تحديد الاتجاه',
+                    actionName: "البوصلة جاهزة",
                     iconImage: 'assets/icons/kaaba.png',
                     accentColor: colorScheme.secondary,
                     onTap: () {
@@ -145,6 +148,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                     width: tileWidth,
                     title: localizations.sunah,
                     subtitle: 'أحاديث وهدي نبوي',
+                    actionName: "تصفح الأحاديث",
                     iconImage: 'assets/icons/quran2.png',
                     accentColor: colorScheme.primary,
                     onTap: () {
@@ -245,6 +249,7 @@ class _ServiceTile extends StatelessWidget {
     required this.width,
     required this.title,
     required this.subtitle,
+    required this.actionName,
     required this.iconImage,
     required this.accentColor,
     required this.onTap,
@@ -253,6 +258,7 @@ class _ServiceTile extends StatelessWidget {
   final double width;
   final String title;
   final String subtitle;
+  final String actionName;
   final String iconImage;
   final Color accentColor;
   final VoidCallback onTap;
@@ -327,10 +333,16 @@ class _ServiceTile extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  Icon(
-                    Icons.arrow_back_rounded,
-                    size: 18.sp,
-                    color: accentColor,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(actionName, style: TextStyle()),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 18.sp,
+                        color: accentColor,
+                      ),
+                    ],
                   ),
                 ],
               ),
