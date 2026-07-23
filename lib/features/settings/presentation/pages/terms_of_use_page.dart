@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/common/widgets/page_header.dart';
 import 'package:zad_al_muslim/core/constants/env.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -44,8 +44,19 @@ class _TermsOfUsePageState extends State<TermsOfUsePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "اتفاقية الاستخدام", center: false),
-      body: WebViewWidget(controller: webViewController),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const PageHeader(
+              tooltip: 'العودة',
+              icon: Icons.description,
+              title: 'اتفاقية الإستخدام',
+              subTitle: 'يخضع استخدامك للتطبيق لهذه الشروط والأحكام',
+            ),
+            Expanded(child: WebViewWidget(controller: webViewController)),
+          ],
+        ),
+      ),
     );
   }
 }

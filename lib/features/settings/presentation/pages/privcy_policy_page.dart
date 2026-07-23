@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zad_al_muslim/core/common/widgets/custom_app_bar.dart';
+import 'package:zad_al_muslim/core/common/widgets/page_header.dart';
 import 'package:zad_al_muslim/core/constants/env.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
@@ -44,8 +44,19 @@ class _PrivcyPolicyPageState extends State<PrivcyPolicyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "سياسة الخصوصية", center: false),
-      body: WebViewWidget(controller: webViewController),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const PageHeader(
+              tooltip: 'العودة',
+              icon: Icons.lock_outline,
+              title: 'سياسة الخصوصية',
+              subTitle: 'تعرف على كيفية جمع معلوماتك واستخدامها وحمايتها',
+            ),
+            Expanded(child: WebViewWidget(controller: webViewController)),
+          ],
+        ),
+      ),
     );
   }
 }
