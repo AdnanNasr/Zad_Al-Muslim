@@ -374,15 +374,15 @@ String _getDailyMessage(DateTime now) {
 }
 
 String _getFormattedGregorianDate(DateTime now) {
-  const dayNames = [
-    'الإثنين',
-    'الثلاثاء',
-    'الأربعاء',
-    'الخميس',
-    'الجمعة',
-    'السبت',
-    'الأحد',
-  ];
+  // const dayNames = [
+  //   'الإثنين',
+  //   'الثلاثاء',
+  //   'الأربعاء',
+  //   'الخميس',
+  //   'الجمعة',
+  //   'السبت',
+  //   'الأحد',
+  // ];
 
   const months = [
     'يناير',
@@ -399,10 +399,10 @@ String _getFormattedGregorianDate(DateTime now) {
     'ديسمبر',
   ];
 
-  final dayName = dayNames[now.weekday - 1];
+  // final dayName = dayNames[now.weekday - 1];
   final month = months[now.month - 1];
 
-  return '$dayName، ${now.day} $month ${now.year}';
+  return '${now.day} $month ${now.year}';
 }
 
 String _getFormattedHijriDate(DateTime now) {

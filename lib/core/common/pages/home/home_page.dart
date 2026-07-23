@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/common/providers/home_clock_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/home_header.dart';
+import 'package:zad_al_muslim/core/common/widgets/home/service_tile.dart';
 import 'package:zad_al_muslim/core/common/widgets/home/today_duaa.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
@@ -113,7 +114,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                 spacing: 12.w,
                 runSpacing: 12.h,
                 children: [
-                  _ServiceTile(
+                  ServiceTile(
                     width: tileWidth,
                     title: 'القرآن المُرتل',
                     subtitle: 'استماع وتحميل',
@@ -122,7 +123,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                     accentColor: colorScheme.primary,
                     onTap: () => _openQuranMoratal(context),
                   ),
-                  _ServiceTile(
+                  ServiceTile(
                     width: tileWidth,
                     title: localizations.adkar_adia,
                     subtitle: adkarContent.value,
@@ -133,7 +134,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                       Navigator.of(context).pushNamed('/adkar_page');
                     },
                   ),
-                  _ServiceTile(
+                  ServiceTile(
                     width: tileWidth,
                     title: localizations.qebla_direction,
                     subtitle: 'تحديد الاتجاه',
@@ -144,7 +145,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                       Navigator.of(context).pushNamed('/qebla_page');
                     },
                   ),
-                  _ServiceTile(
+                  ServiceTile(
                     width: tileWidth,
                     title: localizations.sunah,
                     subtitle: 'أحاديث وهدي نبوي',
@@ -242,114 +243,4 @@ Widget _buildSectionHeader(BuildContext context) {
 
 Future<void> _openQuranMoratal(BuildContext context) async {
   await Navigator.pushNamed(context, Routes.quranMoratal);
-}
-
-class _ServiceTile extends StatelessWidget {
-  const _ServiceTile({
-    required this.width,
-    required this.title,
-    required this.subtitle,
-    required this.actionName,
-    required this.iconImage,
-    required this.accentColor,
-    required this.onTap,
-  });
-
-  final double width;
-  final String title;
-  final String subtitle;
-  final String actionName;
-  final String iconImage;
-  final Color accentColor;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Semantics(
-      button: true,
-      label: '$title، $subtitle',
-      child: SizedBox(
-        width: width,
-        child: Material(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(18.r),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: Ink(
-              padding: EdgeInsets.all(14.r),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18.r),
-                border: Border.all(color: accentColor.withValues(alpha: 0.16)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 42.r,
-                    height: 42.r,
-                    padding: EdgeInsets.all(8.r),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.11),
-                      borderRadius: BorderRadius.circular(13.r),
-                    ),
-                    child: Image.asset(
-                      iconImage,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, _, _) => Icon(
-                        Icons.widgets_rounded,
-                        color: accentColor,
-                        size: 22.sp,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 11.h),
-                  Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w800,
-                      color: scheme.onSurface,
-                      height: 1.45,
-                    ),
-                  ),
-                  SizedBox(height: 3.h),
-                  Text(
-                    subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w500,
-                      color: scheme.onSurfaceVariant,
-                      height: 1.5,
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(actionName, style: TextStyle()),
-                      Icon(
-                        Icons.arrow_forward_rounded,
-                        size: 18.sp,
-                        color: accentColor,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

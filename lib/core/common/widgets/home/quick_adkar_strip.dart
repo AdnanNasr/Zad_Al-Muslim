@@ -266,7 +266,7 @@ class _QuickAdkarCardState extends State<_QuickAdkarCard> {
           splashColor: accentColor.withValues(alpha: 0.08),
           highlightColor: accentColor.withValues(alpha: 0.04),
           child: Ink(
-            width: 150.w,
+            width: widget.item.shortTitle.length <= 13 ? 150.w : 170.w,
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18.r),

@@ -9,9 +9,9 @@ class AppTheme {
 
   static const Color defaultPrimary = Color(0xFF176B70);
   static const Color lightSecondary = Color(0xFFB7893E);
-  static const Color darkSecondary = Color(0xFFD8B56A);
+  static const Color darkSecondary = Color(0xFFF0C36A);
   static const Color lightTertiary = Color(0xFF557A5B);
-  static const Color darkTertiary = Color(0xFF8DB493);
+  static const Color darkTertiary = Color(0xFF7ACB8B);
 
   static ThemeData light(Color seed) {
     const background = Color(0xFFF8F6F1);
@@ -64,14 +64,14 @@ class AppTheme {
   }
 
   static ThemeData dark(Color seed) {
-    const background = Color(0xFF101716);
-    const surface = Color(0xFF18211F);
-    const surfaceLow = Color(0xFF151D1B);
-    const surfaceContainer = Color(0xFF202C29);
-    const onSurface = Color(0xFFEDF3F0);
-    const onSurfaceVariant = Color(0xFFABB9B4);
-    const outline = Color(0xFF71807A);
-    const outlineVariant = Color(0xFF34423E);
+    const background = Color(0xFF0B1312);
+    const surface = Color(0xFF162320);
+    const surfaceLow = Color(0xFF111D1A);
+    const surfaceContainer = Color(0xFF21332F);
+    const onSurface = Color(0xFFF2F7F5);
+    const onSurfaceVariant = Color(0xFFB9C9C3);
+    const outline = Color(0xFF80948D);
+    const outlineVariant = Color(0xFF3C514B);
 
     final primary = _usablePrimary(seed, Brightness.dark);
     final generated = ColorScheme.fromSeed(
@@ -81,16 +81,16 @@ class AppTheme {
     final scheme = generated.copyWith(
       primary: primary,
       onPrimary: _onColor(primary),
-      primaryContainer: _shade(primary, 0.42),
-      onPrimaryContainer: _tint(primary, 0.72),
+      primaryContainer: _shade(primary, 0.27),
+      onPrimaryContainer: _tint(primary, 0.86),
       secondary: darkSecondary,
       onSecondary: const Color(0xFF3D2D0D),
-      secondaryContainer: const Color(0xFF594516),
-      onSecondaryContainer: const Color(0xFFF5E7C8),
+      secondaryContainer: const Color(0xFF674C0C),
+      onSecondaryContainer: const Color(0xFFFFE7AD),
       tertiary: darkTertiary,
       onTertiary: const Color(0xFF17351D),
-      tertiaryContainer: const Color(0xFF294B31),
-      onTertiaryContainer: const Color(0xFFD8E8D7),
+      tertiaryContainer: const Color(0xFF245B34),
+      onTertiaryContainer: const Color(0xFFD5F7DA),
       error: const Color(0xFFFFB4AB),
       onError: const Color(0xFF690005),
       errorContainer: const Color(0xFF93000A),
@@ -109,7 +109,7 @@ class AppTheme {
       surfaceContainerLow: surfaceLow,
       surfaceContainer: surface,
       surfaceContainerHigh: surfaceContainer,
-      surfaceContainerHighest: const Color(0xFF293633),
+      surfaceContainerHighest: const Color(0xFF2D423C),
     );
 
     return _baseTheme(
@@ -223,9 +223,7 @@ class AppTheme {
         backgroundColor: scheme.surfaceContainer,
         selectedColor: scheme.primaryContainer,
         side: BorderSide(color: scheme.outlineVariant),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
@@ -234,9 +232,7 @@ class AppTheme {
           color: scheme.onInverseSurface,
           fontFamily: 'Cairo',
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: scheme.surfaceContainerHigh,
@@ -256,8 +252,11 @@ class AppTheme {
     final hsl = HSLColor.fromColor(color);
     final lightness = brightness == Brightness.light
         ? hsl.lightness.clamp(0.28, 0.48)
-        : hsl.lightness.clamp(0.62, 0.74);
-    return hsl.withLightness(lightness).toColor();
+        : hsl.lightness.clamp(0.60, 0.68);
+    final saturation = brightness == Brightness.dark
+        ? hsl.saturation.clamp(0.58, 0.82)
+        : hsl.saturation;
+    return hsl.withSaturation(saturation).withLightness(lightness).toColor();
   }
 
   static Color _onColor(Color background) =>
