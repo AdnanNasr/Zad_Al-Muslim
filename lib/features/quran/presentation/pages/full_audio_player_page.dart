@@ -141,7 +141,7 @@ class _FullAudioPlayerPageState extends ConsumerState<FullAudioPlayerPage> {
         color: context.color.surfaceContainerLowest,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
       ),
-      height: MediaQuery.of(context).size.height * 0.9,
+      height: 800,
       child: Column(
         children: [
           // مقبض الإغلاق (Handle)

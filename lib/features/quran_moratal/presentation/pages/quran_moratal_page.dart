@@ -48,6 +48,7 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
               decoration: BoxDecoration(
+                // TODO: set background image
                 color: scheme.surfaceContainerLow,
                 border: Border(
                   bottom: BorderSide(color: scheme.outlineVariant),
@@ -68,9 +69,12 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                               onPressed: () {
                                 Scaffold.of(context).closeEndDrawer();
                               },
-                              icon: Icon(Icons.close, color: scheme.onSurface),
+                              icon: Icon(
+                                Icons.close,
+                                color: scheme.onSecondary,
+                              ),
                               style: IconButton.styleFrom(
-                                backgroundColor: scheme.surfaceContainerHigh,
+                                backgroundColor: scheme.secondary,
                               ),
                             );
                           },
@@ -84,7 +88,7 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         fontFamily: "Cairo",
-                        color: scheme.onSurface,
+                        color: scheme.secondary,
                       ),
                     ),
                     SizedBox(height: 6.h),
@@ -93,7 +97,7 @@ class _QuranMoratalPageState extends ConsumerState<QuranMoratalPage> {
                       style: TextStyle(
                         fontSize: 12,
                         fontFamily: "Cairo",
-                        color: scheme.onSurfaceVariant,
+                        color: scheme.onSurface,
                         height: 1.4,
                       ),
                     ),

@@ -184,7 +184,7 @@ class _HadithTabState extends ConsumerState<HadithTab> {
                                     context: context,
                                     isDismissible: true,
                                     enableDrag: true,
-                                    showDragHandle: true,
+                                    showDragHandle: false,
                                     useSafeArea: true,
                                     isScrollControlled: true,
                                     backgroundColor: Colors.transparent,

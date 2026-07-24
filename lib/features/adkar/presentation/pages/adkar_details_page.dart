@@ -309,6 +309,7 @@ class DhikrCard extends ConsumerWidget {
   void _showDetailsDialog(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {

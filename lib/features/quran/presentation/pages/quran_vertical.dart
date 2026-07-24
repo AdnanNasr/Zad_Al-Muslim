@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:zad_al_muslim/core/constants/surah_names.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 import 'package:zad_al_muslim/core/utils/arabic_numbers.dart';
 import 'package:zad_al_muslim/features/quran/data/models/mark.dart';
@@ -586,7 +588,7 @@ class _AyahCard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Text(
-                    'آية ${_toArabicNumber(verseNumber)}',
+                    'آية $verseNumber',
                     style: TextStyle(
                       fontFamily: 'Quran',
                       fontSize: 13.5.sp,
@@ -634,23 +636,127 @@ class _AyahCard extends ConsumerWidget {
                       );
                     }
                     if (!context.mounted) return;
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          content: Text(
-                            isReadingPositionSaved
-                                ? 'تمت إزالة موضع القراءة'
-                                : 'تم حفظ موضع القراءة وسيظهر تقدمك في الصفحة الرئيسية',
-                          ),
-                        ),
+                    if (isReadingPositionSaved) {
+                      BotToast.cleanAll();
+
+                      BotToast.showCustomNotification(
+                        duration: const Duration(seconds: 5),
+
+                        align: Alignment.bottomCenter,
+                        toastBuilder: (cancelFunc) {
+                          return Card(
+                            margin: EdgeInsets.all(16.w),
+
+                            color: const Color.fromARGB(255, 8, 11, 10),
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14.r),
+                            ),
+                            elevation: 4,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 3.h,
+                              ),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      BotToast.cleanAll();
+                                    },
+                                    icon: const Icon(
+                                      Icons.close,
+                                      // size: 22,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  const Expanded(
+                                    child: Text(
+                                      'تمت إزالة موضع القراءة',
+                                      style: TextStyle(
+                                        fontFamily: 'Cairo',
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       );
+                    } else {
+                      BotToast.cleanAll();
+
+                      BotToast.showCustomNotification(
+                        duration: const Duration(seconds: 5),
+
+                        align: Alignment.bottomCenter,
+                        toastBuilder: (cancelFunc) {
+                          return Card(
+                            margin: EdgeInsets.all(16.w),
+
+                            color: const Color(0xFF1B8A5A),
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14.r),
+                            ),
+                            elevation: 4,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 5.h,
+                              ),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      BotToast.cleanAll();
+                                    },
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  const Expanded(
+                                    child: Text(
+                                      'تم حفظ موضع القراءة وسيظهر تقدمك في الصفحة الرئيسية',
+                                      style: TextStyle(
+                                        fontFamily: 'Cairo',
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
                   },
                   icon: Icon(
-                    color: Colors.blue,
-                    isReadingPositionSaved ? Icons.save : Icons.save_outlined,
+                    color: context.color.primary,
+                    isReadingPositionSaved ? Icons.flag : Icons.flag_outlined,
                     size: 18.sp,
+                  ),
+                  style: ButtonStyle(
+                    shape: active
+                        ? WidgetStatePropertyAll(
+                            CircleBorder(
+                              side: BorderSide(color: context.color.primary),
+                            ),
+                          )
+                        : null,
+                    backgroundColor: WidgetStatePropertyAll<Color>(
+                      context.color.primaryContainer,
+                    ),
                   ),
                 ),
               ],
@@ -680,15 +786,6 @@ class _AyahCard extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  String _toArabicNumber(int number) {
-    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return number
-        .toString()
-        .split('')
-        .map((digit) => arabic[int.parse(digit)])
-        .join();
   }
 }
 
@@ -727,6 +824,7 @@ class _AyahActionMenu extends ConsumerWidget {
             context,
             icon: Icons.copy_rounded,
             label: 'نسخ',
+            tooltip: 'نسخ',
             onTap: () async {
               final text = getVerse(
                 surahNumber,
@@ -745,6 +843,7 @@ class _AyahActionMenu extends ConsumerWidget {
             context,
             icon: Icons.play_arrow_rounded,
             label: 'استماع',
+            tooltip: 'تشغيل الآية',
             onTap: () async {
               final urlEither = ref.read(
                 voiceAyahByAyahProvider(
@@ -803,6 +902,7 @@ class _AyahActionMenu extends ConsumerWidget {
                     ? Icons.bookmark_added_rounded
                     : Icons.bookmark_add_outlined,
                 label: 'علامة',
+                tooltip: isMarked ? 'إزالة العلامة' : 'إضافة علامة',
                 onTap: () async {
                   final notifier = ref.read(marksProvder.notifier);
                   if (!isMarked) {
@@ -825,6 +925,7 @@ class _AyahActionMenu extends ConsumerWidget {
             context,
             icon: Icons.menu_book_rounded,
             label: 'تفسير',
+            tooltip: 'تفسير الآية',
             onTap: () {
               final bookId = ref.read(selectedBookProvider).id;
               showTafsserModalBottom(
@@ -841,6 +942,7 @@ class _AyahActionMenu extends ConsumerWidget {
             context,
             icon: Icons.share_rounded,
             label: 'مشاركة',
+            tooltip: 'مشاركة',
             onTap: () async {
               final text = getVerse(
                 surahNumber,
@@ -861,31 +963,35 @@ class _AyahActionMenu extends ConsumerWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    required String tooltip,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 22.sp,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 11.sp,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12.r),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 22.sp,
+                color: Theme.of(context).colorScheme.primary,
               ),
-            ),
-          ],
+              SizedBox(height: 4.h),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
