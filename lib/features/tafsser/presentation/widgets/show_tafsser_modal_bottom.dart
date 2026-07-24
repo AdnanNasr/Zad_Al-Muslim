@@ -24,7 +24,8 @@ Future<dynamic> showTafsserModalBottom(
     context: context,
     useRootNavigator: true,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent, // لجعل الحواف العلوية تعمل بشكل صحيح
+    showDragHandle: false,
+    backgroundColor: Colors.transparent,
     builder: (context) {
       return Consumer(
         builder: (context, ref, child) {
@@ -213,7 +214,7 @@ Future<dynamic> showTafsserModalBottom(
                                                       "تحميل تفسير",
                                                       style: TextStyle(
                                                         fontFamily: 'Cairo',
-                                                        fontSize: 13.sp,
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color: primaryColor,

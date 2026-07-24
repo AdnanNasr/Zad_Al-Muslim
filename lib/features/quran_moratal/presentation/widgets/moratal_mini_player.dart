@@ -29,6 +29,7 @@ class MoratalMiniPlayer extends ConsumerWidget {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
+          showDragHandle: false,
           backgroundColor: Colors.transparent,
           barrierColor: Colors.black.withValues(alpha: .7),
           builder: (_) => _MoratalFullPlayerSheet(surah: currentMoratalSurah),
@@ -242,14 +243,6 @@ class _MoratalFullPlayerSheetState
     ref.read(playMoratalSurahActionProvider)(newSurah);
   }
 
-  // String _arabicName(int number) {
-  //   try {
-  //     return SurahNames.getFormattedName(number);
-  //   } catch (_) {
-  //     return 'السورة $number';
-  //   }
-  // }
-
   // ── Loop ──────────────────────────────────────────────────────────────────
 
   void _cycleLoop() {
@@ -374,13 +367,13 @@ class _MoratalFullPlayerSheetState
           margin: EdgeInsets.symmetric(horizontal: 14.w),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24.r),
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Color.lerp(scheme.primary, Colors.black, 0.35)!,
-                Color.lerp(scheme.tertiary, Colors.black, 0.48)!,
-              ],
+            image: DecorationImage(
+              image: const AssetImage('assets/images/night_clouds.jpg'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                Colors.black87.withValues(alpha: 0.5),
+                BlendMode.darken,
+              ),
             ),
             border: Border.all(color: scheme.primary.withValues(alpha: 0.35)),
           ),
@@ -533,7 +526,7 @@ class _MoratalFullPlayerSheetState
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 8.w),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .1),
+                          color: Colors.white54.withValues(alpha: .1),
                           borderRadius: BorderRadius.circular(16.r),
                         ),
                         child: Padding(

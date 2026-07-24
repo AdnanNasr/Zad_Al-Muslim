@@ -34,6 +34,7 @@ class MiniAudioPlayer extends ConsumerWidget {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
+          showDragHandle: false,
           backgroundColor: Colors.transparent,
           barrierColor: Colors.black.withValues(alpha: .7),
           builder: (context) => const FullAudioPlayerPage(),
@@ -96,10 +97,7 @@ class MiniAudioPlayer extends ConsumerWidget {
                         color: context.color.tertiaryContainer,
                         borderRadius: BorderRadius.circular(12.r),
                       ),
-                      child: Image.asset(
-                        "assets/icons/moon.png",
-                        color: context.color.onTertiaryContainer,
-                      ),
+                      child: const Icon(Icons.multitrack_audio, size: 35),
                     ),
                     SizedBox(width: 12.w),
 

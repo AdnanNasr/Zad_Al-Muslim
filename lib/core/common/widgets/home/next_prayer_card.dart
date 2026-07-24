@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 
@@ -38,16 +37,16 @@ class NextPrayerCard extends ConsumerWidget {
   }
 }
 
-class _PrayerCardContent extends StatefulWidget {
+class _PrayerCardContent extends ConsumerStatefulWidget {
   const _PrayerCardContent({required this.nextPrayer});
 
   final NextPrayerInfo nextPrayer;
 
   @override
-  State<_PrayerCardContent> createState() => _PrayerCardContentState();
+  ConsumerState<_PrayerCardContent> createState() => _PrayerCardContentState();
 }
 
-class _PrayerCardContentState extends State<_PrayerCardContent> {
+class _PrayerCardContentState extends ConsumerState<_PrayerCardContent> {
   bool _isPressed = false;
 
   @override
@@ -73,8 +72,14 @@ class _PrayerCardContentState extends State<_PrayerCardContent> {
           borderRadius: BorderRadius.circular(24.r),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.prayTimePage);
+            onTap: () async {
+              final selectedDateTiem = await Navigator.of(
+                context,
+              ).pushNamed("/pray_time_page");
+              await Future.delayed(const Duration(milliseconds: 250));
+              if (selectedDateTiem != DateTime.now()) {
+                ref.read(selectedDateProvider.notifier).state = DateTime.now();
+              }
             },
             onHighlightChanged: (value) {
               if (_isPressed == value) return;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/hadith/domain/entities/hadith_entity.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -28,6 +29,15 @@ class HadithModalBottom extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Container(
+            width: 50.w,
+            height: 5.h,
+            decoration: BoxDecoration(
+              color: context.color.onSurface.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+          ),
+          SizedBox(height: 16.h),
           Row(
             children: [
               Container(

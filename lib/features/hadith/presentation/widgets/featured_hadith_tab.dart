@@ -26,6 +26,16 @@ class FeaturedHadithsTab extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  SizedBox(height: 12.h),
+                  Container(
+                    width: 50.w,
+                    height: 5.h,
+                    decoration: BoxDecoration(
+                      color: context.color.onSurface.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
                   Container(
                     padding: EdgeInsets.all(20.r),
                     decoration: BoxDecoration(
@@ -85,7 +95,7 @@ class FeaturedHadithsTab extends ConsumerWidget {
                           context: context,
                           isDismissible: true,
                           enableDrag: true,
-                          showDragHandle: true,
+                          showDragHandle: false,
                           useSafeArea: true,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,

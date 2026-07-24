@@ -84,6 +84,10 @@ class _QurahPageBottomNavigationBarState
               _buildNavItem(context, Icons.search_rounded, "بحث", () {
                 showModalBottomSheet(
                   isScrollControlled: true,
+                  showDragHandle: false,
+                  barrierColor: context.color.brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: .2)
+                      : Colors.black54,
                   sheetAnimationStyle: const AnimationStyle(
                     duration: Duration(milliseconds: 800),
                     curve: Curves.decelerate,
@@ -102,6 +106,10 @@ class _QurahPageBottomNavigationBarState
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
+                  showDragHandle: false,
+                  barrierColor: context.color.brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: .2)
+                      : Colors.black54,
                   backgroundColor: Colors.transparent,
                   sheetAnimationStyle: const AnimationStyle(
                     duration: Duration(milliseconds: 600),
