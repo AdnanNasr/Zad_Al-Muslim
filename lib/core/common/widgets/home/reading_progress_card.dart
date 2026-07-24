@@ -65,14 +65,6 @@ class _ReadingProgressCardState extends ConsumerState<ReadingProgressCard> {
                       ? scheme.primary.withValues(alpha: 0.18)
                       : scheme.outline.withValues(alpha: 0.34),
                 ),
-                gradient: LinearGradient(
-                  begin: AlignmentDirectional.topStart,
-                  end: AlignmentDirectional.bottomEnd,
-                  colors: [
-                    scheme.primaryContainer.withValues(alpha: 0.34),
-                    scheme.surface,
-                  ],
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
