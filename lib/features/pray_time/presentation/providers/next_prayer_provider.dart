@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:zad_al_muslim/features/pray_time/domain/entities/prayer_times_entity.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 
@@ -57,11 +58,18 @@ class NextPrayerInfo {
   }
 
   /// الوقت بصيغة 24 ساعة، مثال: 15:42
-  String get formattedTime {
+  String get formattedTime24 {
     final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
 
     return '$hour:$minute';
+  }
+
+  String get formattedTime {
+    DateTime now = DateTime.now();
+    return DateFormat.jm(
+      "ar",
+    ).format(DateTime(now.year, now.month, now.day, time.hour, time.minute));
   }
 
   bool get isVeryClose {

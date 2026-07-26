@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
+import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 
 class NextPrayerCard extends ConsumerWidget {
   const NextPrayerCard({super.key});
@@ -54,6 +55,7 @@ class _PrayerCardContentState extends ConsumerState<_PrayerCardContent> {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final nextPrayer = widget.nextPrayer;
+    final settingsProvider = ref.watch(appSettingsProvider);
 
     final accentColor = nextPrayer.isVeryClose
         ? colorScheme.tertiary
@@ -132,7 +134,11 @@ class _PrayerCardContentState extends ConsumerState<_PrayerCardContent> {
 
                       SizedBox(width: 10.w),
 
-                      _PrayerTime(time: nextPrayer.formattedTime),
+                      _PrayerTime(
+                        time: settingsProvider.use24HourFormat
+                            ? nextPrayer.formattedTime24
+                            : nextPrayer.formattedTime,
+                      ),
                     ],
                   ),
 
