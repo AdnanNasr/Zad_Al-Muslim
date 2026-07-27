@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:zad_al_muslim/core/di/injection_container.dart' as di;
@@ -37,6 +38,18 @@ class AppBootstrap {
 
     // DI: ضروري لكل الـ services الأخرى
     await di.init();
+
+    // Firebase يُهيأ مرة واحدة فقط. غياب ملفات إعداد المنصة لا يمنع تشغيل التطبيق.
+    if (Firebase.apps.isEmpty) {
+      try {
+        await Firebase.initializeApp();
+      } catch (e, stackTrace) {
+        AppLogger.logger.e(
+          'تعذر تهيئة Firebase: $e',
+          stackTrace: stackTrace,
+        );
+      }
+    }
   }
 
   /// ─────────────────────────────────────────────────────────────────

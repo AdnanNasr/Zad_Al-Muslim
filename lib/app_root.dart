@@ -27,6 +27,7 @@ import '../core/common/providers/language_provider.dart';
 import '../features/quran/presentation/providers/mark.dart';
 import '../core/l10n/app_localizations.dart';
 import '../core/common/widgets/custom_navigation_bar.dart';
+import 'package:zad_al_muslim/core/services/app_update/app_update_gate.dart';
 
 class AppRoot extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
@@ -122,11 +123,14 @@ class _AppRootState extends ConsumerState<AppRoot> {
       darkTheme: AppTheme.dark(userColor),
       themeAnimationDuration: const Duration(milliseconds: 320),
       themeAnimationCurve: Curves.easeOutCubic,
-      initialRoute: widget.hasSeenOnboarding
-          ? "/custom_navigation_bar"
-          : "/onboarding",
+      initialRoute: "/",
 
       routes: {
+        "/": (_) => AppUpdateGate(
+          child: widget.hasSeenOnboarding
+              ? const CustomNavigationBar()
+              : const OnboardingPage(),
+        ),
         "/home_page": (_) => const HomePage(),
         "/quran_pages": (_) => const QuranPages(),
         "/quran_moratal": (_) => const QuranMoratalPage(),

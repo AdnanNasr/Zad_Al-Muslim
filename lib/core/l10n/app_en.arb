@@ -144,5 +144,11 @@
   "sunan_ibn_majah": "Sunan Ibn Majah",
   "time_format": "Time Format",
   "active_24_format": "24-hour format",
-  "close": "close"
+  "close": "Close",
+  "updateLater": "Later",
+  "updateNow": "Update now",
+  "updateApp": "Update app",
+  "openGooglePlay": "Open Google Play",
+  "updateFailed": "The in-app update could not be started. Try again or open the store.",
+  "storeOpenFailed": "The app page could not be opened in Google Play."
 }
