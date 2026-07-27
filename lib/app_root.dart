@@ -19,6 +19,7 @@ import 'package:zad_al_muslim/features/settings/presentation/pages/app_info.dart
 import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
 import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:zad_al_muslim/features/splash/presentation/pages/location_startup_gate.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/pages/tafseer_page.dart';
 import 'package:zad_al_muslim/main.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -128,7 +129,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
       routes: {
         "/": (_) => AppUpdateGate(
           child: widget.hasSeenOnboarding
-              ? const CustomNavigationBar()
+              ? const LocationStartupGate()
               : const OnboardingPage(),
         ),
         "/home_page": (_) => const HomePage(),
@@ -143,6 +144,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
         "/sunah_page": (_) => const HadithPage(),
         "/onboarding": (_) => const OnboardingPage(),
         "/custom_navigation_bar": (_) => const CustomNavigationBar(),
+        "/location_startup": (_) => const LocationStartupGate(),
         "/pray_time_page": (_) => const PrayTimePage(),
         "/qebla_page": (_) => const QeblaPage(),
         "/adkar_page": (_) => const AdkarPage(),

@@ -171,7 +171,7 @@ class ThirdPageOnboarding extends StatelessWidget {
 
                   Navigator.pushReplacementNamed(
                     context,
-                    '/custom_navigation_bar',
+                    '/location_startup',
                   );
                 },
                 child: Text(
