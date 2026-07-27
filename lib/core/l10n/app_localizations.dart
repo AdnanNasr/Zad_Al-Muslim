@@ -583,14 +583,43 @@ abstract class AppLocalizations {
   /// No description provided for @close.
   ///
   /// In en, this message translates to:
-  /// **'close'**
+  /// **'Close'**
   String get close;
 
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
   String get updateLater;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
   String get updateNow;
+
+  /// No description provided for @updateApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Update app'**
   String get updateApp;
+
+  /// No description provided for @openGooglePlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Google Play'**
   String get openGooglePlay;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The in-app update could not be started. Try again or open the store.'**
   String get updateFailed;
+
+  /// No description provided for @storeOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The app page could not be opened in Google Play.'**
   String get storeOpenFailed;
 }
 
