@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1080021022149",
+    "project_id": "zad-al-muslim-adnan",
+    "storage_bucket": "zad-al-muslim-adnan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080021022149:android:f871f20c219e2f0308c7ac",
+        "android_client_info": {
+          "package_name": "com.zad_al_muslim.adnan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3q391HbjwaZ1jqL9pc5jrJzrphRpaWys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

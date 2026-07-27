@@ -1,0 +1,21 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "zad-al-muslim-adnan",
+          "appId": "1:1080021022149:android:f871f20c219e2f0308c7ac",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "zad-al-muslim-adnan",
+          "configurations": {
+            "android": "1:1080021022149:android:f871f20c219e2f0308c7ac"
+          }
+        }
+      }
+    }
+  }
+}

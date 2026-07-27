@@ -6,6 +6,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:zad_al_muslim/app_root.dart';
 import 'package:zad_al_muslim/app_bootstrap.dart';
 import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_init.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'firebase_options.dart';
 
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
@@ -17,6 +20,16 @@ void main() async {
 
   // إبقاء شاشة الإقلاع الأصلية ظاهرة أثناء التهيئة السريعة
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    AppLogger.logger.i("تم تهيئة Firebase بنجاح");
+  } catch (error, stackTrace) {
+    // فشل Firebase أو الاتصال لا يجب أن يمنع المستخدم من تشغيل التطبيق.
+    AppLogger.logger.e('تعذر تهيئة Firebase: $error', stackTrace: stackTrace);
+  }
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);

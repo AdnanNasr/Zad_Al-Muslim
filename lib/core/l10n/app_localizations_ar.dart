@@ -253,15 +253,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get updateLater => 'لاحقًا';
+
   @override
   String get updateNow => 'تحديث الآن';
+
   @override
   String get updateApp => 'تحديث التطبيق';
+
   @override
   String get openGooglePlay => 'فتح Google Play';
+
   @override
   String get updateFailed =>
       'تعذر بدء التحديث الداخلي. يمكنك المحاولة مجددًا أو فتح المتجر.';
+
   @override
   String get storeOpenFailed => 'تعذر فتح صفحة التطبيق في Google Play.';
 }

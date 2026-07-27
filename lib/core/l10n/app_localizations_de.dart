@@ -254,15 +254,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get updateLater => 'Später';
+
   @override
   String get updateNow => 'Jetzt aktualisieren';
+
   @override
   String get updateApp => 'App aktualisieren';
+
   @override
   String get openGooglePlay => 'Google Play öffnen';
+
   @override
   String get updateFailed =>
       'Das In-App-Update konnte nicht gestartet werden. Versuchen Sie es erneut oder öffnen Sie den Store.';
+
   @override
   String get storeOpenFailed =>
       'Die App-Seite konnte in Google Play nicht geöffnet werden.';
