@@ -19,12 +19,10 @@ import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/location_status_provider.dart';
 import 'package:zad_al_muslim/core/constants/enums/my_enums.dart';
-import 'package:zad_al_muslim/infrastructure/services/permission_service.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
 import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
-import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_init.dart';
 
 class AppBootstrap {
   /// ─────────────────────────────────────────────────────────────────
@@ -87,8 +85,6 @@ class AppBootstrap {
       //    بدأنا بـ unawaited لأنه لا يؤثر على الـ UI
       QuranSearchIndexer.initialize();
 
-      // 5. الموقع ومواقيت الصلاة
-      await _initLocationAndPrayers(container);
     } catch (e) {
       AppLogger.logger.e('خطأ في initDeferred: $e');
     }
@@ -97,55 +93,48 @@ class AppBootstrap {
   /// ─────────────────────────────────────────────────────────────────
   /// منطق الموقع ومواقيت الصلاة (مُستخرج لوضوح الكود)
   /// ─────────────────────────────────────────────────────────────────
-  static Future<void> _initLocationAndPrayers(
+  /// يحدد الموقع ثم يحسب المواقيت ويحفظها قبل عرض الصفحة الرئيسية.
+  /// يعيد null عند النجاح، ورسالة مناسبة عند التعذر.
+  static Future<String?> initLocationAndPrayers(
     ProviderContainer container,
   ) async {
     final locationLocator = di.sl<LocationLocatorImpl>();
     final cachedPos = await locationLocator.getLocationCoords();
-    final hasSeen = await OnboardingInit.hasSeen();
 
     if (cachedPos != null) {
       container.read(userPositionProvider.notifier).state = cachedPos;
-
-      // طلب الأذونات في الخلفية
-      await di.sl<PermissionService>().requestAllPermissions();
-
-      final tzName = (await FlutterTimezone.getLocalTimezone()).toString();
-      final recalculateUseCase = di.sl<RecalculateAndScheduleUseCase>();
-
-      await recalculateUseCase(
-        domain_loc.Location(
-          latitude: cachedPos.latitude,
-          longitude: cachedPos.longitude,
-          timezone: tzName,
-        ),
-      );
-    } else if (hasSeen) {
-      // مستخدم قديم بدون موقع مخزن
-      await di.sl<PermissionService>().requestAllPermissions();
-      final pos = await locationLocator.determinePosition();
-
-      await pos.fold(
-        (failure) async {
-          container.read(locationStatusProvider.notifier).setStatus({
-            LocationMessage.error: failure.message,
-          });
-        },
-        (position) async {
-          container.read(userPositionProvider.notifier).state = position;
-
-          final tzName = (await FlutterTimezone.getLocalTimezone()).toString();
-          final recalculateUseCase = di.sl<RecalculateAndScheduleUseCase>();
-
-          await recalculateUseCase(
-            domain_loc.Location(
-              latitude: position.latitude,
-              longitude: position.longitude,
-              timezone: tzName,
-            ),
-          );
-        },
-      );
+      await _calculatePrayers(cachedPos.latitude, cachedPos.longitude);
+      return null;
     }
+
+    final pos = await locationLocator.determinePosition();
+    String? error;
+    await pos.fold(
+      (failure) async {
+        error = failure.message;
+        container.read(locationStatusProvider.notifier).setStatus({
+          LocationMessage.error: failure.message,
+        });
+      },
+      (position) async {
+        container.read(userPositionProvider.notifier).state = position;
+        await _calculatePrayers(position.latitude, position.longitude);
+        container.read(locationStatusProvider.notifier).setStatus({
+          LocationMessage.locationAllowed: 'تم تحديد الموقع',
+        });
+      },
+    );
+    return error;
+  }
+
+  static Future<void> _calculatePrayers(double latitude, double longitude) async {
+    final tzName = (await FlutterTimezone.getLocalTimezone()).toString();
+    await di.sl<RecalculateAndScheduleUseCase>()(
+      domain_loc.Location(
+        latitude: latitude,
+        longitude: longitude,
+        timezone: tzName,
+      ),
+    );
   }
 }
