@@ -153,5 +153,11 @@
   "active_24_format": "نظام 24 ساعة",
   "@active_24_format": {},
   "close": "إغلاق",
-  "@close": {}
+  "@close": {},
+  "updateLater": "لاحقًا",
+  "updateNow": "تحديث الآن",
+  "updateApp": "تحديث التطبيق",
+  "openGooglePlay": "فتح Google Play",
+  "updateFailed": "تعذر بدء التحديث الداخلي. يمكنك المحاولة مجددًا أو فتح المتجر.",
+  "storeOpenFailed": "تعذر فتح صفحة التطبيق في Google Play."
 }

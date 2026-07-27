@@ -249,5 +249,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get active_24_format => '24-hour format';
 
   @override
-  String get close => 'close';
+  String get close => 'Close';
+
+  @override
+  String get updateLater => 'Later';
+  @override
+  String get updateNow => 'Update now';
+  @override
+  String get updateApp => 'Update app';
+  @override
+  String get openGooglePlay => 'Open Google Play';
+  @override
+  String get updateFailed =>
+      'The in-app update could not be started. Try again or open the store.';
+  @override
+  String get storeOpenFailed =>
+      'The app page could not be opened in Google Play.';
 }

@@ -585,6 +585,13 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'close'**
   String get close;
+
+  String get updateLater;
+  String get updateNow;
+  String get updateApp;
+  String get openGooglePlay;
+  String get updateFailed;
+  String get storeOpenFailed;
 }
 
 class _AppLocalizationsDelegate
