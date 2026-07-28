@@ -127,6 +127,31 @@ class AppBootstrap {
     return error;
   }
 
+  /// يحدّث المواقيت من الموقع المحفوظ أثناء بقاء شاشة Splash ظاهرة.
+  /// لا يطلب أي إذن جديد، ويعيد true عند وجود موقع محفوظ.
+  static Future<bool> initCachedLocationAndPrayers(
+    ProviderContainer container,
+  ) async {
+    final cachedPosition =
+        await di.sl<LocationLocatorImpl>().getLocationCoords();
+    if (cachedPosition == null) return false;
+
+    container.read(userPositionProvider.notifier).state = cachedPosition;
+    try {
+      await _calculatePrayers(
+        cachedPosition.latitude,
+        cachedPosition.longitude,
+      );
+    } catch (error, stackTrace) {
+      // الخطأ العابر في التحديث لا يستدعي عرض صفحة الأذونات مرة أخرى.
+      AppLogger.logger.e(
+        'تعذر تحديث مواقيت الصلاة من الموقع المحفوظ: $error',
+        stackTrace: stackTrace,
+      );
+    }
+    return true;
+  }
+
   static Future<void> _calculatePrayers(double latitude, double longitude) async {
     final tzName = (await FlutterTimezone.getLocalTimezone()).toString();
     await di.sl<RecalculateAndScheduleUseCase>()(

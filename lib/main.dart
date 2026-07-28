@@ -46,6 +46,13 @@ void main() async {
   // ─── إنشاء حاوية Riverpod ────────────────────────────────────────
   final container = ProviderContainer();
 
+  // تحديث المواقيت من الموقع المحفوظ أثناء ظهور شاشة Splash.
+  final hasCachedLocation = await AppBootstrap.initCachedLocationAndPrayers(
+    container,
+  );
+  final hasSkippedLocationPrompt =
+      await OnboardingInit.hasSkippedLocationPrompt();
+
   // ─── تشغيل التطبيق فوراً ─────────────────────────────────────────
   runApp(
     ScreenUtilInit(
@@ -53,7 +60,11 @@ void main() async {
       designSize: const Size(392.72727272727275, 800.7272727272727),
       builder: (_, _) => UncontrolledProviderScope(
         container: container,
-        child: AppRoot(hasSeenOnboarding: hasSeenOnboarding),
+        child: AppRoot(
+          hasSeenOnboarding: hasSeenOnboarding,
+          shouldShowLocationGate:
+              !hasCachedLocation && !hasSkippedLocationPrompt,
+        ),
       ),
     ),
   );
