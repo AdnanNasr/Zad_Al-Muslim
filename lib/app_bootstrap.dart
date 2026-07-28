@@ -35,7 +35,6 @@ class AppBootstrap {
 
     // DI: ضروري لكل الـ services الأخرى
     await di.init();
-
   }
 
   /// ─────────────────────────────────────────────────────────────────
@@ -84,7 +83,6 @@ class AppBootstrap {
       // 4. Quran Search Index — ثقيل (6236 آية) لكنه يعمل في isolate منفصل
       //    بدأنا بـ unawaited لأنه لا يؤثر على الـ UI
       QuranSearchIndexer.initialize();
-
     } catch (e) {
       AppLogger.logger.e('خطأ في initDeferred: $e');
     }
@@ -95,9 +93,10 @@ class AppBootstrap {
   /// ─────────────────────────────────────────────────────────────────
   /// يحدد الموقع ثم يحسب المواقيت ويحفظها قبل عرض الصفحة الرئيسية.
   /// يعيد null عند النجاح، ورسالة مناسبة عند التعذر.
-  static Future<String?> initLocationAndPrayers(
-    ProviderContainer container,
-  ) async {
+  static Future<String?> initLocationAndPrayers({
+    required ProviderContainer container,
+    required BuildContext context,
+  }) async {
     final locationLocator = di.sl<LocationLocatorImpl>();
     final cachedPos = await locationLocator.getLocationCoords();
 
@@ -117,6 +116,15 @@ class AppBootstrap {
         });
       },
       (position) async {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green.shade700,
+            content: const Text(
+              "جاري حساب مواقيت الصلاة لحظة من فضلك.",
+              style: TextStyle(fontFamily: "Cario"),
+            ),
+          ),
+        );
         container.read(userPositionProvider.notifier).state = position;
         await _calculatePrayers(position.latitude, position.longitude);
         container.read(locationStatusProvider.notifier).setStatus({
@@ -132,8 +140,9 @@ class AppBootstrap {
   static Future<bool> initCachedLocationAndPrayers(
     ProviderContainer container,
   ) async {
-    final cachedPosition =
-        await di.sl<LocationLocatorImpl>().getLocationCoords();
+    final cachedPosition = await di
+        .sl<LocationLocatorImpl>()
+        .getLocationCoords();
     if (cachedPosition == null) return false;
 
     container.read(userPositionProvider.notifier).state = cachedPosition;
@@ -152,7 +161,10 @@ class AppBootstrap {
     return true;
   }
 
-  static Future<void> _calculatePrayers(double latitude, double longitude) async {
+  static Future<void> _calculatePrayers(
+    double latitude,
+    double longitude,
+  ) async {
     final tzName = (await FlutterTimezone.getLocalTimezone()).toString();
     await di.sl<RecalculateAndScheduleUseCase>()(
       domain_loc.Location(

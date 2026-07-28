@@ -51,7 +51,7 @@ class _HomePageState extends ConsumerState<HomePage>
       const QuickAdkarStrip(),
       SizedBox(height: 8.h),
       const TodayDuaa(),
-      SizedBox(height: MediaQuery.paddingOf(context).bottom + 90.h),
+      SizedBox(height: 120.h),
     ];
 
     return Scaffold(

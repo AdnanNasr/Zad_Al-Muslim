@@ -73,15 +73,13 @@ class _QeblaPageState extends ConsumerState<QeblaPage>
 
     if (!mounted) return;
     final error = await AppBootstrap.initLocationAndPrayers(
-      ProviderScope.containerOf(context),
+      context: context,
+      container: ProviderScope.containerOf(context),
     );
     if (error != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            error,
-            style: const TextStyle(fontFamily: 'Cairo'),
-          ),
+          content: Text(error, style: const TextStyle(fontFamily: 'Cairo')),
           backgroundColor: Colors.red.shade700,
         ),
       );
