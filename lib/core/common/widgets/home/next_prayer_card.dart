@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:zad_al_muslim/app_bootstrap.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
@@ -12,13 +14,41 @@ class NextPrayerCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final nextPrayerAsync = ref.watch(nextPrayerProvider);
 
+    /// يقوم بعرض طلب موقع المستخدم ويقوم بإعادة حساب اوقات الصلاة
+    Future<void> requestLocation() async {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.deniedForever) {
+        await Geolocator.openAppSettings();
+        return;
+      }
+
+      if (!context.mounted) return;
+      final error = await AppBootstrap.initLocationAndPrayers(
+        context: context,
+        container: ProviderScope.containerOf(context),
+      );
+      if (error != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error, style: const TextStyle(fontFamily: 'Cairo')),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+        return;
+      }
+
+      if (!context.mounted) return;
+
+      ref.invalidate(todayPrayerTimesProvider);
+    }
+
     return nextPrayerAsync.when(
       data: (nextPrayer) {
         if (nextPrayer == null) {
           return _PrayerCardError(
             message: 'لم يتم العثور على مواقيت الصلاة',
-            onRetry: () {
-              ref.invalidate(todayPrayerTimesProvider);
+            onRetry: () async {
+              await requestLocation();
             },
           );
         }
@@ -29,8 +59,8 @@ class NextPrayerCard extends ConsumerWidget {
       error: (_, _) {
         return _PrayerCardError(
           message: 'تعذر تحميل مواقيت الصلاة',
-          onRetry: () {
-            ref.invalidate(todayPrayerTimesProvider);
+          onRetry: () async {
+            await requestLocation();
           },
         );
       },

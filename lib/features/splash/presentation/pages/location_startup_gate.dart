@@ -24,8 +24,9 @@ class _LocationStartupGateState extends ConsumerState<LocationStartupGate> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final cachedPosition =
-          await di.sl<LocationLocatorImpl>().getLocationCoords();
+      final cachedPosition = await di
+          .sl<LocationLocatorImpl>()
+          .getLocationCoords();
       if (cachedPosition != null && mounted) {
         await _initialize();
       } else if (await OnboardingInit.hasSkippedLocationPrompt() && mounted) {
@@ -55,7 +56,8 @@ class _LocationStartupGateState extends ConsumerState<LocationStartupGate> {
     });
 
     final error = await AppBootstrap.initLocationAndPrayers(
-      ProviderScope.containerOf(context),
+      context: context,
+      container: ProviderScope.containerOf(context),
     );
     if (!mounted) return;
 
