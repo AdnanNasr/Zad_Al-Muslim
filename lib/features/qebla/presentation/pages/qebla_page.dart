@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:zad_al_muslim/core/common/providers/user_position_provider.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
-import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
-import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/features/qebla/presentation/providers/qibla_provider.dart';
 import 'package:zad_al_muslim/features/qebla/presentation/widgets/qibla_compass_painter.dart';
+import 'package:zad_al_muslim/app_bootstrap.dart';
 
 class QeblaPage extends ConsumerStatefulWidget {
   const QeblaPage({super.key});
@@ -18,8 +18,33 @@ class QeblaPage extends ConsumerStatefulWidget {
   ConsumerState<QeblaPage> createState() => _QeblaPageState();
 }
 
-class _QeblaPageState extends ConsumerState<QeblaPage> {
+class _QeblaPageState extends ConsumerState<QeblaPage>
+    with WidgetsBindingObserver {
   bool _isAligned = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      Geolocator.checkPermission().then((permission) {
+        if (permission == LocationPermission.whileInUse ||
+            permission == LocationPermission.always) {
+          _requestLocation();
+        }
+      });
+    }
+  }
 
   void _checkAlignment(double heading, double qiblaAngle) {
     double diff = (heading - qiblaAngle).abs();
@@ -40,25 +65,27 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
 
   /// يُطلق طلب الإذن ثم يُحدّث الموضع في المزود
   Future<void> _requestLocation() async {
-    final locationLocator = sl<LocationLocatorImpl>();
-    final result = await locationLocator.determinePosition();
-    result.fold(
-      (failure) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              failure.message,
-              style: const TextStyle(fontFamily: 'Cairo'),
-            ),
-            backgroundColor: Colors.red.shade700,
-          ),
-        );
-      },
-      (position) {
-        ref.read(userPositionProvider.notifier).state = position;
-      },
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
+      return;
+    }
+
+    if (!mounted) return;
+    final error = await AppBootstrap.initLocationAndPrayers(
+      ProviderScope.containerOf(context),
     );
+    if (error != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error,
+            style: const TextStyle(fontFamily: 'Cairo'),
+          ),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    }
   }
 
   @override
@@ -402,7 +429,8 @@ class _QeblaPageState extends ConsumerState<QeblaPage> {
             ),
             SizedBox(height: 12.h),
             Text(
-              'يحتاج التطبيق إلى معرفة موقعك\nلحساب اتجاه القبلة بدقة.',
+              'لم توافق على مشاركة موقعك، لذلك لا يمكن حساب اتجاه القبلة. '
+              'يمكنك منح إذن الموقع الآن لاستخدام هذه الميزة.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Cairo',

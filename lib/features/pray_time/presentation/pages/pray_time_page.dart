@@ -95,6 +95,13 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       if (status.isEmpty) {
         await ref.read(locationStatusProvider.notifier).refreshStatus();
         if (!mounted) return;
+        final refreshedStatus = ref.read(locationStatusProvider);
+        if (refreshedStatus.containsKey(LocationMessage.locationNotAllowed) ||
+            refreshedStatus.containsKey(
+              LocationMessage.locationNotAllowedEver,
+            )) {
+          return;
+        }
       }
 
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -113,8 +120,14 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       await pos.fold(
         (failure) async {
           if (!mounted) return;
+          final permission = await Geolocator.checkPermission();
+          if (!mounted) return;
           ref.read(locationStatusProvider.notifier).setStatus({
-            LocationMessage.error: failure.message,
+            permission == LocationPermission.deniedForever
+                ? LocationMessage.locationNotAllowedEver
+                : permission == LocationPermission.denied
+                ? LocationMessage.locationNotAllowed
+                : LocationMessage.error: failure.message,
           });
         },
         (position) async {
@@ -1531,14 +1544,6 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     required Map<LocationMessage, String> status,
     required NetworkInfoState networkState,
   }) {
-    if (networkState == NetworkInfoState.loading) {
-      return _buildSkeletonPrayerContent(context);
-    }
-
-    if (networkState == NetworkInfoState.notConnected) {
-      return _buildNoInternetWidget();
-    }
-
     if (status.isNotEmpty) {
       final messageType = status.keys.first;
 
@@ -1551,6 +1556,14 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       if (messageType == LocationMessage.loading) {
         return _buildSkeletonPrayerContent(context);
       }
+    }
+
+    if (networkState == NetworkInfoState.loading) {
+      return _buildSkeletonPrayerContent(context);
+    }
+
+    if (networkState == NetworkInfoState.notConnected) {
+      return _buildNoInternetWidget();
     }
 
     if (status.isEmpty) {
@@ -1695,27 +1708,48 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     Map<LocationMessage, String> status,
   ) {
     final messageType = status.keys.first;
-    return messageType == LocationMessage.locationNotAllowedEver
-        ? FilledButton.icon(
-            onPressed: () async => await Geolocator.openAppSettings(),
-            icon: const Icon(Icons.settings),
-            label: const Text("فتح الإعدادات"),
-            style: FilledButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-            ),
-          )
-        : Text(
-            "سيتم التحديث تلقائياً عند تفعيل الـ GPS",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: context.color.onSurfaceVariant,
-              fontSize: 14.sp,
-              fontFamily: "Cairo",
-            ),
-          );
+    if (messageType == LocationMessage.locationNotAllowedEver) {
+      return FilledButton.icon(
+        onPressed: () async => await Geolocator.openAppSettings(),
+        icon: const Icon(Icons.settings),
+        label: const Text("فتح الإعدادات"),
+        style: FilledButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+        ),
+      );
+    }
+    if (messageType == LocationMessage.locationNotAllowed) {
+      return FilledButton.icon(
+        onPressed: _checkAndFetchLocation,
+        icon: const Icon(Icons.location_on_rounded),
+        label: const Text(
+          "منح إذن الموقع",
+          style: TextStyle(fontFamily: "Cairo"),
+        ),
+      );
+    }
+    if (messageType == LocationMessage.locationDisabled) {
+      return FilledButton.icon(
+        onPressed: Geolocator.openLocationSettings,
+        icon: const Icon(Icons.gps_fixed_rounded),
+        label: const Text(
+          "تشغيل خدمة الموقع",
+          style: TextStyle(fontFamily: "Cairo"),
+        ),
+      );
+    }
+    return Text(
+      "سيتم التحديث تلقائياً عند تفعيل الـ GPS",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: context.color.onSurfaceVariant,
+        fontSize: 14.sp,
+        fontFamily: "Cairo",
+      ),
+    );
   }
 
   // ==========================================
@@ -1733,10 +1767,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       return;
     }
 
-    final networkState = ref.read(networkInfoProvider);
     final userPos = ref.read(userPositionProvider);
 
-    if (networkState == NetworkInfoState.connected && userPos == null) {
+    if (userPos == null) {
       final status = ref.read(locationStatusProvider);
       if (status.isEmpty) {
         ref.invalidate(selectedDatePrayerTimesProvider);
