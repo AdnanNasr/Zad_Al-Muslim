@@ -5,6 +5,8 @@ import 'package:zad_al_muslim/app_bootstrap.dart';
 import 'package:zad_al_muslim/core/common/widgets/custom_navigation_bar.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart' as di;
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
+import 'package:zad_al_muslim/core/utils/location/providers/location_status_provider.dart';
+import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_init.dart';
 
 class LocationStartupGate extends ConsumerStatefulWidget {
   const LocationStartupGate({super.key});
@@ -26,8 +28,23 @@ class _LocationStartupGateState extends ConsumerState<LocationStartupGate> {
           await di.sl<LocationLocatorImpl>().getLocationCoords();
       if (cachedPosition != null && mounted) {
         await _initialize();
+      } else if (await OnboardingInit.hasSkippedLocationPrompt() && mounted) {
+        _goToHome();
       }
     });
+  }
+
+  void _goToHome() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const CustomNavigationBar()),
+    );
+  }
+
+  Future<void> _continueWithoutLocation() async {
+    await OnboardingInit.markLocationPromptSkipped();
+    if (!mounted) return;
+    ref.read(locationStatusProvider.notifier).clearStatus();
+    _goToHome();
   }
 
   Future<void> _initialize() async {
@@ -43,11 +60,7 @@ class _LocationStartupGateState extends ConsumerState<LocationStartupGate> {
     if (!mounted) return;
 
     if (error == null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (_) => const CustomNavigationBar(),
-        ),
-      );
+      _goToHome();
       return;
     }
 
@@ -151,6 +164,13 @@ class _LocationStartupGateState extends ConsumerState<LocationStartupGate> {
                       style: TextStyle(fontFamily: 'Cairo'),
                     ),
                   ),
+                TextButton(
+                  onPressed: _loading ? null : _continueWithoutLocation,
+                  child: const Text(
+                    'المتابعة بدون مشاركة الموقع',
+                    style: TextStyle(fontFamily: 'Cairo'),
+                  ),
+                ),
               ],
             ),
           ),
