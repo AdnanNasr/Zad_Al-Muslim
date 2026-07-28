@@ -32,7 +32,13 @@ import 'package:zad_al_muslim/core/services/app_update/app_update_gate.dart';
 
 class AppRoot extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
-  const AppRoot({super.key, required this.hasSeenOnboarding});
+  final bool shouldShowLocationGate;
+
+  const AppRoot({
+    super.key,
+    required this.hasSeenOnboarding,
+    required this.shouldShowLocationGate,
+  });
 
   @override
   ConsumerState<AppRoot> createState() => _AppRootState();
@@ -129,7 +135,9 @@ class _AppRootState extends ConsumerState<AppRoot> {
       routes: {
         "/": (_) => AppUpdateGate(
           child: widget.hasSeenOnboarding
-              ? const LocationStartupGate()
+              ? widget.shouldShowLocationGate
+                    ? const LocationStartupGate()
+                    : const CustomNavigationBar()
               : const OnboardingPage(),
         ),
         "/home_page": (_) => const HomePage(),
