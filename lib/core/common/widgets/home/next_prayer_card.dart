@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:zad_al_muslim/app_bootstrap.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
@@ -18,53 +17,13 @@ class NextPrayerCard extends ConsumerStatefulWidget {
 }
 
 class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
-  bool _isCalculatingPrayerTimes = false;
+  final bool _isCalculatingPrayerTimes = false;
 
   @override
   Widget build(BuildContext context) {
     final nextPrayerAsync = ref.watch(nextPrayerProvider);
 
     /// يقوم بعرض طلب موقع المستخدم ويقوم بإعادة حساب اوقات الصلاة
-    Future<void> requestLocation() async {
-      if (_isCalculatingPrayerTimes) return;
-
-      setState(() {
-        _isCalculatingPrayerTimes = true;
-      });
-
-      try {
-        final permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.deniedForever) {
-          await Geolocator.openAppSettings();
-          return;
-        }
-
-        if (!mounted) return;
-        final error = await AppBootstrap.initLocationAndPrayers(
-          context: context,
-          container: ProviderScope.containerOf(context),
-        );
-        if (error != null && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error, style: const TextStyle(fontFamily: 'Cairo')),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-          return;
-        }
-
-        if (!mounted) return;
-
-        ref.invalidate(todayPrayerTimesProvider);
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isCalculatingPrayerTimes = false;
-          });
-        }
-      }
-    }
 
     if (_isCalculatingPrayerTimes) {
       return const _PrayerCardLoadingView();
@@ -76,7 +35,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
           return _PrayerCardError(
             message: 'لم يتم الموافقة على مشاركة الموقع',
             onTap: () {
-              requestLocation();
+              Navigator.of(context).pushNamed(Routes.prayTimePage);
             },
             ref: ref,
           );
@@ -89,7 +48,7 @@ class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
         return _PrayerCardError(
           message: 'تعذر تحميل مواقيت الصلاة',
           onTap: () {
-            requestLocation();
+            Navigator.of(context).pushNamed(Routes.prayTimePage);
           },
           ref: ref,
         );
@@ -788,7 +747,7 @@ class _ActivationButton extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'السماح بمشاركة الموقع',
+          'الإنتقال الى أوقات الصلاة',
           style: TextStyle(
             fontFamily: 'Cairo',
             fontSize: 12.sp,
@@ -797,7 +756,7 @@ class _ActivationButton extends StatelessWidget {
           ),
         ),
         SizedBox(width: 5.w),
-        Icon(Icons.gps_fixed, size: 18.sp, color: scheme.primary),
+        Icon(Icons.arrow_forward, size: 18.sp, color: scheme.primary),
       ],
     );
   }

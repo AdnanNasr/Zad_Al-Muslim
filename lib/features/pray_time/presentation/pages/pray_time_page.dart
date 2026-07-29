@@ -124,10 +124,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
           if (!mounted) return;
           ref.read(locationStatusProvider.notifier).setStatus({
             permission == LocationPermission.deniedForever
-                ? LocationMessage.locationNotAllowedEver
-                : permission == LocationPermission.denied
-                ? LocationMessage.locationNotAllowed
-                : LocationMessage.error: failure.message,
+                    ? LocationMessage.locationNotAllowedEver
+                    : permission == LocationPermission.denied
+                    ? LocationMessage.locationNotAllowed
+                    : LocationMessage.error:
+                failure.message,
           });
         },
         (position) async {
@@ -1651,10 +1652,15 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               Text(
                 messageType == LocationMessage.locationDisabled
                     ? "خدمة الموقع معطلة"
-                    : messageType == LocationMessage.locationNotAllowed ||
-                          messageType == LocationMessage.locationNotAllowedEver
+                    : messageType == LocationMessage.locationNotAllowed
                     ? "أذونات الموقع مطلوبة"
-                    : "عذراً، حدث خطأ",
+                    : messageType == LocationMessage.locationNotAllowedEver
+                    ? "أذونات الموقع مرفوضة بشكل دائم"
+                    : messageType == LocationMessage.loading
+                    ? "جاري التحميل"
+                    : messageType == LocationMessage.error
+                    ? "حدث خطأ"
+                    : "عذراً هناك خطأ ما",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22.sp,
@@ -1742,7 +1748,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
       );
     }
     return Text(
-      "سيتم التحديث تلقائياً عند تفعيل الـ GPS",
+      messageType == LocationMessage.locationDisabled
+          ? "سيتم التحديث تلقائياً عند تفعيل الـ GPS"
+          : "يجب منح أذن الوصول الى الموقع بشكل يدوي",
       textAlign: TextAlign.center,
       style: TextStyle(
         color: context.color.onSurfaceVariant,
