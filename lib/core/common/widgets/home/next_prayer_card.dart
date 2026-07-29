@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zad_al_muslim/app_bootstrap.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
@@ -46,10 +49,11 @@ class NextPrayerCard extends ConsumerWidget {
       data: (nextPrayer) {
         if (nextPrayer == null) {
           return _PrayerCardError(
-            message: 'لم يتم العثور على مواقيت الصلاة',
-            onRetry: () async {
-              await requestLocation();
+            message: 'لم يتم الموافقة على مشاركة الموقع',
+            onTap: () {
+              requestLocation();
             },
+            ref: ref,
           );
         }
 
@@ -59,9 +63,10 @@ class NextPrayerCard extends ConsumerWidget {
       error: (_, _) {
         return _PrayerCardError(
           message: 'تعذر تحميل مواقيت الصلاة',
-          onRetry: () async {
-            await requestLocation();
+          onTap: () {
+            requestLocation();
           },
+          ref: ref,
         );
       },
     );
@@ -595,59 +600,127 @@ class _LoadingBox extends StatelessWidget {
 }
 
 class _PrayerCardError extends StatelessWidget {
-  const _PrayerCardError({required this.message, required this.onRetry});
+  const _PrayerCardError({
+    required this.message,
+    required this.onTap,
+    required this.ref,
+  });
 
   final String message;
-  final VoidCallback onRetry;
+  final void Function()? onTap;
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = ref.read(themeProvider).isDark;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(15.r),
-        decoration: BoxDecoration(
-          color: colorScheme.errorContainer.withValues(alpha: 0.40),
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: colorScheme.error.withValues(alpha: 0.15)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40.r,
-              height: 40.r,
-              decoration: BoxDecoration(
-                color: colorScheme.error.withValues(alpha: 0.09),
-                borderRadius: BorderRadius.circular(13.r),
-              ),
-              child: Icon(
-                Icons.location_off_outlined,
-                size: 21.sp,
-                color: colorScheme.error,
+      child: Material(
+        elevation: isDark ? 0 : 3,
+        shadowColor: Colors.black.withValues(alpha: .18),
+        borderRadius: BorderRadius.circular(22.r),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Ink(
+            width: double.infinity,
+            padding: EdgeInsets.all(15.r),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(20.r),
+              border: Border.all(
+                color: colorScheme.primary.withValues(alpha: 0.15),
               ),
             ),
-
-            SizedBox(width: 11.w),
-
-            Expanded(
-              child: Text(
-                message,
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 10.5.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onErrorContainer,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "أوقات الصلاة",
+                  style: TextStyle(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Cairo',
+                  ),
                 ),
-              ),
-            ),
+                SizedBox(height: 2.h),
+                Text(
+                  "تابع أوقات الصلاة لحظة بلحظة",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: context.color.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Container(
+                      width: 40.r,
+                      height: 40.r,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withValues(alpha: 0.09),
+                        borderRadius: BorderRadius.circular(13.r),
+                      ),
+                      child: Icon(
+                        Icons.location_off_outlined,
+                        size: 21.sp,
+                        color: colorScheme.primary,
+                      ),
+                    ),
 
-            TextButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
-          ],
+                    SizedBox(width: 11.w),
+
+                    Expanded(
+                      child: Text(
+                        message,
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: context.color.error,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 14.h),
+                const _ActivationButton(),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _ActivationButton extends StatelessWidget {
+  const _ActivationButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Text(
+          'السماح بمشاركة الموقع',
+          style: TextStyle(
+            fontFamily: 'Cairo',
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w800,
+            color: scheme.primary,
+          ),
+        ),
+        SizedBox(width: 5.w),
+        Icon(Icons.gps_fixed, size: 18.sp, color: scheme.primary),
+      ],
     );
   }
 }

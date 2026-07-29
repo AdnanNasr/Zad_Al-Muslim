@@ -9,6 +9,7 @@ class OnboardingInit {
     await prefs.setBool(_key, true);
   }
 
+  /// يقوم بإرجاع قيمة صحيحة اذا كان المستخدم قد رأى الصفحة الاولى
   static Future<bool> hasSeen() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_key) ?? false;
