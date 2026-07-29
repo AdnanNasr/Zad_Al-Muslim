@@ -201,56 +201,28 @@ class _DatesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final shouldStack = constraints.maxWidth < 310;
+    return Row(
+      children: [
+        Expanded(
+          child: _DateItem(
+            icon: Icons.dark_mode_outlined,
+            label: 'الهجري',
+            text: _getFormattedHijriDate(now),
+            accent: _HeaderDateAccent.primary,
+          ),
+        ),
 
-        if (shouldStack) {
-          return Column(
-            children: [
-              _DateItem(
-                icon: Icons.dark_mode_outlined,
-                label: 'التاريخ الهجري',
-                text: _getFormattedHijriDate(now),
-                accent: _HeaderDateAccent.primary,
-              ),
+        SizedBox(width: 8.w),
 
-              SizedBox(height: 8.h),
-
-              _DateItem(
-                icon: Icons.calendar_today_rounded,
-                label: 'التاريخ الميلادي',
-                text: _getFormattedGregorianDate(now),
-                accent: _HeaderDateAccent.secondary,
-              ),
-            ],
-          );
-        }
-
-        return Row(
-          children: [
-            Expanded(
-              child: _DateItem(
-                icon: Icons.dark_mode_outlined,
-                label: 'الهجري',
-                text: _getFormattedHijriDate(now),
-                accent: _HeaderDateAccent.primary,
-              ),
-            ),
-
-            SizedBox(width: 8.w),
-
-            Expanded(
-              child: _DateItem(
-                icon: Icons.calendar_today_rounded,
-                label: 'الميلادي',
-                text: _getFormattedGregorianDate(now),
-                accent: _HeaderDateAccent.secondary,
-              ),
-            ),
-          ],
-        );
-      },
+        Expanded(
+          child: _DateItem(
+            icon: Icons.calendar_today_rounded,
+            label: 'الميلادي',
+            text: _getFormattedGregorianDate(now),
+            accent: _HeaderDateAccent.secondary,
+          ),
+        ),
+      ],
     );
   }
 }

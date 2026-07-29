@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/app_bootstrap.dart';
 import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
 import 'package:zad_al_muslim/core/common/pages/notifications_page.dart';
 import 'package:zad_al_muslim/core/themes/app_theme.dart';
@@ -19,7 +20,6 @@ import 'package:zad_al_muslim/features/settings/presentation/pages/app_info.dart
 import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/settings_page.dart';
 import 'package:zad_al_muslim/features/splash/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:zad_al_muslim/features/splash/presentation/pages/location_startup_gate.dart';
 import 'package:zad_al_muslim/features/tafsser/presentation/pages/tafseer_page.dart';
 import 'package:zad_al_muslim/main.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -32,12 +32,12 @@ import 'package:zad_al_muslim/core/services/app_update/app_update_gate.dart';
 
 class AppRoot extends ConsumerStatefulWidget {
   final bool hasSeenOnboarding;
-  final bool shouldShowLocationGate;
+  final bool shouldRequestLocation;
 
   const AppRoot({
     super.key,
     required this.hasSeenOnboarding,
-    required this.shouldShowLocationGate,
+    required this.shouldRequestLocation,
   });
 
   @override
@@ -49,8 +49,17 @@ class _AppRootState extends ConsumerState<AppRoot> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FlutterNativeSplash.remove();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        if (widget.shouldRequestLocation) {
+          await AppBootstrap.initLocationAndPrayers(
+            context: context,
+            container: ProviderScope.containerOf(context),
+          );
+        }
+      } finally {
+        FlutterNativeSplash.remove();
+      }
     });
 
     Future.microtask(() async {
@@ -135,9 +144,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
       routes: {
         "/": (_) => AppUpdateGate(
           child: widget.hasSeenOnboarding
-              ? widget.shouldShowLocationGate
-                    ? const LocationStartupGate()
-                    : const CustomNavigationBar()
+              ? const CustomNavigationBar()
               : const OnboardingPage(),
         ),
         "/home_page": (_) => const HomePage(),
@@ -152,7 +159,6 @@ class _AppRootState extends ConsumerState<AppRoot> {
         "/sunah_page": (_) => const HadithPage(),
         "/onboarding": (_) => const OnboardingPage(),
         "/custom_navigation_bar": (_) => const CustomNavigationBar(),
-        "/location_startup": (_) => const LocationStartupGate(),
         "/pray_time_page": (_) => const PrayTimePage(),
         "/qebla_page": (_) => const QeblaPage(),
         "/adkar_page": (_) => const AdkarPage(),

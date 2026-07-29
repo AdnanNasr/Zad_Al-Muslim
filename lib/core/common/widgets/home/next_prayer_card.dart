@@ -2,47 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:zad_al_muslim/app_bootstrap.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
-import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/next_prayer_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/pray_times_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 
-class NextPrayerCard extends ConsumerWidget {
+class NextPrayerCard extends ConsumerStatefulWidget {
   const NextPrayerCard({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NextPrayerCard> createState() => _NextPrayerCardState();
+}
+
+class _NextPrayerCardState extends ConsumerState<NextPrayerCard> {
+  bool _isCalculatingPrayerTimes = false;
+
+  @override
+  Widget build(BuildContext context) {
     final nextPrayerAsync = ref.watch(nextPrayerProvider);
 
     /// يقوم بعرض طلب موقع المستخدم ويقوم بإعادة حساب اوقات الصلاة
     Future<void> requestLocation() async {
-      final permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.deniedForever) {
-        await Geolocator.openAppSettings();
-        return;
-      }
+      if (_isCalculatingPrayerTimes) return;
 
-      if (!context.mounted) return;
-      final error = await AppBootstrap.initLocationAndPrayers(
-        context: context,
-        container: ProviderScope.containerOf(context),
-      );
-      if (error != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error, style: const TextStyle(fontFamily: 'Cairo')),
-            backgroundColor: Colors.red.shade700,
-          ),
+      setState(() {
+        _isCalculatingPrayerTimes = true;
+      });
+
+      try {
+        final permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.deniedForever) {
+          await Geolocator.openAppSettings();
+          return;
+        }
+
+        if (!mounted) return;
+        final error = await AppBootstrap.initLocationAndPrayers(
+          context: context,
+          container: ProviderScope.containerOf(context),
         );
-        return;
+        if (error != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error, style: const TextStyle(fontFamily: 'Cairo')),
+              backgroundColor: Colors.red.shade700,
+            ),
+          );
+          return;
+        }
+
+        if (!mounted) return;
+
+        ref.invalidate(todayPrayerTimesProvider);
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isCalculatingPrayerTimes = false;
+          });
+        }
       }
+    }
 
-      if (!context.mounted) return;
-
-      ref.invalidate(todayPrayerTimesProvider);
+    if (_isCalculatingPrayerTimes) {
+      return const _PrayerCardLoadingView();
     }
 
     return nextPrayerAsync.when(
@@ -59,7 +84,7 @@ class NextPrayerCard extends ConsumerWidget {
 
         return _PrayerCardContent(nextPrayer: nextPrayer);
       },
-      loading: () => const _PrayerCardLoading(),
+      loading: () => const _PrayerCardLoadingView(),
       error: (_, _) {
         return _PrayerCardError(
           message: 'تعذر تحميل مواقيت الصلاة',
@@ -516,6 +541,53 @@ class _OpenPrayerTimesAction extends StatelessWidget {
   }
 }
 
+class _PrayerCardLoadingView extends StatelessWidget {
+  const _PrayerCardLoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const _PrayerCardLoading(),
+        Semantics(
+          liveRegion: true,
+          label: 'جارٍ حساب أوقات الصلاة',
+          child: Card(
+            elevation: 2,
+            color: colorScheme.surface,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox.square(
+                    dimension: 18.r,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Text(
+                    'جارٍ حساب أوقات الصلاة',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _PrayerCardLoading extends StatelessWidget {
   const _PrayerCardLoading();
 
@@ -523,54 +595,60 @@ class _PrayerCardLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(17.r),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(24.r),
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.40),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _LoadingBox(width: 95.w, height: 23.h, radius: 20.r),
-
-            SizedBox(height: 18.h),
-
-            Row(
-              children: [
-                _LoadingBox(width: 54.r, height: 54.r, radius: 18.r),
-
-                SizedBox(width: 13.w),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _LoadingBox(width: 60.w, height: 19.h),
-                      SizedBox(height: 8.h),
-                      _LoadingBox(width: 105.w, height: 10.h),
-                    ],
-                  ),
-                ),
-
-                _LoadingBox(width: 48.w, height: 20.h),
-              ],
+    return Skeletonizer(
+      effect: ShimmerEffect(
+        baseColor: colorScheme.surfaceContainerHighest,
+        highlightColor: colorScheme.surfaceContainerLow,
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(17.r),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24.r),
+            border: Border.all(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.40),
             ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _LoadingBox(width: 95.w, height: 23.h, radius: 20.r),
 
-            SizedBox(height: 17.h),
+              SizedBox(height: 18.h),
 
-            _LoadingBox(width: double.infinity, height: 58.h, radius: 17.r),
+              Row(
+                children: [
+                  _LoadingBox(width: 54.r, height: 54.r, radius: 18.r),
 
-            SizedBox(height: 14.h),
+                  SizedBox(width: 13.w),
 
-            _LoadingBox(width: double.infinity, height: 30.h, radius: 10.r),
-          ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _LoadingBox(width: 60.w, height: 19.h),
+                        SizedBox(height: 8.h),
+                        _LoadingBox(width: 105.w, height: 10.h),
+                      ],
+                    ),
+                  ),
+
+                  _LoadingBox(width: 48.w, height: 20.h),
+                ],
+              ),
+
+              SizedBox(height: 17.h),
+
+              _LoadingBox(width: double.infinity, height: 58.h, radius: 17.r),
+
+              SizedBox(height: 14.h),
+
+              _LoadingBox(width: double.infinity, height: 30.h, radius: 10.r),
+            ],
+          ),
         ),
       ),
     );
