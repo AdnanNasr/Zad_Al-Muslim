@@ -62,7 +62,7 @@ void main() async {
         container: container,
         child: AppRoot(
           hasSeenOnboarding: hasSeenOnboarding,
-          shouldShowLocationGate:
+          shouldRequestLocation:
               !hasCachedLocation && !hasSkippedLocationPrompt,
         ),
       ),

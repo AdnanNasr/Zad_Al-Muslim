@@ -116,15 +116,6 @@ class AppBootstrap {
         });
       },
       (position) async {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green.shade700,
-            content: const Text(
-              "جاري حساب مواقيت الصلاة لحظة من فضلك.",
-              style: TextStyle(fontFamily: "Cario"),
-            ),
-          ),
-        );
         container.read(userPositionProvider.notifier).state = position;
         await _calculatePrayers(position.latitude, position.longitude);
         container.read(locationStatusProvider.notifier).setStatus({
