@@ -60,7 +60,7 @@ class AppInfo extends StatelessWidget {
                       icon: const Right(Icons.numbers),
                       text: AppLocalizations.of(context)!.version,
                       widget: Text(
-                        "1.0.0",
+                        "1.1.0",
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
