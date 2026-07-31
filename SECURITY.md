@@ -6,6 +6,7 @@ This table shows which versions of our project are currently supported with secu
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 1.1.0+5   | ✅ |
 | 1.0.0+5   | ✅ |
 | 1.0.0+4   | ✅ |
 
