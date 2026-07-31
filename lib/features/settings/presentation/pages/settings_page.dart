@@ -627,7 +627,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       text: AppLocalizations.of(context)!.app_information,
                       subText: 'الإصدار والتراخيص وسياسة الاستخدام',
                       forgroundColor: scheme.primary,
-                      onTap: () => Navigator.of(context).pushNamed("/app_info"),
+                      onTap: () =>
+                          Navigator.of(context).pushNamed("/app_info"), // TODO,
                     ),
                     SettingCards(
                       icon: const Right(Icons.share),

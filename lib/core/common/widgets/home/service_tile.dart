@@ -101,7 +101,7 @@ class ServiceTile extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(actionName, style: const TextStyle()),
+                      Text(actionName, style: TextStyle(fontSize: 11.5.sp)),
                       Icon(
                         Icons.arrow_forward_rounded,
                         size: 18.sp,
