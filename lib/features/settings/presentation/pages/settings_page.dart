@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/constants/env.dart';
+import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
@@ -628,7 +629,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       subText: 'الإصدار والتراخيص وسياسة الاستخدام',
                       forgroundColor: scheme.primary,
                       onTap: () =>
-                          Navigator.of(context).pushNamed("/app_info"), // TODO,
+                          Navigator.of(context).pushNamed(Routes.appInfo),
                     ),
                     SettingCards(
                       icon: const Right(Icons.share),
