@@ -3,7 +3,7 @@
 
 # Zad Al-Muslim (زاد المسلم)
 
-<a herf="https://zad-al-muslim.adnandev.cloud/">Show More details</a>
+<a href="https://zad-al-muslim.adnandev.cloud/">Show More details</a>
 
 **A Comprehensive, High-Performance Islamic Application**
 
