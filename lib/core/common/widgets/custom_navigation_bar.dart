@@ -49,74 +49,52 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
     return Scaffold(
       extendBody: true,
       body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: Container(
-        margin: EdgeInsets.fromLTRB(10.w, 0, 10.w, 25.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .15),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+      bottomNavigationBar: ClipRRect(
+        child: Container(
+          decoration: BoxDecoration(
+            color: (isLight ? themeColor.surface : themeColor.surface)
+                .withValues(alpha: isLight ? 0.9 : 0.9),
+            border: Border.all(
+              color: (themeColor.primary).withValues(alpha: 0.3),
+              width: 1.2,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              decoration: BoxDecoration(
-                color: (isLight ? themeColor.surface : themeColor.surface)
-                    .withValues(alpha: isLight ? 0.9 : 0.9),
-                borderRadius: BorderRadius.circular(30.r),
-                border: Border.all(
-                  color: (themeColor.primary).withValues(alpha: 0.3),
-                  width: 1.2,
+          ),
+          child: NavigationBarTheme(
+            data: NavigationBarThemeData(
+              indicatorColor: themeColor.primary.withValues(alpha: 0.15),
+              labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                final isSelected = states.contains(WidgetState.selected);
+                return TextStyle(
+                  fontSize: 12.sp,
+                  fontFamily: "Cairo",
+                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                  color: isSelected ? themeColor.primary : getInactiveColor(),
+                );
+              }),
+              labelPadding: EdgeInsets.zero,
+              height: 65.h,
+            ),
+            child: NavigationBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedIndex: _currentIndex,
+              onDestinationSelected: (index) {
+                setState(() => _currentIndex = index);
+              },
+              destinations: [
+                _buildDestination(
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home_rounded,
+                  label: local.home,
+                  inactiveColor: getInactiveColor(),
                 ),
-              ),
-              child: NavigationBarTheme(
-                data: NavigationBarThemeData(
-                  indicatorColor: themeColor.primary.withValues(alpha: 0.15),
-                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                    final isSelected = states.contains(WidgetState.selected);
-                    return TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: "Cairo",
-                      fontWeight: isSelected
-                          ? FontWeight.w900
-                          : FontWeight.w700,
-                      color: isSelected
-                          ? themeColor.primary
-                          : getInactiveColor(),
-                    );
-                  }),
-                  labelPadding: EdgeInsets.zero,
-                  height: 65.h,
+                _buildDestination(
+                  icon: Icons.settings,
+                  activeIcon: Icons.settings_rounded,
+                  label: local.settings,
+                  inactiveColor: getInactiveColor(),
                 ),
-                child: NavigationBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  selectedIndex: _currentIndex,
-                  onDestinationSelected: (index) {
-                    setState(() => _currentIndex = index);
-                  },
-                  destinations: [
-                    _buildDestination(
-                      icon: Icons.home_outlined,
-                      activeIcon: Icons.home_rounded,
-                      label: local.home,
-                      inactiveColor: getInactiveColor(),
-                    ),
-                    _buildDestination(
-                      icon: Icons.settings_outlined,
-                      activeIcon: Icons.settings_rounded,
-                      label: local.settings,
-                      inactiveColor: getInactiveColor(),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
         ),
