@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ServiceTile extends StatelessWidget {
-  const ServiceTile({
+  ServiceTile({
     super.key,
     required this.width,
     required this.title,
     required this.subtitle,
     required this.actionName,
-    required this.iconImage,
+    this.iconImage,
     required this.accentColor,
     required this.onTap,
+    this.iconData,
   });
 
   final double width;
   final String title;
   final String subtitle;
   final String actionName;
-  final String iconImage;
+  String? iconImage;
+  IconData? iconData;
   final Color accentColor;
   final VoidCallback onTap;
 
@@ -61,15 +63,17 @@ class ServiceTile extends StatelessWidget {
                       color: accentColor.withValues(alpha: 0.11),
                       borderRadius: BorderRadius.circular(13.r),
                     ),
-                    child: Image.asset(
-                      iconImage,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, _, _) => Icon(
-                        Icons.widgets_rounded,
-                        color: accentColor,
-                        size: 22.sp,
-                      ),
-                    ),
+                    child: iconImage != null
+                        ? Image.asset(
+                            iconImage!,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => Icon(
+                              Icons.widgets_rounded,
+                              color: accentColor,
+                              size: 22.sp,
+                            ),
+                          )
+                        : Icon(iconData),
                   ),
                   SizedBox(height: 11.h),
                   Text(

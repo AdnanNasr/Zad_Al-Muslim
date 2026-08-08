@@ -159,6 +159,17 @@ class PrimarySectionWidget extends ConsumerWidget {
                       Navigator.of(context).pushNamed(Routes.sunnahPage);
                     },
                   ),
+                  ServiceTile(
+                    width: tileWidth,
+                    title: "أسماء الله الحسنى",
+                    subtitle: 'أسماء الله ومعانيها',
+                    actionName: "تصفح الأحاديث",
+                    iconData: Icons.auto_awesome,
+                    accentColor: colorScheme.primary,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.sunnahPage);
+                    },
+                  ),
                 ],
               );
             },
