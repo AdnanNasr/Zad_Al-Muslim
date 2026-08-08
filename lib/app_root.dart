@@ -8,6 +8,7 @@ import 'package:zad_al_muslim/core/common/pages/notifications_page.dart';
 import 'package:zad_al_muslim/core/themes/app_theme.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 import 'package:zad_al_muslim/features/adkar/presentation/pages/adkar_page.dart';
+import 'package:zad_al_muslim/features/allah_names/presentation/pages/allah_names_page.dart';
 import 'package:zad_al_muslim/features/hadith/presentation/pages/hadith_page.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/pages/pray_time_page.dart';
 import 'package:zad_al_muslim/features/qebla/presentation/pages/qebla_page.dart';
@@ -163,6 +164,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
         "/qebla_page": (_) => const QeblaPage(),
         "/adkar_page": (_) => const AdkarPage(),
         "/notifications_page": (_) => const NotificationsPage(),
+        "/allah_names": (_) => const AllahNamesPage(),
       },
     );
   }

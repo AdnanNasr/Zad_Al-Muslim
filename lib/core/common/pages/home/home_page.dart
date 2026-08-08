@@ -167,7 +167,7 @@ class PrimarySectionWidget extends ConsumerWidget {
                     iconData: Icons.auto_awesome,
                     accentColor: colorScheme.primary,
                     onTap: () {
-                      Navigator.of(context).pushNamed(Routes.sunnahPage);
+                      Navigator.of(context).pushNamed(Routes.allaNames);
                     },
                   ),
                 ],
