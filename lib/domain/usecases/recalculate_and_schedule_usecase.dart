@@ -1,4 +1,5 @@
 import 'package:adhan/adhan.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
@@ -8,6 +9,10 @@ import '../repositories/i_prayer_repository.dart';
 import 'schedule_notifications_usecase.dart';
 
 class RecalculateAndScheduleUseCase {
+  static const String _calculationMethodKey = 'calculation_method_key';
+  static const String _lastCalculationMethodKey =
+      'last_prayer_calculation_method_key';
+
   final IPrayerRepository _prayerRepository;
   final ScheduleNotificationsUseCase _scheduleNotifications;
 
@@ -17,11 +22,18 @@ class RecalculateAndScheduleUseCase {
   );
 
   Future<void> call(Location location) async {
-    // 1. التحقق من تغير الموقع لتجنب إعادة الحساب غير الضرورية
+    // 1. التحقق من تغير الموقع أو طريقة الحساب لتجنب إعادة الحساب غير الضرورية
+    final preferences = sl<SharedPreferences>();
+    final currentCalculationMethod =
+        preferences.getInt(_calculationMethodKey) ?? 0;
+    final lastCalculationMethod = preferences.getInt(
+      _lastCalculationMethodKey,
+    );
     final lastLoc = await _prayerRepository.getLastKnownLocation();
     bool shouldRecalculate = true;
 
-    if (lastLoc != null) {
+    if (lastLoc != null &&
+        lastCalculationMethod == currentCalculationMethod) {
       final double latDiff = (lastLoc['lat']! - location.latitude).abs();
       final double lngDiff = (lastLoc['lng']! - location.longitude).abs();
       // إذا كان الفرق أقل من 0.001 (حوالي 100 متر)، نعتبره نفس الموقع
@@ -92,6 +104,10 @@ class RecalculateAndScheduleUseCase {
       await _prayerRepository.saveLastKnownLocation(
         location.latitude,
         location.longitude,
+      );
+      await preferences.setInt(
+        _lastCalculationMethodKey,
+        currentCalculationMethod,
       );
       await _scheduleNotifications(force: true);
     } catch (e) {
