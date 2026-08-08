@@ -115,33 +115,41 @@ class CalculationMethodDialog extends ConsumerWidget {
                 )
               : null,
         ),
-        child: ListTile(
-          title: Text(
-            methods[index],
-            style: TextStyle(
-              fontFamily: "Cairo",
-              fontSize: 14.sp,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              color: isSelected ? Theme.of(context).colorScheme.primary : null,
-            ),
-          ),
-          trailing: isSelected
-              ? Icon(
-                  Icons.check_circle,
-                  color: Theme.of(context).colorScheme.primary,
-                )
-              : null,
-          onTap: () {
-            ref.read(appSettingsProvider.notifier).setCalculationMethod(index);
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  "تم تحديث طريقة الحساب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
-                ),
+        child: Material(
+          color: Colors.transparent,
+          child: ListTile(
+            title: Text(
+              methods[index],
+              style: TextStyle(
+                fontFamily: "Cairo",
+                fontSize: 14.sp,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
               ),
-            );
-          },
+            ),
+            trailing: isSelected
+                ? Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : null,
+            onTap: () async {
+              await ref
+                  .read(appSettingsProvider.notifier)
+                  .setCalculationMethod(index);
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    "تم تحديث طريقة الحساب، يرجى إعادة تشغيل التطبيق لضمان دقة المواعيد.",
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       );
     });
