@@ -40,9 +40,6 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        // sourceCompatibility = JavaVersion.VERSION_17
-        // targetCompatibility = JavaVersion.VERSION_17
-        // رفع Java إلى 21 لدعم Locale.of() و Thread.threadId() المستخدمتين في sqflite_android-2.4.x+
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
@@ -80,7 +77,6 @@ flutter {
     source = "../.."
 }
 
-// --- أضف هذا القسم في نهاية الملف تماماً ---
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
