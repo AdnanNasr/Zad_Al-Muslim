@@ -29,8 +29,7 @@ class HadithEntity {
   }
 
   /// اسم الكتاب بالعربية بناءً على رقمه
-  String get bookName =>
-      SahihBukhariBook.fromId(reference.book).arabicName;
+  String get bookName => SahihBukhariBook.fromId(reference.book).arabicName;
 }
 
 class HadithFiltersEntity {

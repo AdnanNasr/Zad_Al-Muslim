@@ -62,6 +62,7 @@ import '../../infrastructure/repositories/isar_prayer_repository.dart';
 import '../../infrastructure/repositories/notification_scheduler_impl.dart';
 import '../../infrastructure/lifecycle/app_lifecycle_observer.dart';
 import '../../infrastructure/services/permission_service.dart';
+import '../utils/notifications/notification_inbox_service.dart';
 
 final sl = GetIt.instance;
 
@@ -70,6 +71,9 @@ Future<void> init() async {
   final prefs = await SharedPreferences.getInstance();
 
   sl.registerSingleton<SharedPreferences>(prefs);
+  sl.registerSingleton<NotificationInboxService>(
+    NotificationInboxService(prefs),
+  );
 
   await IsarDb.initDatabase();
 

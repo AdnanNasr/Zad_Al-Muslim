@@ -15,15 +15,15 @@ class PlayStoreUpdateException implements Exception {
 class PlayStoreUpdateService {
   bool _operationInProgress = false;
 
-  Future<void> startFlexibleUpdate() =>
-      _runUpdate(immediate: false);
+  Future<void> startFlexibleUpdate() => _runUpdate(immediate: false);
 
-  Future<void> startImmediateUpdate() =>
-      _runUpdate(immediate: true);
+  Future<void> startImmediateUpdate() => _runUpdate(immediate: true);
 
   Future<void> _runUpdate({required bool immediate}) async {
     if (kIsWeb || !Platform.isAndroid) {
-      throw const PlayStoreUpdateException('التحديث الداخلي متاح على Android فقط.');
+      throw const PlayStoreUpdateException(
+        'التحديث الداخلي متاح على Android فقط.',
+      );
     }
     if (_operationInProgress) {
       throw const PlayStoreUpdateException('هناك عملية تحديث قيد التنفيذ.');
@@ -32,8 +32,8 @@ class PlayStoreUpdateService {
     _operationInProgress = true;
     try {
       final info = await InAppUpdate.checkForUpdate();
-      final available = info.updateAvailability ==
-              UpdateAvailability.updateAvailable ||
+      final available =
+          info.updateAvailability == UpdateAvailability.updateAvailable ||
           info.updateAvailability ==
               UpdateAvailability.developerTriggeredUpdateInProgress;
       if (!available) {

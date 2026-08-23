@@ -6,6 +6,8 @@ import 'package:zad_al_muslim/core/utils/notifications/notification_service.dart
 import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
 import 'package:zad_al_muslim/domain/entities/prayer_time.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/notification_sound/notification_sound_manager.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_inbox_service.dart';
 
 class ScheduleAdkarNotification {
   static const int morningNotificationId = 10;
@@ -49,6 +51,7 @@ class ScheduleAdkarNotification {
 
     if (!isEnabled) {
       await notifications.cancel(id: morningNotificationId);
+      await sl<NotificationInboxService>().removeDailySchedule('morning_adkar');
       AppLogger.logger.i("تم إلغاء تفعيل تنبيه أذكار الصباح");
       return;
     }
@@ -80,7 +83,8 @@ class ScheduleAdkarNotification {
       }
     }
 
-    final randomData = morningMessages[Random().nextInt(morningMessages.length)];
+    final randomData =
+        morningMessages[Random().nextInt(morningMessages.length)];
 
     final tz.TZDateTime nowTz = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
@@ -101,20 +105,23 @@ class ScheduleAdkarNotification {
       title: randomData['title'],
       body: randomData['body'],
       scheduledDate: scheduledDate,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'morning_adkar_id',
-          'Morning Adkar Reminders',
-          channelDescription: 'تنبيهات أذكار الصباح',
-          importance: Importance.max,
-          priority: Priority.high,
+      notificationDetails: NotificationDetails(
+        android: NotificationSoundManager.androidDetails(
+          NotificationSoundManager.morningAdkar,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'morning_adkar_reminder',
+    );
+    await sl<NotificationInboxService>().setDailySchedule(
+      key: 'morning_adkar',
+      hour: targetHour,
+      minute: targetMinute,
+      title: randomData['title']!,
+      body: randomData['body']!,
     );
 
     AppLogger.logger.i(
@@ -130,6 +137,7 @@ class ScheduleAdkarNotification {
 
     if (!isEnabled) {
       await notifications.cancel(id: eveningNotificationId);
+      await sl<NotificationInboxService>().removeDailySchedule('evening_adkar');
       AppLogger.logger.i("تم إلغاء تفعيل تنبيه أذكار المساء");
       return;
     }
@@ -161,7 +169,8 @@ class ScheduleAdkarNotification {
       }
     }
 
-    final randomData = eveningMessages[Random().nextInt(eveningMessages.length)];
+    final randomData =
+        eveningMessages[Random().nextInt(eveningMessages.length)];
 
     final tz.TZDateTime nowTz = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
@@ -182,20 +191,23 @@ class ScheduleAdkarNotification {
       title: randomData['title'],
       body: randomData['body'],
       scheduledDate: scheduledDate,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'evening_adkar_id',
-          'Evening Adkar Reminders',
-          channelDescription: 'تنبيهات أذكار المساء',
-          importance: Importance.max,
-          priority: Priority.high,
+      notificationDetails: NotificationDetails(
+        android: NotificationSoundManager.androidDetails(
+          NotificationSoundManager.eveningAdkar,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'evening_adkar_reminder',
+    );
+    await sl<NotificationInboxService>().setDailySchedule(
+      key: 'evening_adkar',
+      hour: targetHour,
+      minute: targetMinute,
+      title: randomData['title']!,
+      body: randomData['body']!,
     );
 
     AppLogger.logger.i(

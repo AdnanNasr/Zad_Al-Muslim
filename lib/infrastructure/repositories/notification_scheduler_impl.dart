@@ -4,10 +4,16 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../../domain/repositories/i_notification_scheduler.dart';
+import '../../core/notification_sound/notification_sound_manager.dart';
+import '../../features/adhan/services/adhan_alarm_scheduler.dart';
+import '../../features/adhan/services/adhan_settings.dart';
+import '../../core/di/injection_container.dart';
+import '../../core/utils/notifications/notification_inbox_service.dart';
 
 class NotificationSchedulerImpl implements INotificationScheduler {
   final FlutterLocalNotificationsPlugin _notificationsPlugin;
   final SharedPreferences _prefs;
+  final AdhanAlarmScheduler _adhanAlarms = AdhanAlarmScheduler();
 
   NotificationSchedulerImpl(this._notificationsPlugin, this._prefs);
 
@@ -27,12 +33,17 @@ class NotificationSchedulerImpl implements INotificationScheduler {
     );
 
     await _notificationsPlugin.initialize(settings: settings);
+    await NotificationSoundManager.ensureChannels(_notificationsPlugin);
   }
 
   @override
   Future<void> scheduleAll(List<PrayerTime> prayers) async {
-    final bool globalEnabled = _prefs.getBool('prayer_notifications_enabled_key') ?? true;
-    if (!globalEnabled) return;
+    final bool globalEnabled =
+        _prefs.getBool('prayer_notifications_enabled_key') ?? true;
+    if (!globalEnabled) {
+      await sl<NotificationInboxService>().replaceOneTimeSchedules([]);
+      return;
+    }
 
     final bool fajrEnabled = _prefs.getBool('fajr_notif_key') ?? true;
     final bool sunriseEnabled = _prefs.getBool('sunrise_notif_key') ?? false;
@@ -41,6 +52,7 @@ class NotificationSchedulerImpl implements INotificationScheduler {
     final bool maghribEnabled = _prefs.getBool('maghrib_notif_key') ?? true;
     final bool ishaEnabled = _prefs.getBool('isha_notif_key') ?? true;
 
+    final inboxSchedules = <Map<String, dynamic>>[];
     for (final prayer in prayers) {
       if (prayer.prayerName == PrayerName.fajr && !fajrEnabled) continue;
       if (prayer.prayerName == PrayerName.sunrise && !sunriseEnabled) continue;
@@ -50,22 +62,33 @@ class NotificationSchedulerImpl implements INotificationScheduler {
       if (prayer.prayerName == PrayerName.isha && !ishaEnabled) continue;
 
       final id = _generateDeterministicId(prayer);
+      final audioMode = NotificationSoundManager.prayerAudioMode(_prefs);
+
+      // The notification remains scheduled through flutter_local_notifications.
+      // Native Android playback is only armed for Adhan, preventing a channel
+      // sound from being layered over the media audio.
+      if (audioMode == PrayerNotificationAudioMode.adhan &&
+          prayer.prayerName != PrayerName.sunrise) {
+        await _adhanAlarms.schedule(
+          id: id,
+          time: prayer.time,
+          isFajr: prayer.prayerName == PrayerName.fajr,
+          reciter: AdhanSettings(_prefs).reciter,
+        );
+      } else {
+        await _adhanAlarms.cancel(id);
+      }
 
       await _notificationsPlugin.zonedSchedule(
         id: id,
         title: _getPrayerTitle(prayer.prayerName),
         body: 'حان وقت صلاة ${_getArabicPrayerName(prayer.prayerName)}',
         scheduledDate: tz.TZDateTime.from(prayer.time, tz.local),
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'prayer_times_channel',
-            'مواقيت الصلاة',
-            channelDescription: 'إشعارات أوقات الصلاة',
-            importance: Importance.max,
-            priority: Priority.high,
-            // sound: RawResourceAndroidNotificationSound('adhan'), // TODO: add adhan file
+        notificationDetails: NotificationDetails(
+          android: NotificationSoundManager.androidDetails(
+            NotificationSoundManager.prayerChannelFor(audioMode),
           ),
-          iOS: DarwinNotificationDetails(
+          iOS: const DarwinNotificationDetails(
             presentAlert: true,
             presentSound: true,
             // sound: 'adhan.aiff', // تم تعطيله مؤقتاً لعدم وجود الملف // TODO: add adhan file
@@ -73,12 +96,22 @@ class NotificationSchedulerImpl implements INotificationScheduler {
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
+      inboxSchedules.add({
+        'id': 'prayer_$id',
+        'title': _getPrayerTitle(prayer.prayerName),
+        'body': 'حان وقت صلاة ${_getArabicPrayerName(prayer.prayerName)}',
+        'scheduledAt': prayer.time.toIso8601String(),
+      });
     }
+    await sl<NotificationInboxService>().replaceOneTimeSchedules(
+      inboxSchedules,
+    );
   }
 
   @override
   Future<void> cancelAll() async {
     await _notificationsPlugin.cancelAll();
+    await _adhanAlarms.cancelAll();
   }
 
   @override

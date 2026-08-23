@@ -28,6 +28,5 @@ class PrayerNotificationServiceImpl implements IPrayerNotificationService {
         time: entry.value,
       );
     }
-
   }
 }

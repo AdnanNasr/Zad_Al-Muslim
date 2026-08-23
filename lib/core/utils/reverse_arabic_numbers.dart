@@ -16,4 +16,4 @@ class ReverseArabicNumbers {
       return replace10;
     }
   }
-}
+}

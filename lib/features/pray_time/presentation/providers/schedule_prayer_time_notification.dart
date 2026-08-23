@@ -1,5 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zad_al_muslim/core/notification_sound/notification_sound_manager.dart';
 
 class SchedulePrayerTimeNotification {
   static Future<void> schedulePrayerNotification({
@@ -20,18 +23,13 @@ class SchedulePrayerTimeNotification {
       title: 'حان الآن موعد صلاة $title',
       body: 'حي على الصلاة...',
       scheduledDate: scheduledDate,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'prayer_id',
-          'Prayer Times',
-          channelDescription: 'Notifications for prayer times',
-          importance: Importance.max,
-          priority: Priority.high,
-          // sound: RawResourceAndroidNotificationSound('adhan'),
+      notificationDetails: NotificationDetails(
+        android: NotificationSoundManager.androidDetails(
+          NotificationSoundManager.prayerChannelFor(
+            NotificationSoundManager.prayerAudioMode(sl<SharedPreferences>()),
+          ),
         ),
-        iOS: DarwinNotificationDetails(
-          // sound: 'adhan.aiff',
-        ),
+        iOS: const DarwinNotificationDetails(),
       ),
       // المعاملات الجديدة والمطلوبة في إصدارك:
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
