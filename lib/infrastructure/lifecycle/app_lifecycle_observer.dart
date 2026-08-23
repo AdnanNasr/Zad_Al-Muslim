@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/usecases/schedule_notifications_usecase.dart';
+import '../../core/utils/notifications/notification_inbox_service.dart';
+import '../../core/di/injection_container.dart';
 
 class AppLifecycleObserver extends WidgetsBindingObserver {
   final ScheduleNotificationsUseCase scheduleNotificationsUseCase;
@@ -17,17 +19,19 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      sl<NotificationInboxService>().reconcile();
       _checkAndSchedule();
     }
   }
 
   Future<void> _checkAndSchedule() async {
     try {
-      final currentTimezone = (await FlutterTimezone.getLocalTimezone()).toString();
+      final currentTimezone = (await FlutterTimezone.getLocalTimezone())
+          .toString();
       final lastTimezone = sharedPreferences.getString(_lastTimezoneKey);
 
       bool timezoneChanged = lastTimezone != currentTimezone;
-      
+
       // Call the use case. It internally checks for the 20-hour window
       // but we force it if the timezone has changed.
       await scheduleNotificationsUseCase(force: timezoneChanged);

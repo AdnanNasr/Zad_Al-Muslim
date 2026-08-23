@@ -4,4 +4,4 @@ import 'package:zad_al_muslim/features/quran/domain/entities/surah_meta_entity.d
 
 abstract class SurahsDataRepository {
   Either<Failure, List<SurahMetaEntity>> getSurahsName();
-}
+}

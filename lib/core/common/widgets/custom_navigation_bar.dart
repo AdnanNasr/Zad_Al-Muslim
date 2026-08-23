@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/pages/home/home_page.dart';
@@ -52,12 +53,7 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
       bottomNavigationBar: ClipRRect(
         child: Container(
           decoration: BoxDecoration(
-            color: (isLight ? themeColor.surface : themeColor.surface)
-                .withValues(alpha: isLight ? 0.9 : 0.9),
-            border: Border.all(
-              color: (themeColor.primary).withValues(alpha: 0.3),
-              width: 1.2,
-            ),
+            color: (isLight ? themeColor.surface : themeColor.surface),
           ),
           child: NavigationBarTheme(
             data: NavigationBarThemeData(
@@ -76,7 +72,11 @@ class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
             ),
             child: NavigationBar(
               backgroundColor: Colors.transparent,
-              elevation: 0,
+              elevation: 10,
+              surfaceTintColor: context.color.surfaceContainerHighest,
+              overlayColor: WidgetStatePropertyAll<Color>(
+                context.color.surfaceContainerHighest,
+              ),
               selectedIndex: _currentIndex,
               onDestinationSelected: (index) {
                 setState(() => _currentIndex = index);

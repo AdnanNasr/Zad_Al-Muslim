@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zad_al_muslim/core/constants/env.dart';
@@ -14,6 +15,8 @@ import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_co
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 
 import 'package:zad_al_muslim/features/settings/presentation/widgets/prayer_notification_selection_dialog.dart';
+import 'package:zad_al_muslim/core/notification_sound/notification_sound_settings_dialog.dart';
+import 'package:zad_al_muslim/features/adhan/presentation/widgets/adhan_settings_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/font_size_dialog.dart';
 import 'package:zad_al_muslim/features/settings/presentation/widgets/calculation_method_dialog.dart';
@@ -63,7 +66,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () {
+              HapticFeedback.heavyImpact();
+              Navigator.pop(context, true);
+            },
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
               foregroundColor: Theme.of(context).colorScheme.onError,
@@ -132,7 +138,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             child: const Text("إلغاء", style: TextStyle(fontFamily: 'Cairo')),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () {
+              HapticFeedback.heavyImpact();
+              Navigator.pop(context, true);
+            },
             child: const Text('موافق'),
           ),
         ],
@@ -376,9 +385,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       forgroundColor: scheme.primary,
                       toggle: true,
                       switchValue: themeMode == ThemeMode.dark,
-                      onChanged: (_) => ref
-                          .read(themeProvider.notifier)
-                          .toggleTheme(themeMode),
+                      onChanged: (_) {
+                        HapticFeedback.vibrate();
+                        ref.read(themeProvider.notifier).toggleTheme(themeMode);
+                      },
                     ),
                     SettingCards(
                       icon: const Right(Icons.color_lens),
@@ -463,6 +473,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       toggle: true,
                       switchValue: appSettings.use24HourFormat,
                       onChanged: (value) async {
+                        HapticFeedback.vibrate();
                         await appSettingsNotifier.toggle24HourFormat();
                       },
                     ),
@@ -487,6 +498,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       toggle: true,
                       switchValue: appSettings.prayerNotificationsEnabled,
                       onChanged: (value) async {
+                        HapticFeedback.vibrate();
                         await appSettingsNotifier.togglePrayerNotifications();
                         ref.invalidate(todayPrayerTimesProvider);
                         ref.invalidate(selectedDatePrayerTimesProvider);
@@ -511,6 +523,34 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             )
                           : const SizedBox.shrink(),
                     ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOutCubic,
+                      child: appSettings.prayerNotificationsEnabled
+                          ? SettingCards(
+                              icon: const Right(
+                                Icons.record_voice_over_rounded,
+                              ),
+                              text: 'أصوات الصلاة',
+                              subText: 'الأذان أو صوت إشعار أو اهتزاز صامت',
+                              forgroundColor: scheme.tertiary,
+                              onTap: () => showDialog<void>(
+                                context: context,
+                                builder: (_) => const AdhanSettingsDialog(),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    SettingCards(
+                      icon: const Right(Icons.volume_up_outlined),
+                      text: 'أصوات الإشعارات',
+                      subText: 'اختر الصوت من إعدادات Android لكل نوع',
+                      forgroundColor: scheme.tertiary,
+                      onTap: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => const NotificationSoundSettingsDialog(),
+                      ),
+                    ),
                     SettingCards(
                       icon: const Right(Icons.wb_sunny_rounded),
                       text: 'أذكار الصباح',
@@ -524,6 +564,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       toggle: true,
                       switchValue: appSettings.morningAdkarReminder,
                       onChanged: (value) async {
+                        HapticFeedback.vibrate();
                         await appSettingsNotifier.toggleMorningAdkarReminder();
                       },
                       onTap: appSettings.morningAdkarReminder
@@ -561,6 +602,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       toggle: true,
                       switchValue: appSettings.eveningAdkarReminder,
                       onChanged: (value) async {
+                        HapticFeedback.vibrate();
                         await appSettingsNotifier.toggleEveningAdkarReminder();
                       },
                       onTap: appSettings.eveningAdkarReminder
@@ -715,6 +757,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               foregroundColor: context.color.onError,
             ),
             onPressed: () async {
+              HapticFeedback.heavyImpact();
               await appSettingsNotifier.resetSettings();
               if (context.mounted) {
                 Navigator.pop(context);

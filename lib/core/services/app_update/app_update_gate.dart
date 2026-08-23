@@ -5,6 +5,8 @@ import 'package:zad_al_muslim/core/services/app_update/app_update_providers.dart
 import 'package:zad_al_muslim/core/services/app_update/update_dialog.dart';
 import 'package:zad_al_muslim/core/services/app_update/update_required_page.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_inbox_service.dart';
 
 class AppUpdateGate extends ConsumerStatefulWidget {
   const AppUpdateGate({super.key, required this.child});
@@ -50,6 +52,11 @@ class _AppUpdateGateState extends ConsumerState<AppUpdateGate>
   void _showOptionalOnce(AppUpdateModel update) {
     if (_optionalDialogShown) return;
     _optionalDialogShown = true;
+    sl<NotificationInboxService>().addUpdateAvailable(
+      buildNumber: update.latestBuild,
+      title: update.title,
+      body: update.message,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       showDialog<void>(
@@ -64,9 +71,8 @@ class _AppUpdateGateState extends ConsumerState<AppUpdateGate>
   Widget build(BuildContext context) {
     final state = ref.watch(appUpdateProvider);
     return state.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (error, stackTrace) {
         AppLogger.logger.e(
           'فشل فحص تحديث التطبيق: $error',

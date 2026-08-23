@@ -18,9 +18,11 @@ import 'package:zad_al_muslim/core/utils/location/providers/location_status_prov
 import 'package:zad_al_muslim/core/common/providers/network_info_provider.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/service_status_provider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:zad_al_muslim/features/adhan/presentation/widgets/adhan_settings_dialog.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/user_address_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/data/models/prayer_adjustments_model.dart';
+import 'package:zad_al_muslim/features/settings/presentation/widgets/prayer_notification_selection_dialog.dart';
 
 import '../providers/pray_times_provider.dart';
 import '../providers/prayer_adjustments_provider.dart';
@@ -1111,16 +1113,23 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
             ),
             SizedBox(width: 8.w),
             // حالة الإشعار
-            Icon(
-              isNotificationEnabled
-                  ? Icons.notifications_active_rounded
-                  : Icons.notifications_off_rounded,
-              size: 16.sp,
-              color: isNotificationEnabled
-                  ? accentColor
-                  : surfaceColor.withValues(alpha: 0.3),
+            IconButton(
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (_) => const PrayerNotificationSelectionDialog(),
+                );
+              },
+              icon: Icon(
+                isNotificationEnabled
+                    ? Icons.notifications_active_rounded
+                    : Icons.notifications_off_rounded,
+                size: 16.sp,
+                color: isNotificationEnabled
+                    ? accentColor
+                    : surfaceColor.withValues(alpha: 0.3),
+              ),
             ),
-            SizedBox(width: 8.w),
             // زر الإعدادات
             Tooltip(
               message: 'ضبط وقت $name',
@@ -1162,6 +1171,7 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) {

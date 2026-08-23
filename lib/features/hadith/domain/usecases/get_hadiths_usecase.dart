@@ -8,7 +8,9 @@ class GetHadithsUseCase {
 
   GetHadithsUseCase(this.repository);
 
-  Future<Either<Failure, List<HadithEntity>>> call(HadithFiltersEntity filters) async {
+  Future<Either<Failure, List<HadithEntity>>> call(
+    HadithFiltersEntity filters,
+  ) async {
     return await repository.getHadiths(filters);
   }
 }

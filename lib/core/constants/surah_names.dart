@@ -113,7 +113,7 @@ class SurahNames {
     "المَسَد",
     "الإخلَاص",
     "الفَلَق",
-    "النَّاس"
+    "النَّاس",
   ];
 
   /// Get the formatted Surah name with exact Tashkeel based on surah number (1-114)

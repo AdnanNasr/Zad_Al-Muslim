@@ -26,14 +26,11 @@ class RecalculateAndScheduleUseCase {
     final preferences = sl<SharedPreferences>();
     final currentCalculationMethod =
         preferences.getInt(_calculationMethodKey) ?? 0;
-    final lastCalculationMethod = preferences.getInt(
-      _lastCalculationMethodKey,
-    );
+    final lastCalculationMethod = preferences.getInt(_lastCalculationMethodKey);
     final lastLoc = await _prayerRepository.getLastKnownLocation();
     bool shouldRecalculate = true;
 
-    if (lastLoc != null &&
-        lastCalculationMethod == currentCalculationMethod) {
+    if (lastLoc != null && lastCalculationMethod == currentCalculationMethod) {
       final double latDiff = (lastLoc['lat']! - location.latitude).abs();
       final double lngDiff = (lastLoc['lng']! - location.longitude).abs();
       // إذا كان الفرق أقل من 0.001 (حوالي 100 متر)، نعتبره نفس الموقع

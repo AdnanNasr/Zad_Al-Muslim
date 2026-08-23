@@ -19,12 +19,12 @@ class _LanguageDialogState extends ConsumerState<LanguageDialog> {
     AppLocale.ar: "العربية",
     AppLocale.en: "English",
     AppLocale.de: "Deutsch",
-    //"ur": "اردو", 
-    //"fr": "Français", 
+    //"ur": "اردو",
+    //"fr": "Français",
     //"ms": "Bahasa Melayu",
     //"id": "Bahasa Indonesia",
     //"tr": "Türkçe",
-};
+  };
 
   AppLocale get lang => ref.watch(languageProvider);
   AppLocale get _currentLangCode => lang;

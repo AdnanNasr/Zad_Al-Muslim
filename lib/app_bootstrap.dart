@@ -3,6 +3,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:zad_al_muslim/core/di/injection_container.dart' as di;
 import 'package:zad_al_muslim/core/utils/notifications/notification_service.dart';
+import 'package:zad_al_muslim/core/notification_sound/notification_sound_manager.dart';
 import 'package:zad_al_muslim/infrastructure/repositories/notification_scheduler_impl.dart';
 import 'package:zad_al_muslim/infrastructure/lifecycle/app_lifecycle_observer.dart';
 import 'package:zad_al_muslim/features/quran/domain/services/quran_search_indexer.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
 import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_inbox_service.dart';
 
 class AppBootstrap {
   /// ─────────────────────────────────────────────────────────────────
@@ -75,6 +77,8 @@ class AppBootstrap {
 
       // 2. Notifications: تُهيأ في الخلفية بعد ظهور الشاشة
       await NotificationService.init();
+      await di.sl<NotificationInboxService>().init();
+      await NotificationSoundManager.ensureChannels(NotificationService.plugin);
       await di.sl<NotificationSchedulerImpl>().init();
 
       // 3. Lifecycle observer

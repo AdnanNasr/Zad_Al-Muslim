@@ -5,6 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:zad_al_muslim/core/common/providers/home_clock_provider.dart';
+import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
+import 'package:zad_al_muslim/core/extensions/color_ext.dart';
+import 'package:zad_al_muslim/core/di/injection_container.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_inbox_service.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
@@ -14,6 +18,9 @@ class HomeHeader extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final now = ref.watch(homeClockProvider).value ?? DateTime.now();
+    ref.listen(homeClockProvider, (_, _) {
+      sl<NotificationInboxService>().reconcile();
+    });
 
     return SafeArea(
       bottom: false,
@@ -61,77 +68,107 @@ class HomeHeader extends ConsumerWidget {
   }
 }
 
-class _HeaderContent extends StatelessWidget {
+class _HeaderContent extends ConsumerWidget {
   const _HeaderContent({required this.now});
 
   final DateTime now;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final themeMode = ref.watch(themeProvider);
+    final isDark = themeMode.isDark;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Row(
           children: [
-            Container(
-              width: 8.r,
-              height: 8.r,
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                shape: BoxShape.circle,
-              ),
+            ValueListenableBuilder<List<AppNotification>>(
+              valueListenable: sl<NotificationInboxService>().notifications,
+              builder: (context, notifications, _) {
+                final unread = notifications
+                    .where((item) => !item.isRead)
+                    .length;
+                return Badge(
+                  isLabelVisible: unread > 0,
+                  label: Text(unread > 99 ? '99+' : '$unread'),
+                  alignment: Alignment.topRight,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 11),
+                  child: IconButton(
+                    tooltip: 'الإشعارات',
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      Navigator.of(context).pushNamed('/notifications_page');
+                    },
+                    icon: Icon(
+                      Icons.notifications,
+                      color: isDark
+                          ? Colors.white
+                          : context.color.onPrimaryContainer,
+                      size: 27.5,
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        isDark
+                            ? context.color.secondaryContainer
+                            : context.color.primaryContainer,
+                      ),
+                      shape: WidgetStatePropertyAll(
+                        CircleBorder(
+                          side: BorderSide(
+                            color: isDark
+                                ? context.color.secondary
+                                : context.color.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
+            SizedBox(width: 10.w),
 
-            SizedBox(width: 7.w),
-
-            Flexible(
-              child: Text(
-                _getGreeting(now),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 11.5.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.primary,
-                  height: 1.3,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'زاد المسلم',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w900,
+                    color: colorScheme.onSurface,
+                    height: 1.25,
+                  ),
                 ),
-              ),
+                SizedBox(height: 6.h),
+                Text(
+                  _getDailyMessage(now),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                    color: colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
 
-        SizedBox(height: 5.h),
+        // SizedBox(height: 5.h),
 
-        Text(
-          'زاد المسلم',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 22.sp,
-            fontWeight: FontWeight.w900,
-            color: colorScheme.onSurface,
-            height: 1.25,
-          ),
-        ),
-
-        SizedBox(height: 4.h),
-
-        Text(
-          _getDailyMessage(now),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontFamily: 'Tajawal',
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w500,
-            color: colorScheme.onSurfaceVariant,
-            height: 1.5,
-          ),
-        ),
+        // SizedBox(height: 4.h),
       ],
     );
   }
@@ -194,32 +231,288 @@ class _AppLogoButton extends StatelessWidget {
   }
 }
 
-class _DatesRow extends StatelessWidget {
+class _DatesRow extends ConsumerWidget {
   const _DatesRow({required this.now});
 
   final DateTime now;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+    final isDark = themeMode.isDark;
     return Row(
       children: [
         Expanded(
-          child: _DateItem(
-            icon: Icons.dark_mode_outlined,
-            label: 'الهجري',
-            text: _getFormattedHijriDate(now),
-            accent: _HeaderDateAccent.primary,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 22),
+                    decoration: BoxDecoration(
+                      color: context.color.surface,
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // الهلال
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: context.color.primaryContainer,
+                          ),
+                          child: Icon(
+                            Icons.nightlight_round,
+                            size: 40,
+                            color: isDark
+                                ? Colors.white
+                                : context.color.primary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        // العنوان
+                        Text(
+                          'التاريخ الهجري',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            color: context.color.onSurface,
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          'تاريخ اليوم حسب التقويم الهجري',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12.5.sp,
+                            color: context.color.onSurfaceVariant,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // التاريخ
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.color.primaryContainer.withValues(
+                              alpha: 0.45,
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: context.color.primary.withValues(
+                                alpha: .12,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            _getFormattedHijriDate(now),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 17.sp,
+                              color: context.color.primary,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.w700,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // زر الإغلاق
+                        SizedBox(
+                          width: double.infinity,
+                          height: 46,
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              backgroundColor: context.color.primary,
+                              foregroundColor: context.color.onPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: Text(
+                              'حسنًا',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.w700,
+                                color: context.color.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: _DateItem(
+              icon: Icons.dark_mode_outlined,
+              label: 'الهجري',
+              text: _getFormattedHijriDate(now),
+              accent: _HeaderDateAccent.primary,
+            ),
           ),
         ),
 
         SizedBox(width: 8.w),
 
         Expanded(
-          child: _DateItem(
-            icon: Icons.calendar_today_rounded,
-            label: 'الميلادي',
-            text: _getFormattedGregorianDate(now),
-            accent: _HeaderDateAccent.secondary,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 22),
+                    decoration: BoxDecoration(
+                      color: context.color.surface,
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // أيقونة التقويم
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: context.color.secondaryContainer,
+                          ),
+                          child: Icon(
+                            Icons.calendar_month_rounded,
+                            size: 40,
+                            color: isDark
+                                ? Colors.white
+                                : context.color.secondary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        // العنوان
+                        Text(
+                          'التاريخ الميلادي',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            color: context.color.onSurface,
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          'تاريخ اليوم حسب التقويم الميلادي',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12.5.sp,
+                            color: context.color.onSurfaceVariant,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // التاريخ
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.color.secondaryContainer.withValues(
+                              alpha: 0.45,
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: context.color.secondary.withValues(
+                                alpha: .12,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            _getFormattedGregorianDate(now),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 17.sp,
+                              color: context.color.secondary,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.w700,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // زر الإغلاق
+                        SizedBox(
+                          width: double.infinity,
+                          height: 46,
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              backgroundColor: context.color.secondary,
+                              foregroundColor: context.color.onSecondary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: Text(
+                              'حسنًا',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.w700,
+                                color: context.color.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: _DateItem(
+              icon: Icons.calendar_today_rounded,
+              label: 'الميلادي',
+              text: _getFormattedGregorianDate(now),
+              accent: _HeaderDateAccent.secondary,
+            ),
           ),
         ),
       ],
@@ -314,23 +607,23 @@ class _DateItem extends StatelessWidget {
 
 enum _HeaderDateAccent { primary, secondary }
 
-String _getGreeting(DateTime now) {
-  final hour = now.hour;
+// String _getGreeting(DateTime now) {
+//   final hour = now.hour;
 
-  if (hour >= 4 && hour < 12) {
-    return 'صباح مبارك';
-  }
+//   if (hour >= 4 && hour < 12) {
+//     return 'صباح مبارك';
+//   }
 
-  if (hour >= 12 && hour < 17) {
-    return 'نهارك مبارك';
-  }
+//   if (hour >= 12 && hour < 17) {
+//     return 'نهارك مبارك';
+//   }
 
-  if (hour >= 17 && hour < 22) {
-    return 'مساء مبارك';
-  }
+//   if (hour >= 17 && hour < 22) {
+//     return 'مساء مبارك';
+//   }
 
-  return 'السلام عليكم ورحمة الله';
-}
+//   return 'السلام عليكم ورحمة الله';
+// }
 
 String _getDailyMessage(DateTime now) {
   final hour = now.hour;

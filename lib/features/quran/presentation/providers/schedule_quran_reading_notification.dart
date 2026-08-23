@@ -6,6 +6,8 @@ import 'package:zad_al_muslim/core/utils/notifications/notification_service.dart
 import 'package:zad_al_muslim/domain/repositories/i_prayer_repository.dart';
 import 'package:zad_al_muslim/domain/entities/prayer_time.dart';
 import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
+import 'package:zad_al_muslim/core/notification_sound/notification_sound_manager.dart';
+import 'package:zad_al_muslim/core/utils/notifications/notification_inbox_service.dart';
 
 class ScheduleQuranReadingNotification {
   static const int notificationId = 9999;
@@ -39,6 +41,7 @@ class ScheduleQuranReadingNotification {
 
     if (!isEnabled) {
       await notifications.cancel(id: notificationId);
+      await sl<NotificationInboxService>().removeDailySchedule('quran_reading');
       AppLogger.logger.i("تم إلغاء تفعيل تنبيه ورد القرآن");
       return;
     }
@@ -101,20 +104,23 @@ class ScheduleQuranReadingNotification {
       title: randomData['title'],
       body: randomData['body'],
       scheduledDate: scheduledDate,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'quran_reading_id',
-          'Quran Reading Reminders',
-          channelDescription: 'تنبيهات الورد القرآني اليومي',
-          importance: Importance.max,
-          priority: Priority.high,
+      notificationDetails: NotificationDetails(
+        android: NotificationSoundManager.androidDetails(
+          NotificationSoundManager.quranReading,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'quran_reading_reminder',
+    );
+    await sl<NotificationInboxService>().setDailySchedule(
+      key: 'quran_reading',
+      hour: targetHour,
+      minute: targetMinute,
+      title: randomData['title']!,
+      body: randomData['body']!,
     );
 
     AppLogger.logger.i(
