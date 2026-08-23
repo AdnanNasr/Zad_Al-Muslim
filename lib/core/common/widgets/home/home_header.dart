@@ -52,7 +52,58 @@ class HomeHeader extends ConsumerWidget {
 
                     SizedBox(width: 14.w),
 
-                    const _AppLogoButton(),
+                    ValueListenableBuilder<List<AppNotification>>(
+                      valueListenable:
+                          sl<NotificationInboxService>().notifications,
+                      builder: (context, notifications, _) {
+                        final unread = notifications
+                            .where((item) => !item.isRead)
+                            .length;
+                        return Badge(
+                          isLabelVisible: unread > 0,
+                          label: Text(unread > 99 ? '99+' : '$unread'),
+                          alignment: Alignment.topRight,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          textStyle: const TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: 11,
+                          ),
+                          child: IconButton(
+                            tooltip: 'الإشعارات',
+                            onPressed: () {
+                              HapticFeedback.vibrate();
+                              Navigator.of(
+                                context,
+                              ).pushNamed('/notifications_page');
+                            },
+                            icon: Icon(
+                              Icons.notifications,
+                              color: isDark
+                                  ? Colors.white
+                                  : context.color.onPrimaryContainer,
+                              size: 27.5,
+                            ),
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll<Color>(
+                                isDark
+                                    ? context.color.secondaryContainer
+                                    : context.color.primaryContainer,
+                              ),
+                              shape: WidgetStatePropertyAll(
+                                CircleBorder(
+                                  side: BorderSide(
+                                    color: isDark
+                                        ? context.color.secondary
+                                        : context.color.primary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
 
@@ -84,52 +135,7 @@ class _HeaderContent extends ConsumerWidget {
       children: [
         Row(
           children: [
-            ValueListenableBuilder<List<AppNotification>>(
-              valueListenable: sl<NotificationInboxService>().notifications,
-              builder: (context, notifications, _) {
-                final unread = notifications
-                    .where((item) => !item.isRead)
-                    .length;
-                return Badge(
-                  isLabelVisible: unread > 0,
-                  label: Text(unread > 99 ? '99+' : '$unread'),
-                  alignment: Alignment.topRight,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 11),
-                  child: IconButton(
-                    tooltip: 'الإشعارات',
-                    onPressed: () {
-                      HapticFeedback.vibrate();
-                      Navigator.of(context).pushNamed('/notifications_page');
-                    },
-                    icon: Icon(
-                      Icons.notifications,
-                      color: isDark
-                          ? Colors.white
-                          : context.color.onPrimaryContainer,
-                      size: 27.5,
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(
-                        isDark
-                            ? context.color.secondaryContainer
-                            : context.color.primaryContainer,
-                      ),
-                      shape: WidgetStatePropertyAll(
-                        CircleBorder(
-                          side: BorderSide(
-                            color: isDark
-                                ? context.color.secondary
-                                : context.color.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+            const _AppLogoButton(),
             SizedBox(width: 10.w),
 
             Column(
