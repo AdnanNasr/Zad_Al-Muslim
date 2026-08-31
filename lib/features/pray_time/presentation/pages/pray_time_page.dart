@@ -10,6 +10,7 @@ import 'package:zad_al_muslim/core/di/injection_container.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zad_al_muslim/core/notification_sound/notification_sound_manager.dart';
 import 'package:zad_al_muslim/core/utils/location/location_locator.dart';
 import 'package:zad_al_muslim/domain/entities/location.dart' as domain_loc;
 import 'package:zad_al_muslim/domain/usecases/recalculate_and_schedule_usecase.dart';
@@ -19,6 +20,7 @@ import 'package:zad_al_muslim/core/common/providers/network_info_provider.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/service_status_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zad_al_muslim/features/adhan/presentation/widgets/adhan_settings_dialog.dart';
+import 'package:zad_al_muslim/features/adhan/services/adhan_settings.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/user_address_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:zad_al_muslim/features/pray_time/data/models/prayer_adjustments_model.dart';
@@ -40,6 +42,9 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
   Timer? _countdownTimer;
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
+  late final AdhanSettings _settings;
+  late PrayerNotificationAudioMode _mode;
+  late String _reciterId;
   bool _hasShownLocationAlert = false;
 
   @override
@@ -66,6 +71,10 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
         );
 
     _animationController.forward();
+
+    _settings = AdhanSettings(sl<SharedPreferences>());
+    _mode = _settings.mode;
+    _reciterId = _settings.reciter.id;
   }
 
   @override
@@ -1117,7 +1126,11 @@ class _PrayTimePageState extends ConsumerState<PrayTimePage>
               onPressed: () {
                 showDialog<void>(
                   context: context,
-                  builder: (_) => const PrayerNotificationSelectionDialog(),
+                  builder: (_) => PrayerNotificationSelectionDialog(
+                    mode: _mode,
+                    reciterId: _reciterId,
+                    settings: _settings,
+                  ),
                 );
               },
               icon: Icon(

@@ -230,7 +230,6 @@ class QariNames {
     ra3ad,
     aSwaiyd,
     zaml,
-    zaml,
     mAlZubaidi,
     kafi,
     aloosi,

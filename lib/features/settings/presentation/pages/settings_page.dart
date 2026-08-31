@@ -517,7 +517,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 showDialog(
                                   context: context,
                                   builder: (context) =>
-                                      const PrayerNotificationSelectionDialog(),
+                                      PrayerNotificationSelectionDialog(),
                                 );
                               },
                             )
