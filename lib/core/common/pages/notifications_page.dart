@@ -15,10 +15,18 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   final _inbox = sl<NotificationInboxService>();
 
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
+  final List<AppNotification> _currentNotifications = [];
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _inbox.markAllRead());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _inbox.markAllRead();
+
+      _currentNotifications.addAll(_inbox.notifications.value);
+    });
   }
 
   @override
@@ -37,14 +45,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: ValueListenableBuilder<List<AppNotification>>(
                 valueListenable: _inbox.notifications,
                 builder: (context, notifications, _) {
-                  if (notifications.isEmpty) {
+                  if (_currentNotifications.isEmpty &&
+                      notifications.isNotEmpty) {
+                    _currentNotifications.addAll(notifications);
+                  }
+
+                  if (notifications.isEmpty && _currentNotifications.isEmpty) {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Notification Icon
                             Container(
                               width: 120,
                               height: 120,
@@ -81,7 +93,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
                             const SizedBox(height: 28),
 
-                            // Title
                             Text(
                               'لا توجد إشعارات',
                               textAlign: TextAlign.center,
@@ -95,7 +106,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
                             const SizedBox(height: 8),
 
-                            // Description
                             Text(
                               'سنخبرك عندما يصل إليك إشعار جديد',
                               textAlign: TextAlign.center,
@@ -112,24 +122,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       ),
                     );
                   }
-                  return ListView.separated(
+
+                  return AnimatedList(
+                    key: _listKey,
+                    initialItemCount: _currentNotifications.length,
                     padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 24.h),
-                    itemCount: notifications.length,
-                    separatorBuilder: (_, _) => SizedBox(height: 10.h),
-                    itemBuilder: (context, index) {
-                      final notification = notifications[index];
-                      return Dismissible(
-                        key: ValueKey(notification.id),
-                        direction: DismissDirection.endToStart,
-                        background: _DeleteBackground(),
-                        onDismissed: (_) =>
-                            _inbox.deleteNotification(notification.id),
-                        child: _NotificationCard(
-                          notification: notification,
-                          onDelete: () =>
-                              _inbox.deleteNotification(notification.id),
-                        ),
-                      );
+                    itemBuilder: (context, index, animation) {
+                      final notification = _currentNotifications[index];
+
+                      return _buildItem(notification, animation);
                     },
                   );
                 },
@@ -140,10 +141,55 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ),
     );
   }
+
+  Widget _buildItem(AppNotification notification, Animation<double> animation) {
+    return Column(
+      children: [
+        _NotificationCard(
+          key: ValueKey(notification.id),
+          notification: notification,
+          onDelete: () => _deleteNotification(notification),
+        ),
+
+        SizedBox(height: 10.h),
+      ],
+    );
+  }
+
+  void _deleteNotification(AppNotification notification) {
+    final index = _currentNotifications.indexWhere(
+      (n) => n.id == notification.id,
+    );
+    if (index == -1) return;
+
+    final removedItem = _currentNotifications.removeAt(index);
+
+    _listKey.currentState?.removeItem(index, (context, animation) {
+      final offsetAnimation =
+          Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeInOutBack),
+          );
+
+      return SlideTransition(
+        position: offsetAnimation,
+        child: FadeTransition(
+          opacity: animation,
+
+          child: _buildItem(removedItem, animation),
+        ),
+      );
+    }, duration: const Duration(milliseconds: 600));
+
+    _inbox.deleteNotification(notification.id);
+  }
 }
 
 class _NotificationCard extends StatelessWidget {
-  const _NotificationCard({required this.notification, required this.onDelete});
+  const _NotificationCard({
+    required this.notification,
+    required this.onDelete,
+    super.key,
+  });
 
   final AppNotification notification;
   final VoidCallback onDelete;
@@ -224,6 +270,7 @@ class _NotificationCard extends StatelessWidget {
             ),
             IconButton(
               tooltip: 'حذف الإشعار',
+
               onPressed: onDelete,
               icon: Icon(Icons.delete_outline_rounded, size: 21.sp),
               color: scheme.error,
@@ -233,22 +280,6 @@ class _NotificationCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _DeleteBackground extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Container(
-    alignment: AlignmentDirectional.centerEnd,
-    padding: EdgeInsetsDirectional.only(end: 20.w),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.errorContainer,
-      borderRadius: BorderRadius.circular(8.r),
-    ),
-    child: Icon(
-      Icons.delete_outline_rounded,
-      color: Theme.of(context).colorScheme.onErrorContainer,
-    ),
-  );
 }
 
 class _NotificationPresentation {
