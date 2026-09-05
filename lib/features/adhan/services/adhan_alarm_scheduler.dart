@@ -24,8 +24,9 @@ class AdhanAlarmScheduler {
   }
 
   Future<void> cancel(int id) async {
-    if (Platform.isAndroid)
+    if (Platform.isAndroid) {
       await _channel.invokeMethod<void>('cancel', {'id': id});
+    }
   }
 
   Future<void> cancelAll() async {

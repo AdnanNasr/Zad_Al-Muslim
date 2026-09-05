@@ -127,8 +127,6 @@ class _HeaderContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final themeMode = ref.watch(themeProvider);
-    final isDark = themeMode.isDark;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,

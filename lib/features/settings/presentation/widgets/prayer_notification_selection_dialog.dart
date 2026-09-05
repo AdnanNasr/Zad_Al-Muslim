@@ -10,6 +10,7 @@ import 'package:zad_al_muslim/features/settings/presentation/providers/app_setti
 import '../../../../core/di/injection_container.dart';
 import '../../../../domain/usecases/schedule_notifications_usecase.dart';
 
+// ignore: must_be_immutable
 class PrayerNotificationSelectionDialog extends ConsumerStatefulWidget {
   final AdhanSettings? _settings;
   final PrayerNotificationAudioMode? _mode;
@@ -19,10 +20,9 @@ class PrayerNotificationSelectionDialog extends ConsumerStatefulWidget {
     super.key,
     AdhanSettings? settings,
     PrayerNotificationAudioMode? mode,
-    String? reciterId,
+    this.reciterId,
   }) : _settings = settings,
-       _mode = mode,
-       reciterId = reciterId;
+       _mode = mode;
 
   @override
   ConsumerState<PrayerNotificationSelectionDialog> createState() =>

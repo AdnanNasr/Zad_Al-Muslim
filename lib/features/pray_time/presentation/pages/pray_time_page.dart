@@ -19,7 +19,6 @@ import 'package:zad_al_muslim/core/utils/location/providers/location_status_prov
 import 'package:zad_al_muslim/core/common/providers/network_info_provider.dart';
 import 'package:zad_al_muslim/core/utils/location/providers/service_status_provider.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:zad_al_muslim/features/adhan/presentation/widgets/adhan_settings_dialog.dart';
 import 'package:zad_al_muslim/features/adhan/services/adhan_settings.dart';
 import 'package:zad_al_muslim/features/pray_time/presentation/providers/user_address_provider.dart';
 import 'package:zad_al_muslim/features/settings/presentation/providers/app_settings_provider.dart';
