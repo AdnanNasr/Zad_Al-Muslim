@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:logger/web.dart';
 import 'package:zad_al_muslim/core/constants/env.dart';
 import 'package:zad_al_muslim/core/constants/routes.dart';
 import 'package:zad_al_muslim/core/extensions/color_ext.dart';
@@ -11,6 +13,7 @@ import 'package:zad_al_muslim/core/l10n/app_localizations.dart';
 import 'package:zad_al_muslim/core/common/providers/theme_provider.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_card.dart';
 import 'package:zad_al_muslim/core/common/widgets/settings_container.dart';
+import 'package:zad_al_muslim/core/utils/log/app_logger.dart';
 import 'package:zad_al_muslim/features/settings/presentation/pages/change_app_color_page.dart';
 import 'package:zad_al_muslim/core/themes/theme_notifier.dart';
 
@@ -660,11 +663,53 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 SizedBox(height: 22.h),
 
                 SettingsContainer(
+                  title: 'إجراءات حساسة',
+                  subtitle: 'هذه الإجراءات تحتاج إلى تأكيد',
+                  icon: Icons.warning_amber_rounded,
+                  accentColor: scheme.error,
+                  settingsCards: [
+                    SettingCards(
+                      icon: const Right(Icons.location_off_rounded),
+                      text: 'حذف بيانات الموقع',
+                      subText: 'سيؤثر في الصلاة والقبلة حتى تحديث الموقع',
+                      destructive: true,
+                      onTap: () => _deleteLocationData(context),
+                    ),
+                    SettingCards(
+                      icon: const Right(Icons.restart_alt_rounded),
+                      text: 'إعادة ضبط الإعدادات',
+                      subText: 'استعادة جميع الإعدادات الافتراضية',
+                      destructive: true,
+                      onTap: () =>
+                          resetSettingsDialog(context, appSettingsNotifier),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 22.h),
+
+                SettingsContainer(
                   title: 'حول التطبيق',
                   subtitle: 'معلومات زاد المسلم ومشاركته',
                   icon: Icons.info_outline_rounded,
                   accentColor: scheme.primary,
                   settingsCards: [
+                    SettingCards(
+                      forgroundColor: Colors.amber.shade800,
+                      icon: const Right(Icons.star),
+                      text: "قيّم التطبيق",
+                      subText: "ساعدنا بتقييمك ومشاركة رأيك",
+                      onTap: () async {
+                        final inAppReview = InAppReview.instance;
+
+                        await inAppReview.openStoreListing().onError((
+                          error,
+                          stackTrace,
+                        ) {
+                          AppLogger.logger.e(error.toString());
+                        });
+                      },
+                    ),
                     SettingCards(
                       icon: const Right(Icons.app_settings_alt),
                       text: AppLocalizations.of(context)!.app_information,
@@ -687,32 +732,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                         );
                       },
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 22.h),
-
-                SettingsContainer(
-                  title: 'إجراءات حساسة',
-                  subtitle: 'هذه الإجراءات تحتاج إلى تأكيد',
-                  icon: Icons.warning_amber_rounded,
-                  accentColor: scheme.error,
-                  settingsCards: [
-                    SettingCards(
-                      icon: const Right(Icons.location_off_rounded),
-                      text: 'حذف بيانات الموقع',
-                      subText: 'سيؤثر في الصلاة والقبلة حتى تحديث الموقع',
-                      destructive: true,
-                      onTap: () => _deleteLocationData(context),
-                    ),
-                    SettingCards(
-                      icon: const Right(Icons.restart_alt_rounded),
-                      text: 'إعادة ضبط الإعدادات',
-                      subText: 'استعادة جميع الإعدادات الافتراضية',
-                      destructive: true,
-                      onTap: () =>
-                          resetSettingsDialog(context, appSettingsNotifier),
                     ),
                   ],
                 ),
