@@ -84,9 +84,8 @@ class _QuranPageAppBarState extends ConsumerState<QuranPageAppBar>
                 _buildSquareAction(
                   message: "الصفحة الرئيسية",
                   icon: Icons.arrow_back_ios_rounded,
-                  onTap: () => Navigator.of(
-                    context,
-                  ).popUntil(ModalRoute.withName(Routes.customNavigationBar)),
+                  onTap: () =>
+                      Navigator.of(context).popUntil((route) => route.isFirst),
                 ),
 
                 SizedBox(width: 16.w),
