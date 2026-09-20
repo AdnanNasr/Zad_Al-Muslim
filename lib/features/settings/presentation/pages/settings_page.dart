@@ -701,12 +701,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       onTap: () async {
                         final inAppReview = InAppReview.instance;
 
-                        await inAppReview.openStoreListing().onError((
-                          error,
-                          stackTrace,
-                        ) {
-                          AppLogger.logger.e(error.toString());
-                        });
+                        try {
+                          inAppReview.openStoreListing();
+                        } catch (error, stackTrace) {
+                          AppLogger.logger.e(
+                            "Error Message: ${error.toString()}",
+                            stackTrace: stackTrace,
+                          );
+
+                          return;
+                        }
                       },
                     ),
                     SettingCards(
