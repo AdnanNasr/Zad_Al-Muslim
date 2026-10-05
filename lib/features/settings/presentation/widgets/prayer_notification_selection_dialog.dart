@@ -129,7 +129,7 @@ class _PrayerNotificationSelectionDialogState
               const SizedBox(height: 12),
 
               DropdownButtonFormField<String>(
-                value: widget.reciterId,
+                initialValue: widget.reciterId,
                 isExpanded: true,
                 decoration: const InputDecoration(
                   labelText: 'المؤذن',
