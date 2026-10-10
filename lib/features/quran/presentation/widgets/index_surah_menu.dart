@@ -39,41 +39,63 @@ class _IndexSurahMenuState extends ConsumerState<IndexSurahMenu> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(10.r),
-                      decoration: BoxDecoration(
-                        color: context.color.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      child: Icon(
-                        Icons.collections_bookmark,
-                        color: context.color.onTertiaryContainer,
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Text(
-                        'فهرس المصحف',
-                        style: TextStyle(
-                          fontFamily: 'Cairo',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w900,
-                          color: context.color.onSurface,
+                padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 10.h),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? context.color.surface : context.color.onTertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: EdgeInsets.all(5.dg),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 10.h),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(10.r),
+                              decoration: BoxDecoration(
+                                color: isDark  ? context.color.onTertiaryFixedVariant : context.color.onTertiaryFixedVariant,
+                                borderRadius: BorderRadius.circular(14.r),
+                              ),
+                              child: Icon(
+                                Icons.collections_bookmark,
+                                color: isDark ? context.color.onSurface : context.color.tertiaryContainer,
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: Text(
+                                'فهرس المصحف',
+                                style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w900,
+                                  color: context.color.onSurface,
+                                ),
+                              ),
+                            ),
+                            IconButton.filledTonal(
+                              tooltip: 'إغلاق',
+                              onPressed: () => Navigator.pop(context),
+                              icon: Icon(
+                                Icons.close_rounded,
+                                color: isDark ? context.color.onSurface : context.color.tertiaryContainer,
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStatePropertyAll<Color>(
+                                  context.color.onTertiaryFixedVariant,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    IconButton.filledTonal(
-                      tooltip: 'إغلاق',
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded),
-                    ),
-                  ],
+                      _IndexMenuTabBar(primaryColor: color),
+                    ],
+                  ),
                 ),
               ),
-              _IndexMenuTabBar(primaryColor: color),
               const SizedBox(height: 10),
               Expanded(
                 child: TabBarView(
