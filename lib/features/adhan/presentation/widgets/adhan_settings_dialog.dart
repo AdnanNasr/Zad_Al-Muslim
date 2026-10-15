@@ -50,22 +50,26 @@ class _AdhanSettingsDialogState extends State<AdhanSettingsDialog> {
               ),
             ),
           ),
-          ...PrayerNotificationAudioMode.values.map(
-            (mode) => RadioListTile<PrayerNotificationAudioMode>(
-              value: mode,
-              groupValue: _mode,
-              onChanged: (value) => setState(() => _mode = value!),
-              title: Text(switch (mode) {
-                PrayerNotificationAudioMode.adhan => 'صوت الأذان',
-                PrayerNotificationAudioMode.notification => 'صوت إشعار',
-                PrayerNotificationAudioMode.silentVibration => 'اهتزاز صامت',
-              }, style: const TextStyle(fontFamily: 'Cairo')),
+          RadioGroup<PrayerNotificationAudioMode>(
+            groupValue: _mode,
+            onChanged: (value) => setState(() => _mode = value!),
+            child: Column(
+              children: PrayerNotificationAudioMode.values.map(
+                (mode) => RadioListTile<PrayerNotificationAudioMode>(
+                  value: mode,
+                  title: Text(switch (mode) {
+                    PrayerNotificationAudioMode.adhan => 'صوت الأذان',
+                    PrayerNotificationAudioMode.notification => 'صوت إشعار',
+                    PrayerNotificationAudioMode.silentVibration => 'اهتزاز صامت',
+                  }, style: const TextStyle(fontFamily: 'Cairo')),
+                ),
+              ).toList(),
             ),
           ),
           if (_mode == PrayerNotificationAudioMode.adhan) ...[
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: _reciterId,
+              initialValue: _reciterId,
               decoration: const InputDecoration(labelText: 'المؤذن'),
               items: AdhanReciterCatalog.reciters
                   .map(
