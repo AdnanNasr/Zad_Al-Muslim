@@ -47,7 +47,7 @@ abstract class _$SelectedBook extends $Notifier<TafsserBookEntity> {
   TafsserBookEntity build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<TafsserBookEntity, TafsserBookEntity>;
     final element =
         ref.element
@@ -57,6 +57,6 @@ abstract class _$SelectedBook extends $Notifier<TafsserBookEntity> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
